@@ -1,0 +1,685 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 55;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		7F37B84A27F75C0200211492 /* AuthFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 7F37B84927F75C0200211492 /* AuthFoundation */; };
+		7F37B84C27F75C0200211492 /* OktaOAuth2 in Frameworks */ = {isa = PBXBuildFile; productRef = 7F37B84B27F75C0200211492 /* OktaOAuth2 */; };
+		7F37B84E27F75C0200211492 /* WebAuthenticationUI in Frameworks */ = {isa = PBXBuildFile; productRef = 7F37B84D27F75C0200211492 /* WebAuthenticationUI */; };
+		7F37B85027F7950C00211492 /* Okta.plist in Resources */ = {isa = PBXBuildFile; fileRef = 7F37B84F27F7950C00211492 /* Okta.plist */; };
+		7F37B85227FB711800211492 /* SignInViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F37B85127FB711800211492 /* SignInViewModel.swift */; };
+		7F47B97927F6361D00E78495 /* RootCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F47B97827F6361D00E78495 /* RootCoordinator.swift */; };
+		7F4BDF5F281F68D800B4FC3B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7FA732B727F6190200C38E10 /* Assets.xcassets */; };
+		7F4BDF612820490700B4FC3B /* AccountBalanceViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F4BDF602820490700B4FC3B /* AccountBalanceViewModel.swift */; };
+		7F808C242811C28E004F7EB0 /* AccountBalanceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F808C232811C28E004F7EB0 /* AccountBalanceViewController.swift */; };
+		7F808C272811C3CE004F7EB0 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F808C262811C3CE004F7EB0 /* SettingsViewController.swift */; };
+		7F808C292811C5CC004F7EB0 /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F808C282811C5CC004F7EB0 /* SettingsViewModel.swift */; };
+		7F808C2B2811C7C6004F7EB0 /* SettingsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F808C2A2811C7C6004F7EB0 /* SettingsCell.swift */; };
+		7F808C2F2811CA29004F7EB0 /* SettingsCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F808C2E2811CA29004F7EB0 /* SettingsCellModel.swift */; };
+		7FA732AF27F6190000C38E10 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FA732AE27F6190000C38E10 /* AppDelegate.swift */; };
+		7FA732B327F6190000C38E10 /* WebSignInViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FA732B227F6190000C38E10 /* WebSignInViewController.swift */; };
+		7FA732BB27F6190200C38E10 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7FA732B927F6190200C38E10 /* LaunchScreen.storyboard */; };
+		7FA732C627F6190200C38E10 /* SampleAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FA732C527F6190200C38E10 /* SampleAppTests.swift */; };
+		7FB3137A281B9F5600CF0617 /* Appearance+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FB31379281B9F5600CF0617 /* Appearance+Extensions.swift */; };
+		7FC4AED92805D8E700EF5228 /* UserConsentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FC4AED82805D8E700EF5228 /* UserConsentViewModel.swift */; };
+		7FC4AEDB2805D90B00EF5228 /* UserConsentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FC4AEDA2805D90B00EF5228 /* UserConsentViewController.swift */; };
+		7FC4AEDF2809F19900EF5228 /* RemediationEventsHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FC4AEDE2809F19900EF5228 /* RemediationEventsHandler.swift */; };
+		7FD4370827FDF77A00B0717C /* PushNotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FD4370727FDF77A00B0717C /* PushNotificationService.swift */; };
+		7FD4370A27FE53C400B0717C /* MainStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7FD4370927FE53C400B0717C /* MainStoryboard.storyboard */; };
+		7FD4370C27FE580E00B0717C /* StoryboardController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FD4370B27FE580E00B0717C /* StoryboardController.swift */; };
+		7FD4371027FE6A9100B0717C /* OktaWebAuthProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FD4370F27FE6A9100B0717C /* OktaWebAuthProtocol.swift */; };
+		7FD4371227FE7FDA00B0717C /* UserDefaults+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FD4371127FE7FDA00B0717C /* UserDefaults+Extensions.swift */; };
+		B3704A0145C8BD8049D2A4A5 /* libPods-SampleApp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C364D2999DF9D37AC1BBA629 /* libPods-SampleApp.a */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		7FA732C227F6190200C38E10 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7FA732A327F6190000C38E10 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7FA732AA27F6190000C38E10;
+			remoteInfo = SampleApp;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		405AF62FA95D56886FBB0C3C /* Pods-SampleApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SampleApp.release.xcconfig"; path = "Target Support Files/Pods-SampleApp/Pods-SampleApp.release.xcconfig"; sourceTree = "<group>"; };
+		51D44C8334060B37415EB7E4 /* Pods-SampleApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SampleApp.debug.xcconfig"; path = "Target Support Files/Pods-SampleApp/Pods-SampleApp.debug.xcconfig"; sourceTree = "<group>"; };
+		7F37B84F27F7950C00211492 /* Okta.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Okta.plist; sourceTree = "<group>"; };
+		7F37B85127FB711800211492 /* SignInViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInViewModel.swift; sourceTree = "<group>"; };
+		7F37B85627FB904700211492 /* SampleApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SampleApp.entitlements; sourceTree = "<group>"; };
+		7F47B97827F6361D00E78495 /* RootCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootCoordinator.swift; sourceTree = "<group>"; };
+		7F4BDF602820490700B4FC3B /* AccountBalanceViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountBalanceViewModel.swift; sourceTree = "<group>"; };
+		7F808C232811C28E004F7EB0 /* AccountBalanceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountBalanceViewController.swift; sourceTree = "<group>"; };
+		7F808C262811C3CE004F7EB0 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
+		7F808C282811C5CC004F7EB0 /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
+		7F808C2A2811C7C6004F7EB0 /* SettingsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsCell.swift; sourceTree = "<group>"; };
+		7F808C2E2811CA29004F7EB0 /* SettingsCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsCellModel.swift; sourceTree = "<group>"; };
+		7FA732AB27F6190000C38E10 /* SampleApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SampleApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		7FA732AE27F6190000C38E10 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		7FA732B227F6190000C38E10 /* WebSignInViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebSignInViewController.swift; sourceTree = "<group>"; };
+		7FA732B727F6190200C38E10 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		7FA732BA27F6190200C38E10 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		7FA732BC27F6190200C38E10 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		7FA732C127F6190200C38E10 /* SampleAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SampleAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		7FA732C527F6190200C38E10 /* SampleAppTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleAppTests.swift; sourceTree = "<group>"; };
+		7FB3137B281BA2C600CF0617 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		7FB31379281B9F5600CF0617 /* Appearance+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Appearance+Extensions.swift"; sourceTree = "<group>"; };
+		7FC4AED82805D8E700EF5228 /* UserConsentViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserConsentViewModel.swift; sourceTree = "<group>"; };
+		7FC4AEDA2805D90B00EF5228 /* UserConsentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserConsentViewController.swift; sourceTree = "<group>"; };
+		7FC4AEDE2809F19900EF5228 /* RemediationEventsHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemediationEventsHandler.swift; sourceTree = "<group>"; };
+		7FD4370727FDF77A00B0717C /* PushNotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationService.swift; sourceTree = "<group>"; };
+		7FD4370927FE53C400B0717C /* MainStoryboard.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = MainStoryboard.storyboard; sourceTree = "<group>"; };
+		7FD4370B27FE580E00B0717C /* StoryboardController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryboardController.swift; sourceTree = "<group>"; };
+		7FD4370F27FE6A9100B0717C /* OktaWebAuthProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OktaWebAuthProtocol.swift; sourceTree = "<group>"; };
+		7FD4371127FE7FDA00B0717C /* UserDefaults+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserDefaults+Extensions.swift"; sourceTree = "<group>"; };
+		C364D2999DF9D37AC1BBA629 /* libPods-SampleApp.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SampleApp.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		7FA732A827F6190000C38E10 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B3704A0145C8BD8049D2A4A5 /* libPods-SampleApp.a in Frameworks */,
+				7F37B84A27F75C0200211492 /* AuthFoundation in Frameworks */,
+				7F37B84C27F75C0200211492 /* OktaOAuth2 in Frameworks */,
+				7F37B84E27F75C0200211492 /* WebAuthenticationUI in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7FA732BE27F6190200C38E10 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		7F808C222811C254004F7EB0 /* AccountBalance */ = {
+			isa = PBXGroup;
+			children = (
+				7F808C232811C28E004F7EB0 /* AccountBalanceViewController.swift */,
+				7F4BDF602820490700B4FC3B /* AccountBalanceViewModel.swift */,
+			);
+			path = AccountBalance;
+			sourceTree = "<group>";
+		};
+		7F808C252811C3BD004F7EB0 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				7F808C262811C3CE004F7EB0 /* SettingsViewController.swift */,
+				7F808C282811C5CC004F7EB0 /* SettingsViewModel.swift */,
+				7F808C2A2811C7C6004F7EB0 /* SettingsCell.swift */,
+				7F808C2E2811CA29004F7EB0 /* SettingsCellModel.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		7FA732A227F6190000C38E10 = {
+			isa = PBXGroup;
+			children = (
+				7FB3137B281BA2C600CF0617 /* README.md */,
+				7FA732AD27F6190000C38E10 /* SampleApp */,
+				7FA732C427F6190200C38E10 /* SampleAppTests */,
+				7FA732AC27F6190000C38E10 /* Products */,
+				83197E2D06A90DF58F1FE54E /* Pods */,
+				95E407231014723D0AD853C5 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		7FA732AC27F6190000C38E10 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				7FA732AB27F6190000C38E10 /* SampleApp.app */,
+				7FA732C127F6190200C38E10 /* SampleAppTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		7FA732AD27F6190000C38E10 /* SampleApp */ = {
+			isa = PBXGroup;
+			children = (
+				7F37B85627FB904700211492 /* SampleApp.entitlements */,
+				7FA732AE27F6190000C38E10 /* AppDelegate.swift */,
+				7F47B97827F6361D00E78495 /* RootCoordinator.swift */,
+				7FD4370727FDF77A00B0717C /* PushNotificationService.swift */,
+				7FC4AEDE2809F19900EF5228 /* RemediationEventsHandler.swift */,
+				7F808C252811C3BD004F7EB0 /* Settings */,
+				7F808C222811C254004F7EB0 /* AccountBalance */,
+				7FC4AED52805D80200EF5228 /* UserConsent */,
+				7FD4370E27FE68EE00B0717C /* Extensions+Utils */,
+				7FD4370D27FE631D00B0717C /* WebSignIn */,
+				7FD4370927FE53C400B0717C /* MainStoryboard.storyboard */,
+				7FA732B727F6190200C38E10 /* Assets.xcassets */,
+				7FA732B927F6190200C38E10 /* LaunchScreen.storyboard */,
+				7FA732BC27F6190200C38E10 /* Info.plist */,
+				7F37B84F27F7950C00211492 /* Okta.plist */,
+			);
+			path = SampleApp;
+			sourceTree = "<group>";
+		};
+		7FA732C427F6190200C38E10 /* SampleAppTests */ = {
+			isa = PBXGroup;
+			children = (
+				7FA732C527F6190200C38E10 /* SampleAppTests.swift */,
+			);
+			path = SampleAppTests;
+			sourceTree = "<group>";
+		};
+		7FC4AED52805D80200EF5228 /* UserConsent */ = {
+			isa = PBXGroup;
+			children = (
+				7FC4AED82805D8E700EF5228 /* UserConsentViewModel.swift */,
+				7FC4AEDA2805D90B00EF5228 /* UserConsentViewController.swift */,
+			);
+			path = UserConsent;
+			sourceTree = "<group>";
+		};
+		7FD4370D27FE631D00B0717C /* WebSignIn */ = {
+			isa = PBXGroup;
+			children = (
+				7FA732B227F6190000C38E10 /* WebSignInViewController.swift */,
+				7F37B85127FB711800211492 /* SignInViewModel.swift */,
+			);
+			path = WebSignIn;
+			sourceTree = "<group>";
+		};
+		7FD4370E27FE68EE00B0717C /* Extensions+Utils */ = {
+			isa = PBXGroup;
+			children = (
+				7FD4370B27FE580E00B0717C /* StoryboardController.swift */,
+				7FD4371127FE7FDA00B0717C /* UserDefaults+Extensions.swift */,
+				7FD4370F27FE6A9100B0717C /* OktaWebAuthProtocol.swift */,
+				7FB31379281B9F5600CF0617 /* Appearance+Extensions.swift */,
+			);
+			path = "Extensions+Utils";
+			sourceTree = "<group>";
+		};
+		83197E2D06A90DF58F1FE54E /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				51D44C8334060B37415EB7E4 /* Pods-SampleApp.debug.xcconfig */,
+				405AF62FA95D56886FBB0C3C /* Pods-SampleApp.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
+		95E407231014723D0AD853C5 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				C364D2999DF9D37AC1BBA629 /* libPods-SampleApp.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		7FA732AA27F6190000C38E10 /* SampleApp */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7FA732D527F6190200C38E10 /* Build configuration list for PBXNativeTarget "SampleApp" */;
+			buildPhases = (
+				F86E7ED5A383A33279B1CEB3 /* [CP] Check Pods Manifest.lock */,
+				7FA732A727F6190000C38E10 /* Sources */,
+				7FA732A827F6190000C38E10 /* Frameworks */,
+				7FA732A927F6190000C38E10 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SampleApp;
+			packageProductDependencies = (
+				7F37B84927F75C0200211492 /* AuthFoundation */,
+				7F37B84B27F75C0200211492 /* OktaOAuth2 */,
+				7F37B84D27F75C0200211492 /* WebAuthenticationUI */,
+			);
+			productName = SampleApp;
+			productReference = 7FA732AB27F6190000C38E10 /* SampleApp.app */;
+			productType = "com.apple.product-type.application";
+		};
+		7FA732C027F6190200C38E10 /* SampleAppTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7FA732D827F6190200C38E10 /* Build configuration list for PBXNativeTarget "SampleAppTests" */;
+			buildPhases = (
+				7FA732BD27F6190200C38E10 /* Sources */,
+				7FA732BE27F6190200C38E10 /* Frameworks */,
+				7FA732BF27F6190200C38E10 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				7FA732C327F6190200C38E10 /* PBXTargetDependency */,
+			);
+			name = SampleAppTests;
+			productName = SampleAppTests;
+			productReference = 7FA732C127F6190200C38E10 /* SampleAppTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		7FA732A327F6190000C38E10 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1330;
+				LastUpgradeCheck = 1330;
+				TargetAttributes = {
+					7FA732AA27F6190000C38E10 = {
+						CreatedOnToolsVersion = 13.3;
+					};
+					7FA732C027F6190200C38E10 = {
+						CreatedOnToolsVersion = 13.3;
+						TestTargetID = 7FA732AA27F6190000C38E10;
+					};
+				};
+			};
+			buildConfigurationList = 7FA732A627F6190000C38E10 /* Build configuration list for PBXProject "SampleApp" */;
+			compatibilityVersion = "Xcode 13.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 7FA732A227F6190000C38E10;
+			packageReferences = (
+				7F37B84827F75C0200211492 /* XCRemoteSwiftPackageReference "okta-mobile-swift" */,
+			);
+			productRefGroup = 7FA732AC27F6190000C38E10 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				7FA732AA27F6190000C38E10 /* SampleApp */,
+				7FA732C027F6190200C38E10 /* SampleAppTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		7FA732A927F6190000C38E10 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7FA732BB27F6190200C38E10 /* LaunchScreen.storyboard in Resources */,
+				7FD4370A27FE53C400B0717C /* MainStoryboard.storyboard in Resources */,
+				7F4BDF5F281F68D800B4FC3B /* Assets.xcassets in Resources */,
+				7F37B85027F7950C00211492 /* Okta.plist in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7FA732BF27F6190200C38E10 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		F86E7ED5A383A33279B1CEB3 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-SampleApp-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		7FA732A727F6190000C38E10 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7FD4370827FDF77A00B0717C /* PushNotificationService.swift in Sources */,
+				7F37B85227FB711800211492 /* SignInViewModel.swift in Sources */,
+				7FC4AEDB2805D90B00EF5228 /* UserConsentViewController.swift in Sources */,
+				7FD4371227FE7FDA00B0717C /* UserDefaults+Extensions.swift in Sources */,
+				7FC4AED92805D8E700EF5228 /* UserConsentViewModel.swift in Sources */,
+				7FA732B327F6190000C38E10 /* WebSignInViewController.swift in Sources */,
+				7F808C2F2811CA29004F7EB0 /* SettingsCellModel.swift in Sources */,
+				7F47B97927F6361D00E78495 /* RootCoordinator.swift in Sources */,
+				7F808C242811C28E004F7EB0 /* AccountBalanceViewController.swift in Sources */,
+				7FD4371027FE6A9100B0717C /* OktaWebAuthProtocol.swift in Sources */,
+				7FA732AF27F6190000C38E10 /* AppDelegate.swift in Sources */,
+				7F808C272811C3CE004F7EB0 /* SettingsViewController.swift in Sources */,
+				7FB3137A281B9F5600CF0617 /* Appearance+Extensions.swift in Sources */,
+				7FD4370C27FE580E00B0717C /* StoryboardController.swift in Sources */,
+				7FC4AEDF2809F19900EF5228 /* RemediationEventsHandler.swift in Sources */,
+				7F4BDF612820490700B4FC3B /* AccountBalanceViewModel.swift in Sources */,
+				7F808C2B2811C7C6004F7EB0 /* SettingsCell.swift in Sources */,
+				7F808C292811C5CC004F7EB0 /* SettingsViewModel.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7FA732BD27F6190200C38E10 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7FA732C627F6190200C38E10 /* SampleAppTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		7FA732C327F6190200C38E10 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 7FA732AA27F6190000C38E10 /* SampleApp */;
+			targetProxy = 7FA732C227F6190200C38E10 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		7FA732B927F6190200C38E10 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				7FA732BA27F6190200C38E10 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		7FA732D327F6190200C38E10 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		7FA732D427F6190200C38E10 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		7FA732D627F6190200C38E10 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 51D44C8334060B37415EB7E4 /* Pods-SampleApp.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = SampleApp/SampleApp.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 7WXXBW6Z2Y;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SampleApp/Info.plist;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.okta.PushSDKSampleApp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		7FA732D727F6190200C38E10 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 405AF62FA95D56886FBB0C3C /* Pods-SampleApp.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = SampleApp/SampleApp.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 7WXXBW6Z2Y;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SampleApp/Info.plist;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.okta.PushSDKSampleApp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		7FA732D927F6190200C38E10 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 7WXXBW6Z2Y;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.okta.SampleAppTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SampleApp.app/SampleApp";
+			};
+			name = Debug;
+		};
+		7FA732DA27F6190200C38E10 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 7WXXBW6Z2Y;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.okta.SampleAppTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SampleApp.app/SampleApp";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		7FA732A627F6190000C38E10 /* Build configuration list for PBXProject "SampleApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7FA732D327F6190200C38E10 /* Debug */,
+				7FA732D427F6190200C38E10 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		7FA732D527F6190200C38E10 /* Build configuration list for PBXNativeTarget "SampleApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7FA732D627F6190200C38E10 /* Debug */,
+				7FA732D727F6190200C38E10 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		7FA732D827F6190200C38E10 /* Build configuration list for PBXNativeTarget "SampleAppTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7FA732D927F6190200C38E10 /* Debug */,
+				7FA732DA27F6190200C38E10 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		7F37B84827F75C0200211492 /* XCRemoteSwiftPackageReference "okta-mobile-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/okta/okta-mobile-swift";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		7F37B84927F75C0200211492 /* AuthFoundation */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7F37B84827F75C0200211492 /* XCRemoteSwiftPackageReference "okta-mobile-swift" */;
+			productName = AuthFoundation;
+		};
+		7F37B84B27F75C0200211492 /* OktaOAuth2 */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7F37B84827F75C0200211492 /* XCRemoteSwiftPackageReference "okta-mobile-swift" */;
+			productName = OktaOAuth2;
+		};
+		7F37B84D27F75C0200211492 /* WebAuthenticationUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7F37B84827F75C0200211492 /* XCRemoteSwiftPackageReference "okta-mobile-swift" */;
+			productName = WebAuthenticationUI;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 7FA732A327F6190000C38E10 /* Project object */;
+}
