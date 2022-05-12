@@ -13,12 +13,12 @@
 import Foundation
 import WebAuthenticationUI
 
-// Wrapper protocol for WebAuthentication object
+// Wrapper protocol for Okta WebAuthentication object
 protocol OktaWebAuthProtocol {
     func signIn(from: WebAuthentication.WindowAnchor?, completion: @escaping (Result<AuthFoundation.Token, WebAuthenticationError>) -> Void)
     func signOut(from window: WebAuthentication.WindowAnchor?, credential: Credential?, completion: @escaping (Result<Void, WebAuthenticationError>) -> Void)
     func signOut(from window: WebAuthentication.WindowAnchor?, completion: @escaping (Result<Void, WebAuthenticationError>) -> Void)
-    func refreshTokenIfNeeded(completion: @escaping (Result<Token, OAuth2Error>) -> Void)
+    func getAccessToken(completion: @escaping (Result<Token, OAuth2Error>) -> Void)
     var isSignedIn: Bool { get }
     var accessToken: String? { get }
     var baseURL: URL? { get }
@@ -64,7 +64,7 @@ extension WebAuthentication: OktaWebAuthProtocol {
         try? Credential.default?.remove()
     }
     
-    func refreshTokenIfNeeded(completion: @escaping (Result<Token, OAuth2Error>) -> Void) {
+    func getAccessToken(completion: @escaping (Result<Token, OAuth2Error>) -> Void) {
         Credential.default?.refreshIfNeeded(completion: completion)
     }
     
