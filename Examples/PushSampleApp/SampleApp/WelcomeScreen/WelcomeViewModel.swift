@@ -12,11 +12,11 @@
 import Foundation
 import OktaLogger
 
-protocol AccountBalanceViewModelProtocol {
+protocol WelcomeViewModelProtocol {
     var welcomeLabelText: String { get }
 }
 
-struct AccountBalanceViewModel: AccountBalanceViewModelProtocol {
+class WelcomeViewModel: WelcomeViewModelProtocol {
 
     let webAuthenticator: OktaWebAuthProtocol
 

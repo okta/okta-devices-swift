@@ -41,6 +41,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         remediationEventsHandler = RemediationStepHandler()
         pushNotificationService = PushNotificationService(deviceAuthenticator: deviceAuthenticator,
                                                           remediationEventsHandler: remediationEventsHandler,
+                                                          webAuthenticator: webAuthenticator,
                                                           logger: logger)
 
         rootCoordinator = RootCoordinator(deviceAuthenticator: deviceAuthenticator,
