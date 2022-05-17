@@ -12,9 +12,10 @@
 
 import UIKit
 
-class SettingsViewController: UIViewController, StoryboardController,  UITableViewDelegate, UITableViewDataSource {
+class SettingsViewController: UIViewController, StoryboardController,  UITableViewDelegate, UITableViewDataSource, SettingsViewUpdatable {
 
     @IBOutlet weak var settingsTableView: UITableView!
+    @IBOutlet weak var spinner: UIActivityIndicatorView!
     var viewModel: SettingsViewModelProtocol!
 
     override func viewDidLoad() {
@@ -22,13 +23,6 @@ class SettingsViewController: UIViewController, StoryboardController,  UITableVi
         addCustomNavBarAppereance()
         setupTableView()
         navigationItem.title = viewModel.title
-        viewModel.didEnroll = { [weak self] alertTitle, alertText in
-            DispatchQueue.main.async {
-                let alert = UIAlertController(title: alertTitle, message: alertText, preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "Ok", style: .default))
-                self?.present(alert, animated: true, completion: nil)
-            }
-        }
     }
     
     private func setupTableView() {
@@ -49,4 +43,28 @@ class SettingsViewController: UIViewController, StoryboardController,  UITableVi
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 70
     }
+    
+    func showAlert(alertTitle: String, alertText: String) {
+        DispatchQueue.main.async {
+            let alert = UIAlertController(title: alertTitle, message: alertText, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "Ok", style: .default))
+            self.present(alert, animated: true, completion: nil)
+        }
+    }
+    
+    func updateView(shouldShowSpinner: Bool) {
+        DispatchQueue.main.async {
+            guard shouldShowSpinner else {
+                self.spinner.stopAnimating()
+                self.settingsTableView.reloadData()
+                return
+            }
+            self.spinner.startAnimating()
+        }
+    }
+}
+
+protocol SettingsViewUpdatable: AnyObject {
+    func showAlert(alertTitle: String, alertText: String)
+    func updateView(shouldShowSpinner: Bool)
 }

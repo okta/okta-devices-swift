@@ -93,5 +93,5 @@ enum PushSettingsConstant {
 }
 
 enum LoggerEvent: String {
-    case appInit, pushService, webSignIn, enrollment, account
+    case appInit, pushService, webSignIn, enrollment, enrollmentDelete, userVerification, account
 }
