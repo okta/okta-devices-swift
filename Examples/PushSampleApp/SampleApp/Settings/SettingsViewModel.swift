@@ -59,8 +59,8 @@ class SettingsViewModel: SettingsViewModelProtocol {
     }
     
     private func beginEnrollment() {
-        // Since access token could be expired, we refresh it if needed. Completion closure will be called immediately if it's still valid.
-        webAuthenticator.refreshTokenIfNeeded { [weak self] result in
+        // Fetching a valid access token to pass to enrollment. WebAuthenticator will try to refresh it if expired.
+        webAuthenticator.getAccessToken { [weak self] result in
             switch result {
             case .success(_):
                 self?.enroll()

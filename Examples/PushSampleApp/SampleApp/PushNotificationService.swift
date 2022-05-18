@@ -14,20 +14,22 @@ import Foundation
 import UIKit
 import OktaLogger
 import OktaDeviceSDK
-import WebAuthenticationUI
 
 class PushNotificationService: NSObject, UNUserNotificationCenterDelegate {
 
     private var logger: OktaLogger?
     private var deviceAuthenticator: DeviceAuthenticatorProtocol
     private let remediationEventsHandler: RemediationStepHandlerProtocol
+    private let webAuthenticator: OktaWebAuthProtocol
 
     init(deviceAuthenticator: DeviceAuthenticatorProtocol,
          remediationEventsHandler: RemediationStepHandlerProtocol,
+         webAuthenticator: OktaWebAuthProtocol,
          logger: OktaLogger?) {
         self.logger = logger
         self.deviceAuthenticator = deviceAuthenticator
         self.remediationEventsHandler = remediationEventsHandler
+        self.webAuthenticator = webAuthenticator
         super.init()
         UNUserNotificationCenter.current().delegate = self
     }
@@ -53,18 +55,12 @@ class PushNotificationService: NSObject, UNUserNotificationCenterDelegate {
         }
     }
 
-    func saveDeviceToken(data: Data) {
+    func updateDeviceTokenForEnrollments(data: Data) {
         UserDefaults.save(deviceToken: data)
         deviceAuthenticator.allEnrollments().forEach({ enrollment in
-            // Need to fetch a valid accessToken in order to update DeviceToken, thus refreshing if it's expired. Completion closure will be called immediately if AC is still valid.
-            Credential.default?.refreshIfNeeded { result in
-                switch result {
-                case .success(let token):
-                    enrollment.updateDeviceToken(data, authenticationToken: AuthToken.bearer(token.accessToken)) { error in
-                        self.logger?.info(eventName: LoggerEvent.pushService.rawValue, message: "Success update device token")
-                    }
-                case .failure(let error):
-                    self.logger?.error(eventName: LoggerEvent.pushService.rawValue, message: error.localizedDescription)
+            getAccessToken { accessToken in
+                enrollment.updateDeviceToken(data, authenticationToken: AuthToken.bearer(accessToken)) { error in
+                    self.logger?.info(eventName: LoggerEvent.pushService.rawValue, message: "Success update device token")
                 }
             }
         })
@@ -93,6 +89,19 @@ class PushNotificationService: NSObject, UNUserNotificationCenterDelegate {
         }
         completionHandler()
     }
+    
+    private func getAccessToken(completion: @escaping (String) -> Void) {
+        // Fetching a valid access token. WebAuthenticator will try to refresh it if expired.
+        webAuthenticator.getAccessToken { result in
+            switch result  {
+            case .success(let token):
+                completion(token.accessToken)
+            case .failure(let error):
+                // If there was a failure obtaining/refreshing a valid access token, consider starting the authentication flow again as it's needed for most SDK API calls.
+                self.logger?.error(eventName: LoggerEvent.pushService.rawValue, message: error.localizedDescription)
+            }
+        }
+    }
 
     private func resolvePushChallenge(_ pushChallenge: PushChallengeProtocol) {
         pushChallenge.resolve { step in
@@ -109,13 +118,8 @@ class PushNotificationService: NSObject, UNUserNotificationCenterDelegate {
     }
 
     func retrievePushChallenges() {
-        Credential.default?.refreshIfNeeded { result in
-            switch result {
-            case .success(let token):
-                self.retrievePushChallenges(accessToken: token.accessToken)
-            case .failure(let error):
-                self.logger?.error(eventName: LoggerEvent.account.rawValue, message: error.localizedDescription)
-            }
+        getAccessToken { accessToken in
+            self.retrievePushChallenges(accessToken: accessToken)
         }
     }
 

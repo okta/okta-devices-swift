@@ -29,6 +29,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         window = .init(frame: UIScreen.main.bounds)
         
+        logger = OktaLogger()
+        logger.addDestination(OktaLoggerConsoleLogger(identifier: "PushSDKSampleApp.console.logger", level: .all, defaultProperties: nil))
+
         guard let webAuthenticator = WebAuthentication.shared else {
             logger.error(eventName: LoggerEvent.appInit.rawValue, message: "Failed to initialize WebAuthenticator SDK")
             fatalError("Couldn't initialize OktaWebAuthenticator, please review your Okta.plist settings")
@@ -36,11 +39,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
 
         initOktaDeviceAuthenticator()
-        logger = OktaLogger()
-        logger.addDestination(OktaLoggerConsoleLogger(identifier: "PushSDKSampleApp.console.logger", level: .all, defaultProperties: nil))
         remediationEventsHandler = RemediationStepHandler()
         pushNotificationService = PushNotificationService(deviceAuthenticator: deviceAuthenticator,
                                                           remediationEventsHandler: remediationEventsHandler,
+                                                          webAuthenticator: webAuthenticator,
                                                           logger: logger)
 
         rootCoordinator = RootCoordinator(deviceAuthenticator: deviceAuthenticator,
@@ -54,7 +56,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        pushNotificationService.saveDeviceToken(data: deviceToken)
+        // Whenever iOS assigns or updates the push token, your app must pass the new deviceToken to the SDK, which will perform the update for all enrollments associated with this device.
+        pushNotificationService.updateDeviceTokenForEnrollments(data: deviceToken)
     }
 
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {

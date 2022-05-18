@@ -12,19 +12,25 @@
 
 import UIKit
 
-class AccountBalanceViewController: UIViewController, StoryboardController {
+class WelcomeViewController: UIViewController, StoryboardController {
 
     @IBOutlet weak var welcomeLabel: UILabel!
     var didTapSettings: () -> Void = {}
     var didTapSignOut: () -> Void = {}
-    var viewModel: AccountBalanceViewModelProtocol!
+    var didRequestSignInFaster: () -> Void = {}
+    var viewModel: WelcomeViewModel!
 
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.largeTitleDisplayMode = .always
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Settings", style: .plain, target: self, action: #selector(didTapSettingsButton))
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Sign out", style: .plain, target: self, action: #selector(didTapSignOutButton))
-        self.welcomeLabel.text = self.viewModel.welcomeLabelText
+        self.welcomeLabel.text = self.viewModel.welcomeLabelText        
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        didRequestSignInFaster()
     }
 
     @objc func didTapSettingsButton() {

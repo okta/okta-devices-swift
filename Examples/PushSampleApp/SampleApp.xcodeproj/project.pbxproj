@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7F1EC97A282C464800AE8ACE /* SignInFasterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F1EC979282C464800AE8ACE /* SignInFasterViewController.swift */; };
 		7F37B84A27F75C0200211492 /* AuthFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 7F37B84927F75C0200211492 /* AuthFoundation */; };
 		7F37B84C27F75C0200211492 /* OktaOAuth2 in Frameworks */ = {isa = PBXBuildFile; productRef = 7F37B84B27F75C0200211492 /* OktaOAuth2 */; };
 		7F37B84E27F75C0200211492 /* WebAuthenticationUI in Frameworks */ = {isa = PBXBuildFile; productRef = 7F37B84D27F75C0200211492 /* WebAuthenticationUI */; };
@@ -14,8 +15,8 @@
 		7F37B85227FB711800211492 /* SignInViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F37B85127FB711800211492 /* SignInViewModel.swift */; };
 		7F47B97927F6361D00E78495 /* RootCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F47B97827F6361D00E78495 /* RootCoordinator.swift */; };
 		7F4BDF5F281F68D800B4FC3B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7FA732B727F6190200C38E10 /* Assets.xcassets */; };
-		7F4BDF612820490700B4FC3B /* AccountBalanceViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F4BDF602820490700B4FC3B /* AccountBalanceViewModel.swift */; };
-		7F808C242811C28E004F7EB0 /* AccountBalanceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F808C232811C28E004F7EB0 /* AccountBalanceViewController.swift */; };
+		7F4BDF612820490700B4FC3B /* WelcomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F4BDF602820490700B4FC3B /* WelcomeViewModel.swift */; };
+		7F808C242811C28E004F7EB0 /* WelcomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F808C232811C28E004F7EB0 /* WelcomeViewController.swift */; };
 		7F808C272811C3CE004F7EB0 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F808C262811C3CE004F7EB0 /* SettingsViewController.swift */; };
 		7F808C292811C5CC004F7EB0 /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F808C282811C5CC004F7EB0 /* SettingsViewModel.swift */; };
 		7F808C2B2811C7C6004F7EB0 /* SettingsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F808C2A2811C7C6004F7EB0 /* SettingsCell.swift */; };
@@ -33,7 +34,7 @@
 		7FD4370C27FE580E00B0717C /* StoryboardController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FD4370B27FE580E00B0717C /* StoryboardController.swift */; };
 		7FD4371027FE6A9100B0717C /* OktaWebAuthProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FD4370F27FE6A9100B0717C /* OktaWebAuthProtocol.swift */; };
 		7FD4371227FE7FDA00B0717C /* UserDefaults+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FD4371127FE7FDA00B0717C /* UserDefaults+Extensions.swift */; };
-		B3704A0145C8BD8049D2A4A5 /* libPods-SampleApp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C364D2999DF9D37AC1BBA629 /* libPods-SampleApp.a */; };
+		BD8D169B94FE20E05EE97E2B /* libPods-SampleApp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C364D2999DF9D37AC1BBA629 /* libPods-SampleApp.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,12 +50,13 @@
 /* Begin PBXFileReference section */
 		405AF62FA95D56886FBB0C3C /* Pods-SampleApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SampleApp.release.xcconfig"; path = "Target Support Files/Pods-SampleApp/Pods-SampleApp.release.xcconfig"; sourceTree = "<group>"; };
 		51D44C8334060B37415EB7E4 /* Pods-SampleApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SampleApp.debug.xcconfig"; path = "Target Support Files/Pods-SampleApp/Pods-SampleApp.debug.xcconfig"; sourceTree = "<group>"; };
+		7F1EC979282C464800AE8ACE /* SignInFasterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInFasterViewController.swift; sourceTree = "<group>"; };
 		7F37B84F27F7950C00211492 /* Okta.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Okta.plist; sourceTree = "<group>"; };
 		7F37B85127FB711800211492 /* SignInViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInViewModel.swift; sourceTree = "<group>"; };
 		7F37B85627FB904700211492 /* SampleApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SampleApp.entitlements; sourceTree = "<group>"; };
 		7F47B97827F6361D00E78495 /* RootCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootCoordinator.swift; sourceTree = "<group>"; };
-		7F4BDF602820490700B4FC3B /* AccountBalanceViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountBalanceViewModel.swift; sourceTree = "<group>"; };
-		7F808C232811C28E004F7EB0 /* AccountBalanceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountBalanceViewController.swift; sourceTree = "<group>"; };
+		7F4BDF602820490700B4FC3B /* WelcomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeViewModel.swift; sourceTree = "<group>"; };
+		7F808C232811C28E004F7EB0 /* WelcomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeViewController.swift; sourceTree = "<group>"; };
 		7F808C262811C3CE004F7EB0 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		7F808C282811C5CC004F7EB0 /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
 		7F808C2A2811C7C6004F7EB0 /* SettingsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsCell.swift; sourceTree = "<group>"; };
@@ -67,8 +69,8 @@
 		7FA732BC27F6190200C38E10 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7FA732C127F6190200C38E10 /* SampleAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SampleAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		7FA732C527F6190200C38E10 /* SampleAppTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleAppTests.swift; sourceTree = "<group>"; };
-		7FB3137B281BA2C600CF0617 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		7FB31379281B9F5600CF0617 /* Appearance+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Appearance+Extensions.swift"; sourceTree = "<group>"; };
+		7FB3137B281BA2C600CF0617 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		7FC4AED82805D8E700EF5228 /* UserConsentViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserConsentViewModel.swift; sourceTree = "<group>"; };
 		7FC4AEDA2805D90B00EF5228 /* UserConsentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserConsentViewController.swift; sourceTree = "<group>"; };
 		7FC4AEDE2809F19900EF5228 /* RemediationEventsHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemediationEventsHandler.swift; sourceTree = "<group>"; };
@@ -85,10 +87,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B3704A0145C8BD8049D2A4A5 /* libPods-SampleApp.a in Frameworks */,
 				7F37B84A27F75C0200211492 /* AuthFoundation in Frameworks */,
 				7F37B84C27F75C0200211492 /* OktaOAuth2 in Frameworks */,
 				7F37B84E27F75C0200211492 /* WebAuthenticationUI in Frameworks */,
+				BD8D169B94FE20E05EE97E2B /* libPods-SampleApp.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -102,13 +104,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		7F808C222811C254004F7EB0 /* AccountBalance */ = {
+		7F1EC976282C3F7D00AE8ACE /* SignInFaster */ = {
 			isa = PBXGroup;
 			children = (
-				7F808C232811C28E004F7EB0 /* AccountBalanceViewController.swift */,
-				7F4BDF602820490700B4FC3B /* AccountBalanceViewModel.swift */,
+				7F1EC979282C464800AE8ACE /* SignInFasterViewController.swift */,
 			);
-			path = AccountBalance;
+			path = SignInFaster;
+			sourceTree = "<group>";
+		};
+		7F808C222811C254004F7EB0 /* WelcomeScreen */ = {
+			isa = PBXGroup;
+			children = (
+				7F808C232811C28E004F7EB0 /* WelcomeViewController.swift */,
+				7F4BDF602820490700B4FC3B /* WelcomeViewModel.swift */,
+			);
+			path = WelcomeScreen;
 			sourceTree = "<group>";
 		};
 		7F808C252811C3BD004F7EB0 /* Settings */ = {
@@ -151,8 +161,9 @@
 				7F47B97827F6361D00E78495 /* RootCoordinator.swift */,
 				7FD4370727FDF77A00B0717C /* PushNotificationService.swift */,
 				7FC4AEDE2809F19900EF5228 /* RemediationEventsHandler.swift */,
+				7F1EC976282C3F7D00AE8ACE /* SignInFaster */,
 				7F808C252811C3BD004F7EB0 /* Settings */,
-				7F808C222811C254004F7EB0 /* AccountBalance */,
+				7F808C222811C254004F7EB0 /* WelcomeScreen */,
 				7FC4AED52805D80200EF5228 /* UserConsent */,
 				7FD4370E27FE68EE00B0717C /* Extensions+Utils */,
 				7FD4370D27FE631D00B0717C /* WebSignIn */,
@@ -363,14 +374,15 @@
 				7FA732B327F6190000C38E10 /* WebSignInViewController.swift in Sources */,
 				7F808C2F2811CA29004F7EB0 /* SettingsCellModel.swift in Sources */,
 				7F47B97927F6361D00E78495 /* RootCoordinator.swift in Sources */,
-				7F808C242811C28E004F7EB0 /* AccountBalanceViewController.swift in Sources */,
+				7F808C242811C28E004F7EB0 /* WelcomeViewController.swift in Sources */,
 				7FD4371027FE6A9100B0717C /* OktaWebAuthProtocol.swift in Sources */,
 				7FA732AF27F6190000C38E10 /* AppDelegate.swift in Sources */,
 				7F808C272811C3CE004F7EB0 /* SettingsViewController.swift in Sources */,
+				7F1EC97A282C464800AE8ACE /* SignInFasterViewController.swift in Sources */,
 				7FB3137A281B9F5600CF0617 /* Appearance+Extensions.swift in Sources */,
 				7FD4370C27FE580E00B0717C /* StoryboardController.swift in Sources */,
 				7FC4AEDF2809F19900EF5228 /* RemediationEventsHandler.swift in Sources */,
-				7F4BDF612820490700B4FC3B /* AccountBalanceViewModel.swift in Sources */,
+				7F4BDF612820490700B4FC3B /* WelcomeViewModel.swift in Sources */,
 				7F808C2B2811C7C6004F7EB0 /* SettingsCell.swift in Sources */,
 				7F808C292811C5CC004F7EB0 /* SettingsViewModel.swift in Sources */,
 			);

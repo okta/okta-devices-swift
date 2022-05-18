@@ -57,15 +57,18 @@ class RootCoordinator {
     
     private func beginWelcomeFlow(on window: UIWindow?) {
     
-        let accountBalanceVC = AccountBalanceViewController.loadFromStoryboard(storyboardName: Self.mainStoryboardName)
-        accountBalanceVC.viewModel = AccountBalanceViewModel(webAuthenticator: oktaWebAuthenticator)
-        accountBalanceVC.didTapSettings = {
+        let welcomeVC = WelcomeViewController.loadFromStoryboard(storyboardName: Self.mainStoryboardName)
+        welcomeVC.viewModel = WelcomeViewModel(webAuthenticator: oktaWebAuthenticator)
+        welcomeVC.didTapSettings = {
             self.beginSettingsFlow()
         }
-        accountBalanceVC.didTapSignOut = {
+        welcomeVC.didTapSignOut = {
             self.signOut()
         }
-        let navController = UINavigationController(rootViewController: accountBalanceVC)
+        welcomeVC.didRequestSignInFaster = { [weak self] in
+            self?.beginSignInFasterFlow()
+        }
+        let navController = UINavigationController(rootViewController: welcomeVC)
         navController.setNavigationBarHidden(false, animated: false)
         window?.rootViewController = navController
         self.navController = navController
@@ -121,5 +124,15 @@ class RootCoordinator {
                 self?.logger?.error(eventName: LoggerEvent.webSignIn.rawValue, message: error.localizedDescription)
             }
         }
+    }
+    
+    private func beginSignInFasterFlow() {
+        let vc = SignInFasterViewController.loadFromStoryboard(storyboardName: Self.mainStoryboardName)
+        vc.didTapSetupButton = { [weak self, weak vc] in
+            vc?.dismiss(animated: true) {
+                self?.beginSettingsFlow()
+            }
+        }
+        navController?.present(vc, animated: true)
     }
 }
