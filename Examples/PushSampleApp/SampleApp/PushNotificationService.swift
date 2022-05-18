@@ -97,8 +97,8 @@ class PushNotificationService: NSObject, UNUserNotificationCenterDelegate {
             case .success(let token):
                 completion(token.accessToken)
             case .failure(let error):
+                // If there was a failure obtaining/refreshing a valid access token, consider starting the authentication flow again as it's needed for most SDK API calls.
                 self.logger?.error(eventName: LoggerEvent.pushService.rawValue, message: error.localizedDescription)
-                // Update UX accordingly if there was a failure getting a valid access token.
             }
         }
     }

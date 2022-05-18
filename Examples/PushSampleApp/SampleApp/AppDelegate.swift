@@ -56,6 +56,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        // Whenever iOS assigns or updates the push token, your app must pass the new deviceToken to the SDK, which will perform the update for all enrollments associated with this device.
         pushNotificationService.updateDeviceTokenForEnrollments(data: deviceToken)
     }
 
