@@ -59,7 +59,7 @@ class SettingsViewModel: SettingsViewModelProtocol {
     }
     
     private func beginEnrollment() {
-        // Fetching a valid access token to pass to enrollment. WebAuthenticator will refresh it if expired. 
+        // Fetching a valid access token to pass to enrollment. WebAuthenticator will try to refresh it if expired.
         webAuthenticator.getAccessToken { [weak self] result in
             switch result {
             case .success(_):

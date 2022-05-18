@@ -55,19 +55,14 @@ class PushNotificationService: NSObject, UNUserNotificationCenterDelegate {
         }
     }
 
-    func saveDeviceToken(data: Data) {
+    func updateDeviceTokenForEnrollments(data: Data) {
         UserDefaults.save(deviceToken: data)
         deviceAuthenticator.allEnrollments().forEach({ enrollment in
-            // Fetching a valid access token. WebAuthenticator will refresh it if expired.
-            webAuthenticator.getAccessToken { [weak self] result in
-                switch result {
-                case .success(let token):
-                    enrollment.updateDeviceToken(data, authenticationToken: AuthToken.bearer(token.accessToken)) { error in
-                        self?.logger?.info(eventName: LoggerEvent.pushService.rawValue, message: "Success update device token")
-                    }
-                case .failure(let error):
-                    self?.logger?.error(eventName: LoggerEvent.pushService.rawValue, message: error.localizedDescription)
-                }            }
+            getAccessToken { accessToken in
+                enrollment.updateDeviceToken(data, authenticationToken: AuthToken.bearer(accessToken)) { error in
+                    self.logger?.info(eventName: LoggerEvent.pushService.rawValue, message: "Success update device token")
+                }
+            }
         })
     }
     
@@ -94,6 +89,19 @@ class PushNotificationService: NSObject, UNUserNotificationCenterDelegate {
         }
         completionHandler()
     }
+    
+    private func getAccessToken(completion: @escaping (String) -> Void) {
+        // Fetching a valid access token. WebAuthenticator will try to refresh it if expired.
+        webAuthenticator.getAccessToken { result in
+            switch result  {
+            case .success(let token):
+                completion(token.accessToken)
+            case .failure(let error):
+                self.logger?.error(eventName: LoggerEvent.pushService.rawValue, message: error.localizedDescription)
+                // Update UX accordingly if there was a failure getting a valid access token.
+            }
+        }
+    }
 
     private func resolvePushChallenge(_ pushChallenge: PushChallengeProtocol) {
         pushChallenge.resolve { step in
@@ -110,13 +118,8 @@ class PushNotificationService: NSObject, UNUserNotificationCenterDelegate {
     }
 
     func retrievePushChallenges() {
-        webAuthenticator.getAccessToken { [weak self] result in
-            switch result {
-            case .success(let token):
-                self?.retrievePushChallenges(accessToken: token.accessToken)
-            case .failure(let error):
-                self?.logger?.error(eventName: LoggerEvent.account.rawValue, message: error.localizedDescription)
-            }
+        getAccessToken { accessToken in
+            self.retrievePushChallenges(accessToken: accessToken)
         }
     }
 

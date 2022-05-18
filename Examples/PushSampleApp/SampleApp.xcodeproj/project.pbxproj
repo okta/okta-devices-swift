@@ -34,6 +34,7 @@
 		7FD4370C27FE580E00B0717C /* StoryboardController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FD4370B27FE580E00B0717C /* StoryboardController.swift */; };
 		7FD4371027FE6A9100B0717C /* OktaWebAuthProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FD4370F27FE6A9100B0717C /* OktaWebAuthProtocol.swift */; };
 		7FD4371227FE7FDA00B0717C /* UserDefaults+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FD4371127FE7FDA00B0717C /* UserDefaults+Extensions.swift */; };
+		BD8D169B94FE20E05EE97E2B /* libPods-SampleApp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C364D2999DF9D37AC1BBA629 /* libPods-SampleApp.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -89,6 +90,7 @@
 				7F37B84A27F75C0200211492 /* AuthFoundation in Frameworks */,
 				7F37B84C27F75C0200211492 /* OktaOAuth2 in Frameworks */,
 				7F37B84E27F75C0200211492 /* WebAuthenticationUI in Frameworks */,
+				BD8D169B94FE20E05EE97E2B /* libPods-SampleApp.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

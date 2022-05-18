@@ -65,10 +65,8 @@ class RootCoordinator {
         welcomeVC.didTapSignOut = {
             self.signOut()
         }
-        welcomeVC.didRequestSignInFasterView = { [weak self] in
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                self?.beginSignInFasterFlow()
-            }
+        welcomeVC.didRequestSignInFaster = { [weak self] in
+            self?.beginSignInFasterFlow()
         }
         let navController = UINavigationController(rootViewController: welcomeVC)
         navController.setNavigationBarHidden(false, animated: false)
