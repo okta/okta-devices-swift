@@ -27,11 +27,14 @@ protocol SettingsCellProtocol {
 
 struct EmailSettingsCellModel: SettingsCellProtocol {
     var title: String? = "Email address"
-    var subtitle: String? = "moises.olmedopina@example.com"
+    var subtitle: String?
     var type: SettingsCellType = .email
     var isEnabled: Bool? = false
     var shouldShowSwitch: Bool = false
     var didToggleSwitch: ((Bool) -> Void)?
+    init(email: String?) {
+        subtitle = email
+    }
 }
 
 struct PushSettingsCellModel: SettingsCellProtocol {

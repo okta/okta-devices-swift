@@ -29,6 +29,7 @@ class SettingsViewModel: SettingsViewModelProtocol {
     var title: String = "Security Settings"
     weak var view: SettingsViewUpdatable?
     private var cellModels: [SettingsCellProtocol] = []
+    private var deviceEnrollment: AuthenticatorEnrollmentProtocol?
     
     init(deviceauthenticator: DeviceAuthenticatorProtocol,
          webAuthenticator: OktaWebAuthProtocol,
@@ -38,22 +39,21 @@ class SettingsViewModel: SettingsViewModelProtocol {
         self.webAuthenticator = webAuthenticator
         self.view = settingsView
         self.logger = logger
+        deviceEnrollment = authenticator.allEnrollments().first
         setupCellModels()
-        //Here you would fetch your backend's Authenticator Policy. This to decide if User Verification is required or preferred so you would update your UX accordingly.
-        //fetchPolicy()
     }
     
     private var userVerificationCellModel: UserVerificationCellModel? {
         // Check if an enrollment exists on device.
-        guard let authenticator = authenticator.allEnrollments().first else { return nil }
+        guard let enrollment = deviceEnrollment else { return nil }
         
-        return UserVerificationCellModel(isEnabled: authenticator.userVerificationEnabled, didToggleSwitch: { [weak self] isOn in
+        return UserVerificationCellModel(isEnabled: enrollment.userVerificationEnabled, didToggleSwitch: { [weak self] isOn in
             self?.toggleUserVerification(enable: isOn)
         })
     }
     
     private var enrollmentCellModel: PushSettingsCellModel {
-        let isEnrolled = !authenticator.allEnrollments().isEmpty
+        let isEnrolled = deviceEnrollment != nil
         return PushSettingsCellModel(isEnabled: isEnrolled, didToggleSwitch: { [weak self] isOn in
             guard isOn else {
                 self?.beginEnrollmentDeletion()
@@ -87,23 +87,12 @@ class SettingsViewModel: SettingsViewModelProtocol {
     
     private func setupCellModels() {
         let cells: [SettingsCellProtocol?] = [
-            EmailSettingsCellModel(),
+            EmailSettingsCellModel(email: webAuthenticator.email),
             enrollmentCellModel,
             userVerificationCellModel
         ]
         cellModels = cells.compactMap({ $0 })
     }
-
-    /*
-    Here you would fetch your backend's Authenticator Policy. This to decide if User Verification is required or preferred so you would update your UX accordingly
-     
-    private func fetchPolicy() {
-        let authToken = AuthToken.bearer(accessToken)
-        guard let deviceAuthenticatorConfig = self.deviceAuthenticatorConfig else { return }
-        self.authenticator.downloadPolicy(authenticationToken: authToken, authenticatorConfig: deviceAuthenticatorConfig) { [weak self] result in }
-        }
-    }
-    */
 
     private func getAccessToken(completion: @escaping (String) -> Void) {
         // Fetching a valid access token. WebAuthenticator will try to refresh it if expired.
@@ -121,11 +110,11 @@ class SettingsViewModel: SettingsViewModelProtocol {
     
     private func beginEnrollment() {
         getAccessToken { token in
-            self.enrolldDeviceAuthenticator(with: token)
+            self.enrollDeviceAuthenticator(with: token)
         }
     }
     
-    private func enrolldDeviceAuthenticator(with accessToken: String) {
+    private func enrollDeviceAuthenticator(with accessToken: String) {
         
         let authToken = AuthToken.bearer(accessToken)
 
@@ -140,6 +129,14 @@ class SettingsViewModel: SettingsViewModelProtocol {
         let enrollmentParams = EnrollmentParameters(deviceToken: deviceToken)
         
         view?.updateView(shouldShowSpinner: true)
+        
+        /**
+         
+         - You may want to fetch the authenticator policy via `authenticator.downloadPolicy()` method before calling enroll to start the enrollment flow.
+         - If policy *requires* user verification capabilities to be enabled for the enrollment then UI flow should force the user to enable device biometrics and give permissions to the app to use biometrics.
+         - If policy *prefers* user verification capabilities then UI flow may suggest the user to additionally enable user verification for the enrollment.
+         - Once the policy is evaluated by the app it can call enroll API with relevant enrollment settings.
+         */
 
         authenticator.enroll(authenticationToken: authToken,
                              authenticatorConfig: deviceAuthenticatorConfig,
@@ -147,6 +144,7 @@ class SettingsViewModel: SettingsViewModelProtocol {
             
             switch result {
             case .success(let authenticator):
+                self?.deviceEnrollment = authenticator
                 self?.logger?.info(eventName: LoggerEvent.enrollment.rawValue, message: "Success enrolling this device, enrollment ID - \(authenticator.enrollmentId)")
                 self?.view?.showAlert(alertTitle: "Enrolled Successfully", alertText: "You can now use this app as push authenticator")
             case .failure(let error):
@@ -159,8 +157,7 @@ class SettingsViewModel: SettingsViewModelProtocol {
     }
     
     private func beginEnrollmentDeletion() {
-        // Selecting the first enrollment object of the authenticators associated to this device since this sample app only shows enrollment of a single authenticator.
-        guard let enrollment = authenticator.allEnrollments().first else {
+        guard let enrollment = deviceEnrollment else {
             view?.showAlert(alertTitle: EnrollmentDeleteError.errorTitle, alertText: EnrollmentDeleteError.noEnrollmentDeleteError.description)
             logger?.error(eventName: LoggerEvent.enrollmentDelete.rawValue, message: EnrollmentDeleteError.noEnrollmentDeleteError.description)
             return
@@ -178,6 +175,7 @@ class SettingsViewModel: SettingsViewModelProtocol {
                 self?.view?.showAlert(alertTitle: EnrollmentDeleteError.errorTitle, alertText: error.localizedDescription)
                 self?.logger?.error(eventName: LoggerEvent.enrollmentDelete.rawValue, message: error.localizedDescription)
             } else {
+                self?.deviceEnrollment = nil
                 self?.view?.showAlert(alertTitle: "Deletion Successfully", alertText: "Success removing this device as a push authenticator")
             }
             self?.setupCellModels()
@@ -186,13 +184,13 @@ class SettingsViewModel: SettingsViewModelProtocol {
     }
     
     private func toggleUserVerification(enable: Bool) {
-        guard let authenticator = authenticator.allEnrollments().first else {
+        guard let enrollment = deviceEnrollment else {
             return
         }
         view?.updateView(shouldShowSpinner: true)
         getAccessToken { accessToken in
             let authToken = AuthToken.bearer(accessToken)
-            authenticator.setUserVerification(authenticationToken: authToken, enable: enable) { [weak self] error in
+            enrollment.setUserVerification(authenticationToken: authToken, enable: enable) { [weak self] error in
                 if let error = error {
                     self?.view?.showAlert(alertTitle: "Error updating User Verification", alertText: error.localizedDescription)
                     self?.logger?.error(eventName: LoggerEvent.userVerification.rawValue, message: error.localizedDescription)
