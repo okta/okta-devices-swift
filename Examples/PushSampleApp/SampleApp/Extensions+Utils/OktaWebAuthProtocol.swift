@@ -24,6 +24,7 @@ protocol OktaWebAuthProtocol {
     var baseURL: URL? { get }
     var clientId: String? { get }
     var userName: String? { get }
+    var email: String? { get }
 }
 
 extension WebAuthentication: OktaWebAuthProtocol {
@@ -46,6 +47,10 @@ extension WebAuthentication: OktaWebAuthProtocol {
     
     var userName: String? {
         Credential.default?.token.idToken?.name
+    }
+    
+    var email: String? {
+        Credential.default?.token.idToken?.email
     }
     
     func signOut(from window: WebAuthentication.WindowAnchor?, completion: @escaping (Result<Void, WebAuthenticationError>) -> Void) {
