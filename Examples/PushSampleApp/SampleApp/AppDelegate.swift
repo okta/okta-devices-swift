@@ -68,7 +68,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         do {
             let applicationConfig = ApplicationConfig(applicationName: "PushSDKSampleApp-iOS",
                                                       applicationVersion: "1.0.0",
-                                                      applicationGroupId: "group.com.okta.SampleApp")
+                                                      applicationGroupId: PushSettingsConstant.applicationGroupiD)
             applicationConfig.pushSettings.apsEnvironment = .development
             applicationConfig.pushSettings.approveActionTitle = PushSettingsConstant.approveActionTitle
             applicationConfig.pushSettings.denyActionTitle = PushSettingsConstant.denyActionTitle
@@ -90,6 +90,7 @@ enum PushSettingsConstant {
     static let approveActionTitle = "Yes, it's me"
     static let denyActionTitle = "No, it's not me"
     static let userVerificationActionTitle = "Review"
+    static let applicationGroupID = "group.com.okta.SampleApp"
 }
 
 enum LoggerEvent: String {
