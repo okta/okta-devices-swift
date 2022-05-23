@@ -20,20 +20,22 @@ class RootCoordinator {
     let deviceAuthenticator: DeviceAuthenticatorProtocol
     let oktaWebAuthenticator: OktaWebAuthProtocol
     var remediationEventsHandler: RemediationStepHandlerProtocol
+    let pushNotificationService: PushNotificationService
     var logger: OktaLogger?
     var navController: UINavigationController?
     
-
     static let mainStoryboardName = "MainStoryboard"
 
     init(deviceAuthenticator: DeviceAuthenticatorProtocol,
          oktaWebAuthenticator: OktaWebAuthProtocol,
          remediationEventsHandler: RemediationStepHandlerProtocol,
+         pushNotificationService: PushNotificationService,
          oktaLogger: OktaLogger?) {
         self.deviceAuthenticator = deviceAuthenticator
         self.oktaWebAuthenticator = oktaWebAuthenticator
-        self.logger = oktaLogger
         self.remediationEventsHandler = remediationEventsHandler
+        self.pushNotificationService = pushNotificationService
+        self.logger = oktaLogger
         setupRemediationHandler()
     }
 
@@ -100,7 +102,11 @@ class RootCoordinator {
     
     func beginSettingsFlow() {
         let vc = SettingsViewController.loadFromStoryboard(storyboardName: Self.mainStoryboardName)
-        vc.viewModel = SettingsViewModel(deviceauthenticator: deviceAuthenticator, webAuthenticator: oktaWebAuthenticator, settingsView: vc, logger: logger)
+        let viewModel = SettingsViewModel(deviceauthenticator: deviceAuthenticator, webAuthenticator: oktaWebAuthenticator, pushNotificationService: pushNotificationService, settingsView: vc, logger: logger)
+        pushNotificationService.didEnableRemoteNotifications = { [weak viewModel] in
+            viewModel?.beginEnrollmentIfNeeded()
+        }
+        vc.viewModel = viewModel
         let nav = UINavigationController(rootViewController: vc)
 
         navController?.present(nav, animated: true)

@@ -48,10 +48,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         rootCoordinator = RootCoordinator(deviceAuthenticator: deviceAuthenticator,
                                           oktaWebAuthenticator: webAuthenticator,
                                           remediationEventsHandler: remediationEventsHandler,
+                                          pushNotificationService: pushNotificationService,
                                           oktaLogger: logger)
         rootCoordinator?.begin(on: window)
-
-        pushNotificationService.requestNotificationsPermissions()
+        
         return true
     }
 

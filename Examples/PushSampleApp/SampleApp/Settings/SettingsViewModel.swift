@@ -25,18 +25,22 @@ class SettingsViewModel: SettingsViewModelProtocol {
     
     private let authenticator: DeviceAuthenticatorProtocol
     private let webAuthenticator: OktaWebAuthProtocol
+    private let pushNotificationService: PushNotificationService
     private let logger: OktaLogger?
     var title: String = "Security Settings"
     weak var view: SettingsViewUpdatable?
     private var cellModels: [SettingsCellProtocol] = []
     private var deviceEnrollment: AuthenticatorEnrollmentProtocol?
+    private var didRequestPushPermissions = false
     
     init(deviceauthenticator: DeviceAuthenticatorProtocol,
          webAuthenticator: OktaWebAuthProtocol,
+         pushNotificationService: PushNotificationService,
          settingsView: SettingsViewUpdatable,
          logger: OktaLogger? = nil) {
         self.authenticator = deviceauthenticator
         self.webAuthenticator = webAuthenticator
+        self.pushNotificationService = pushNotificationService
         self.view = settingsView
         self.logger = logger
         deviceEnrollment = authenticator.allEnrollments().first
@@ -110,9 +114,26 @@ class SettingsViewModel: SettingsViewModelProtocol {
     }
     
     private func beginEnrollment() {
+        guard pushNotificationService.isRegisteredForRemoteNotifications else {
+            pushNotificationService.requestNotificationsPermissions { [weak self] granted in
+                guard granted else {
+                    self?.view?.showAlert(alertTitle: EnrollmentError.errorTitle, alertText: EnrollmentError.pushNotificationsNotGrantedError.description)
+                    self?.view?.updateView(shouldShowSpinner: false)
+                    return
+                }
+                self?.didRequestPushPermissions = true
+            }
+            return
+        }
         getAccessToken { token in
             self.enrollDeviceAuthenticator(with: token)
         }
+    }
+    
+    func beginEnrollmentIfNeeded() {
+        guard didRequestPushPermissions else { return }
+        didRequestPushPermissions = false
+        beginEnrollment()
     }
     
     private func enrollDeviceAuthenticator(with accessToken: String) {
@@ -206,10 +227,12 @@ class SettingsViewModel: SettingsViewModelProtocol {
 }
 
 enum EnrollmentError: Error {
-    case accessTokenError, baseUrlError, clientIdError, deviceAuthenticatorError(DeviceAuthenticatorError?)
+    case pushNotificationsNotGrantedError, accessTokenError, baseUrlError, clientIdError, deviceAuthenticatorError(DeviceAuthenticatorError?)
 
     var description: String {
         switch self {
+        case .pushNotificationsNotGrantedError:
+            return "Push notifications permissions should be granted"
         case .accessTokenError:
             return "Error getting access token"
         case .baseUrlError:

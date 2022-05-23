@@ -18,9 +18,10 @@ import OktaDeviceSDK
 class PushNotificationService: NSObject, UNUserNotificationCenterDelegate {
 
     private var logger: OktaLogger?
-    private var deviceAuthenticator: DeviceAuthenticatorProtocol
+    private let deviceAuthenticator: DeviceAuthenticatorProtocol
     private let remediationEventsHandler: RemediationStepHandlerProtocol
     private let webAuthenticator: OktaWebAuthProtocol
+    var didEnableRemoteNotifications: () -> Void = {}
 
     init(deviceAuthenticator: DeviceAuthenticatorProtocol,
          remediationEventsHandler: RemediationStepHandlerProtocol,
@@ -33,8 +34,12 @@ class PushNotificationService: NSObject, UNUserNotificationCenterDelegate {
         super.init()
         UNUserNotificationCenter.current().delegate = self
     }
+    
+    var isRegisteredForRemoteNotifications: Bool {
+        UIApplication.shared.isRegisteredForRemoteNotifications
+    }
 
-    func requestNotificationsPermissions() {
+    func requestNotificationsPermissions(completion: @escaping (Bool) -> Void) {
         var authorizationOptions: UNAuthorizationOptions = [.badge, .alert, .sound]
         if #available(iOS 15.0, *) {
             authorizationOptions.insert(.timeSensitive)
@@ -45,6 +50,7 @@ class PushNotificationService: NSObject, UNUserNotificationCenterDelegate {
                     self.logger?.error(eventName: LoggerEvent.pushService.rawValue, message: error.localizedDescription)
                     return
                 }
+                completion(granted)
                 if granted {
                     self.logger?.info(eventName: LoggerEvent.pushService.rawValue, message: "Push notifications permissions granted")
                     UIApplication.shared.registerForRemoteNotifications()
@@ -54,8 +60,15 @@ class PushNotificationService: NSObject, UNUserNotificationCenterDelegate {
             }
         }
     }
-
+    
     func updateDeviceTokenForEnrollments(data: Data) {
+        guard let deviceToken = UserDefaults.deviceToken() else {
+            UserDefaults.save(deviceToken: data)
+            didEnableRemoteNotifications()
+            return
+        }
+        // Don't update if new token is the same as stored token
+        guard data != deviceToken else { return }
         UserDefaults.save(deviceToken: data)
         deviceAuthenticator.allEnrollments().forEach({ enrollment in
             getAccessToken { accessToken in
