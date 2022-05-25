@@ -47,11 +47,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         rootCoordinator = RootCoordinator(deviceAuthenticator: deviceAuthenticator,
                                           oktaWebAuthenticator: webAuthenticator,
+                                          pushNotificationService: pushNotificationService,
                                           remediationEventsHandler: remediationEventsHandler,
                                           oktaLogger: logger)
         rootCoordinator?.begin(on: window)
 
-        pushNotificationService.requestNotificationsPermissions()
+        UIApplication.shared.registerForRemoteNotifications()
         return true
     }
 
