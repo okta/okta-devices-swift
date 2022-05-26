@@ -46,9 +46,6 @@ class RootCoordinator {
     }
     
     private func setupRemediationHandler() {
-        remediationEventsHandler.onUserVerification = { [weak self] step in
-            // TODO: To implement UV flow
-        }
         remediationEventsHandler.onUserConsent = { [weak self] step in
             guard let navController = self?.navController else { return }
             self?.beginUserConsentFlow(on: navController, remediationStep: step)
@@ -56,7 +53,6 @@ class RootCoordinator {
     }
     
     private func beginWelcomeFlow(on window: UIWindow?) {
-    
         let welcomeVC = WelcomeViewController.loadFromStoryboard(storyboardName: Self.mainStoryboardName)
         welcomeVC.viewModel = WelcomeViewModel(webAuthenticator: oktaWebAuthenticator)
         welcomeVC.didTapSettings = {
@@ -93,7 +89,6 @@ class RootCoordinator {
     }
     
     func beginUserConsentFlow(on nav: UINavigationController, remediationStep: RemediationStepUserConsent) {
-
         let userConsentVC = UserConsentViewController.loadFromStoryboard(storyboardName: Self.mainStoryboardName)
         var viewModel = UserConsentViewModel(remediationStep: remediationStep)
         viewModel.onCompletion = {
@@ -104,16 +99,14 @@ class RootCoordinator {
     }
     
     func beginSettingsFlow() {
-
         let vc = SettingsViewController.loadFromStoryboard(storyboardName: Self.mainStoryboardName)
-        vc.viewModel = SettingsViewModel(deviceauthenticator: deviceAuthenticator, webAuthenticator: oktaWebAuthenticator, logger: logger)
+        vc.viewModel = SettingsViewModel(deviceauthenticator: deviceAuthenticator, webAuthenticator: oktaWebAuthenticator, settingsView: vc, logger: logger)
         let nav = UINavigationController(rootViewController: vc)
 
         navController?.present(nav, animated: true)
     }
     
     private func signOut() {
-
         guard let window = navController?.navigationBar.window else { return }
         oktaWebAuthenticator.signOut(from: window) { [weak self] result in
             switch result {

@@ -16,7 +16,6 @@ import OktaDeviceSDK
 class RemediationStepHandler: RemediationStepHandlerProtocol {
     
     var onUserConsent: ((RemediationStepUserConsent) -> Void)?
-    var onUserVerification: ((RemediationStepUserVerification) -> Void)?
     
     func handle(step: RemediationStep) {
         switch step {
@@ -32,7 +31,5 @@ class RemediationStepHandler: RemediationStepHandlerProtocol {
 
 protocol RemediationStepHandlerProtocol {
     var onUserConsent: ((RemediationStepUserConsent) -> Void)? { get set }
-    var onUserVerification: ((RemediationStepUserVerification) -> Void)? { get set }
-
     func handle(step: RemediationStep)
 }

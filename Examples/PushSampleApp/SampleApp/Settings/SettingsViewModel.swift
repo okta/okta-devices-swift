@@ -18,7 +18,7 @@ protocol SettingsViewModelProtocol {
     func setup(cell: SettingsCell, with row: Int)
     var numberOfRows: Int { get }
     var title: String { get }
-    var didEnroll: (String, String) -> Void { get set }
+    var view: SettingsViewUpdatable? { get }
 }
 
 class SettingsViewModel: SettingsViewModelProtocol {
@@ -27,27 +27,54 @@ class SettingsViewModel: SettingsViewModelProtocol {
     private let webAuthenticator: OktaWebAuthProtocol
     private let logger: OktaLogger?
     var title: String = "Security Settings"
-    var didEnroll: (String, String) -> Void = { _, _ in }
-    
-    private lazy var cellModels: [SettingsCellProtocol] = {
-        let isEnrolled = !self.authenticator.allEnrollments().isEmpty
-        return [
-            EmailSettingsCellModel(),
-            PushSettingsCellModel(isEnabled: isEnrolled, didToggleSwitch: { isOn in
-                guard isOn else {
-                    // TODO: Handle enrollment deletion
-                    return
-                }
-                self.beginEnrollment()
-            })]
-    }()
+    weak var view: SettingsViewUpdatable?
+    private var cellModels: [SettingsCellProtocol] = []
+    private var deviceEnrollment: AuthenticatorEnrollmentProtocol?
     
     init(deviceauthenticator: DeviceAuthenticatorProtocol,
          webAuthenticator: OktaWebAuthProtocol,
+         settingsView: SettingsViewUpdatable,
          logger: OktaLogger? = nil) {
         self.authenticator = deviceauthenticator
         self.webAuthenticator = webAuthenticator
+        self.view = settingsView
         self.logger = logger
+        deviceEnrollment = authenticator.allEnrollments().first
+        setupCellModels()
+    }
+    
+    private var userVerificationCellModel: UserVerificationCellModel? {
+        // Check if an enrollment exists on device.
+        guard let enrollment = deviceEnrollment else { return nil }
+        
+        return UserVerificationCellModel(isEnabled: enrollment.userVerificationEnabled, didToggleSwitch: { [weak self] isOn in
+            self?.toggleUserVerification(enable: isOn)
+        })
+    }
+    
+    private var enrollmentCellModel: PushSettingsCellModel {
+        let isEnrolled = deviceEnrollment != nil
+        return PushSettingsCellModel(isEnabled: isEnrolled, didToggleSwitch: { [weak self] isOn in
+            guard isOn else {
+                self?.beginEnrollmentDeletion()
+                return
+            }
+            self?.beginEnrollment()
+        })
+    }
+    
+    private var deviceAuthenticatorConfig: DeviceAuthenticatorConfig? {
+        guard let url = webAuthenticator.baseURL else {
+            logger?.error(eventName: EnrollmentError.authConfigErrorTitle, message: EnrollmentError.baseUrlError.description)
+            view?.showAlert(alertTitle: EnrollmentError.authConfigErrorTitle, alertText: EnrollmentError.baseUrlError.description)
+            return nil
+        }
+        guard let clientId = webAuthenticator.clientId else {
+            logger?.error(eventName: EnrollmentError.authConfigErrorTitle, message: EnrollmentError.clientIdError.description)
+            view?.showAlert(alertTitle: EnrollmentError.authConfigErrorTitle, alertText: EnrollmentError.clientIdError.description)
+            return nil
+        }
+        return DeviceAuthenticatorConfig(orgURL: url, oidcClientId: clientId)
     }
     
     var numberOfRows: Int {
@@ -58,38 +85,40 @@ class SettingsViewModel: SettingsViewModelProtocol {
         cell.setup(cellModel: cellModels[row])
     }
     
-    private func beginEnrollment() {
-        // Fetching a valid access token to pass to enrollment. WebAuthenticator will try to refresh it if expired.
+    private func setupCellModels() {
+        let cells: [SettingsCellProtocol?] = [
+            EmailSettingsCellModel(email: webAuthenticator.email),
+            enrollmentCellModel,
+            userVerificationCellModel
+        ]
+        cellModels = cells.compactMap({ $0 })
+    }
+
+    private func getAccessToken(completion: @escaping (String) -> Void) {
+        // Fetching a valid access token. WebAuthenticator will try to refresh it if expired.
         webAuthenticator.getAccessToken { [weak self] result in
             switch result {
-            case .success(_):
-                self?.enroll()
+            case .success(let token):
+                completion(token.accessToken)
             case .failure(let error):
                 self?.logger?.error(eventName: LoggerEvent.account.rawValue, message: error.localizedDescription)
+                self?.view?.showAlert(alertTitle: "Error", alertText: EnrollmentError.accessTokenError.description)
+                self?.view?.updateView(shouldShowSpinner: false)
             }
         }
     }
     
-    private func enroll() {
-        guard let accessToken = webAuthenticator.accessToken else {
-            logger?.error(eventName: LoggerEvent.enrollment.rawValue, message: EnrollmentError.accessTokenError.description)
-            didEnroll(EnrollmentError.errorTitle, EnrollmentError.accessTokenError.description)
-            return
+    private func beginEnrollment() {
+        getAccessToken { token in
+            self.enrollDeviceAuthenticator(with: token)
         }
+    }
+    
+    private func enrollDeviceAuthenticator(with accessToken: String) {
+        
         let authToken = AuthToken.bearer(accessToken)
 
-        guard let url = webAuthenticator.baseURL else {
-            logger?.error(eventName: LoggerEvent.enrollment.rawValue, message: EnrollmentError.baseUrlError.description)
-            didEnroll(EnrollmentError.errorTitle, EnrollmentError.baseUrlError.description)
-            return
-        }
-        guard let clientId = webAuthenticator.clientId else {
-            logger?.error(eventName: LoggerEvent.enrollment.rawValue, message: EnrollmentError.clientIdError.description)
-            didEnroll(EnrollmentError.errorTitle, EnrollmentError.clientIdError.description)
-            return
-        }
-
-        let deviceAuthenticatorConfig = DeviceAuthenticatorConfig(orgURL: url, oidcClientId: clientId)
+        guard let deviceAuthenticatorConfig = deviceAuthenticatorConfig else { return }
 
         var deviceToken = DeviceToken.empty
         if let pushToken = UserDefaults.deviceToken() {
@@ -98,6 +127,16 @@ class SettingsViewModel: SettingsViewModelProtocol {
             logger?.warning(eventName: LoggerEvent.enrollment.rawValue, message: "Device token is nil")
         }
         let enrollmentParams = EnrollmentParameters(deviceToken: deviceToken)
+        
+        view?.updateView(shouldShowSpinner: true)
+        
+        /**
+         
+         - You may want to fetch the authenticator policy via `authenticator.downloadPolicy()` method before calling enroll to start the enrollment flow.
+         - If policy *requires* user verification capabilities to be enabled for the enrollment then UI flow should force the user to enable device biometrics and give permissions to the app to use biometrics.
+         - If policy *prefers* user verification capabilities then UI flow may suggest the user to additionally enable user verification for the enrollment.
+         - Once the policy is evaluated by the app it can call enroll API with relevant enrollment settings.
+         */
 
         authenticator.enroll(authenticationToken: authToken,
                              authenticatorConfig: deviceAuthenticatorConfig,
@@ -105,11 +144,61 @@ class SettingsViewModel: SettingsViewModelProtocol {
             
             switch result {
             case .success(let authenticator):
+                self?.deviceEnrollment = authenticator
                 self?.logger?.info(eventName: LoggerEvent.enrollment.rawValue, message: "Success enrolling this device, enrollment ID - \(authenticator.enrollmentId)")
-                self?.didEnroll("Enrolled Successfully", "You can now use this app as push authenticator")
+                self?.view?.showAlert(alertTitle: "Enrolled Successfully", alertText: "You can now use this app as push authenticator")
             case .failure(let error):
                 self?.logger?.error(eventName: EnrollmentError.deviceAuthenticatorError(error).description, message: error.localizedDescription)
-                self?.didEnroll(EnrollmentError.errorTitle, error.localizedDescription)
+                self?.view?.showAlert(alertTitle: EnrollmentError.errorTitle, alertText: error.localizedDescription)
+            }
+            self?.setupCellModels()
+            self?.view?.updateView(shouldShowSpinner: false)
+        }
+    }
+    
+    private func beginEnrollmentDeletion() {
+        guard let enrollment = deviceEnrollment else {
+            view?.showAlert(alertTitle: EnrollmentDeleteError.errorTitle, alertText: EnrollmentDeleteError.noEnrollmentDeleteError.description)
+            logger?.error(eventName: LoggerEvent.enrollmentDelete.rawValue, message: EnrollmentDeleteError.noEnrollmentDeleteError.description)
+            return
+        }
+        getAccessToken { token in
+            self.deleteEnrollment(enrollment: enrollment, accessToken: token)
+        }
+    }
+    
+    private func deleteEnrollment(enrollment: AuthenticatorEnrollmentProtocol, accessToken: String) {
+        let authToken = AuthToken.bearer(accessToken)
+        view?.updateView(shouldShowSpinner: true)
+        authenticator.delete(enrollment: enrollment, authenticationToken: authToken) { [weak self] error in
+            if let error = error {
+                self?.view?.showAlert(alertTitle: EnrollmentDeleteError.errorTitle, alertText: error.localizedDescription)
+                self?.logger?.error(eventName: LoggerEvent.enrollmentDelete.rawValue, message: error.localizedDescription)
+            } else {
+                self?.deviceEnrollment = nil
+                self?.view?.showAlert(alertTitle: "Deletion Successfully", alertText: "Success removing this device as a push authenticator")
+            }
+            self?.setupCellModels()
+            self?.view?.updateView(shouldShowSpinner: false)
+        }
+    }
+    
+    private func toggleUserVerification(enable: Bool) {
+        guard let enrollment = deviceEnrollment else {
+            return
+        }
+        view?.updateView(shouldShowSpinner: true)
+        getAccessToken { accessToken in
+            let authToken = AuthToken.bearer(accessToken)
+            enrollment.setUserVerification(authenticationToken: authToken, enable: enable) { [weak self] error in
+                if let error = error {
+                    self?.view?.showAlert(alertTitle: "Error updating User Verification", alertText: error.localizedDescription)
+                    self?.logger?.error(eventName: LoggerEvent.userVerification.rawValue, message: error.localizedDescription)
+                } else {
+                    self?.view?.showAlert(alertTitle: "Success updating User Verification", alertText: "")
+                }
+                self?.setupCellModels()
+                self?.view?.updateView(shouldShowSpinner: false)
             }
         }
     }
@@ -132,4 +221,21 @@ enum EnrollmentError: Error {
     }
     
     static let errorTitle = "Failed to enroll"
+    static let authConfigErrorTitle = "Error creating config"
+}
+
+enum EnrollmentDeleteError: Error {
+    case noEnrollmentDeleteError, accessTokenError, deviceAuthenticatorError(DeviceAuthenticatorError?)
+
+    var description: String {
+        switch self {
+        case .noEnrollmentDeleteError:
+            return "No enrollment to delete"
+        case .accessTokenError:
+            return "Error getting access token"
+        case .deviceAuthenticatorError(let error):
+            return "DeviceAuthenticator error \(error)"
+        }
+    }
+    static let errorTitle = "Failed to delete"
 }

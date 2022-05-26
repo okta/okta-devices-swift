@@ -43,35 +43,35 @@ struct UserConsentViewModel: UserConsentViewModelProtocol {
     }
     
     var clientLocationString: String {
-        "Client Location: \(pushChallenge?.clientLocation ?? "Unknown location")"
+        "\(pushChallenge?.clientLocation ?? "Unknown location")"
     }
     var clientOSString: String {
-        "Client OS: \(pushChallenge?.clientOS ?? "Unknown")"
+        "\(pushChallenge?.clientOS ?? "Unknown")"
     }
     var urlString: String {
-        "Original URL: \(pushChallenge?.originURL?.absoluteString ?? "Unknown")"
+        "\(pushChallenge?.originURL?.absoluteString ?? "Unknown")"
     }
     var dateString: String {
         guard let transactionTime = pushChallenge?.transactionTime else {
-            return "Date: Unknown"
+            return "Unknown"
         }
         let locale = Locale(identifier: "en_US_POSIX")
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd"
         formatter.locale = locale
         let dateString = formatter.string(from: transactionTime)
-        return "Date: \(dateString)"
+        return "\(dateString)"
     }
     var timeString: String {
         guard let transactionTime = pushChallenge?.transactionTime else {
-            return "Time: Unknown"
+            return "Unknown"
         }
         let locale = Locale(identifier: "en_US_POSIX")
         let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm:ss"
         formatter.locale = locale
         let timeString = formatter.string(from: transactionTime)
-        return "Time: \(timeString)"
+        return "\(timeString)"
     }
     
     func didTapApproveChallenge() {

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		358A52ADDD8AFAA9B05EFEE3 /* libPods-SampleApp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C364D2999DF9D37AC1BBA629 /* libPods-SampleApp.a */; };
 		7F1EC97A282C464800AE8ACE /* SignInFasterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F1EC979282C464800AE8ACE /* SignInFasterViewController.swift */; };
 		7F37B84A27F75C0200211492 /* AuthFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 7F37B84927F75C0200211492 /* AuthFoundation */; };
 		7F37B84C27F75C0200211492 /* OktaOAuth2 in Frameworks */ = {isa = PBXBuildFile; productRef = 7F37B84B27F75C0200211492 /* OktaOAuth2 */; };
@@ -90,7 +91,7 @@
 				7F37B84A27F75C0200211492 /* AuthFoundation in Frameworks */,
 				7F37B84C27F75C0200211492 /* OktaOAuth2 in Frameworks */,
 				7F37B84E27F75C0200211492 /* WebAuthenticationUI in Frameworks */,
-				BD8D169B94FE20E05EE97E2B /* libPods-SampleApp.a in Frameworks */,
+				358A52ADDD8AFAA9B05EFEE3 /* libPods-SampleApp.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
