@@ -20,7 +20,9 @@ extension UserDefaults {
     static func clearDeviceToken() {
         UserDefaults.standard.removeObject(forKey: DeviceTokenKey)
     }
-    
+    /*
+         Using UserDefaults to save APNS Device Token. For a production app, a safer storage (e.g. Keychain) is recommended.
+    */
     static func save(deviceToken: Data) {
         UserDefaults.standard.set(deviceToken, forKey: DeviceTokenKey)
     }

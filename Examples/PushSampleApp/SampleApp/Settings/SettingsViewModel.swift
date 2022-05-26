@@ -25,6 +25,7 @@ class SettingsViewModel: SettingsViewModelProtocol {
     
     private let authenticator: DeviceAuthenticatorProtocol
     private let webAuthenticator: OktaWebAuthProtocol
+    private let pushNotificationService: PushNotificationService
     private let logger: OktaLogger?
     var title: String = "Security Settings"
     weak var view: SettingsViewUpdatable?
@@ -33,10 +34,12 @@ class SettingsViewModel: SettingsViewModelProtocol {
     
     init(deviceauthenticator: DeviceAuthenticatorProtocol,
          webAuthenticator: OktaWebAuthProtocol,
+         pushNotificationService: PushNotificationService,
          settingsView: SettingsViewUpdatable,
          logger: OktaLogger? = nil) {
         self.authenticator = deviceauthenticator
         self.webAuthenticator = webAuthenticator
+        self.pushNotificationService = pushNotificationService
         self.view = settingsView
         self.logger = logger
         deviceEnrollment = authenticator.allEnrollments().first
@@ -59,7 +62,7 @@ class SettingsViewModel: SettingsViewModelProtocol {
                 self?.beginEnrollmentDeletion()
                 return
             }
-            self?.beginEnrollment()
+            self?.didEnableEnrollmentToggle()
         })
     }
     
@@ -105,6 +108,12 @@ class SettingsViewModel: SettingsViewModelProtocol {
                 self?.view?.showAlert(alertTitle: "Error", alertText: EnrollmentError.accessTokenError.description)
                 self?.view?.updateView(shouldShowSpinner: false)
             }
+        }
+    }
+    
+    private func didEnableEnrollmentToggle() {
+        pushNotificationService.requestNotificationsPermissionsIfNeeded { [weak self] in
+            self?.beginEnrollment()
         }
     }
     

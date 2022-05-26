@@ -19,19 +19,21 @@ class RootCoordinator {
 
     let deviceAuthenticator: DeviceAuthenticatorProtocol
     let oktaWebAuthenticator: OktaWebAuthProtocol
+    let pushNotificationService: PushNotificationService
     var remediationEventsHandler: RemediationStepHandlerProtocol
     var logger: OktaLogger?
     var navController: UINavigationController?
-    
 
     static let mainStoryboardName = "MainStoryboard"
 
     init(deviceAuthenticator: DeviceAuthenticatorProtocol,
          oktaWebAuthenticator: OktaWebAuthProtocol,
+         pushNotificationService: PushNotificationService,
          remediationEventsHandler: RemediationStepHandlerProtocol,
          oktaLogger: OktaLogger?) {
         self.deviceAuthenticator = deviceAuthenticator
         self.oktaWebAuthenticator = oktaWebAuthenticator
+        self.pushNotificationService = pushNotificationService
         self.logger = oktaLogger
         self.remediationEventsHandler = remediationEventsHandler
         setupRemediationHandler()
@@ -100,7 +102,11 @@ class RootCoordinator {
     
     func beginSettingsFlow() {
         let vc = SettingsViewController.loadFromStoryboard(storyboardName: Self.mainStoryboardName)
-        vc.viewModel = SettingsViewModel(deviceauthenticator: deviceAuthenticator, webAuthenticator: oktaWebAuthenticator, settingsView: vc, logger: logger)
+        vc.viewModel = SettingsViewModel(deviceauthenticator: deviceAuthenticator,
+                                         webAuthenticator: oktaWebAuthenticator,
+                                         pushNotificationService: pushNotificationService,
+                                         settingsView: vc,
+                                         logger: logger)
         let nav = UINavigationController(rootViewController: vc)
 
         navController?.present(nav, animated: true)

@@ -18,7 +18,7 @@ import OktaDeviceSDK
 class PushNotificationService: NSObject, UNUserNotificationCenterDelegate {
 
     private var logger: OktaLogger?
-    private var deviceAuthenticator: DeviceAuthenticatorProtocol
+    private let deviceAuthenticator: DeviceAuthenticatorProtocol
     private let remediationEventsHandler: RemediationStepHandlerProtocol
     private let webAuthenticator: OktaWebAuthProtocol
 
@@ -33,8 +33,34 @@ class PushNotificationService: NSObject, UNUserNotificationCenterDelegate {
         super.init()
         UNUserNotificationCenter.current().delegate = self
     }
+    
+    private func getPermissions(completion: @escaping (Bool) -> Void) {
+        UNUserNotificationCenter.current().getNotificationSettings { settings in
+            switch settings.authorizationStatus {
+            case .notDetermined:
+                completion(false)
+            case .authorized:
+                completion(true)
+            case .denied:
+                UIApplication.shared.unregisterForRemoteNotifications()
+                completion(false)
+            default:
+                completion(false)
+            }
+        }
+    }
 
-    func requestNotificationsPermissions() {
+    func requestNotificationsPermissionsIfNeeded(completion: @escaping () -> Void) {
+        getPermissions { isAuthorized in
+            guard isAuthorized else {
+                self.requestNotificationsPermissions(completion: completion)
+                return
+            }
+            completion()
+        }
+    }
+    
+    private func requestNotificationsPermissions(completion: @escaping () -> Void) {
         var authorizationOptions: UNAuthorizationOptions = [.badge, .alert, .sound]
         if #available(iOS 15.0, *) {
             authorizationOptions.insert(.timeSensitive)
@@ -47,15 +73,18 @@ class PushNotificationService: NSObject, UNUserNotificationCenterDelegate {
                 }
                 if granted {
                     self.logger?.info(eventName: LoggerEvent.pushService.rawValue, message: "Push notifications permissions granted")
-                    UIApplication.shared.registerForRemoteNotifications()
                 } else {
                     self.logger?.info(eventName: LoggerEvent.pushService.rawValue, message: "Push notifications permissions denied")
                 }
+                completion()
             }
         }
     }
 
     func updateDeviceTokenForEnrollments(data: Data) {
+        guard data != UserDefaults.deviceToken() else {
+            return
+        }
         UserDefaults.save(deviceToken: data)
         deviceAuthenticator.allEnrollments().forEach({ enrollment in
             getAccessToken { accessToken in
