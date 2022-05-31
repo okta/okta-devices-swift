@@ -349,9 +349,9 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VN2-Tq-ngq">
-                                <rect key="frame" x="20" y="831" width="120" height="31"/>
+                                <rect key="frame" x="20" y="831" width="140" height="31"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="120" id="jxp-JQ-Fp3"/>
+                                    <constraint firstAttribute="width" constant="140" id="jxp-JQ-Fp3"/>
                                     <constraint firstAttribute="height" constant="31" id="rds-BN-apY"/>
                                 </constraints>
                                 <state key="normal" title="Button"/>
@@ -412,10 +412,10 @@
                                 </constraints>
                             </imageView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GvI-ua-mYC">
-                                <rect key="frame" x="274" y="831" width="120" height="31"/>
+                                <rect key="frame" x="254" y="831" width="140" height="31"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="31" id="S9J-E5-kXH"/>
-                                    <constraint firstAttribute="width" constant="120" id="YVk-JQ-v4t"/>
+                                    <constraint firstAttribute="width" constant="140" id="YVk-JQ-v4t"/>
                                 </constraints>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="plain" title="No, it's not me">

@@ -30,7 +30,7 @@ struct UserConsentViewModel: UserConsentViewModelProtocol {
     
     private let remediationStep: RemediationStepUserConsent
 
-    var onCompletion: () -> Void = {}
+    var onCompletion: (Bool) -> Void = {}
 
     init(remediationStep: RemediationStepUserConsent) {
         self.remediationStep = remediationStep
@@ -76,11 +76,11 @@ struct UserConsentViewModel: UserConsentViewModelProtocol {
     
     func didTapApproveChallenge() {
         remediationStep.provide(.approved)
-        onCompletion()
+        onCompletion(true)
     }
 
     func didTapDenyChallenge() {
         remediationStep.provide(.denied)
-        onCompletion()
+        onCompletion(false)
     }
 }

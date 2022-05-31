@@ -93,13 +93,29 @@ class RootCoordinator {
     func beginUserConsentFlow(on nav: UINavigationController, remediationStep: RemediationStepUserConsent) {
         let userConsentVC = UserConsentViewController.loadFromStoryboard(storyboardName: Self.mainStoryboardName)
         var viewModel = UserConsentViewModel(remediationStep: remediationStep)
-        viewModel.onCompletion = {
+        viewModel.onCompletion = { didApprove in
             nav.dismiss(animated: true)
+            self.showVerificationAlert(didApprove: didApprove, nav: nav)
         }
         userConsentVC.viewModel = viewModel
         nav.present(userConsentVC, animated: true)
     }
     
+    private func showVerificationAlert(didApprove: Bool, nav: UINavigationController) {
+        var alertTitle: String
+        var alertText: String
+        if didApprove {
+            alertTitle = "Continue at magentabank.com"
+            alertText = "Thanks for securely verifying your identity."
+        } else {
+            alertTitle = "We've logged this attempt to sign in"
+            alertText = "The details of this attempt have been logged for security review."
+        }
+        let alert = UIAlertController(title: alertTitle, message: alertText, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Ok", style: .default))
+        nav.present(alert, animated: true, completion: nil)
+    }
+
     func beginSettingsFlow() {
         let vc = SettingsViewController.loadFromStoryboard(storyboardName: Self.mainStoryboardName)
         vc.viewModel = SettingsViewModel(deviceauthenticator: deviceAuthenticator,
