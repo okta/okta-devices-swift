@@ -1,0 +1,19 @@
+name: Okta Devices Swift 
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  Tests:
+    runs-on: macos-11
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_13.1.app/Contents/Developer
+    steps:
+    - uses: actions/checkout@v2
+    - name: install pod
+      run: cd Examples/PushSampleApp; pod install   
+    - name: iOS Push Sample App
+      run: set -o pipefail && xcodebuild -workspace SampleApp.xcworkspace -scheme "SampleApp" -destination "platform=iOS Simulator,OS=latest,name=iPhone 11" clean build
