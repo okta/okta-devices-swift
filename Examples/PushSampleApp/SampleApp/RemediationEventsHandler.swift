@@ -13,23 +13,32 @@
 import Foundation
 import OktaDeviceSDK
 
-class RemediationStepHandler: RemediationStepHandlerProtocol {
+typealias UserConsentHandler = ((RemediationStepUserConsent) -> Void)
+typealias ChallengeResolvedHandler = (PushChallengeUserResponse) -> Void
+
+class RemediationEventsHandler: RemediationEventsHandlerProtocol {
     
-    var onUserConsent: ((RemediationStepUserConsent) -> Void)?
+    let onUserConsent: UserConsentHandler
+    let onChallengeResolved: ChallengeResolvedHandler
+
+    init(onUserConsent: @escaping UserConsentHandler, onChallengeResolved: @escaping ChallengeResolvedHandler) {
+        self.onUserConsent = onUserConsent
+        self.onChallengeResolved = onChallengeResolved
+    }
     
     func handle(step: RemediationStep) {
         switch step {
         case let userConsentStep as RemediationStepUserConsent:
             // Show UX to allow the user to say "yes" or "no" to the sign-in attempt
-            onUserConsent?(userConsentStep)
+            onUserConsent(userConsentStep)
         default:
             step.doNotProcess()
         }
     }
 }
 
-
-protocol RemediationStepHandlerProtocol {
-    var onUserConsent: ((RemediationStepUserConsent) -> Void)? { get set }
+protocol RemediationEventsHandlerProtocol {
+    var onUserConsent: UserConsentHandler { get }
+    var onChallengeResolved: ChallengeResolvedHandler { get }
     func handle(step: RemediationStep)
 }

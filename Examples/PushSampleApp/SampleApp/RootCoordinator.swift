@@ -20,7 +20,7 @@ class RootCoordinator {
     let deviceAuthenticator: DeviceAuthenticatorProtocol
     let oktaWebAuthenticator: OktaWebAuthProtocol
     let pushNotificationService: PushNotificationService
-    var remediationEventsHandler: RemediationStepHandlerProtocol
+    var remediationEventsHandler: RemediationEventsHandlerProtocol
     var logger: OktaLogger?
     var navController: UINavigationController?
 
@@ -29,14 +29,13 @@ class RootCoordinator {
     init(deviceAuthenticator: DeviceAuthenticatorProtocol,
          oktaWebAuthenticator: OktaWebAuthProtocol,
          pushNotificationService: PushNotificationService,
-         remediationEventsHandler: RemediationStepHandlerProtocol,
+         remediationEventsHandler: RemediationEventsHandlerProtocol,
          oktaLogger: OktaLogger?) {
         self.deviceAuthenticator = deviceAuthenticator
         self.oktaWebAuthenticator = oktaWebAuthenticator
         self.pushNotificationService = pushNotificationService
         self.logger = oktaLogger
         self.remediationEventsHandler = remediationEventsHandler
-        setupRemediationHandler()
     }
 
     func begin(on window: UIWindow?) {
@@ -44,13 +43,6 @@ class RootCoordinator {
             beginWelcomeFlow(on: window)
         } else {
             beginSignInFlow(on: window)
-        }
-    }
-    
-    private func setupRemediationHandler() {
-        remediationEventsHandler.onUserConsent = { [weak self] step in
-            guard let navController = self?.navController else { return }
-            self?.beginUserConsentFlow(on: navController, remediationStep: step)
         }
     }
     
@@ -90,15 +82,24 @@ class RootCoordinator {
         window?.makeKeyAndVisible()
     }
     
-    func beginUserConsentFlow(on nav: UINavigationController, remediationStep: RemediationStepUserConsent) {
+    func beginUserConsentFlow(remediationStep: RemediationStepUserConsent) {
+        guard let nav = navController else { return }
         let userConsentVC = UserConsentViewController.loadFromStoryboard(storyboardName: Self.mainStoryboardName)
         var viewModel = UserConsentViewModel(remediationStep: remediationStep)
-        viewModel.onCompletion = { didApprove in
+        viewModel.onRemediationComplete = {
             nav.dismiss(animated: true)
-            self.showVerificationAlert(didApprove: didApprove, nav: nav)
         }
         userConsentVC.viewModel = viewModel
         nav.present(userConsentVC, animated: true)
+    }
+    
+    func handleChallengeResponse(userResponse: PushChallengeUserResponse) {
+        guard userResponse != .userNotResponded else {
+            // Here you would handle if the user didn't respond to the challenge
+            return
+        }
+        guard let nav = navController else { return }
+        showVerificationAlert(didApprove: userResponse == .userApproved, nav: nav)
     }
     
     private func showVerificationAlert(didApprove: Bool, nav: UINavigationController) {

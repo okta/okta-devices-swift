@@ -19,11 +19,11 @@ class PushNotificationService: NSObject, UNUserNotificationCenterDelegate {
 
     private var logger: OktaLogger?
     private let deviceAuthenticator: DeviceAuthenticatorProtocol
-    private let remediationEventsHandler: RemediationStepHandlerProtocol
+    private let remediationEventsHandler: RemediationEventsHandlerProtocol
     private let webAuthenticator: OktaWebAuthProtocol
 
     init(deviceAuthenticator: DeviceAuthenticatorProtocol,
-         remediationEventsHandler: RemediationStepHandlerProtocol,
+         remediationEventsHandler: RemediationEventsHandlerProtocol,
          webAuthenticator: OktaWebAuthProtocol,
          logger: OktaLogger?) {
         self.logger = logger
@@ -140,6 +140,7 @@ class PushNotificationService: NSObject, UNUserNotificationCenterDelegate {
                 if let error = error {
                     self.logger?.error(eventName: LoggerEvent.account.rawValue, message: "Cannot resolve push challenge: \(error.localizedDescription)")
                 } else {
+                    self.remediationEventsHandler.onChallengeResolved(pushChallenge.userResponse)
                     self.logger?.error(eventName: LoggerEvent.account.rawValue, message: "Success resolving push challenge")
                 }
             }
