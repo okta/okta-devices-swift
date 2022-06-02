@@ -20,7 +20,7 @@ protocol UserConsentViewModelProtocol {
     var urlString: String { get }
     var dateString: String { get }
     var timeString: String { get }
-    var onCompletion: () -> Void { get set }
+    var onRemediationComplete: () -> Void { get set }
     
     func didTapApproveChallenge()
     func didTapDenyChallenge()
@@ -30,7 +30,7 @@ struct UserConsentViewModel: UserConsentViewModelProtocol {
     
     private let remediationStep: RemediationStepUserConsent
 
-    var onCompletion: () -> Void = {}
+    var onRemediationComplete: () -> Void = {}
 
     init(remediationStep: RemediationStepUserConsent) {
         self.remediationStep = remediationStep
@@ -76,11 +76,11 @@ struct UserConsentViewModel: UserConsentViewModelProtocol {
     
     func didTapApproveChallenge() {
         remediationStep.provide(.approved)
-        onCompletion()
+        onRemediationComplete()
     }
 
     func didTapDenyChallenge() {
         remediationStep.provide(.denied)
-        onCompletion()
+        onRemediationComplete()
     }
 }

@@ -22,7 +22,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var rootCoordinator: RootCoordinator?
     var deviceAuthenticator: DeviceAuthenticatorProtocol!
     var pushNotificationService: PushNotificationService!
-    var remediationEventsHandler: RemediationStepHandlerProtocol!
+    var remediationEventsHandler: RemediationEventsHandlerProtocol!
     var logger: OktaLogger!
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
@@ -39,7 +39,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
 
         initOktaDeviceAuthenticator()
-        remediationEventsHandler = RemediationStepHandler()
+        initRemediationEventsHandler()
+
         pushNotificationService = PushNotificationService(deviceAuthenticator: deviceAuthenticator,
                                                           remediationEventsHandler: remediationEventsHandler,
                                                           webAuthenticator: webAuthenticator,
@@ -79,6 +80,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             logger.error(eventName: LoggerEvent.appInit.rawValue, message: "Failed to initialize OktaAuthenticator SDK")
             fatalError("Failed to initialize OktaAuthenticator SDK")
         }
+    }
+    
+    func initRemediationEventsHandler() {
+        remediationEventsHandler = RemediationEventsHandler(onUserConsent: { [weak self] step in
+            self?.rootCoordinator?.beginUserConsentFlow(remediationStep: step)
+        }, onChallengeResolved: { [weak self] userResponse in
+            self?.rootCoordinator?.handleChallengeResponse(userResponse: userResponse)
+        })
     }
     
     func applicationDidBecomeActive(_ application: UIApplication) {
