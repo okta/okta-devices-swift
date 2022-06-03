@@ -1,18 +1,21 @@
-#  Okta Authenticator SDK 
+#  Okta Device Authenticator 
 
-This library allows your app to integrate with Okta service to provide APNS push-based MFA.
+Enable your app to validate the identity of a user for an Okta authenticator that uses Apple Push Notification service (APNs).
 
 **Table of Contents**
-- [Okta Authenticator SDK](#okta-authenticator-sdk)
+- [Okta Device Authenticator](#okta-device-authenticator)
   - [Release status](#release-status)
   - [Need help?](#need-help)
   - [Getting started](#getting-started)
-    - [CocoaPods](#cocoapods)
+    - [Including Okta Device Authenticator SDK](#including-okta-device-authenticator-sdk)
   - [Usage](#usage)
-    - [Creation](#creation)
-    - [Enrollment](#enrollment)
-      - [Retrieving Existing Enrollments](#retrieving-existing-enrollments)
+    - [First create a device authenticator to interact with the DeviceAuthenticator SDK.](#first-create-a-device-authenticator-to-interact-with-the-deviceauthenticator-sdk)
+    - [Enroll push verification method for user's account](#enroll-push-verification-method-for-users-account)
+      - [Retrieving existing enrollments](#retrieving-existing-enrollments)
       - [Update Push Token](#update-push-token)
+      - [Add user verification capabilites into existing enrollment](#add-user-verification-capabilites-into-existing-enrollment)
+      - [Delete enrollment](#delete-enrollment)
+      - [Delete enrollment from device](#delete-enrollment-from-device)
     - [Verification](#verification)
       - [App is foregrounded](#app-is-foregrounded)
       - [Retrieve challenges on upon demand](#retrieve-challenges-on-upon-demand)
@@ -42,24 +45,29 @@ If you run into problems using the SDK, you can:
 
 ## Getting started
 
-### CocoaPods
+### Including Okta Device Authenticator SDK
 
-This SDK is available through [CocoaPods](http://cocoapods.org). To install it, add the following line to your Podfile:
+Okta DeviceAuthenticator SDK is available from [CocoaPods](http://cocoapods.org). To add it to your project, add the following lines to your Podfile:
 
 ```ruby
-pod 'OktaDeviceSDK'
+target 'MyApplicationTarget' do
+  use_frameworks!
+  pod 'DeviceAuthenticator'
+end
 ```
+**NOTE** Beta version of the SDK is disributed as dynamic `xcframework` library and `use_frameworks!` setting in your podile is important for successful project compilation. More information about this option can be found on [CocoaPods](https://guides.cocoapods.org/syntax/podfile.html#use_frameworks_bang) web site
+
 
 ## Usage
 
-A complete integration requires your app to implement the following:
+The DeviceAuthenticator SDK supports identity verification using a custom authenticator in an Okta org. Your app interacts with that custom authenticator in three ways:
+- **Enrollment**: Add a device and optional biometric data to a user's account to enable identity verification using push notifications.
+- **Verification**: Verify the identity of a user by prompting them to approve or reject a sign-in attempt.
+- **Update**: Update the biometric data in a user's account, refresh the APNs token to keep it active, and remove a device from a user's account.
 
-- **Creation**: Create the SDK object to work with your Okta authenticator configuration
-- **Enrollment**: Register a device and optional biometrics with an account for use with push MFA.
-- **Verification**: Resolve an MFA challenge step for a sign-in attempt against an enrolled account, prompting the user to approve or reject it (with optional biometrics).
-- **Update**: Refresh the APNS token, remediate changed biometrics, deregister the account on the device.
 
-### Creation
+### First create a device authenticator to interact with the DeviceAuthenticator SDK.
+
 ```swift
 let appicationConfig = ApplicationConfig(applicationName: "TestApp",
                                          applicationVersion: "1.0.0",
@@ -68,16 +76,10 @@ let appicationConfig = ApplicationConfig(applicationName: "TestApp",
 appicationConfig.apsEnvironment = .development
 #endif
 
-let authenticator: DeviceAuthenticatorProtocol = try? DeviceAuthenticatorBuilder(applicationConfig: applicationConfig).create()
+let authenticator = try? DeviceAuthenticatorBuilder(applicationConfig: applicationConfig).create()
 ```
 
-See also:<br>
-[ApplicationConfig](https://github.com/okta-tardis/okta-devices-swift/blob/IA_readme_update/Sources/OktaDeviceSDK/Common/ApplicationConfig.swift)<br>
-[DeviceAuthenticatorBuilder](https://github.com/okta-tardis/okta-devices-swift/blob/IA_readme_update/Sources/DeviceAuthenticatorBuilder.swift)<br>
-
-### Enrollment
-
-Enrollment registers your app + device combination for push MFA against an account.
+### Enroll push verification method for user's account
 
 ```swift
 let accessToken = "eySBDC...." // https://developer.okta.com/docs/reference/api/oidc/#access-token
@@ -99,21 +101,13 @@ authenticator.enroll(authenticationToken: AuthToken.bearer(accessToken),
                            
 ```
 
-See also: 
-[EnrollmentParameters](https://github.com/okta-tardis/okta-devices-swift/blob/IA_readme_update/Sources/OktaDeviceSDK/Common/EnrollmentParameters.swift) 
-[AuthenticatorConfig](https://github.com/okta-tardis/okta-devices-swift/blob/IA_readme_update/Sources/OktaDeviceSDK/Common/DeviceAuthenticatorConfig.swift) 
-[DeviceAuthenticatorProtocol.enroll](https://github.com/okta-tardis/okta-devices-swift/blob/IA_readme_update/Sources/DeviceAuthenticatorProtocol.swift#L34) 
-
-#### Retrieving Existing Enrollments
+#### Retrieving existing enrollments
 In order to retrieve information about existing enrollments, use `allEnrollments()`.
 This can be used to display attributes for a list of accounts or find a specific account in order to update or delete it.
 
 ```swift
 let enrollments = authenticator.allEnrollments()
 ```
-
-See also:<br>
-[DeviceAuthenticatorProtocol.allEnrollments](https://github.com/okta-tardis/okta-devices-swift/blob/IA_readme_update/Sources/DeviceAuthenticatorProtocol.swift#L40)<br>
 
 #### Update Push Token
 Whenever iOS assigns or updates the push token, your app must pass the new `deviceToken` to the SDK, which will perform the update for all enrollments associated with this device.
@@ -132,11 +126,8 @@ func application(_ application: UIApplication, didRegisterForRemoteNotifications
 }
 ```
 
-See also:<br>
-[AuthenticatorEnrollmentProtocol.updateDeviceToken](https://github.com/okta-tardis/okta-devices-swift/blob/IA_readme_update/Sources/AuthenticatorEnrollmentProtocol.swift#L41)<br>
-
 #### Add user verification capabilites into existing enrollment
-Users may be prompted with biometric local authentication for the challenged factor; this will occur if authentication policy requires user verification.
+Users may be prompted with biometric local authentication for the challenged push factor; this will occur if authentication policy requires user verification.
 
 ```swift
 let accessToken = "eySBDC...." // https://developer.okta.com/docs/reference/api/oidc/#access-token
@@ -149,9 +140,6 @@ enrollments.forEach { enrollment in
     }
 }
 ```
-
-See also:<br>
-[AuthenticatorEnrollmentProtocol.setUserVerification](https://github.com/okta-tardis/okta-devices-swift/blob/IA_readme_update/Sources/AuthenticatorEnrollmentProtocol.swift#L34)<br>
 
 #### Delete enrollment
 Use the `enrollment.delete()` method to unenroll push verification. This will result in the SDK deleting enrollment from a device when a successful response is received from the Okta server.
@@ -168,9 +156,6 @@ enrollments.forEach { enrollment in
 }
 ```
 
-See also:<br>
-[DeviceAuthenticatorProtocol.delete](https://github.com/okta-tardis/okta-devices-swift/blob/IA_readme_update/Sources/DeviceAuthenticatorProtocol.swift#L47)<br>
-
 #### Delete enrollment from device
 Use the `enrollment.deleteFromDevice()` method to delete enrollment from a device without notifying the Okta server.
 
@@ -186,21 +171,20 @@ enrollments.forEach { enrollment in
 }
 ```
 
-See also:<br>
-[AuthenticatorEnrollmentProtocol.deleteFromDevice](https://github.com/okta-tardis/okta-devices-swift/blob/IA_readme_update/Sources/AuthenticatorEnrollmentProtocol.swift#L57)<br>
-
 ### Verification
-When a user attempts to sign in to the enrolled account (e.g. via an app or a web browser), Okta's backend will create a push challenge and send this challenge to all enrolled devices via APNS using the API token uploaded to your okta console.
+When a user attempts to sign in to the enrolled account (e.g. via an app or a web browser), Okta's backend will create a push challenge and send this challenge to all enrolled devices via APNs using the API token uploaded to your okta console.
 
-Given a valid APNS configuration via the Okta Admin portal, the push challenge will be delivered via `UNUserNotificationCenter` in the same way other push notifications may be delivered to your app.
+Given a valid APNs configuration via the Okta Admin portal, the push challenge will be delivered via `UNUserNotificationCenter` in the same way other push notifications may be delivered to your app.
+
 #### App is foregrounded
 
 ```swift
 func userNotificationCenter(_ center: UNUserNotificationCenter,
                             willPresentNotification notification: UNNotification,
                             withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+    // Try to parse incoming push notification
     if let pushChallenge = try? authenticator.parsePushNotification(notification) {
-        // Handle the push challenge
+        // This is Okta push challenge. Handle the push challenge
         pushChallenge.resolve(onRemediationStep: { step in
                                  self.handle(step)
                           }) { error in
@@ -217,12 +201,8 @@ func userNotificationCenter(_ center: UNUserNotificationCenter,
 }
 ```
 
-See also:<br>
-[DeviceAuthenticatorProtocol.parsePushNotification](https://github.com/okta-tardis/okta-devices-swift/blob/IA_readme_update/Sources/DeviceAuthenticatorProtocol.swift#L56)<br>
-[ChallengeProtocol.resolve](https://github.com/okta-tardis/okta-devices-swift/blob/IA_readme_update/Sources/ChallengeProtocol.swift#L27)<br>
-
 #### Retrieve challenges on upon demand
-Though APNS messages are usually delivered quickly, they may not always be received by the user's device in a timely manner.
+Though APNs messages are usually delivered quickly, they may not always be received by the user's device in a timely manner.
 In addition, the user may configure your app's notification permissions in ways that can prevent them from being displayed.
 
 In order to account for these scenarios, the SDK provides a pull-based API to acquire outstanding challenges. This allows the app to poll for challenges when it expects to receive one (e.g.  user attempted to log in with your app).
@@ -249,12 +229,9 @@ func applicationDidBecomeActive(_ application: UIApplication) {
 }
 ```
 
-See also:<br>
-[AuthenticatorEnrollmentProtocol.retrievePushChallenges](https://github.com/okta-tardis/okta-devices-swift/blob/IA_readme_update/Sources/AuthenticatorEnrollmentProtocol.swift#L51)<br>
-
 #### Resolve the challenge
 Once you have received a challenge via one of the channels above, your app should `resolve` them in order to proceed with login.
-The SDK may request remediation steps in order to complete resolution, such as `RemediationStepUserConsent` (to request the user to approve/deny the challenge) or `RemediationStepUserVerification` to notify the app that a biometric verification dialog is about to be displayed.
+The SDK may request remediation steps in order to complete resolution, such as `RemediationStepUserConsent` (to request the user to approve/deny the challenge)
 
 Upon success or failure, the `completion` closure will be called with an optional `Error` object.
 
@@ -285,29 +262,20 @@ func handle(_ remediationStep: RemediationStep) {
         // This challenge requires user consent to be processed.
         // Show UX to allow the user to say "yes" or "no" to the sign-in attempt, then provide their response.
         consentStep.provide(.approved)
-    case let verificationStep as RemediationStepUserVerification:
-        // SDK would like to show the touch/face ID dialog
-        // You may override the default text with your own here.
-        // NOTE: iOS requires the application or extension to be foregrounded in order to show the user verification dialog
-        let params = UserVerificationParameters(localizedFallbackTitle: "Biometric transaction failed. Please use pin to proceed",
-                                                localizedCancelTitle: nil,
-                                                localizedReason: nil)
-        verificationStep.provide(params)
     case let messageStep as RemediationStepMessage:
         // There is a non-fatal error happened during challenge verification flow - for example user verification key is not available
         print(messageStep.message)
+    default:
+        // Default processing for unexpected remediation step
+        remediationStep.defaultProcess()
     }
 }
 ```
 
-See also:<br>
-[DeviceAuthenticatorProtocol.parsePushNotification](https://github.com/okta-tardis/okta-devices-swift/blob/IA_readme_update/Sources/DeviceAuthenticatorProtocol.swift#L56)<br>
-[ChallengeProtocol.resolve](https://github.com/okta-tardis/okta-devices-swift/blob/IA_readme_update/Sources/ChallengeProtocol.swift#L27)<br>
-[RemediationStepUserConsent](https://github.com/okta-tardis/okta-devices-swift/blob/IA_readme_update/Sources/OktaDeviceSDK/Common/Remediation/RemediationStepUserConsent.swift)<br>
-[RemediationStepUserVerification](https://github.com/okta-tardis/okta-devices-swift/blob/IA_readme_update/Sources/OktaDeviceSDK/Common/Remediation/RemediationStepUserVerification.swift)<br>
-[RemediationStepMessage](https://github.com/okta-tardis/okta-devices-swift/blob/IA_readme_update/Sources/OktaDeviceSDK/Common/Remediation/RemediationStepMessage.swift)<br>
-
 ## Known issues
+* Application crashes due to exception from dylib process.
+  * Reason - Cocoapods sometimes doesn't update properly `xcconfig` file for pod targets([link](https://github.com/CocoaPods/CocoaPods/issues/11153))
+  * Workaround - run `pod install` one more time
 
 ## Contributing
  
