@@ -7,7 +7,7 @@
 	<key>issuer</key>
 	<string>{issuer}</string>
 	<key>scopes</key>
-	<string>okta.authenticators.manage.self okta.authenticators.read okta.users.read.self openid offline_access profile</string>
+	<string>okta.authenticators.manage.self okta.authenticators.read okta.users.read.self openid offline_access profile email</string>
 	<key>redirectUri</key>
 	<string>{redirectUri}</string>
 	<key>logoutRedirectUri</key>

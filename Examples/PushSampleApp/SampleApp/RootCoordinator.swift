@@ -90,7 +90,13 @@ class RootCoordinator {
             nav.dismiss(animated: true)
         }
         userConsentVC.viewModel = viewModel
-        nav.present(userConsentVC, animated: true)
+        if nav.presentedViewController != nil {
+            nav.dismiss(animated: true) {
+                nav.present(userConsentVC, animated: true)
+            }
+        } else {
+            nav.present(userConsentVC, animated: true)
+        }
     }
     
     func handleChallengeResponse(userResponse: PushChallengeUserResponse) {

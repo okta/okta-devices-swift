@@ -34,4 +34,13 @@ extension StoryboardController where Self: UIViewController {
     }
 
     func embedInNavigation() -> UINavigationController { UINavigationController(rootViewController: self) }
+    
+    func customizeButtons() {
+        if #unavailable(iOS 15.0) {
+            view.subviews.compactMap({$0 as? UIButton}).forEach { button in
+                button.layer.cornerRadius = 15.0
+                button.backgroundColor = UIColor.purple
+            }
+        }
+    }
 }

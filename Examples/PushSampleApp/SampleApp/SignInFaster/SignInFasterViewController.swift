@@ -18,6 +18,7 @@ class SignInFasterViewController: UIViewController, StoryboardController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        customizeButtons()
     }
     
     @IBAction func didTapNotNowButon() {
