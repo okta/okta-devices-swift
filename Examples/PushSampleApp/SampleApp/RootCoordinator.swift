@@ -53,7 +53,7 @@ class RootCoordinator {
             self.beginSettingsFlow()
         }
         welcomeVC.didTapSignOut = {
-            self.signOut()
+            self.beginSignOut()
         }
         welcomeVC.didRequestSignInFaster = { [weak self] in
             self?.beginSignInFasterFlow()
@@ -135,8 +135,38 @@ class RootCoordinator {
         navController?.present(nav, animated: true)
     }
     
-    private func signOut() {
+    private func beginSignOut() {
         guard let window = navController?.navigationBar.window else { return }
+        
+        /*
+         Depending on your app's behavior, you may want to delete the current enrollment from both server and device when signing out of the User's session. This to avoid receiving the wrong push notifications for the next user that may sign in into your app.
+         For this sample app, we are doing this by removing the existing enrollment via the SDK's `delete` API and signing out on completion.
+         */
+        guard let enrollment = deviceAuthenticator.allEnrollments().first else {
+            signOut(from: window)
+            return
+        }
+
+        oktaWebAuthenticator.getAccessToken {[weak self] result in
+            switch result {
+            case .success(let token):
+                self?.deviceAuthenticator.delete(enrollment: enrollment, authenticationToken: AuthToken.bearer(token.accessToken), completion: { error in
+                    self?.signOut(from: window)
+                    
+                    if case .serverAPIError = error {
+                        try? enrollment.deleteFromDevice()
+                    }
+                    self?.logger?.error(eventName: LoggerEvent.enrollmentDelete.rawValue, message: error?.localizedDescription)
+                })
+            case .failure(let error):
+                self?.signOut(from: window)
+                self?.logger?.error(eventName: LoggerEvent.account.rawValue, message: error.errorDescription)
+            }
+        }
+        
+    }
+    
+    private func signOut(from window: UIWindow) {
         oktaWebAuthenticator.signOut(from: window) { [weak self] result in
             switch result {
             case .success():
@@ -147,7 +177,7 @@ class RootCoordinator {
             }
         }
     }
-    
+
     private func beginSignInFasterFlow() {
         let vc = SignInFasterViewController.loadFromStoryboard(storyboardName: Self.mainStoryboardName)
         vc.didTapSetupButton = { [weak self, weak vc] in

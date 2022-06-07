@@ -56,7 +56,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         UIApplication.shared.registerForRemoteNotifications()
         
-        application.applicationIconBadgeNumber = 0
         return true
     }
 
@@ -95,6 +94,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func applicationDidBecomeActive(_ application: UIApplication) {
+        application.applicationIconBadgeNumber = 0
         pushNotificationService.retrievePushChallenges()
     }
 }
