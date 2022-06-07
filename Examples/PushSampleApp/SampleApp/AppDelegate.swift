@@ -37,6 +37,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             fatalError("Couldn't initialize OktaWebAuthenticator, please review your Okta.plist settings")
             return true
         }
+        webAuthenticator.ephemeralSession = true
 
         initOktaDeviceAuthenticator()
         initRemediationEventsHandler()
@@ -54,6 +55,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         rootCoordinator?.begin(on: window)
 
         UIApplication.shared.registerForRemoteNotifications()
+        
+        application.applicationIconBadgeNumber = 0
         return true
     }
 
