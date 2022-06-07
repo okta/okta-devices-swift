@@ -27,6 +27,7 @@ class WebSignInViewController: UIViewController, StoryboardController {
         addCustomNavBarAppereance()
         setUpCallbacks()
         updateUI()
+        customizeButtons()
     }
 
     private func setUpCallbacks() {
