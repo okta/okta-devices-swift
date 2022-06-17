@@ -1,0 +1,32 @@
+name: Okta Device Authenticator 
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+#### Uncomment once we move the code to this public repo.
+  # SampleApp:
+  #   runs-on: macos-11
+  #   env:
+  #     DEVELOPER_DIR: /Applications/Xcode_13.1.app/Contents/Developer
+  #   steps:
+  #   - uses: actions/checkout@v2
+  #   - name: install pod
+  #     run: cd Examples/PushSampleApp; pod install   
+  #   - name: iOS Push Sample App
+  #     run: set -o pipefail && xcodebuild -workspace SampleApp.xcworkspace -scheme "SampleApp" -destination "platform=iOS Simulator,OS=latest,name=iPhone 11" clean build
+    Tests:
+      runs-on: macos-11
+      env:
+        DEVELOPER_DIR: /Applications/Xcode_13.1.app/Contents/Developer
+      steps:
+      - uses: actions/checkout@v2
+      - name: Build DeviceAuthenticator target
+        run: set -o pipefail && xcodebuild -workspace DeviceAuthenticator.xcworkspace -scheme "DeviceAuthenticator" -destination "platform=iOS Simulator,OS=latest,name=iPhone 11" clean build
+      - name: Unit Tests
+        run: set -o pipefail && xcodebuild -workspace DeviceAuthenticator.xcworkspace -scheme "DeviceAuthenticatorUnitTests" -destination "platform=iOS Simulator,OS=latest,name=iPhone 11" clean test
+      - name: Functional Tests
+        run: set -o pipefail && xcodebuild -workspace DeviceAuthenticator.xcworkspace -scheme "DeviceAuthenticatorFunctionalTests" -destination "platform=iOS Simulator,OS=latest,name=iPhone 11" clean test
