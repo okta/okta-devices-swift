@@ -10,15 +10,6 @@
 * See the License for the specific language governing permissions and limitations under the License.
 */
 
-import XCTest
+import Foundation
 
-class DeviceAuthenticatorFunctionalTests: XCTestCase {
-
-    override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-    }
-
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-    }
-}
+// Remove this file once we add source code into project.

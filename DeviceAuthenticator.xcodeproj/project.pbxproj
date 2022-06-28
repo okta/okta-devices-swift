@@ -7,22 +7,22 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		7FFB5F7D285BA94A006BC548 /* DeviceAuthenticator.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7FFB5F74285BA94A006BC548 /* DeviceAuthenticator.framework */; };
-		7FFB5F82285BA94A006BC548 /* DeviceAuthenticatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FFB5F81285BA94A006BC548 /* DeviceAuthenticatorTests.swift */; };
-		7FFB5F83285BA94A006BC548 /* DeviceAuthenticator.h in Headers */ = {isa = PBXBuildFile; fileRef = 7FFB5F77285BA94A006BC548 /* DeviceAuthenticator.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		7FFB5F93285BAB4E006BC548 /* DeviceAuthenticatorFunctionalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FFB5F92285BAB4E006BC548 /* DeviceAuthenticatorFunctionalTests.swift */; };
-		7FFB5F94285BAB4E006BC548 /* DeviceAuthenticator.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7FFB5F74285BA94A006BC548 /* DeviceAuthenticator.framework */; };
+		7FFB5FFE286A7F4C006BC548 /* DeviceAuthenticator.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7FFB5F74285BA94A006BC548 /* DeviceAuthenticator.framework */; platformFilter = ios; };
+		7FFB6014286A80CF006BC548 /* DeviceAuthenticator.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7FFB5F74285BA94A006BC548 /* DeviceAuthenticator.framework */; platformFilter = ios; };
+		7FFB6020286A8184006BC548 /* DeviceAuthenticatorFunctionalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FFB601F286A8184006BC548 /* DeviceAuthenticatorFunctionalTests.swift */; };
+		7FFB6022286A819A006BC548 /* DeviceAuthenticatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FFB6021286A819A006BC548 /* DeviceAuthenticatorTests.swift */; };
+		7FFB6024286A8404006BC548 /* Dummy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FFB6023286A8404006BC548 /* Dummy.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		7FFB5F7E285BA94A006BC548 /* PBXContainerItemProxy */ = {
+		7FFB5FFF286A7F4C006BC548 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 7FFB5F6B285BA94A006BC548 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 7FFB5F73285BA94A006BC548;
 			remoteInfo = DeviceAuthenticator;
 		};
-		7FFB5F95285BAB4E006BC548 /* PBXContainerItemProxy */ = {
+		7FFB6015286A80CF006BC548 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 7FFB5F6B285BA94A006BC548 /* Project object */;
 			proxyType = 1;
@@ -33,11 +33,12 @@
 
 /* Begin PBXFileReference section */
 		7FFB5F74285BA94A006BC548 /* DeviceAuthenticator.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = DeviceAuthenticator.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		7FFB5F77285BA94A006BC548 /* DeviceAuthenticator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DeviceAuthenticator.h; sourceTree = "<group>"; };
-		7FFB5F7C285BA94A006BC548 /* DeviceAuthenticatorUnitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DeviceAuthenticatorUnitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		7FFB5F81285BA94A006BC548 /* DeviceAuthenticatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceAuthenticatorTests.swift; sourceTree = "<group>"; };
-		7FFB5F90285BAB4E006BC548 /* DeviceAuthenticatorFunctionalTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DeviceAuthenticatorFunctionalTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		7FFB5F92285BAB4E006BC548 /* DeviceAuthenticatorFunctionalTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceAuthenticatorFunctionalTests.swift; sourceTree = "<group>"; };
+		7FFB5FA0286A6E09006BC548 /* DeviceAuthenticator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeviceAuthenticator.h; sourceTree = SOURCE_ROOT; };
+		7FFB5FFA286A7F4C006BC548 /* DeviceAuthenticatorUnitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DeviceAuthenticatorUnitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		7FFB6010286A80CF006BC548 /* DeviceAuthenticatorFunctionalTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DeviceAuthenticatorFunctionalTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		7FFB601F286A8184006BC548 /* DeviceAuthenticatorFunctionalTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DeviceAuthenticatorFunctionalTests.swift; path = Tests/DeviceAuthenticatorFunctionalTests/DeviceAuthenticatorFunctionalTests.swift; sourceTree = SOURCE_ROOT; };
+		7FFB6021286A819A006BC548 /* DeviceAuthenticatorTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DeviceAuthenticatorTests.swift; path = Tests/DeviceAuthenticatorUnitTests/DeviceAuthenticatorTests.swift; sourceTree = SOURCE_ROOT; };
+		7FFB6023286A8404006BC548 /* Dummy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dummy.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -48,19 +49,19 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		7FFB5F79285BA94A006BC548 /* Frameworks */ = {
+		7FFB5FF7286A7F4C006BC548 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7FFB5F7D285BA94A006BC548 /* DeviceAuthenticator.framework in Frameworks */,
+				7FFB5FFE286A7F4C006BC548 /* DeviceAuthenticator.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		7FFB5F8D285BAB4E006BC548 /* Frameworks */ = {
+		7FFB600D286A80CF006BC548 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7FFB5F94285BAB4E006BC548 /* DeviceAuthenticator.framework in Frameworks */,
+				7FFB6014286A80CF006BC548 /* DeviceAuthenticator.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -71,8 +72,8 @@
 			isa = PBXGroup;
 			children = (
 				7FFB5F76285BA94A006BC548 /* DeviceAuthenticator */,
-				7FFB5F9A285BAB60006BC548 /* Tests */,
 				7FFB5F75285BA94A006BC548 /* Products */,
+				7FFB5FA9286A77A0006BC548 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -80,8 +81,8 @@
 			isa = PBXGroup;
 			children = (
 				7FFB5F74285BA94A006BC548 /* DeviceAuthenticator.framework */,
-				7FFB5F7C285BA94A006BC548 /* DeviceAuthenticatorUnitTests.xctest */,
-				7FFB5F90285BAB4E006BC548 /* DeviceAuthenticatorFunctionalTests.xctest */,
+				7FFB5FFA286A7F4C006BC548 /* DeviceAuthenticatorUnitTests.xctest */,
+				7FFB6010286A80CF006BC548 /* DeviceAuthenticatorFunctionalTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -89,35 +90,62 @@
 		7FFB5F76285BA94A006BC548 /* DeviceAuthenticator */ = {
 			isa = PBXGroup;
 			children = (
-				7FFB5F77285BA94A006BC548 /* DeviceAuthenticator.h */,
+				7FFB5FA0286A6E09006BC548 /* DeviceAuthenticator.h */,
+				7FFB5FA2286A6E1B006BC548 /* Sources */,
+				7FFB6004286A7F67006BC548 /* Tests */,
 			);
 			path = DeviceAuthenticator;
 			sourceTree = "<group>";
 		};
-		7FFB5F80285BA94A006BC548 /* DeviceAuthenticatorUnitTests */ = {
+		7FFB5FA2286A6E1B006BC548 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				7FFB5F81285BA94A006BC548 /* DeviceAuthenticatorTests.swift */,
+				7FFB5FA3286A6E1B006BC548 /* DeviceAuthenticator */,
 			);
-			path = DeviceAuthenticatorUnitTests;
+			path = Sources;
+			sourceTree = SOURCE_ROOT;
+		};
+		7FFB5FA3286A6E1B006BC548 /* DeviceAuthenticator */ = {
+			isa = PBXGroup;
+			children = (
+				7FFB6023286A8404006BC548 /* Dummy.swift */,
+			);
+			path = DeviceAuthenticator;
 			sourceTree = "<group>";
 		};
-		7FFB5F91285BAB4E006BC548 /* DeviceAuthenticatorFunctionalTests */ = {
+		7FFB5FA9286A77A0006BC548 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				7FFB5F92285BAB4E006BC548 /* DeviceAuthenticatorFunctionalTests.swift */,
 			);
-			path = DeviceAuthenticatorFunctionalTests;
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		7FFB5F9A285BAB60006BC548 /* Tests */ = {
+		7FFB6004286A7F67006BC548 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
-				7FFB5F80285BA94A006BC548 /* DeviceAuthenticatorUnitTests */,
-				7FFB5F91285BAB4E006BC548 /* DeviceAuthenticatorFunctionalTests */,
+				7FFB601A286A80FC006BC548 /* DeviceAuthenticatorFunctionalTests */,
+				7FFB6009286A80A4006BC548 /* DeviceAuthenticatorUnitTests */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
+		};
+		7FFB6009286A80A4006BC548 /* DeviceAuthenticatorUnitTests */ = {
+			isa = PBXGroup;
+			children = (
+				7FFB6021286A819A006BC548 /* DeviceAuthenticatorTests.swift */,
+			);
+			name = DeviceAuthenticatorUnitTests;
+			path = Tests2/DeviceAuthenticatorUnitTests;
+			sourceTree = SOURCE_ROOT;
+		};
+		7FFB601A286A80FC006BC548 /* DeviceAuthenticatorFunctionalTests */ = {
+			isa = PBXGroup;
+			children = (
+				7FFB601F286A8184006BC548 /* DeviceAuthenticatorFunctionalTests.swift */,
+			);
+			name = DeviceAuthenticatorFunctionalTests;
+			path = Tests2/DeviceAuthenticatorFunctionalTests;
+			sourceTree = SOURCE_ROOT;
 		};
 /* End PBXGroup section */
 
@@ -126,7 +154,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7FFB5F83285BA94A006BC548 /* DeviceAuthenticator.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -151,40 +178,40 @@
 			productReference = 7FFB5F74285BA94A006BC548 /* DeviceAuthenticator.framework */;
 			productType = "com.apple.product-type.framework";
 		};
-		7FFB5F7B285BA94A006BC548 /* DeviceAuthenticatorUnitTests */ = {
+		7FFB5FF9286A7F4C006BC548 /* DeviceAuthenticatorUnitTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 7FFB5F89285BA94A006BC548 /* Build configuration list for PBXNativeTarget "DeviceAuthenticatorUnitTests" */;
+			buildConfigurationList = 7FFB6001286A7F4C006BC548 /* Build configuration list for PBXNativeTarget "DeviceAuthenticatorUnitTests" */;
 			buildPhases = (
-				7FFB5F78285BA94A006BC548 /* Sources */,
-				7FFB5F79285BA94A006BC548 /* Frameworks */,
-				7FFB5F7A285BA94A006BC548 /* Resources */,
+				7FFB5FF6286A7F4C006BC548 /* Sources */,
+				7FFB5FF7286A7F4C006BC548 /* Frameworks */,
+				7FFB5FF8286A7F4C006BC548 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				7FFB5F7F285BA94A006BC548 /* PBXTargetDependency */,
+				7FFB6000286A7F4C006BC548 /* PBXTargetDependency */,
 			);
 			name = DeviceAuthenticatorUnitTests;
-			productName = DeviceAuthenticatorTests;
-			productReference = 7FFB5F7C285BA94A006BC548 /* DeviceAuthenticatorUnitTests.xctest */;
+			productName = DeviceAuthenticatorUnitTests;
+			productReference = 7FFB5FFA286A7F4C006BC548 /* DeviceAuthenticatorUnitTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		7FFB5F8F285BAB4E006BC548 /* DeviceAuthenticatorFunctionalTests */ = {
+		7FFB600F286A80CF006BC548 /* DeviceAuthenticatorFunctionalTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 7FFB5F97285BAB4E006BC548 /* Build configuration list for PBXNativeTarget "DeviceAuthenticatorFunctionalTests" */;
+			buildConfigurationList = 7FFB6017286A80CF006BC548 /* Build configuration list for PBXNativeTarget "DeviceAuthenticatorFunctionalTests" */;
 			buildPhases = (
-				7FFB5F8C285BAB4E006BC548 /* Sources */,
-				7FFB5F8D285BAB4E006BC548 /* Frameworks */,
-				7FFB5F8E285BAB4E006BC548 /* Resources */,
+				7FFB600C286A80CF006BC548 /* Sources */,
+				7FFB600D286A80CF006BC548 /* Frameworks */,
+				7FFB600E286A80CF006BC548 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				7FFB5F96285BAB4E006BC548 /* PBXTargetDependency */,
+				7FFB6016286A80CF006BC548 /* PBXTargetDependency */,
 			);
 			name = DeviceAuthenticatorFunctionalTests;
 			productName = DeviceAuthenticatorFunctionalTests;
-			productReference = 7FFB5F90285BAB4E006BC548 /* DeviceAuthenticatorFunctionalTests.xctest */;
+			productReference = 7FFB6010286A80CF006BC548 /* DeviceAuthenticatorFunctionalTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
@@ -201,11 +228,13 @@
 						CreatedOnToolsVersion = 13.4.1;
 						LastSwiftMigration = 1340;
 					};
-					7FFB5F7B285BA94A006BC548 = {
+					7FFB5FF9286A7F4C006BC548 = {
 						CreatedOnToolsVersion = 13.4.1;
+						LastSwiftMigration = 1340;
 					};
-					7FFB5F8F285BAB4E006BC548 = {
+					7FFB600F286A80CF006BC548 = {
 						CreatedOnToolsVersion = 13.4.1;
+						LastSwiftMigration = 1340;
 					};
 				};
 			};
@@ -223,8 +252,8 @@
 			projectRoot = "";
 			targets = (
 				7FFB5F73285BA94A006BC548 /* DeviceAuthenticator */,
-				7FFB5F7B285BA94A006BC548 /* DeviceAuthenticatorUnitTests */,
-				7FFB5F8F285BAB4E006BC548 /* DeviceAuthenticatorFunctionalTests */,
+				7FFB5FF9286A7F4C006BC548 /* DeviceAuthenticatorUnitTests */,
+				7FFB600F286A80CF006BC548 /* DeviceAuthenticatorFunctionalTests */,
 			);
 		};
 /* End PBXProject section */
@@ -237,14 +266,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		7FFB5F7A285BA94A006BC548 /* Resources */ = {
+		7FFB5FF8286A7F4C006BC548 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		7FFB5F8E285BAB4E006BC548 /* Resources */ = {
+		7FFB600E286A80CF006BC548 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -258,37 +287,40 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7FFB6024286A8404006BC548 /* Dummy.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		7FFB5F78285BA94A006BC548 /* Sources */ = {
+		7FFB5FF6286A7F4C006BC548 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7FFB5F82285BA94A006BC548 /* DeviceAuthenticatorTests.swift in Sources */,
+				7FFB6022286A819A006BC548 /* DeviceAuthenticatorTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		7FFB5F8C285BAB4E006BC548 /* Sources */ = {
+		7FFB600C286A80CF006BC548 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7FFB5F93285BAB4E006BC548 /* DeviceAuthenticatorFunctionalTests.swift in Sources */,
+				7FFB6020286A8184006BC548 /* DeviceAuthenticatorFunctionalTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		7FFB5F7F285BA94A006BC548 /* PBXTargetDependency */ = {
+		7FFB6000286A7F4C006BC548 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
+			platformFilter = ios;
 			target = 7FFB5F73285BA94A006BC548 /* DeviceAuthenticator */;
-			targetProxy = 7FFB5F7E285BA94A006BC548 /* PBXContainerItemProxy */;
+			targetProxy = 7FFB5FFF286A7F4C006BC548 /* PBXContainerItemProxy */;
 		};
-		7FFB5F96285BAB4E006BC548 /* PBXTargetDependency */ = {
+		7FFB6016286A80CF006BC548 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
+			platformFilter = ios;
 			target = 7FFB5F73285BA94A006BC548 /* DeviceAuthenticator */;
-			targetProxy = 7FFB5F95285BAB4E006BC548 /* PBXContainerItemProxy */;
+			targetProxy = 7FFB6015286A80CF006BC548 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -476,33 +508,48 @@
 			};
 			name = Release;
 		};
-		7FFB5F8A285BA94A006BC548 /* Debug */ = {
+		7FFB6002286A7F4C006BC548 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 7WXXBW6Z2Y;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.okta.DeviceAuthenticatorTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.okta.DeviceAuthenticatorUnitTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
-		7FFB5F8B285BA94A006BC548 /* Release */ = {
+		7FFB6003286A7F4C006BC548 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 7WXXBW6Z2Y;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.okta.DeviceAuthenticatorTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.okta.DeviceAuthenticatorUnitTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
@@ -510,31 +557,46 @@
 			};
 			name = Release;
 		};
-		7FFB5F98285BAB4E006BC548 /* Debug */ = {
+		7FFB6018286A80CF006BC548 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 7WXXBW6Z2Y;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.okta.DeviceAuthenticatorFunctionalTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
-		7FFB5F99285BAB4E006BC548 /* Release */ = {
+		7FFB6019286A80CF006BC548 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 7WXXBW6Z2Y;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.okta.DeviceAuthenticatorFunctionalTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -565,20 +627,20 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		7FFB5F89285BA94A006BC548 /* Build configuration list for PBXNativeTarget "DeviceAuthenticatorUnitTests" */ = {
+		7FFB6001286A7F4C006BC548 /* Build configuration list for PBXNativeTarget "DeviceAuthenticatorUnitTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				7FFB5F8A285BA94A006BC548 /* Debug */,
-				7FFB5F8B285BA94A006BC548 /* Release */,
+				7FFB6002286A7F4C006BC548 /* Debug */,
+				7FFB6003286A7F4C006BC548 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		7FFB5F97285BAB4E006BC548 /* Build configuration list for PBXNativeTarget "DeviceAuthenticatorFunctionalTests" */ = {
+		7FFB6017286A80CF006BC548 /* Build configuration list for PBXNativeTarget "DeviceAuthenticatorFunctionalTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				7FFB5F98285BAB4E006BC548 /* Debug */,
-				7FFB5F99285BAB4E006BC548 /* Release */,
+				7FFB6018286A80CF006BC548 /* Debug */,
+				7FFB6019286A80CF006BC548 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
