@@ -14,7 +14,7 @@
             buildForAnalyzing = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "7FFB5F8F285BAB4E006BC548"
+               BlueprintIdentifier = "7FFB600F286A80CF006BC548"
                BuildableName = "DeviceAuthenticatorFunctionalTests.xctest"
                BlueprintName = "DeviceAuthenticatorFunctionalTests"
                ReferencedContainer = "container:DeviceAuthenticator.xcodeproj">
@@ -32,7 +32,7 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "7FFB5F8F285BAB4E006BC548"
+               BlueprintIdentifier = "7FFB600F286A80CF006BC548"
                BuildableName = "DeviceAuthenticatorFunctionalTests.xctest"
                BlueprintName = "DeviceAuthenticatorFunctionalTests"
                ReferencedContainer = "container:DeviceAuthenticator.xcodeproj">
@@ -60,7 +60,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "7FFB5F8F285BAB4E006BC548"
+            BlueprintIdentifier = "7FFB600F286A80CF006BC548"
             BuildableName = "DeviceAuthenticatorFunctionalTests.xctest"
             BlueprintName = "DeviceAuthenticatorFunctionalTests"
             ReferencedContainer = "container:DeviceAuthenticator.xcodeproj">

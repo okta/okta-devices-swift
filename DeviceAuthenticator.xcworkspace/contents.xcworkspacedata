@@ -2,7 +2,7 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:DeviceAuthenticator/DeviceAuthenticator.xcodeproj">
+      location = "group:DeviceAuthenticator.xcodeproj">
    </FileRef>
    <Group
       location = "group:Examples"
