@@ -11,7 +11,7 @@
 		7FFB6014286A80CF006BC548 /* DeviceAuthenticator.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7FFB5F74285BA94A006BC548 /* DeviceAuthenticator.framework */; platformFilter = ios; };
 		7FFB6020286A8184006BC548 /* DeviceAuthenticatorFunctionalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FFB601F286A8184006BC548 /* DeviceAuthenticatorFunctionalTests.swift */; };
 		7FFB6022286A819A006BC548 /* DeviceAuthenticatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FFB6021286A819A006BC548 /* DeviceAuthenticatorTests.swift */; };
-		7FFB6024286A8404006BC548 /* Dummy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FFB6023286A8404006BC548 /* Dummy.swift */; };
+		9F98950B2874ECC80056AC6E /* DeviceAuthenticatorConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F98950A2874ECC80056AC6E /* DeviceAuthenticatorConstants.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -38,7 +38,7 @@
 		7FFB6010286A80CF006BC548 /* DeviceAuthenticatorFunctionalTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DeviceAuthenticatorFunctionalTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		7FFB601F286A8184006BC548 /* DeviceAuthenticatorFunctionalTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DeviceAuthenticatorFunctionalTests.swift; path = Tests/DeviceAuthenticatorFunctionalTests/DeviceAuthenticatorFunctionalTests.swift; sourceTree = SOURCE_ROOT; };
 		7FFB6021286A819A006BC548 /* DeviceAuthenticatorTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DeviceAuthenticatorTests.swift; path = Tests/DeviceAuthenticatorUnitTests/DeviceAuthenticatorTests.swift; sourceTree = SOURCE_ROOT; };
-		7FFB6023286A8404006BC548 /* Dummy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dummy.swift; sourceTree = "<group>"; };
+		9F98950A2874ECC80056AC6E /* DeviceAuthenticatorConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceAuthenticatorConstants.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -108,7 +108,7 @@
 		7FFB5FA3286A6E1B006BC548 /* DeviceAuthenticator */ = {
 			isa = PBXGroup;
 			children = (
-				7FFB6023286A8404006BC548 /* Dummy.swift */,
+				9F98950A2874ECC80056AC6E /* DeviceAuthenticatorConstants.swift */,
 			);
 			path = DeviceAuthenticator;
 			sourceTree = "<group>";
@@ -287,7 +287,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7FFB6024286A8404006BC548 /* Dummy.swift in Sources */,
+				9F98950B2874ECC80056AC6E /* DeviceAuthenticatorConstants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
