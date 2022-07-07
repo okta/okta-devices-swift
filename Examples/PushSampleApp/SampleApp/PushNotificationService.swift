@@ -13,7 +13,7 @@
 import Foundation
 import UIKit
 import OktaLogger
-import OktaDeviceSDK
+import DeviceAuthenticator
 
 class PushNotificationService: NSObject, UNUserNotificationCenterDelegate {
 

@@ -11,7 +11,7 @@
 */
 
 import Foundation
-import OktaDeviceSDK
+import DeviceAuthenticator
 import WebAuthenticationUI
 import OktaLogger
 

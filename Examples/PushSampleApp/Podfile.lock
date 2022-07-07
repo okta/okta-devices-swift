@@ -2,71 +2,45 @@ PODS:
   - CocoaLumberjack/Core (3.6.2)
   - CocoaLumberjack/Swift (3.6.2):
     - CocoaLumberjack/Core
-  - GRDB.swift (5.24.0):
-    - GRDB.swift/standard (= 5.24.0)
-  - GRDB.swift/standard (5.24.0)
-  - JOSESwift (2.4.0)
-  - OktaDeviceSDK/Core (1.0.0):
+  - DeviceAuthenticator (0.0.1):
     - GRDB.swift (~> 5)
-    - JOSESwift (~> 2)
-    - OktaDeviceSDK/Networking
-    - OktaJWT (~> 2)
+    - OktaJWT (~> 2.3)
     - OktaLogger/FileLogger (~> 1)
-    - OktaStorage (~> 1)
-    - SwiftBase32 (~> 0.8.0)
-  - OktaDeviceSDK/Networking (1.0.0):
-    - OktaLogger/FileLogger (~> 1)
-  - OktaJWT (2.3.4)
-  - OktaLogger/Core (1.3.4):
+  - GRDB.swift (5.25.0):
+    - GRDB.swift/standard (= 5.25.0)
+  - GRDB.swift/standard (5.25.0)
+  - OktaJWT (2.3.5)
+  - OktaLogger/Core (1.3.8):
     - SwiftLint
-  - OktaLogger/FileLogger (1.3.4):
+  - OktaLogger/FileLogger (1.3.8):
     - CocoaLumberjack/Swift (~> 3.6.0)
     - OktaLogger/Core
     - SwiftLint
-  - OktaStorage (1.1.3)
-  - SwiftBase32 (0.8.0)
   - SwiftLint (0.47.1)
 
 DEPENDENCIES:
-  - OktaDeviceSDK/Core (from `https://github.com/okta-tardis/okta-devices-swift`)
-  - OktaLogger/Core (from `https://github.com/okta/okta-logger-swift.git`, tag `1.3.4`)
+  - DeviceAuthenticator (from `../../`)
 
 SPEC REPOS:
   trunk:
     - CocoaLumberjack
     - GRDB.swift
-    - JOSESwift
     - OktaJWT
-    - OktaStorage
-    - SwiftBase32
+    - OktaLogger
     - SwiftLint
 
 EXTERNAL SOURCES:
-  OktaDeviceSDK:
-    :git: https://github.com/okta-tardis/okta-devices-swift
-  OktaLogger:
-    :git: https://github.com/okta/okta-logger-swift.git
-    :tag: 1.3.4
-
-CHECKOUT OPTIONS:
-  OktaDeviceSDK:
-    :commit: f401a40f16a5b0a105c1342a42fafa1c49551994
-    :git: https://github.com/okta-tardis/okta-devices-swift
-  OktaLogger:
-    :git: https://github.com/okta/okta-logger-swift.git
-    :tag: 1.3.4
+  DeviceAuthenticator:
+    :path: "../../"
 
 SPEC CHECKSUMS:
   CocoaLumberjack: bd155f2dd06c0e0b03f876f7a3ee55693122ec94
-  GRDB.swift: 7ecc8799aaa97cf1fbbcfa9d75821aa920cb713f
-  JOSESwift: 7ff178bb9173ff42c6e990929a9f2fa702a34f69
-  OktaDeviceSDK: 46d968593d993082a5207a97594770fb0083abf1
-  OktaJWT: 7612cc1c3bf8fc9041646c2048813ff43c2d4b4d
-  OktaLogger: 735d7f5bfdd8caedde1122489fdeb0a5ce544668
-  OktaStorage: d5b39f93156832a1baed052be537e9e79b3adf7a
-  SwiftBase32: 723fd05e2fce776f2b98f26fe423bd20fa80e411
+  DeviceAuthenticator: c9639a7ee99d41be8f41cb8480b5a57855615bfa
+  GRDB.swift: 39b3ff769afde87a840ced4e3a327d5c6f6a6e4f
+  OktaJWT: d9934b947fd0742713557b9ab9e1a313d40751cc
+  OktaLogger: f92c0fd63642204558cbef3755050cf80b107820
   SwiftLint: f80f1be7fa96d30e0aa68e58d45d4ea1ccaac519
 
-PODFILE CHECKSUM: eff22bb38fe5e12f4d336784ab656e9fa140df54
+PODFILE CHECKSUM: be8a68d200b3c92aa15121997d3e53c9cb75e43a
 
 COCOAPODS: 1.10.2

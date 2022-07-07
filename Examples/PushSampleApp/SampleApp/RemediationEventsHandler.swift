@@ -11,7 +11,7 @@
 */
 
 import Foundation
-import OktaDeviceSDK
+import DeviceAuthenticator
 
 typealias UserConsentHandler = ((RemediationStepUserConsent) -> Void)
 typealias ChallengeResolvedHandler = (PushChallengeUserResponse) -> Void
@@ -32,7 +32,7 @@ class RemediationEventsHandler: RemediationEventsHandlerProtocol {
             // Show UX to allow the user to say "yes" or "no" to the sign-in attempt
             onUserConsent(userConsentStep)
         default:
-            step.doNotProcess()
+            step.defaultProcess()
         }
     }
 }
