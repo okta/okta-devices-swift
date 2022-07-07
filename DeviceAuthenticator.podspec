@@ -21,6 +21,6 @@ SDK for iOS devices for communicating with Okta's device APIs
   s.dependency 'JOSESwift','~>1'
   s.dependency 'OktaStorage','~>1'
   s.dependency 'OktaJWT', '~>2'
-  s.dependency 'OktaLogger/FileLogger', '~>1'
+  s.dependency 'OktaLogger/FileLogger', '~>1.3.4'
   s.user_target_xcconfig = { 'BUILD_LIBRARY_FOR_DISTRIBUTION' => 'YES' }
 end
