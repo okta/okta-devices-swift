@@ -12,7 +12,7 @@
 
 import UIKit
 import WebAuthenticationUI
-import OktaDeviceSDK
+import DeviceAuthenticator
 import OktaLogger
 
 @main

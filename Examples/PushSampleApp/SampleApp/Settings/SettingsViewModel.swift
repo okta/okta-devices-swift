@@ -11,7 +11,7 @@
 */
 
 import Foundation
-import OktaDeviceSDK
+import DeviceAuthenticator
 import OktaLogger
 
 protocol SettingsViewModelProtocol {

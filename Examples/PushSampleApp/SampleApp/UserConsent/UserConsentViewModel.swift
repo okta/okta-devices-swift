@@ -11,7 +11,7 @@
 */
 
 import Foundation
-import OktaDeviceSDK
+import DeviceAuthenticator
 
 protocol UserConsentViewModelProtocol {
     var titleString: String { get }

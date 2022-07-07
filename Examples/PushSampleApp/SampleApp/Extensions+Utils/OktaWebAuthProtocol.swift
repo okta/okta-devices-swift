@@ -70,7 +70,18 @@ extension WebAuthentication: OktaWebAuthProtocol {
     }
     
     func getAccessToken(completion: @escaping (Result<Token, OAuth2Error>) -> Void) {
-        Credential.default?.refreshIfNeeded(completion: completion)
+        Credential.default?.refreshIfNeeded(completion: { result in
+            switch result {
+            case .success():
+                if let token = Credential.default?.token {
+                    completion(Result.success(token))
+                } else {
+                    completion(Result.failure(OAuth2Error.missingToken(type: .accessToken)))
+                }
+            case .failure(let error):
+                completion(Result.failure(error))
+            }
+        })
     }
     
 }
