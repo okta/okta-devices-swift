@@ -10,14 +10,9 @@
 * See the License for the specific language governing permissions and limitations under the License.
 */
 
-#import <Foundation/Foundation.h>
+import Foundation
 
-//! Project version number for DeviceAuthenticator.
-FOUNDATION_EXPORT double DeviceAuthenticatorVersionNumber;
-
-//! Project version string for DeviceAuthenticator.
-FOUNDATION_EXPORT const unsigned char DeviceAuthenticatorVersionString[];
-
-// In this header, you should import all the public headers of your framework using statements like #import <DeviceAuthenticator/PublicHeader.h>
-
-
+struct ExampleAppConstants {
+    static let appGroupId = "group.okta.qa"
+    static let bundleId = "com.okta.PushSDKTestApp"
+}
