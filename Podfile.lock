@@ -2,6 +2,10 @@ PODS:
   - CocoaLumberjack/Core (3.6.2)
   - CocoaLumberjack/Swift (3.6.2):
     - CocoaLumberjack/Core
+  - DeviceAuthenticator (0.0.1):
+    - GRDB.swift (~> 5)
+    - OktaJWT (~> 2.3)
+    - OktaLogger/FileLogger (~> 1)
   - GRDB.swift (5.25.0):
     - GRDB.swift/standard (= 5.25.0)
   - GRDB.swift/standard (5.25.0)
@@ -15,6 +19,7 @@ PODS:
   - SwiftLint (0.32.0)
 
 DEPENDENCIES:
+  - DeviceAuthenticator (from `.`)
   - GRDB.swift (~> 5)
   - OktaJWT (~> 2.3)
   - OktaLogger/FileLogger
@@ -28,13 +33,18 @@ SPEC REPOS:
     - OktaLogger
     - SwiftLint
 
+EXTERNAL SOURCES:
+  DeviceAuthenticator:
+    :path: "."
+
 SPEC CHECKSUMS:
   CocoaLumberjack: bd155f2dd06c0e0b03f876f7a3ee55693122ec94
+  DeviceAuthenticator: c9639a7ee99d41be8f41cb8480b5a57855615bfa
   GRDB.swift: 39b3ff769afde87a840ced4e3a327d5c6f6a6e4f
   OktaJWT: d9934b947fd0742713557b9ab9e1a313d40751cc
   OktaLogger: f92c0fd63642204558cbef3755050cf80b107820
   SwiftLint: 009a898ef2a1c851f45e1b59349bf6ff2ddc990d
 
-PODFILE CHECKSUM: 5183f989e0c7fe00f64aff51c684a56a9b17eb0d
+PODFILE CHECKSUM: c8350906dca812cfb6493606b6847053de0a368a
 
 COCOAPODS: 1.10.2

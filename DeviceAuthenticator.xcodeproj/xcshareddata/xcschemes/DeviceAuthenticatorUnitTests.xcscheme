@@ -37,6 +37,32 @@
                BlueprintName = "DeviceAuthenticatorUnitTests"
                ReferencedContainer = "container:DeviceAuthenticator.xcodeproj">
             </BuildableReference>
+            <SkippedTests>
+               <Test
+                  Identifier = "CryptoManagerTests/testEncryptionManager_BasicOperations()">
+               </Test>
+               <Test
+                  Identifier = "DeviceAuthenticatorTests">
+               </Test>
+               <Test
+                  Identifier = "OktaSQLiteEncryptionManagerTests">
+               </Test>
+               <Test
+                  Identifier = "OktaSecureStorageTests">
+               </Test>
+               <Test
+                  Identifier = "OktaSharedSQLiteTests">
+               </Test>
+               <Test
+                  Identifier = "OktaStorageManagerTests">
+               </Test>
+               <Test
+                  Identifier = "TransactionPossessionChallengeBaseTests">
+               </Test>
+               <Test
+                  Identifier = "TransactionTests">
+               </Test>
+            </SkippedTests>
          </TestableReference>
       </Testables>
    </TestAction>

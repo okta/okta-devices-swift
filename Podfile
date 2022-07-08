@@ -22,11 +22,13 @@ end
 target 'DeviceAuthenticatorUnitTests' do
   platform :ios, '13.0'
   pod 'SwiftLint', '0.32.0'
+  pod 'DeviceAuthenticator', :path => '.'
 end
 
 target 'DeviceAuthenticatorFunctionalTests' do
   platform :ios, '13.0'
   pod 'SwiftLint', '0.32.0'
+  pod 'DeviceAuthenticator', :path => '.'
 end
 
 post_install do |project|
