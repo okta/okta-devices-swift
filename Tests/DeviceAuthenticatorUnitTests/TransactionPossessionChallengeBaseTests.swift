@@ -26,6 +26,12 @@ class TransactionPossessionChallengeBaseTests: XCTestCase {
         cryptoManager = CryptoManagerMock(accessGroupId: ExampleAppConstants.appGroupId, logger: OktaLoggerMock())
         restAPIMock = RestAPIMock(client: HTTPClient(logger: OktaLoggerMock(), userAgent: ""), logger: OktaLoggerMock())
         storageMock = StorageMock()
+        storageMock.deviceEnrollmentByOrgIdHook = { orgId in
+            return OktaDeviceEnrollment(id: "id",
+                                        orgId: orgId,
+                                        clientInstanceId: "clientInstanceId",
+                                        clientInstanceKeyTag: "clientInstanceKeyTag")
+        }
         applicationConfig = ApplicationConfig(applicationName: "Test App",
                                               applicationVersion: "1.0.0",
                                               applicationGroupId: ExampleAppConstants.appGroupId)
