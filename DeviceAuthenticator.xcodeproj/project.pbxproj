@@ -129,6 +129,10 @@
 		7F8833F42874FB820034CA5E /* UserAgent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F88337A2874FB820034CA5E /* UserAgent.swift */; };
 		7F8833F52874FB820034CA5E /* OktaURLRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F88337B2874FB820034CA5E /* OktaURLRequest.swift */; };
 		7F8833F62874FB820034CA5E /* SecurityError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F88337C2874FB820034CA5E /* SecurityError.swift */; };
+		7F8833FF287C763A0034CA5E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F8833FE287C763A0034CA5E /* AppDelegate.swift */; };
+		7F883406287C763A0034CA5E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7F883404287C763A0034CA5E /* Main.storyboard */; };
+		7F883408287C763C0034CA5E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7F883407287C763C0034CA5E /* Assets.xcassets */; };
+		7F88340B287C763C0034CA5E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7F883409287C763C0034CA5E /* LaunchScreen.storyboard */; };
 		7FFB5FFE286A7F4C006BC548 /* DeviceAuthenticatorFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7FFB5F74285BA94A006BC548 /* DeviceAuthenticatorFramework.framework */; platformFilter = ios; };
 		7FFB6014286A80CF006BC548 /* DeviceAuthenticatorFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7FFB5F74285BA94A006BC548 /* DeviceAuthenticatorFramework.framework */; platformFilter = ios; };
 		7FFB6020286A8184006BC548 /* DeviceAuthenticatorFunctionalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FFB601F286A8184006BC548 /* DeviceAuthenticatorFunctionalTests.swift */; };
@@ -199,6 +203,23 @@
 		9F98950B2874ECC80056AC6E /* DeviceAuthenticatorConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F98950A2874ECC80056AC6E /* DeviceAuthenticatorConstants.swift */; };
 		BFD6BE98FF9921062C533D81 /* libPods-DeviceAuthenticator.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B53EEBADD32786AED0B3915D /* libPods-DeviceAuthenticator.a */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		7F883410287CA7270034CA5E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7FFB5F6B285BA94A006BC548 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7F8833FB287C763A0034CA5E;
+			remoteInfo = DeviceAuthenticatorTestApp;
+		};
+		7F883412287CA7290034CA5E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7FFB5F6B285BA94A006BC548 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7F8833FB287C763A0034CA5E;
+			remoteInfo = DeviceAuthenticatorTestApp;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		1456F86D9AF19D829C87B4BF /* Pods-DeviceAuthenticatorUnitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DeviceAuthenticatorUnitTests.debug.xcconfig"; path = "Target Support Files/Pods-DeviceAuthenticatorUnitTests/Pods-DeviceAuthenticatorUnitTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -328,6 +349,13 @@
 		7F88337A2874FB820034CA5E /* UserAgent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserAgent.swift; sourceTree = "<group>"; };
 		7F88337B2874FB820034CA5E /* OktaURLRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OktaURLRequest.swift; sourceTree = "<group>"; };
 		7F88337C2874FB820034CA5E /* SecurityError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SecurityError.swift; sourceTree = "<group>"; };
+		7F8833FC287C763A0034CA5E /* PushSDKTestApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PushSDKTestApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		7F8833FE287C763A0034CA5E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		7F883405287C763A0034CA5E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		7F883407287C763C0034CA5E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		7F88340A287C763C0034CA5E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		7F88340C287C763C0034CA5E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		7F883414287CA8B80034CA5E /* PushSDKTestApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PushSDKTestApp.entitlements; sourceTree = "<group>"; };
 		7FFB5F74285BA94A006BC548 /* DeviceAuthenticatorFramework.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = DeviceAuthenticatorFramework.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7FFB5FFA286A7F4C006BC548 /* DeviceAuthenticatorUnitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DeviceAuthenticatorUnitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		7FFB6010286A80CF006BC548 /* DeviceAuthenticatorFunctionalTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DeviceAuthenticatorFunctionalTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -403,6 +431,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		7F8833F9287C763A0034CA5E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		7FFB5F71285BA94A006BC548 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -666,10 +701,24 @@
 			path = Networking;
 			sourceTree = "<group>";
 		};
+		7F8833FD287C763A0034CA5E /* PushSDKTestApp */ = {
+			isa = PBXGroup;
+			children = (
+				7F883414287CA8B80034CA5E /* PushSDKTestApp.entitlements */,
+				7F8833FE287C763A0034CA5E /* AppDelegate.swift */,
+				7F883404287C763A0034CA5E /* Main.storyboard */,
+				7F883407287C763C0034CA5E /* Assets.xcassets */,
+				7F883409287C763C0034CA5E /* LaunchScreen.storyboard */,
+				7F88340C287C763C0034CA5E /* Info.plist */,
+			);
+			path = PushSDKTestApp;
+			sourceTree = "<group>";
+		};
 		7FFB5F6A285BA94A006BC548 = {
 			isa = PBXGroup;
 			children = (
 				7FFB5F76285BA94A006BC548 /* DeviceAuthenticator */,
+				7F8833FD287C763A0034CA5E /* PushSDKTestApp */,
 				7FFB5F75285BA94A006BC548 /* Products */,
 				7FFB5FA9286A77A0006BC548 /* Frameworks */,
 				6261F8F2B4BAA5158635458F /* Pods */,
@@ -682,6 +731,7 @@
 				7FFB5F74285BA94A006BC548 /* DeviceAuthenticatorFramework.framework */,
 				7FFB5FFA286A7F4C006BC548 /* DeviceAuthenticatorUnitTests.xctest */,
 				7FFB6010286A80CF006BC548 /* DeviceAuthenticatorFunctionalTests.xctest */,
+				7F8833FC287C763A0034CA5E /* PushSDKTestApp.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -863,6 +913,23 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		7F8833FB287C763A0034CA5E /* PushSDKTestApp */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7F88340F287C763C0034CA5E /* Build configuration list for PBXNativeTarget "PushSDKTestApp" */;
+			buildPhases = (
+				7F8833F8287C763A0034CA5E /* Sources */,
+				7F8833F9287C763A0034CA5E /* Frameworks */,
+				7F8833FA287C763A0034CA5E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PushSDKTestApp;
+			productName = DeviceAuthenticatorTestApp;
+			productReference = 7F8833FC287C763A0034CA5E /* PushSDKTestApp.app */;
+			productType = "com.apple.product-type.application";
+		};
 		7FFB5F73285BA94A006BC548 /* DeviceAuthenticator */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 7FFB5F86285BA94A006BC548 /* Build configuration list for PBXNativeTarget "DeviceAuthenticator" */;
@@ -894,6 +961,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				7F883413287CA7290034CA5E /* PBXTargetDependency */,
 			);
 			name = DeviceAuthenticatorUnitTests;
 			productName = DeviceAuthenticatorUnitTests;
@@ -912,6 +980,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				7F883411287CA7270034CA5E /* PBXTargetDependency */,
 			);
 			name = DeviceAuthenticatorFunctionalTests;
 			productName = DeviceAuthenticatorFunctionalTests;
@@ -928,6 +997,9 @@
 				LastSwiftUpdateCheck = 1340;
 				LastUpgradeCheck = 1340;
 				TargetAttributes = {
+					7F8833FB287C763A0034CA5E = {
+						CreatedOnToolsVersion = 13.4.1;
+					};
 					7FFB5F73285BA94A006BC548 = {
 						CreatedOnToolsVersion = 13.4.1;
 						LastSwiftMigration = 1340;
@@ -935,10 +1007,12 @@
 					7FFB5FF9286A7F4C006BC548 = {
 						CreatedOnToolsVersion = 13.4.1;
 						LastSwiftMigration = 1340;
+						TestTargetID = 7F8833FB287C763A0034CA5E;
 					};
 					7FFB600F286A80CF006BC548 = {
 						CreatedOnToolsVersion = 13.4.1;
 						LastSwiftMigration = 1340;
+						TestTargetID = 7F8833FB287C763A0034CA5E;
 					};
 				};
 			};
@@ -958,11 +1032,22 @@
 				7FFB5F73285BA94A006BC548 /* DeviceAuthenticator */,
 				7FFB5FF9286A7F4C006BC548 /* DeviceAuthenticatorUnitTests */,
 				7FFB600F286A80CF006BC548 /* DeviceAuthenticatorFunctionalTests */,
+				7F8833FB287C763A0034CA5E /* PushSDKTestApp */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		7F8833FA287C763A0034CA5E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7F88340B287C763C0034CA5E /* LaunchScreen.storyboard in Resources */,
+				7F883408287C763C0034CA5E /* Assets.xcassets in Resources */,
+				7F883406287C763A0034CA5E /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		7FFB5F72285BA94A006BC548 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1062,6 +1147,14 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		7F8833F8287C763A0034CA5E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7F8833FF287C763A0034CA5E /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		7FFB5F70285BA94A006BC548 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1265,7 +1358,97 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		7F883411287CA7270034CA5E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 7F8833FB287C763A0034CA5E /* PushSDKTestApp */;
+			targetProxy = 7F883410287CA7270034CA5E /* PBXContainerItemProxy */;
+		};
+		7F883413287CA7290034CA5E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 7F8833FB287C763A0034CA5E /* PushSDKTestApp */;
+			targetProxy = 7F883412287CA7290034CA5E /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		7F883404287C763A0034CA5E /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				7F883405287C763A0034CA5E /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		7F883409287C763C0034CA5E /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				7F88340A287C763C0034CA5E /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
 /* Begin XCBuildConfiguration section */
+		7F88340D287C763C0034CA5E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = PushSDKTestApp/PushSDKTestApp.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 7WXXBW6Z2Y;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = PushSDKTestApp/Info.plist;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.okta.PushSDKTestApp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		7F88340E287C763C0034CA5E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = PushSDKTestApp/PushSDKTestApp.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 7WXXBW6Z2Y;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = PushSDKTestApp/Info.plist;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.okta.PushSDKTestApp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		7FFB5F84285BA94A006BC548 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1474,6 +1657,7 @@
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PushSDKTestApp.app/PushSDKTestApp";
 			};
 			name = Debug;
 		};
@@ -1499,6 +1683,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PushSDKTestApp.app/PushSDKTestApp";
 			};
 			name = Release;
 		};
@@ -1525,6 +1710,7 @@
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PushSDKTestApp.app/PushSDKTestApp";
 			};
 			name = Debug;
 		};
@@ -1550,12 +1736,22 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PushSDKTestApp.app/PushSDKTestApp";
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		7F88340F287C763C0034CA5E /* Build configuration list for PBXNativeTarget "PushSDKTestApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7F88340D287C763C0034CA5E /* Debug */,
+				7F88340E287C763C0034CA5E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		7FFB5F6E285BA94A006BC548 /* Build configuration list for PBXProject "DeviceAuthenticator" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
