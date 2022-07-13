@@ -49,7 +49,7 @@ public protocol AuthenticatorEnrollmentProtocol {
     ///   - completion: Closure called when the retrieval process has completed
     ///  - Discussion: This method is useful for user-driven activity indicating they would like to remediate a challenge. Examples: User clicks a refresh button, foregrounds the app.
     func retrievePushChallenges(authenticationToken: AuthToken,
-                                allowedClockSkewInSeconds: UInt,
+                                allowedClockSkewInSeconds: Int,
                                 completion: @escaping (Result<[PushChallengeProtocol], DeviceAuthenticatorError>) -> Void)
 
     ///  Delete the enrollment from this device's local storage
@@ -59,7 +59,7 @@ public protocol AuthenticatorEnrollmentProtocol {
 
 public extension AuthenticatorEnrollmentProtocol {
     func retrievePushChallenges(authenticationToken: AuthToken,
-                                allowedClockSkewInSeconds: UInt = 300,
+                                allowedClockSkewInSeconds: Int = 300,
                                 completion: @escaping (Result<[PushChallengeProtocol], DeviceAuthenticatorError>) -> Void) {
         retrievePushChallenges(authenticationToken: authenticationToken,
                                allowedClockSkewInSeconds: allowedClockSkewInSeconds,

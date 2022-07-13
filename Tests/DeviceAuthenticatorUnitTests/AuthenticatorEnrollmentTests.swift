@@ -116,8 +116,9 @@ class AuthenticatorEnrollmentTests: XCTestCase {
                                                                                               methods: [.push]))
         try? mockStorageManager.storeAuthenticatorPolicy(policy, orgId: enrollment.orgId)
         let ex = expectation(description: "Completion callback expected!")
-        enrollment.updateDeviceToken(pushTokenToCompare,
-                                     authenticationToken: AuthToken.bearer("access_token")) { error in
+        let opaqueEnrollment = enrollment as AuthenticatorEnrollmentProtocol
+        opaqueEnrollment.updateDeviceToken(pushTokenToCompare,
+                                           authenticationToken: AuthToken.bearer("access_token")) { error in
             XCTAssertNil(error)
             ex.fulfill()
         }
@@ -143,6 +144,45 @@ class AuthenticatorEnrollmentTests: XCTestCase {
         }
 
         waitForExpectations(timeout: 1.0, handler: nil)
+    }
+
+    func testRetrievePushChallenges() {
+        cryptoManager.accessGroupId = ""
+        let pushFactor = OktaFactorPush(factorData: OktaFactorMetadataPush(id: "id",
+                                                                           proofOfPossessionKeyTag: "proofOfPossessionKeyTag",
+                                                                           links: OktaFactorMetadataPush.Links(pendingLink: "https://test.okta.com/pending_challenge")),
+                                        cryptoManager: cryptoManager,
+                                        restAPIClient: restAPIMock,
+                                        logger: OktaLoggerMock())
+        enrollment.enrolledFactors = []
+        enrollment.enrolledFactors.append(pushFactor)
+        var pendingChallengeRequestHookCalled = false
+        restAPIMock.pendingChallengeRequestHook = { url, token, completion in
+            let result = HTTPURLResult(request: URLRequest(url: URL(string: "com.okta.example")!),
+                                       response: HTTPURLResponse(url: self.mockURL, statusCode: 200, httpVersion: nil, headerFields: nil)!,
+                                       data: GoldenData.pendingChallengeData())
+            pendingChallengeRequestHookCalled = true
+            completion(result, nil)
+        }
+
+        let policy = AuthenticatorPolicy(metadata: TestUtils.createAuthenticatorMetadataModel(id: "id",
+                                                                                              userVerification: .preferred,
+                                                                                              methods: [.push]))
+        try? mockStorageManager.storeAuthenticatorPolicy(policy, orgId: enrollment.orgId)
+        let ex = expectation(description: "Completion callback expected!")
+        let opaqueEnrollment = enrollment as AuthenticatorEnrollmentProtocol
+        opaqueEnrollment.retrievePushChallenges(authenticationToken: .bearer("")) { result in
+            switch result {
+            case .success(let challenges):
+                XCTAssertTrue(challenges.count == 1)
+            case .failure(_):
+                XCTFail("Unexpected completion failure")
+            }
+            ex.fulfill()
+        }
+
+        waitForExpectations(timeout: 1.0, handler: nil)
+        XCTAssertTrue(pendingChallengeRequestHookCalled)
     }
 
     func testDeleteFromDevice() {
