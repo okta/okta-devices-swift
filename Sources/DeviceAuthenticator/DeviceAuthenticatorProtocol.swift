@@ -52,22 +52,22 @@ public protocol DeviceAuthenticatorProtocol {
     ///   - notification: Push notification recieved by application
     ///   - allowedClockSkewInSeconds: The amount of clock skew in seconds to tolerate when verifying
     ///  Discussion: In the case of a non-okta notification, this function will throw an OktaError.pushNotRecognized object.
-    func parsePushNotification(_ notification: UNNotification, allowedClockSkewInSeconds: UInt) throws -> PushChallengeProtocol
+    func parsePushNotification(_ notification: UNNotification, allowedClockSkewInSeconds: Int) throws -> PushChallengeProtocol
 
     /// Given a push notification response received by your app, attempt to parse it as an Okta push.
     ///  - Parameters:
     ///   - response: Response object from actionable notification
     ///   - allowedClockSkewInSeconds: The amount of clock skew in seconds to tolerate when verifying
     ///  Discussion: In the case of a non-okta notification, this function will throw an OktaError.pushNotRecognized object.
-    func parsePushNotificationResponse(_ response: UNNotificationResponse, allowedClockSkewInSeconds: UInt) throws -> PushChallengeProtocol
+    func parsePushNotificationResponse(_ response: UNNotificationResponse, allowedClockSkewInSeconds: Int) throws -> PushChallengeProtocol
 }
 
 public extension DeviceAuthenticatorProtocol {
-    func parsePushNotification(_ notification: UNNotification, allowedClockSkewInSeconds: UInt = 300) throws -> PushChallengeProtocol {
+    func parsePushNotification(_ notification: UNNotification, allowedClockSkewInSeconds: Int = 300) throws -> PushChallengeProtocol {
         try parsePushNotification(notification, allowedClockSkewInSeconds: allowedClockSkewInSeconds)
     }
 
-    func parsePushNotificationResponse(_ response: UNNotificationResponse, allowedClockSkewInSeconds: UInt = 300) throws -> PushChallengeProtocol {
+    func parsePushNotificationResponse(_ response: UNNotificationResponse, allowedClockSkewInSeconds: Int = 300) throws -> PushChallengeProtocol {
         try parsePushNotificationResponse(response, allowedClockSkewInSeconds: allowedClockSkewInSeconds)
     }
 }

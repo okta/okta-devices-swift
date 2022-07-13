@@ -82,9 +82,68 @@ class GoldenData {
                 "appInstanceId": "oidcAppId1234",
                 "userVerification": "preferred"
             },
-            "_links": {},
+            "_links": {
+                "self": {
+                    "href": "https://atko.oktapreview.com/api/v1/authenticators/autuowpr5VjVjQPU30g3",
+                    "hints": {
+                        "allow": ["GET", "PUT", "DELETE"]
+                    }
+                },
+                "methods": {
+                    "href": "https://atko.oktapreview.com/api/v1/authenticators/autuowpr5VjVjQPU30g3/methods",
+                    "hints": {
+                        "allow": ["GET"]
+                    }
+                },
+                "activate": {
+                    "href": "https://atko.oktapreview.com/api/v1/authenticators/autuowpr5VjVjQPU30g3/lifecycle/deactivate",
+                    "hints": {
+                        "allow": ["POST"]
+                    }
+                },
+                "enroll": {
+                    "href": "https://atko.oktapreview.com/idp/authenticators",
+                    "hints": {
+                        "allow": ["POST"]
+                    }
+                },
+                "logos": [{
+                        "name": "medium",
+                        "href": "http://atko.oktapreview.com/assets/img/logos/groups/okta-medium.d7fb831bc4e7e1a5d8bd35dfaf405d9e.png",
+                        "type": "image/png"
+                    },
+                    {
+                        "name": "large",
+                        "href": "http://atko.oktapreview.com/assets/img/logos/groups/okta-large.511fcb0de9da185b52589cb14d581c2c.png",
+                        "type": "image/png"
+                    }
+                ]
+            },
             "_embedded": {
-                "methods": [{}]
+                "methods": [{
+                        "type": "signed_nonce",
+                        "status": "ACTIVE",
+                        "settings": {
+                            "algorithms": ["RS256", "ES256"],
+                            "keyProtection": "ANY"
+                        }
+                    },
+                    {
+                        "type": "push",
+                        "status": "ACTIVE"
+                    },
+                    {
+                        "type": "totp",
+                        "status": "ACTIVE",
+                        "settings": {
+                            "timeIntervalInSeconds": 10,
+                            "encoding": "Base32",
+                            "algorithm": "HMACSHA1",
+                            "passCodeLength": 6
+                        }
+                    }
+                ]
+            }
         }]
         """
         let jsonArray = try! JSONSerialization.jsonObject(with: authenticatorJson.data(using: .utf8)!, options: []) as! [Any]
