@@ -7,7 +7,6 @@ on:
     branches: [ master ]
 
 jobs:
-#### Uncomment once we move the code to this public repo.
   SampleApp:
     runs-on: macos-11
     env:
