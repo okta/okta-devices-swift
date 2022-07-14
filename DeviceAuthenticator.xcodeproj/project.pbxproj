@@ -133,8 +133,7 @@
 		7F883406287C763A0034CA5E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7F883404287C763A0034CA5E /* Main.storyboard */; };
 		7F883408287C763C0034CA5E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7F883407287C763C0034CA5E /* Assets.xcassets */; };
 		7F88340B287C763C0034CA5E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7F883409287C763C0034CA5E /* LaunchScreen.storyboard */; };
-		7FFB5FFE286A7F4C006BC548 /* DeviceAuthenticatorFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7FFB5F74285BA94A006BC548 /* DeviceAuthenticatorFramework.framework */; platformFilter = ios; };
-		7FFB6014286A80CF006BC548 /* DeviceAuthenticatorFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7FFB5F74285BA94A006BC548 /* DeviceAuthenticatorFramework.framework */; platformFilter = ios; };
+		7F8FF73D287F87DA000F17F2 /* DeviceAuthenticator.docc in Sources */ = {isa = PBXBuildFile; fileRef = 7F8FF73C287F87DA000F17F2 /* DeviceAuthenticator.docc */; };
 		98F2EBDD5510C097C38222F3 /* libPods-DeviceAuthenticatorFunctionalTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DD73FB7DC7E598DC865F395B /* libPods-DeviceAuthenticatorFunctionalTests.a */; };
 		9F7EFF07287E0D8A001E2C4E /* EnrollmentTestHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7EFF00287E0D8A001E2C4E /* EnrollmentTestHelper.swift */; };
 		9F7EFF08287E0D8A001E2C4E /* FakePushChallenge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7EFF01287E0D8A001E2C4E /* FakePushChallenge.swift */; };
@@ -369,7 +368,8 @@
 		7F88340A287C763C0034CA5E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		7F88340C287C763C0034CA5E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7F883414287CA8B80034CA5E /* PushSDKTestApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PushSDKTestApp.entitlements; sourceTree = "<group>"; };
-		7FFB5F74285BA94A006BC548 /* DeviceAuthenticatorFramework.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = DeviceAuthenticatorFramework.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		7F8FF73C287F87DA000F17F2 /* DeviceAuthenticator.docc */ = {isa = PBXFileReference; lastKnownFileType = folder.documentationcatalog; path = DeviceAuthenticator.docc; sourceTree = "<group>"; };
+		7FFB5F74285BA94A006BC548 /* DeviceAuthenticator.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = DeviceAuthenticator.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7FFB5FFA286A7F4C006BC548 /* DeviceAuthenticatorUnitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DeviceAuthenticatorUnitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		7FFB6010286A80CF006BC548 /* DeviceAuthenticatorFunctionalTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DeviceAuthenticatorFunctionalTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9F7EFF00287E0D8A001E2C4E /* EnrollmentTestHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EnrollmentTestHelper.swift; sourceTree = "<group>"; };
@@ -469,7 +469,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7FFB5FFE286A7F4C006BC548 /* DeviceAuthenticatorFramework.framework in Frameworks */,
 				2BC969C31E576D617731C08B /* libPods-DeviceAuthenticatorUnitTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -478,7 +477,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7FFB6014286A80CF006BC548 /* DeviceAuthenticatorFramework.framework in Frameworks */,
 				98F2EBDD5510C097C38222F3 /* libPods-DeviceAuthenticatorFunctionalTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -747,7 +745,7 @@
 		7FFB5F75285BA94A006BC548 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				7FFB5F74285BA94A006BC548 /* DeviceAuthenticatorFramework.framework */,
+				7FFB5F74285BA94A006BC548 /* DeviceAuthenticator.framework */,
 				7FFB5FFA286A7F4C006BC548 /* DeviceAuthenticatorUnitTests.xctest */,
 				7FFB6010286A80CF006BC548 /* DeviceAuthenticatorFunctionalTests.xctest */,
 				7F8833FC287C763A0034CA5E /* PushSDKTestApp.app */,
@@ -760,6 +758,7 @@
 			children = (
 				7FFB5FA2286A6E1B006BC548 /* Sources */,
 				7FFB6004286A7F67006BC548 /* Tests */,
+				7F8FF73C287F87DA000F17F2 /* DeviceAuthenticator.docc */,
 			);
 			name = DeviceAuthenticator;
 			path = Sources/DeviceAuthenticator;
@@ -971,7 +970,7 @@
 			);
 			name = DeviceAuthenticator;
 			productName = DeviceAuthenticator;
-			productReference = 7FFB5F74285BA94A006BC548 /* DeviceAuthenticatorFramework.framework */;
+			productReference = 7FFB5F74285BA94A006BC548 /* DeviceAuthenticator.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		7FFB5FF9286A7F4C006BC548 /* DeviceAuthenticatorUnitTests */ = {
@@ -1278,6 +1277,7 @@
 				7F88338C2874FB820034CA5E /* DeviceAuthenticatorProtocol.swift in Sources */,
 				7F8833C02874FB820034CA5E /* SQLiteSchema_200.swift in Sources */,
 				7F8833DE2874FB820034CA5E /* OktaTransactionPossessionChallenge.swift in Sources */,
+				7F8FF73D287F87DA000F17F2 /* DeviceAuthenticator.docc in Sources */,
 				7F88337E2874FB820034CA5E /* OktaFactorMetadata.swift in Sources */,
 				7F8833E22874FB820034CA5E /* OktaDeviceModelBuilder.swift in Sources */,
 				7F8833C72874FB820034CA5E /* OktaEnrollmentStorageProtocol.swift in Sources */,
@@ -1632,7 +1632,7 @@
 				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.okta.DeviceAuthenticator;
-				PRODUCT_NAME = DeviceAuthenticatorFramework;
+				PRODUCT_NAME = DeviceAuthenticator;
 				SKIP_INSTALL = YES;
 				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -1665,7 +1665,7 @@
 				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.okta.DeviceAuthenticator;
-				PRODUCT_NAME = DeviceAuthenticatorFramework;
+				PRODUCT_NAME = DeviceAuthenticator;
 				SKIP_INSTALL = YES;
 				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
