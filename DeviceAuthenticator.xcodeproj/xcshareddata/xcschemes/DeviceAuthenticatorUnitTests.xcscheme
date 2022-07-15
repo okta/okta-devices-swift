@@ -76,6 +76,16 @@
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "7F8833FB287C763A0034CA5E"
+            BuildableName = "PushSDKTestApp.app"
+            BlueprintName = "PushSDKTestApp"
+            ReferencedContainer = "container:DeviceAuthenticator.xcodeproj">
+         </BuildableReference>
+      </BuildableProductRunnable>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
@@ -83,15 +93,6 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
-      <MacroExpansion>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "7FFB5FF9286A7F4C006BC548"
-            BuildableName = "DeviceAuthenticatorUnitTests.xctest"
-            BlueprintName = "DeviceAuthenticatorUnitTests"
-            ReferencedContainer = "container:DeviceAuthenticator.xcodeproj">
-         </BuildableReference>
-      </MacroExpansion>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">
