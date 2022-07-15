@@ -27,8 +27,8 @@ jobs:
     - name: Install pod
       run: pod install
     - name: Build DeviceAuthenticator target
-      run: set -o pipefail && xcodebuild -workspace DeviceAuthenticator.xcworkspace -scheme "DeviceAuthenticator" -destination "platform=iOS Simulator,OS=latest,name=iPhone 11" clean build-for-testing
+      run: set -o pipefail && xcodebuild -workspace DeviceAuthenticator.xcworkspace -scheme "DeviceAuthenticator" -destination "platform=iOS Simulator,OS=latest,name=iPhone 11" clean build-for-testing -derivedDataPath "~/build"
     - name: Unit Tests
-      run: set -o pipefail && xcodebuild -workspace DeviceAuthenticator.xcworkspace -scheme "DeviceAuthenticatorUnitTests" -destination "platform=iOS Simulator,OS=latest,name=iPhone 11" test-without-building
+      run: set -o pipefail && xcodebuild -workspace DeviceAuthenticator.xcworkspace -scheme "DeviceAuthenticatorUnitTests" -destination "platform=iOS Simulator,OS=latest,name=iPhone 11" test-without-building -derivedDataPath "~/build"
     - name: Functional Tests
-      run: set -o pipefail && xcodebuild -workspace DeviceAuthenticator.xcworkspace -scheme "DeviceAuthenticatorFunctionalTests" -destination "platform=iOS Simulator,OS=latest,name=iPhone 11" test-without-building
+      run: set -o pipefail && xcodebuild -workspace DeviceAuthenticator.xcworkspace -scheme "DeviceAuthenticatorFunctionalTests" -destination "platform=iOS Simulator,OS=latest,name=iPhone 11" test-without-building -derivedDataPath "~/build"
