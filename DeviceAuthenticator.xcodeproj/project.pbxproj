@@ -735,7 +735,6 @@
 			isa = PBXGroup;
 			children = (
 				7FFB5F76285BA94A006BC548 /* DeviceAuthenticator */,
-				7F8833FD287C763A0034CA5E /* PushSDKTestApp */,
 				7FFB5F75285BA94A006BC548 /* Products */,
 				7FFB5FA9286A77A0006BC548 /* Frameworks */,
 				6261F8F2B4BAA5158635458F /* Pods */,
@@ -814,6 +813,7 @@
 		7FFB6004286A7F67006BC548 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				7F8833FD287C763A0034CA5E /* PushSDKTestApp */,
 				9F9602972878AF900012C74C /* TestResources */,
 				7FFB601A286A80FC006BC548 /* DeviceAuthenticatorFunctionalTests */,
 				7FFB6009286A80A4006BC548 /* DeviceAuthenticatorUnitTests */,
@@ -1434,12 +1434,12 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = PushSDKTestApp/PushSDKTestApp.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Tests/PushSDKTestApp/PushSDKTestApp.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 7WXXBW6Z2Y;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = PushSDKTestApp/Info.plist;
+				INFOPLIST_FILE = Tests/PushSDKTestApp/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -1464,12 +1464,12 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = PushSDKTestApp/PushSDKTestApp.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Tests/PushSDKTestApp/PushSDKTestApp.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 7WXXBW6Z2Y;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = PushSDKTestApp/Info.plist;
+				INFOPLIST_FILE = Tests/PushSDKTestApp/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
