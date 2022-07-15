@@ -51,12 +51,9 @@ Okta DeviceAuthenticator SDK is available from [CocoaPods](http://cocoapods.org)
 
 ```ruby
 target 'MyApplicationTarget' do
-  use_frameworks!
   pod 'DeviceAuthenticator'
 end
 ```
-**NOTE** Beta version of the SDK is disributed as dynamic `xcframework` library and `use_frameworks!` setting in your podile is important for successful project compilation. More information about this option can be found on [CocoaPods](https://guides.cocoapods.org/syntax/podfile.html#use_frameworks_bang) web site
-
 
 ## Usage
 
@@ -273,9 +270,7 @@ func handle(_ remediationStep: RemediationStep) {
 ```
 
 ## Known issues
-* Application crashes due to exception from dylib process.
-  * Reason - Cocoapods sometimes doesn't update properly `xcconfig` file for pod targets([link](https://github.com/CocoaPods/CocoaPods/issues/11153))
-  * Workaround - run `pod install` one more time
+
 
 ## Contributing
  
