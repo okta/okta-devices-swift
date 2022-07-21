@@ -25,7 +25,7 @@ struct OktaStorageBackupMetadata: OktaStorageBackup {
 class OktaStorageManager: PersistentStorageProtocol {
     let storage: PersistentStorageProtocol
     let logger: OktaLoggerProtocol
-    var storageMigrator: _OktaStorageMigrator
+    var storageMigrator: OktaStorageMigrator
 
     init(restApiClient: OktaRestAPI,
          applicationConfig: ApplicationConfig,
@@ -48,7 +48,7 @@ class OktaStorageManager: PersistentStorageProtocol {
                                         applicationConfig: applicationConfig,
                                         logger: logger)
 
-        self.storageMigrator = _OktaStorageMigrator(logger: logger)
+        self.storageMigrator = OktaStorageMigrator(logger: logger)
         self.logger = logger
     }
 

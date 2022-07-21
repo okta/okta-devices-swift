@@ -13,7 +13,7 @@
 import Foundation
 import OktaLogger
 
-public class _OktaStorageMigrator {
+class OktaStorageMigrator {
 
     let logger: OktaLoggerProtocol
 
@@ -21,7 +21,7 @@ public class _OktaStorageMigrator {
         self.logger = logger
     }
 
-    public func isMigrationToTargetVersionNeeded<T>(migratableStorage: T, type: T.Type) throws -> Bool where T: _OktaMigratableStorage {
+    func isMigrationToTargetVersionNeeded<T>(migratableStorage: T, type: T.Type) throws -> Bool where T: OktaMigratableStorage {
         let storageLastKnownVersion = migratableStorage.lastKnownVersion
         let storageTargetVersion = type.targetVersion
 
@@ -48,7 +48,7 @@ public class _OktaStorageMigrator {
     /// Starts migration from `migratableStorage`'s `lastKnownVersion` to `targetVersion`
     /// Breaks down a migration routine into a subsequence of smaller migrations, so that
     /// Ensures that `lastKnownVersion` and `targetVersion` are not `.unknown`, not equal and `targetVersion` > `lastKnownVersion`
-    public func migrateToTargetVersion<T>(migratableStorage: T, type: T.Type) throws where T: _OktaMigratableStorage {
+    func migrateToTargetVersion<T>(migratableStorage: T, type: T.Type) throws where T: OktaMigratableStorage {
         let storageLastKnownVersion = migratableStorage.lastKnownVersion
         let storageTargetVersion = type.targetVersion
         guard try isMigrationToTargetVersionNeeded(migratableStorage: migratableStorage, type: type) else {

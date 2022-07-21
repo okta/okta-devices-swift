@@ -85,7 +85,7 @@ class OktaStorageMigratorTests: XCTestCase {
             XCTAssertEqual(currentVersion, endVersion)
         }
         
-        let storageMigrator = _OktaStorageMigrator(logger: OktaLogger())
+        let storageMigrator = OktaStorageMigrator(logger: OktaLogger())
         XCTAssertNoThrow(try storageMigrator.migrateToTargetVersion(migratableStorage: testMigratableStorage, type: TestMigratableStorage.self))
         
         XCTAssertEqual(expectedMigratedVersions, actualMigratedVersions)

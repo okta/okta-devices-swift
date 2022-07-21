@@ -13,7 +13,7 @@
 import Foundation
 @testable import DeviceAuthenticator
 
-enum TestStorageVersion: Int, _OktaVersionType {
+enum TestStorageVersion: Int, OktaVersionType {
     case unknown = -9999
     case firstVersion = 1
     case secondVersion = 2
@@ -24,7 +24,7 @@ enum TestStorageVersion: Int, _OktaVersionType {
     static var unknownVersion: TestStorageVersion { return .unknown }
 }
 
-class TestMigratableStorage : _OktaMigratableStorage {
+class TestMigratableStorage : OktaMigratableStorage {
     typealias Version = TestStorageVersion
 
     var lastKnownVersion: TestStorageVersion = .unknown

@@ -80,15 +80,15 @@
 		7F8833C22874FB820034CA5E /* OktaSQLIteConnectionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F8833422874FB820034CA5E /* OktaSQLIteConnectionBuilder.swift */; };
 		7F8833C32874FB820034CA5E /* OktaSQLitePersistentStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F8833432874FB820034CA5E /* OktaSQLitePersistentStorage.swift */; };
 		7F8833C42874FB820034CA5E /* OktaStorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F8833442874FB820034CA5E /* OktaStorageManager.swift */; };
-		7F8833C52874FB820034CA5E /* _OktaMigratableStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F8833452874FB820034CA5E /* _OktaMigratableStorage.swift */; };
+		7F8833C52874FB820034CA5E /* OktaMigratableStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F8833452874FB820034CA5E /* OktaMigratableStorage.swift */; };
 		7F8833C62874FB820034CA5E /* AuthenticatorPolicyStorageProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F8833462874FB820034CA5E /* AuthenticatorPolicyStorageProtocol.swift */; };
 		7F8833C72874FB820034CA5E /* OktaEnrollmentStorageProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F8833472874FB820034CA5E /* OktaEnrollmentStorageProtocol.swift */; };
 		7F8833C82874FB820034CA5E /* OktaBackupableStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F8833482874FB820034CA5E /* OktaBackupableStorage.swift */; };
-		7F8833C92874FB820034CA5E /* _OktaVersionType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F8833492874FB820034CA5E /* _OktaVersionType.swift */; };
+		7F8833C92874FB820034CA5E /* OktaVersionType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F8833492874FB820034CA5E /* OktaVersionType.swift */; };
 		7F8833CA2874FB820034CA5E /* OktaSharedKeychainStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F88334A2874FB820034CA5E /* OktaSharedKeychainStorage.swift */; };
 		7F8833CB2874FB820034CA5E /* StorageError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F88334B2874FB820034CA5E /* StorageError.swift */; };
 		7F8833CC2874FB820034CA5E /* DeviceSDKStorageVersion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F88334D2874FB820034CA5E /* DeviceSDKStorageVersion.swift */; };
-		7F8833CD2874FB820034CA5E /* _OktaStorageMigrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F88334E2874FB820034CA5E /* _OktaStorageMigrator.swift */; };
+		7F8833CD2874FB820034CA5E /* OktaStorageMigrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F88334E2874FB820034CA5E /* OktaStorageMigrator.swift */; };
 		7F8833CE2874FB820034CA5E /* VerificationMethodFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F8833502874FB820034CA5E /* VerificationMethodFactory.swift */; };
 		7F8833CF2874FB820034CA5E /* OktaTransaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F8833512874FB820034CA5E /* OktaTransaction.swift */; };
 		7F8833D02874FB820034CA5E /* _UserMediationType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F8833522874FB820034CA5E /* _UserMediationType.swift */; };
@@ -311,15 +311,15 @@
 		7F8833422874FB820034CA5E /* OktaSQLIteConnectionBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OktaSQLIteConnectionBuilder.swift; sourceTree = "<group>"; };
 		7F8833432874FB820034CA5E /* OktaSQLitePersistentStorage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OktaSQLitePersistentStorage.swift; sourceTree = "<group>"; };
 		7F8833442874FB820034CA5E /* OktaStorageManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OktaStorageManager.swift; sourceTree = "<group>"; };
-		7F8833452874FB820034CA5E /* _OktaMigratableStorage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = _OktaMigratableStorage.swift; sourceTree = "<group>"; };
+		7F8833452874FB820034CA5E /* OktaMigratableStorage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OktaMigratableStorage.swift; sourceTree = "<group>"; };
 		7F8833462874FB820034CA5E /* AuthenticatorPolicyStorageProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthenticatorPolicyStorageProtocol.swift; sourceTree = "<group>"; };
 		7F8833472874FB820034CA5E /* OktaEnrollmentStorageProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OktaEnrollmentStorageProtocol.swift; sourceTree = "<group>"; };
 		7F8833482874FB820034CA5E /* OktaBackupableStorage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OktaBackupableStorage.swift; sourceTree = "<group>"; };
-		7F8833492874FB820034CA5E /* _OktaVersionType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = _OktaVersionType.swift; sourceTree = "<group>"; };
+		7F8833492874FB820034CA5E /* OktaVersionType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OktaVersionType.swift; sourceTree = "<group>"; };
 		7F88334A2874FB820034CA5E /* OktaSharedKeychainStorage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OktaSharedKeychainStorage.swift; sourceTree = "<group>"; };
 		7F88334B2874FB820034CA5E /* StorageError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StorageError.swift; sourceTree = "<group>"; };
 		7F88334D2874FB820034CA5E /* DeviceSDKStorageVersion.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceSDKStorageVersion.swift; sourceTree = "<group>"; };
-		7F88334E2874FB820034CA5E /* _OktaStorageMigrator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = _OktaStorageMigrator.swift; sourceTree = "<group>"; };
+		7F88334E2874FB820034CA5E /* OktaStorageMigrator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OktaStorageMigrator.swift; sourceTree = "<group>"; };
 		7F8833502874FB820034CA5E /* VerificationMethodFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VerificationMethodFactory.swift; sourceTree = "<group>"; };
 		7F8833512874FB820034CA5E /* OktaTransaction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OktaTransaction.swift; sourceTree = "<group>"; };
 		7F8833522874FB820034CA5E /* _UserMediationType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = _UserMediationType.swift; sourceTree = "<group>"; };
@@ -601,11 +601,11 @@
 				7F88333A2874FB820034CA5E /* OktaSecureStorage.swift */,
 				7F88333B2874FB820034CA5E /* SQLite */,
 				7F8833442874FB820034CA5E /* OktaStorageManager.swift */,
-				7F8833452874FB820034CA5E /* _OktaMigratableStorage.swift */,
+				7F8833452874FB820034CA5E /* OktaMigratableStorage.swift */,
 				7F8833462874FB820034CA5E /* AuthenticatorPolicyStorageProtocol.swift */,
 				7F8833472874FB820034CA5E /* OktaEnrollmentStorageProtocol.swift */,
 				7F8833482874FB820034CA5E /* OktaBackupableStorage.swift */,
-				7F8833492874FB820034CA5E /* _OktaVersionType.swift */,
+				7F8833492874FB820034CA5E /* OktaVersionType.swift */,
 				7F88334A2874FB820034CA5E /* OktaSharedKeychainStorage.swift */,
 			);
 			path = Storage;
@@ -637,7 +637,7 @@
 			isa = PBXGroup;
 			children = (
 				7F88334D2874FB820034CA5E /* DeviceSDKStorageVersion.swift */,
-				7F88334E2874FB820034CA5E /* _OktaStorageMigrator.swift */,
+				7F88334E2874FB820034CA5E /* OktaStorageMigrator.swift */,
 			);
 			path = StorageVersioning;
 			sourceTree = "<group>";
@@ -1183,7 +1183,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7F8833CD2874FB820034CA5E /* _OktaStorageMigrator.swift in Sources */,
+				7F8833CD2874FB820034CA5E /* OktaStorageMigrator.swift in Sources */,
 				7F88339E2874FB820034CA5E /* OktaURLExtension.swift in Sources */,
 				7F8833AF2874FB820034CA5E /* OktaCryptoManager.swift in Sources */,
 				7F8833C42874FB820034CA5E /* OktaStorageManager.swift in Sources */,
@@ -1249,7 +1249,7 @@
 				7F8833A22874FB820034CA5E /* AuthenticatorEnrollmentProtocol.swift in Sources */,
 				7F8833DF2874FB820034CA5E /* FileTypeSignalPluginManager.swift in Sources */,
 				7F8833F42874FB820034CA5E /* UserAgent.swift in Sources */,
-				7F8833C92874FB820034CA5E /* _OktaVersionType.swift in Sources */,
+				7F8833C92874FB820034CA5E /* OktaVersionType.swift in Sources */,
 				7F8833A12874FB820034CA5E /* DeviceAuthenticatorError.swift in Sources */,
 				7F8833DA2874FB820034CA5E /* OktaTransactionPushChallenge.swift in Sources */,
 				7F8833EA2874FB820034CA5E /* SignalManagerProtocol.swift in Sources */,
@@ -1294,7 +1294,7 @@
 				7F8833D52874FB820034CA5E /* OktaTransactionDeleteEnrollment.swift in Sources */,
 				7F88339D2874FB820034CA5E /* OktaDataExtensions.swift in Sources */,
 				7F8833B12874FB820034CA5E /* OktaBindJWT.swift in Sources */,
-				7F8833C52874FB820034CA5E /* _OktaMigratableStorage.swift in Sources */,
+				7F8833C52874FB820034CA5E /* OktaMigratableStorage.swift in Sources */,
 				7F8833D02874FB820034CA5E /* _UserMediationType.swift in Sources */,
 				7F88339A2874FB820034CA5E /* OktaBundleProperties.swift in Sources */,
 				7F8833892874FB820034CA5E /* OktaFactorPush.swift in Sources */,

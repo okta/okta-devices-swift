@@ -13,9 +13,9 @@
 import Foundation
 
 /// Abstraction for migratable, versioned models / persistent storages.
-public protocol _OktaMigratableStorage {
+protocol OktaMigratableStorage {
     /// A type that represents storage Version
-    associatedtype Version: _OktaVersionType
+    associatedtype Version: OktaVersionType
 
     /// Data Representation version from disk
     var lastKnownVersion: Version { get }

@@ -13,7 +13,7 @@
 import Foundation
 
 /// - Description: Abstraction for version representation. Versions are represented by Integers. To maintain SemVer specification compliance, use `enum` with SemVer-compatible cases, while having underlying `Int` as a `rawType`. Supports Swift Ranges syntax. Versions order is determined by RawType value, not versions declaration order.
-public protocol _OktaVersionType: CaseIterable, Strideable, RawRepresentable where RawValue == Int, Stride == Int, AllCases.Index == Int {
+protocol OktaVersionType: CaseIterable, Strideable, RawRepresentable where RawValue == Int, Stride == Int, AllCases.Index == Int {
 
     /// - Description: Represents unidentifiable or non-existing version. Example: calling `.nextVersion()` on the most recent version is expected to return `unknownVersion` value
     static var unknownVersion: Self { get }
@@ -23,7 +23,7 @@ public protocol _OktaVersionType: CaseIterable, Strideable, RawRepresentable whe
 }
 
 /// - Description: default `Strideable` methods implementation for Swift Ranges support, as well as `nextVersion()` default implemetation.
-public extension _OktaVersionType {
+extension OktaVersionType {
     static func < (a: Self, b: Self) -> Bool {
         return a.rawValue < b.rawValue
     }
