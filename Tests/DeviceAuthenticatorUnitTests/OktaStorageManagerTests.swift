@@ -36,16 +36,16 @@ class OktaStorageManagerTests: XCTestCase {
 #endif
 }
 
-class OktaStorageMigratorMock: _OktaStorageMigrator {
+class OktaStorageMigratorMock: OktaStorageMigrator {
     var isMigrationToTargetVersionNeededCalled = false
     var migrateToTargetVersionCalled = false
     
-    override func isMigrationToTargetVersionNeeded<T>(migratableStorage: T, type: T.Type) throws -> Bool where T : _OktaMigratableStorage {
+    override func isMigrationToTargetVersionNeeded<T>(migratableStorage: T, type: T.Type) throws -> Bool where T : OktaMigratableStorage {
         isMigrationToTargetVersionNeededCalled = true
         return true
     }
 
-    override func migrateToTargetVersion<T>(migratableStorage: T, type: T.Type) throws where T : _OktaMigratableStorage {
+    override func migrateToTargetVersion<T>(migratableStorage: T, type: T.Type) throws where T : OktaMigratableStorage {
         migrateToTargetVersionCalled = true
     }
 }

@@ -16,7 +16,7 @@ import XCTest
 class OktaVersionTypeTests: XCTestCase {
 
     func testVersionsRelyOnRawValueNotDeclarationOrder() {
-        enum AVersions: Int, _OktaVersionType {
+        enum AVersions: Int, OktaVersionType {
             static var unknownVersion = AVersions.unknown
             case unknown = -9999
             case firstVersion = 1
@@ -26,7 +26,7 @@ class OktaVersionTypeTests: XCTestCase {
             case fifthVersion = 5
         }
 
-        enum BVersions: Int, _OktaVersionType {
+        enum BVersions: Int, OktaVersionType {
             static var unknownVersion = BVersions.unknown
             case unknown = -9999
             case secondVersion = 2

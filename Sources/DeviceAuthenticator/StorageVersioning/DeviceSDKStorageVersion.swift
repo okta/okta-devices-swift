@@ -12,7 +12,7 @@
 
 import Foundation
 
-enum DeviceSDKStorageVersion: Int, _OktaVersionType {
+enum DeviceSDKStorageVersion: Int, OktaVersionType {
     case unknown = -1
 
     /**

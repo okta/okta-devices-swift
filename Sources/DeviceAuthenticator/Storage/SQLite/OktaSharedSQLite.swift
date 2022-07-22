@@ -569,7 +569,7 @@ class OktaSharedSQLite: OktaSharedSQLiteProtocol {
     }
 }
 
-extension OktaSharedSQLite: _OktaMigratableStorage {
+extension OktaSharedSQLite: OktaMigratableStorage {
     typealias Version = DeviceSDKStorageVersion
 
     func willStartIncrementalStorageMigrationSequence(startVersion: Version, endVersion: Version) throws {
