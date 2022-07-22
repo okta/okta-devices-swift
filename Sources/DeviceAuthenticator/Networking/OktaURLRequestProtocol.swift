@@ -13,7 +13,7 @@
 import Foundation
 
 /// Abstract interface that represents HTTP request
-@objc protocol URLRequestProtocol {
+@objc public protocol URLRequestProtocol {
     var currentRequest: URLRequest { get }
 
     /**

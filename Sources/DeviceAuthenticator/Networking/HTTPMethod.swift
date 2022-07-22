@@ -13,7 +13,7 @@
 import Foundation
 
 /// HTTP methods enumeration
-enum HTTPMethod: Int {
+public enum HTTPMethod: Int {
     case get, post, put, delete
 
     func toString() -> String {

@@ -13,7 +13,7 @@
 import Foundation
 import OktaLogger
 
-protocol HTTPClientProtocol {
+public protocol HTTPClientProtocol {
 
     /// Current url session
     var currentSession: URLSession { get }
