@@ -102,7 +102,7 @@ class OktaSharedSQLite: OktaSharedSQLiteProtocol {
                     sql: "DELETE from EnrolledMethod WHERE enrollmentId = ? AND orgId = ?",
                     arguments: [enrollmentDuplicate.enrollmentId, enrollmentDuplicate.organization.id])
             }
-            try db.execute(sql: "INSERT INTO Enrollment (enrollmentId, orgId, serverErrorCode, orgUrl, userId, username, deviceId, createdTimestamp, updatedTimestamp) VALUES (:enrollmentId, :orgId, :serverErrorCode, :orgUrl, :userId, :username, :deviceId, :createdTimestamp, :updatedTimestamp) ON CONFLICT(userId,orgId) DO UPDATE SET enrollmentId = :enrollmentId, orgId = :orgId, serverErrorCode = :serverErrorCode, orgUrl = :orgUrl, userId = :userId, username = :username, deviceId = :deviceId, updatedTimestamp = :updatedTimestamp", arguments: writeArguments)
+            try db.execute(sql: "INSERT INTO Enrollment (enrollmentId, orgId, serverErrorCode, orgUrl, userId, username, deviceId, createdTimestamp, updatedTimestamp) VALUES (:enrollmentId, :orgId, :serverErrorCode, :orgUrl, :userId, :username, :deviceId, :createdTimestamp, :updatedTimestamp) ON CONFLICT(enrollmentId,orgId) DO UPDATE SET enrollmentId = :enrollmentId, orgId = :orgId, serverErrorCode = :serverErrorCode, orgUrl = :orgUrl, userId = :userId, username = :username, deviceId = :deviceId, updatedTimestamp = :updatedTimestamp", arguments: writeArguments)
 
             // Enrolled factors
 

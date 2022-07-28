@@ -26,7 +26,7 @@ class SQLiteSchema_200: SQLiteSchemaProtocol {
     'serverErrorCode' TEXT DEFAULT NULL,
     'createdTimestamp' TEXT DEFAULT NULL,
     'updatedTimestamp' TEXT DEFAULT NULL,
-    UNIQUE (userId, orgId)
+    UNIQUE (enrollmentId, orgId)
     );
 
     CREATE TABLE 'EnrolledMethod' (
