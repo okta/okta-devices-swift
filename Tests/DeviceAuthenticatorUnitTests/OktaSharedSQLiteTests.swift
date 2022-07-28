@@ -243,7 +243,7 @@ class OktaSharedSQLiteTests: XCTestCase {
 
         try? sqlite.storeEnrollment(enrollmentA)
         let enrollmentB = entitiesGenerator.createAuthenticator(orgId: "myOrgId",
-                                                                enrollmentId: "id-2",
+                                                                enrollmentId: "id-1",
                                                                 userId: "user1@hello.world",
                                                                 enrolledFactors: [pushFactor])
         try? sqlite.storeEnrollment(enrollmentB)
