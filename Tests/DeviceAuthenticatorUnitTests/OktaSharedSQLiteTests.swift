@@ -406,11 +406,11 @@ class OktaSharedSQLiteTests: XCTestCase {
     }
 
     ///  Write two different device enrollments to the same org + deviceId, should be overwritten
-    func testOverwriteEnrollmentForSameOrgDevice() throws {
-        try overwriteEnrollmentForSameOrgDevice(fullDatabaseEncryption: false, prefersSecureEnclaveUsage: false)
+    func testOverwriteDeviceEnrollmentForSameOrgDevice() throws {
+        try overwriteDeviceEnrollmentForSameOrgDevice(fullDatabaseEncryption: false, prefersSecureEnclaveUsage: false)
     }
 
-    func overwriteEnrollmentForSameOrgDevice(fullDatabaseEncryption: Bool, prefersSecureEnclaveUsage: Bool) throws {
+    func overwriteDeviceEnrollmentForSameOrgDevice(fullDatabaseEncryption: Bool, prefersSecureEnclaveUsage: Bool) throws {
         let sqlite = try createSqlite(fullDatabaseEncryption: fullDatabaseEncryption, prefersSecureEnclaveUsage: prefersSecureEnclaveUsage)
         let firstEnrollment = entitiesGenerator.createDeviceEnrollment()
         let orgId = firstEnrollment.orgId!
