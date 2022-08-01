@@ -46,8 +46,9 @@ class OktaEnvironment {
     #else
         return SecureEnclave.isAvailable
     #endif
-#endif
+#else
         return false
+#endif
     }
 
     class func hasUserVerificationCapabilites(laContext: LAContext = LAContext()) -> (result: Bool, error: NSError?) {

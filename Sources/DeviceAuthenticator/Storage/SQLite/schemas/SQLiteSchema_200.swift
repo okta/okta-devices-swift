@@ -25,9 +25,10 @@ class SQLiteSchema_200: SQLiteSchemaProtocol {
     'deviceId' TEXT NOT NULL,
     'serverErrorCode' TEXT DEFAULT NULL,
     'createdTimestamp' TEXT DEFAULT NULL,
-    'updatedTimestamp' TEXT DEFAULT NULL,
-    UNIQUE (enrollmentId, orgId)
+    'updatedTimestamp' TEXT DEFAULT NULL
     );
+
+    CREATE UNIQUE INDEX enrollment_index ON Enrollment(enrollmentId, orgId);
 
     CREATE TABLE 'EnrolledMethod' (
     'id' TEXT NOT NULL,
@@ -42,9 +43,10 @@ class SQLiteSchema_200: SQLiteSchemaProtocol {
     'algorithm' INTEGER DEFAULT NULL,
     'sharedSecret' BLOB DEFAULT NULL,
     'createdTimestamp' TEXT DEFAULT NULL,
-    'updatedTimestamp' TEXT DEFAULT NULL,
-    UNIQUE (id, enrollmentId, orgId)
+    'updatedTimestamp' TEXT DEFAULT NULL
     );
+
+    CREATE UNIQUE INDEX method_index ON EnrolledMethod(id, enrollmentId, orgId);
 
     CREATE TABLE 'AuthenticatorPolicy' (
     'policyId' TEXT NOT NULL,
@@ -53,9 +55,10 @@ class SQLiteSchema_200: SQLiteSchemaProtocol {
     'userVerification' TEXT DEFAULT NULL,
     'metadata' BLOB NOT NULL,
     'createdTimestamp' TEXT DEFAULT NULL,
-    'updatedTimestamp' TEXT DEFAULT NULL,
-    UNIQUE (policyId, orgId)
+    'updatedTimestamp' TEXT DEFAULT NULL
     );
+
+    CREATE UNIQUE INDEX policy_index ON AuthenticatorPolicy(policyId, orgId);
 
     CREATE TABLE 'DeviceEnrollment' (
     'deviceId' TEXT NOT NULL,
@@ -64,10 +67,9 @@ class SQLiteSchema_200: SQLiteSchemaProtocol {
     'clientInstanceKeyTag' TEXT DEFAULT NULL,
     'deviceStatus' TEXT DEFAULT NULL,
     'createdTimestamp' TEXT DEFAULT NULL,
-    'updatedTimestamp' TEXT DEFAULT NULL,
-    UNIQUE (deviceId, orgId)
+    'updatedTimestamp' TEXT DEFAULT NULL
     );
+
+    CREATE UNIQUE INDEX device_index ON DeviceEnrollment(deviceId, orgId);
     """
 }
-
-

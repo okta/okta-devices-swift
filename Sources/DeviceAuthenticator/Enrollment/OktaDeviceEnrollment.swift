@@ -14,10 +14,7 @@ import Foundation
 
 class OktaDeviceEnrollment: Codable {
     let id: String
-
-    /// Deprecated and always will contain `nil` in case of new enrollments or SQLite-backed storage. To identify the org, refer `orgId` instead
-    @available(*, deprecated, message: "orgURL is deprecated and always will contain `nil` in case of new enrollments or SQLite-backed storage. To identify the org, refer `orgId` instead")
-    let orgURL: URL?
+    let orgURL: URL? // org url is not serialized into sqlite db, use orgId instead
     let orgId: String?
     let clientInstanceId: String
     let clientInstanceKeyTag: String

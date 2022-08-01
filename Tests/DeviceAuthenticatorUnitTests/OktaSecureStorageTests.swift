@@ -47,7 +47,7 @@ class OktaSecureStorageTests: XCTestCase {
         #endif
 
         do {
-            try secureStorage.set("token", forKey: "account3", behindBiometrics: false, accessibility:kSecAttrAccessibleAlways)
+            try secureStorage.set("token", forKey: "account3", behindBiometrics: false, accessibility: kSecAttrAccessibleAfterFirstUnlock)
             let result = try secureStorage.get(key: "account3")
             XCTAssertEqual("token", result)
         } catch let error {
@@ -118,7 +118,7 @@ class OktaSecureStorageTests: XCTestCase {
         #endif
         
         do {
-            try secureStorage.set(data:"token".data(using: .utf8)!, forKey: "account9", behindBiometrics: false, accessibility:kSecAttrAccessibleAlways)
+            try secureStorage.set(data:"token".data(using: .utf8)!, forKey: "account9", behindBiometrics: false, accessibility: kSecAttrAccessibleAfterFirstUnlock)
             let result = try secureStorage.getData(key: "account9")
             XCTAssertEqual("token".data(using: .utf8)!, result)
         } catch let error {
