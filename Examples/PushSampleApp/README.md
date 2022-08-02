@@ -5,9 +5,9 @@ This sample app demonstrates how to integrate [Okta Devices SDK](https://github.
 **Table of Contents**
 - [Okta Authenticator Sample App](#okta-authenticator-sample-app)
   - [Prerequisites](#prerequisites)
-  - [Update Okta.plist](#updating-plist)
-  - [Run the project](#running)
-  - [Enroll the app as a custom authenticator](#enrolling)
+  - [Update Okta.plist](#update-okta.plist)
+  - [Run the project](#run-the-project)
+  - [Enroll the app as a custom authenticator](#enroll-the-app-as-a-custom-authenticator)
   - [Verify it works](#verify-it-works)
   
 ## Prerequisites
@@ -50,7 +50,7 @@ Locate `Okta.plist` file and update the following values:
 
 5. Build and run the project. Keep in mind you need a **real device** 📲 for Push Notifications to work.
 
-## Enroll this App as a Custom Authenticator
+## Enroll the app as a custom authenticator
 
 In order to try the SDK capabilities, you need to Sign In on the app with your org's credentials.
 
