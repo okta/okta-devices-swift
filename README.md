@@ -9,8 +9,8 @@ Enable your app to validate the identity of a user for an Okta authenticator tha
   - [Getting started](#getting-started)
     - [Including Okta Devices SDK](#including-okta-devices-sdk)
   - [Usage](#usage)
-    - [First create a device authenticator to interact with the Devices SDK.](#first-create-a-device-authenticator-to-interact-with-the-devices-sdk)
-    - [Enroll push verification method for user's account](#enroll-push-verification-method-for-users-account)
+    - [Creation](#Creation)
+    - [Enrollment](#Enrollment)
       - [Retrieving existing enrollments](#retrieving-existing-enrollments)
       - [Update Push Token](#update-push-token)
       - [Add user verification capabilites into existing enrollment](#add-user-verification-capabilites-into-existing-enrollment)
@@ -57,13 +57,14 @@ end
 
 ## Usage
 
-The DeviceAuthenticator SDK supports identity verification using a custom authenticator in an Okta org. Your app interacts with that custom authenticator in three ways:
+Okta Devices SDK supports identity verification using a custom authenticator in an Okta org. Your app interacts with that custom authenticator in three ways:
 - **Enrollment**: Add a device and optional biometric data to a user's account to enable identity verification using push notifications.
 - **Verification**: Verify the identity of a user by prompting them to approve or reject a sign-in attempt.
 - **Update**: Update the biometric data in a user's account, refresh the APNs token to keep it active, and remove a device from a user's account.
 
 
-### First create a device authenticator to interact with the Devices SDK.
+### Creation
+First create a device authenticator to interact with the Devices SDK.
 
 ```swift
 let appicationConfig = ApplicationConfig(applicationName: "TestApp",
@@ -76,7 +77,8 @@ appicationConfig.apsEnvironment = .development
 let authenticator = try? DeviceAuthenticatorBuilder(applicationConfig: applicationConfig).create()
 ```
 
-### Enroll push verification method for user's account
+### Enrollment
+Enroll push verification method for user's account
 
 ```swift
 let accessToken = "eySBDC...." // https://developer.okta.com/docs/reference/api/oidc/#access-token
@@ -155,6 +157,7 @@ enrollments.forEach { enrollment in
 
 #### Delete enrollment from device
 Use the `enrollment.deleteFromDevice()` method to delete enrollment from a device without notifying the Okta server.
+The difference between calling deleteFromDevice and delete is that deleteFromDevice does not make a server call to unenroll push verification, therefore it does not require any authorization.
 
 ```swift
 let accessToken = "eySBDC...." // https://developer.okta.com/docs/reference/api/oidc/#access-token
@@ -269,6 +272,8 @@ func handle(_ remediationStep: RemediationStep) {
 }
 ```
 
+See the [Push Sample App] for a complete implementation on resolving a push challenge.
+
 ## Known issues
 
 
@@ -278,6 +283,8 @@ We are happy to accept contributions and PRs! Please see the [contribution guide
 
 [devforum]: https://devforum.okta.com/
 [lang-landing]: https://developer.okta.com/code/swift/
-[github-releases]: https://github.com/okta-tardis/okta-devices-swift/releases
+[github-releases]: https://github.com/okta/okta-devices-swift/releases
+[github-issues]: https://github.com/okta/okta-devices-swift/issues
 [Rate Limiting at Okta]: https://developer.okta.com/docs/api/getting_started/rate-limits
 [okta-library-versioning]: https://developer.okta.com/code/library-versions
+[Push Sample App]: https://github.com/okta/okta-devices-swift/tree/master/Examples/PushSampleApp
