@@ -283,8 +283,8 @@ We are happy to accept contributions and PRs! Please see the [contribution guide
 
 [devforum]: https://devforum.okta.com/
 [lang-landing]: https://developer.okta.com/code/swift/
-[github-releases]: https://github.com/okta-tardis/okta-devices-swift/releases
-[github-issues]: https://github.com/okta-tardis/okta-devices-swift/issues
+[github-releases]: https://github.com/okta/okta-devices-swift/releases
+[github-issues]: https://github.com/okta/okta-devices-swift/issues
 [Rate Limiting at Okta]: https://developer.okta.com/docs/api/getting_started/rate-limits
 [okta-library-versioning]: https://developer.okta.com/code/library-versions
 [Push Sample App]: https://github.com/okta/okta-devices-swift/tree/master/Examples/PushSampleApp
