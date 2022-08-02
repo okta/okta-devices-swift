@@ -1,15 +1,15 @@
-#  Okta Device Authenticator 
+#  Okta Devices SDK 
 
 Enable your app to validate the identity of a user for an Okta authenticator that uses Apple Push Notification service (APNs).
 
 **Table of Contents**
-- [Okta Device Authenticator](#okta-device-authenticator)
+- [Okta Devices SDK](#okta-devices-sdk)
   - [Release status](#release-status)
   - [Need help?](#need-help)
   - [Getting started](#getting-started)
-    - [Including Okta Device Authenticator SDK](#including-okta-device-authenticator-sdk)
+    - [Including Okta Devices SDK](#including-okta-devices-sdk)
   - [Usage](#usage)
-    - [First create a device authenticator to interact with the DeviceAuthenticator SDK.](#first-create-a-device-authenticator-to-interact-with-the-deviceauthenticator-sdk)
+    - [First create a device authenticator to interact with the Devices SDK.](#first-create-a-device-authenticator-to-interact-with-the-devices-sdk)
     - [Enroll push verification method for user's account](#enroll-push-verification-method-for-users-account)
       - [Retrieving existing enrollments](#retrieving-existing-enrollments)
       - [Update Push Token](#update-push-token)
@@ -45,9 +45,9 @@ If you run into problems using the SDK, you can:
 
 ## Getting started
 
-### Including Okta Device Authenticator SDK
+### Including Okta Devices SDK
 
-Okta DeviceAuthenticator SDK is available from [CocoaPods](http://cocoapods.org). To add it to your project, add the following lines to your Podfile:
+Okta Devices SDK is available from [CocoaPods](http://cocoapods.org). To add it to your project, add the following lines to your Podfile:
 
 ```ruby
 target 'MyApplicationTarget' do
@@ -63,7 +63,7 @@ The DeviceAuthenticator SDK supports identity verification using a custom authen
 - **Update**: Update the biometric data in a user's account, refresh the APNs token to keep it active, and remove a device from a user's account.
 
 
-### First create a device authenticator to interact with the DeviceAuthenticator SDK.
+### First create a device authenticator to interact with the Devices SDK.
 
 ```swift
 let appicationConfig = ApplicationConfig(applicationName: "TestApp",
