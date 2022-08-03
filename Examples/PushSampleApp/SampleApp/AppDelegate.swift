@@ -78,6 +78,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             #else
                 applicationConfig.pushSettings.apsEnvironment = .production
             #endif
+            applicationConfig.pushSettings.approveActionTitle = PushSettingsConstant.approveActionTitle
+            applicationConfig.pushSettings.denyActionTitle = PushSettingsConstant.denyActionTitle
+            applicationConfig.pushSettings.userVerificationActionTitle = PushSettingsConstant.userVerificationActionTitle
+
             deviceAuthenticator = try DeviceAuthenticatorBuilder(applicationConfig: applicationConfig).create()
         } catch {
             logger.error(eventName: LoggerEvent.appInit.rawValue, message: "Failed to initialize OktaAuthenticator SDK")
@@ -100,8 +104,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 }
 
 
-enum PushSettingsConstant {
+private enum PushSettingsConstant {
     static let applicationGroupID = "group.com.okta.SampleApp"
+    static let approveActionTitle = "Yes, it's me"
+    static let denyActionTitle = "No, it's not me"
+    static let userVerificationActionTitle = "Review"
 }
 
 enum LoggerEvent: String {
