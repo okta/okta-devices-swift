@@ -130,8 +130,8 @@ class VerifyFlowTests: XCTestCase {
     func testParsePushNotification_AccountNotFound() {
 
         struct PushChallenge: PushChallengeProtocol {
+            var transactionId: String = "transactionId"
             var appInstanceName: String?
-            
             var clientOS: String? = nil
             var clientLocation: String? = nil
             var userResponse: PushChallengeUserResponse = .userNotResponded

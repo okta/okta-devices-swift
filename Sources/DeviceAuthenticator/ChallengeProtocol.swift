@@ -14,6 +14,8 @@ import Foundation
 
 /// Base challenge protocol with set of data that every challenge contains
 public protocol ChallengeProtocol {
+    /// Challenge unique identifier
+    var transactionId: String { get }
     /// Org url that originated the challenge
     var originURL: URL? { get }
     /// Time of the sign-in attempt
