@@ -9,11 +9,13 @@
 *
 * See the License for the specific language governing permissions and limitations under the License.
 */
-
+// swiftlint:disable force_unwrapping
 import Foundation
 import XCTest
 @testable import DeviceAuthenticator
 
+// swiftlint:disable force_try
+// swiftlint:disable force_cast
 class SignalsManagerTests: XCTestCase {
     var signalPath: String?
     let encoder = JSONEncoder()
@@ -75,9 +77,9 @@ class SignalsManagerTests: XCTestCase {
 
         signalsManager.updateAll(plugins: [], externalConfigs: [])
         let newPluginCollection = signalsManager.signalPluginFactory?.signalPluginConfigCollection
-        XCTAssertTrue(newPluginCollection?.signalPluginConfigMap.count == 0)
+        XCTAssertTrue(newPluginCollection!.signalPluginConfigMap.isEmpty)
     }
-    
+
     func testIntegrationConfigurationHandlerInitWithBadConfigs() {
         let signalsManager = SignalsManager(logger: OktaLoggerMock())
         let integrationData = signalsManager.collectSignals(with: "name_1")
@@ -94,7 +96,7 @@ class SignalsManagerTests: XCTestCase {
         }
         signalsManager.initializeSignalPlugins(plugins: [], externalConfigs: dataList)
         let pluginCollection = signalsManager.signalPluginFactory?.signalPluginConfigCollection
-        XCTAssertTrue(pluginCollection?.signalPluginConfigMap.count == 0)
+        XCTAssertTrue(pluginCollection!.signalPluginConfigMap.isEmpty)
         XCTAssertNil(pluginCollection?.signalPluginConfigMap["name_1"])
         XCTAssertNil(pluginCollection?.signalPluginConfigMap["name_2"])
     }

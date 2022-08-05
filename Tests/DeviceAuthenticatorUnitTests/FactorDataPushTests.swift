@@ -9,7 +9,7 @@
 *
 * See the License for the specific language governing permissions and limitations under the License.
 */
-
+// swiftlint:disable force_unwrapping
 import XCTest
 @testable import DeviceAuthenticator
 
@@ -18,7 +18,7 @@ class FactorDataPushTests: XCTestCase {
     var oktaFactor: OktaFactorMetadataPush!
 
     override func setUp() {
-        oktaFactor =  OktaFactorMetadataPush(id: "id",
+        oktaFactor = OktaFactorMetadataPush(id: "id",
                                              proofOfPossessionKeyTag: "proofOfPossessionKeyTag",
                                              userVerificationKeyTag: "userVerificationKeyTag")
     }

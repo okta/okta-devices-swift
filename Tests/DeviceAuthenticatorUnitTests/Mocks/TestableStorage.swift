@@ -20,11 +20,11 @@ enum TestStorageVersion: Int, OktaVersionType {
     case thirdVersion = 3
     case fourthVersion = 4
     case fifthVersion = 5
-    
+
     static var unknownVersion: TestStorageVersion { return .unknown }
 }
 
-class TestMigratableStorage : OktaMigratableStorage {
+class TestMigratableStorage: OktaMigratableStorage {
     typealias Version = TestStorageVersion
 
     var lastKnownVersion: TestStorageVersion = .unknown
@@ -34,15 +34,15 @@ class TestMigratableStorage : OktaMigratableStorage {
     var willStartMigrationCallback: ((TestStorageVersion, TestStorageVersion) -> Void)? = nil
     var didFinishMigrationCallback: ((TestStorageVersion, TestStorageVersion) -> Void)? = nil
     var performIncrementalMigration: ((TestStorageVersion) -> Void)? = nil
-    
+
     func willStartIncrementalStorageMigrationSequence(startVersion: TestStorageVersion, endVersion: TestStorageVersion) throws {
         willStartMigrationCallback?(startVersion, endVersion)
     }
-    
+
     func performIncrementalStorageMigration(_ nextVersion: TestStorageVersion) throws {
         performIncrementalMigration?(nextVersion)
     }
-    
+
     func didFinishStorageIncrementalMigrationSequence(startVersion: TestStorageVersion, endVersion: TestStorageVersion) {
         didFinishMigrationCallback?(startVersion, endVersion)
     }

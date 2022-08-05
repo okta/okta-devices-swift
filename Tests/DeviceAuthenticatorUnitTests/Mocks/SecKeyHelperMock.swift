@@ -9,16 +9,18 @@
 *
 * See the License for the specific language governing permissions and limitations under the License.
 */
-
+// swiftlint:disable force_cast
+// swiftlint:disable force_unwrapping
 import Foundation
 @testable import DeviceAuthenticator
 
-class SecKeyHelperMock: SecKeyHelper  {
+class SecKeyHelperMock: SecKeyHelper {
 
     typealias generateKeyPairType = (CFDictionary, UnsafeMutablePointer<SecKey?>?, UnsafeMutablePointer<SecKey?>?) -> OSStatus
     typealias generateRandomKeyType = (CFDictionary, UnsafeMutablePointer<Unmanaged<CFError>?>?) -> SecKey?
     typealias getKeyType = (CFDictionary, UnsafeMutablePointer<CFTypeRef?>?) -> OSStatus
     typealias deleteKeyType = (CFDictionary) -> OSStatus
+
     var generateKeyPairHook: generateKeyPairType?
     var generateRandomKeyHook: generateRandomKeyType?
     var getKeyHook: getKeyType?
@@ -37,14 +39,13 @@ class SecKeyHelperMock: SecKeyHelper  {
     var keyExpectation: SecKey?
     var getKeyExpectation = 0 as OSStatus
     var getKeySpyParameters = [:] as CFDictionary
-    var getKeyRefExpectation:CFTypeRef?
+    var getKeyRefExpectation: CFTypeRef?
 
-
-    var createSignatureExpectation:CFData?
-    var createSignatureError:CFError?
-    var createSignatureKeySpyParmeter:SecKey?
+    var createSignatureExpectation: CFData?
+    var createSignatureError: CFError?
+    var createSignatureKeySpyParmeter: SecKey?
     var createSignatureAlgorithmParemeter = .ecdsaSignatureDigestX962SHA256 as SecKeyAlgorithm
-    var createSignatureDataToSignParameter:CFData = Data() as CFData
+    var createSignatureDataToSignParameter: CFData = Data() as CFData
 
     var verifySignatureExpection = false
 
@@ -93,7 +94,7 @@ class SecKeyHelperMock: SecKeyHelper  {
             deleteCallCount = deleteCallCount + 1
         }
 
-        if (deleteCallCount < deleteKeyExpectations.count) {
+        if deleteCallCount < deleteKeyExpectations.count {
             deleteSpyQueryParams.append(query)
             return deleteKeyExpectations[deleteCallCount]
         }
@@ -125,7 +126,7 @@ class SecKeyHelperMock: SecKeyHelper  {
     }
 
     public func verifyGenerateKeyPairExpectation(_ parameters: CFDictionary) -> Bool {
-        return NSDictionary(dictionary: generateKeyPairSpyParameters).isEqual(to:parameters as? [String : Any] ?? [:])
+        return NSDictionary(dictionary: generateKeyPairSpyParameters).isEqual(to: parameters as? [String: Any] ?? [:])
     }
 
     public func verifyDeleteExpectation(_ parameters: [CFDictionary]) -> Bool {
@@ -133,7 +134,7 @@ class SecKeyHelperMock: SecKeyHelper  {
     }
 
     public func verifyGet(_ parameters: CFDictionary) -> Bool {
-        return NSDictionary(dictionary: getKeySpyParameters).isEqual(to:parameters as? [String : Any] ?? [:])
+        return NSDictionary(dictionary: getKeySpyParameters).isEqual(to: parameters as? [String: Any] ?? [:])
     }
 
     public func verifyCreateSignature(algorithm: SecKeyAlgorithm, dataToSign: CFData) -> Bool {

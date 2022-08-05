@@ -9,10 +9,24 @@
 *
 * See the License for the specific language governing permissions and limitations under the License.
 */
-
+// swiftlint:disable force_unwrapping
 import XCTest
 import LocalAuthentication
 @testable import DeviceAuthenticator
+
+fileprivate class OktaTransactionPullChallengePartialMock: OktaTransactionPullChallenge {
+    var allowedClockSkewInSeconds: Int = 0
+
+    override func parsePushBindJWT(info: [String: Any], allowedClockSkewInSeconds: Int) -> OktaBindJWT? {
+        self.allowedClockSkewInSeconds = allowedClockSkewInSeconds
+        return try? OktaBindJWT(string: info[InternalConstants.PushJWTConstants.challengeKey] as? String ?? "",
+                                validatePayload: false,
+                                customizableHeaders: [: ],
+                                jwtType: "okta-pushbind+jwt",
+                                allowedClockSkewInSeconds: allowedClockSkewInSeconds,
+                                logger: logger)
+    }
+}
 
 class TransactionPullChallengeTests: XCTestCase {
 
@@ -61,7 +75,6 @@ class TransactionPullChallengeTests: XCTestCase {
             case .failure(let error):
                 XCTFail("Unexpected error - \(error.errorDescription ?? "")")
             }
-            
             completionExpectation.fulfill()
         }
         wait(for: [completionExpectation], timeout: 1)
@@ -86,7 +99,7 @@ class TransactionPullChallengeTests: XCTestCase {
             case .failure(let error):
                 XCTFail("Unexpected error - \(error.errorDescription ?? "")")
             }
-            
+
             completionExpectation.fulfill()
         }
 
@@ -260,19 +273,5 @@ class TransactionPullChallengeTests: XCTestCase {
                 XCTFail("Unexpected error - \(error.errorDescription ?? "")")
             }
         }
-    }
-}
-
-fileprivate class OktaTransactionPullChallengePartialMock: OktaTransactionPullChallenge {
-    var allowedClockSkewInSeconds: Int = 0
-
-    override func parsePushBindJWT(info: [String: Any], allowedClockSkewInSeconds: Int) -> OktaBindJWT? {
-        self.allowedClockSkewInSeconds = allowedClockSkewInSeconds
-        return try? OktaBindJWT(string: info[InternalConstants.PushJWTConstants.challengeKey] as? String ?? "",
-                                validatePayload: false,
-                                customizableHeaders: [: ],
-                                jwtType: "okta-pushbind+jwt",
-                                allowedClockSkewInSeconds: allowedClockSkewInSeconds,
-                                logger: logger)
     }
 }

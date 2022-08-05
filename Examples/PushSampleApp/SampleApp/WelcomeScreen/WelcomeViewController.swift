@@ -25,7 +25,7 @@ class WelcomeViewController: UIViewController, StoryboardController {
         navigationItem.largeTitleDisplayMode = .always
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Settings", style: .plain, target: self, action: #selector(didTapSettingsButton))
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Sign out", style: .plain, target: self, action: #selector(didTapSignOutButton))
-        self.welcomeLabel.text = self.viewModel.welcomeLabelText        
+        self.welcomeLabel.text = self.viewModel.welcomeLabelText
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -36,7 +36,7 @@ class WelcomeViewController: UIViewController, StoryboardController {
     @objc func didTapSettingsButton() {
         didTapSettings()
     }
-    
+
     @objc func didTapSignOutButton() {
         didTapSignOut()
     }

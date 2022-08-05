@@ -9,7 +9,7 @@
 *
 * See the License for the specific language governing permissions and limitations under the License.
 */
-
+// swiftlint:disable file_types_order
 import XCTest
 @testable import DeviceAuthenticator
 
@@ -17,7 +17,7 @@ class OktaStorageManagerTests: XCTestCase {
 
 #if os(iOS)
     func testStorageManager() throws {
-   
+
         let applicationConfig = ApplicationConfig(applicationName: "",
                                                   applicationVersion: "",
                                                   applicationGroupId: ExampleAppConstants.appGroupId)
@@ -39,13 +39,13 @@ class OktaStorageManagerTests: XCTestCase {
 class OktaStorageMigratorMock: OktaStorageMigrator {
     var isMigrationToTargetVersionNeededCalled = false
     var migrateToTargetVersionCalled = false
-    
-    override func isMigrationToTargetVersionNeeded<T>(migratableStorage: T, type: T.Type) throws -> Bool where T : OktaMigratableStorage {
+
+    override func isMigrationToTargetVersionNeeded<T>(migratableStorage: T, type: T.Type) throws -> Bool where T: OktaMigratableStorage {
         isMigrationToTargetVersionNeededCalled = true
         return true
     }
 
-    override func migrateToTargetVersion<T>(migratableStorage: T, type: T.Type) throws where T : OktaMigratableStorage {
+    override func migrateToTargetVersion<T>(migratableStorage: T, type: T.Type) throws where T: OktaMigratableStorage {
         migrateToTargetVersionCalled = true
     }
 }

@@ -9,7 +9,7 @@
 *
 * See the License for the specific language governing permissions and limitations under the License.
 */
-
+// swiftlint:disable force_unwrapping
 import XCTest
 import LocalAuthentication
 import UserNotifications
@@ -25,10 +25,10 @@ class OktaAuthenticatorsManagerTests: XCTestCase {
     var authenticatorManager: _OktaAuthenticatorsManager!
     var enrollmentMock: AuthenticatorEnrollment!
     var restAPI: RestAPIMock!
-    
+
     override func setUp() {
         super.setUp()
-        
+
         secHelperMock = SecKeyHelperMock()
         cryptoManager = OktaCryptoManager(accessGroupId: ExampleAppConstants.appGroupId, secKeyHelper: secHelperMock, logger: OktaLoggerMock())
 
@@ -112,7 +112,7 @@ class OktaAuthenticatorsManagerTests: XCTestCase {
             XCTAssertNotNil(error)
             completionCalled.fulfill()
         }
-        
+
         waitForExpectations(timeout: 1.0, handler: nil)
 
         XCTAssertEqual(mockStorageManager.allEnrollments().count, 1)
@@ -216,7 +216,7 @@ class OktaAuthenticatorsManagerTests: XCTestCase {
         }
         waitForExpectations(timeout: 1.0, handler: nil)
     }
-    
+
     func testUpdateEnrollment_LifecycleErrors() {
         let enrollment = TestUtils.createAuthenticatorEnrollment(orgHost: URL(string: "tenant.okta.com")!,
                                                        orgId: "orgId",
@@ -233,7 +233,7 @@ class OktaAuthenticatorsManagerTests: XCTestCase {
                                                   enrollBiometricKey: nil,
                                                   deviceSignals: nil,
                                                   biometricSettings: nil)
-        
+
         // suspended
         var mockHTTPClient = MockAPIResponse.response(for: .deviceSuspended)
         authenticatorManager.restAPI = OktaRestAPI(client: mockHTTPClient, logger: OktaLoggerMock())
@@ -248,7 +248,7 @@ class OktaAuthenticatorsManagerTests: XCTestCase {
         }
         waitForExpectations(timeout: 1.0, handler: nil)
         XCTAssertEqual(enrollment.state, .suspended)
-        
+
         // deleted
         mockHTTPClient = MockAPIResponse.response(for: .userDeleted)
         authenticatorManager.restAPI = OktaRestAPI(client: mockHTTPClient, logger: OktaLoggerMock())
@@ -272,7 +272,6 @@ class OktaAuthenticatorsManagerTests: XCTestCase {
                                                                  orgId: "orgId",
                                                                  enrollmentId: "enrollmentId",
                                                                  cryptoManager: cryptoManager)
-        
         var mockHTTPClient = MockAPIResponse.response(for: .enrollmentDeleted)
         authenticatorManager.restAPI = OktaRestAPI(client: mockHTTPClient, logger: OktaLoggerMock())
         var ex = expectation(description: "Completion callback expected!")
@@ -281,7 +280,7 @@ class OktaAuthenticatorsManagerTests: XCTestCase {
         }
         waitForExpectations(timeout: 1.0, handler: nil)
         XCTAssertEqual(enrollment.state, .reset)
-        
+
         // suspended state
         mockHTTPClient = MockAPIResponse.response(for: .userSuspended)
         authenticatorManager.restAPI = OktaRestAPI(client: mockHTTPClient, logger: OktaLoggerMock())
@@ -291,7 +290,7 @@ class OktaAuthenticatorsManagerTests: XCTestCase {
         }
         waitForExpectations(timeout: 1.0, handler: nil)
         XCTAssertEqual(enrollment.state, .suspended)
-        
+
         // deleted state
         mockHTTPClient = MockAPIResponse.response(for: .userDeleted)
         authenticatorManager.restAPI = OktaRestAPI(client: mockHTTPClient, logger: OktaLoggerMock())

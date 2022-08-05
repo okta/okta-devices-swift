@@ -32,15 +32,16 @@ struct EmailSettingsCellModel: SettingsCellProtocol {
     var isEnabled: Bool? = false
     var shouldShowSwitch: Bool = false
     var didToggleSwitch: ((Bool) -> Void)?
+
     init(email: String?) {
         subtitle = email
     }
 }
 
-struct PushSettingsCellModel: SettingsCellProtocol {
+struct UserVerificationCellModel: SettingsCellProtocol {
     var title: String? = ""
-    var subtitle: String? = "Sign in with push notification"
-    var type: SettingsCellType = .pushSignIn
+    var subtitle: String? = "Enable biometrics"
+    var type: SettingsCellType = .userVerification
     var isEnabled: Bool?
     var shouldShowSwitch: Bool = true
     var didToggleSwitch: ((Bool) -> Void)?
@@ -51,10 +52,10 @@ struct PushSettingsCellModel: SettingsCellProtocol {
     }
 }
 
-struct UserVerificationCellModel: SettingsCellProtocol {
+struct PushSettingsCellModel: SettingsCellProtocol {
     var title: String? = ""
-    var subtitle: String? = "Enable biometrics"
-    var type: SettingsCellType = .userVerification
+    var subtitle: String? = "Sign in with push notification"
+    var type: SettingsCellType = .pushSignIn
     var isEnabled: Bool?
     var shouldShowSwitch: Bool = true
     var didToggleSwitch: ((Bool) -> Void)?

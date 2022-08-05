@@ -14,7 +14,7 @@ import XCTest
 @testable import DeviceAuthenticator
 
 class OktaJWTGeneratorIntegrationTests: XCTestCase {
-    private let cryptoManager = OktaCryptoManager(accessGroupId:"", logger: OktaLoggerMock())
+    private let cryptoManager = OktaCryptoManager(accessGroupId: "", logger: OktaLoggerMock())
     private var mut: OktaJWTGenerator!
     private let ec256ValidPrivateKeyBase64 = "BIBwuQyPfBPU+fyXiU+i0FOqEAHtm3U5aER8gIWVnyJvw9YfSa7ylqLNpdeyTie4zUFP9UU4FXLByqcaGFR1q05at441RDVAq1aewlvnE9pKcZmCiiayoO37AxpdRYcTmA=="
 
@@ -28,7 +28,7 @@ class OktaJWTGeneratorIntegrationTests: XCTestCase {
             XCTFail("Sec key is nil")
             return
         }
-        let user = UserMock(userID:"test_user", userName:"test@okta")
+        let user = UserMock(userID: "test_user", userName: "test@okta")
         do {
             let jwt = try mut.generate(with: "JWT", for: user, with: secKey, using: .ES256)
             let jwtArray = jwt.components(separatedBy: ".")

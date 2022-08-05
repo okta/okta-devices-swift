@@ -11,6 +11,7 @@ end
 def device_authenticator_common
   okta_jwt
   okta_logger
+  pod 'SwiftLint', '0.32.0'
   pod 'GRDB.swift', '~> 5'
 end
 

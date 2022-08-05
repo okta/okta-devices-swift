@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2021, Okta-Present, Inc. and/or its affiliates. All rights reserved.
+* Copyright (c) 2022-Present, Okta, Inc. and/or its affiliates. All rights reserved.
 * The Okta software accompanied by this notice is provided pursuant to the Apache License, Version 2.0 (the "License.")
 *
 * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0.
@@ -9,7 +9,8 @@
 *
 * See the License for the specific language governing permissions and limitations under the License.
 */
-
+// swiftlint:disable force_try
+// swiftlint:disable force_unwrapping
 import XCTest
 import OktaLogger
 import GRDB
@@ -29,15 +30,15 @@ class OktaSharedSQLiteTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        
+
         // Clean SQLite-related files before test run
         try? fileManager.removeItem(at: sqlDirectoryURL)
     }
-    
+
     func testCreatesEmptySQLiteOnFirstLaunch() throws {
         try createsEmptySQLiteOnFirstLaunch(fullDatabaseEncryption: false, prefersSecureEnclaveUsage: false)
     }
-    
+
     private func createsEmptySQLiteOnFirstLaunch(fullDatabaseEncryption: Bool, prefersSecureEnclaveUsage: Bool) throws {
         // GIVEN:
         // No SQLite stored at shared group directory
@@ -48,7 +49,7 @@ class OktaSharedSQLiteTests: XCTestCase {
         // WHEN:
         // OktaSQLitePersistentStorage gets created
         let sqliteStorage = try createStorage(fullDatabaseEncryption: fullDatabaseEncryption, prefersSecureEnclaveUsage: prefersSecureEnclaveUsage)
-        
+
         // THEN:
         // 1. SQLite connection is established
         // 2. SQLite exists on disk
@@ -59,7 +60,7 @@ class OktaSharedSQLiteTests: XCTestCase {
     func testSQLFilesNotOverriten() throws {
         try sqlFilesNotOverriten(fullDatabaseEncryption: false)
     }
-    
+
     func sqlFilesNotOverriten(fullDatabaseEncryption: Bool) throws {
         // GIVEN:
         // Unencrypted SQLite files are already present
@@ -76,7 +77,7 @@ class OktaSharedSQLiteTests: XCTestCase {
         let fileTimestampsBeforeStorageInit = try destinationUrls.map {
             return try fileManager.attributesOfItem(atPath: $0.path)[.creationDate] as? Date
         }
-        
+
         // WHEN:
         // OktaSQLitePersistentStorage gets created no existing files are overriten
         let sqliteStorage = try createStorage(fullDatabaseEncryption: fullDatabaseEncryption, prefersSecureEnclaveUsage: false)
@@ -236,7 +237,7 @@ class OktaSharedSQLiteTests: XCTestCase {
                                         cryptoManager: sqlite.cryptoManager,
                                         restAPIClient: sqlite.restAPIClient,
                                         logger: sqlite.logger)
-        let enrollmentA = entitiesGenerator.createAuthenticator(orgId :"myOrgId",
+        let enrollmentA = entitiesGenerator.createAuthenticator(orgId: "myOrgId",
                                                                 enrollmentId: "id-1",
                                                                 userId: "user1@hello.world",
                                                                 enrolledFactors: [pushFactor])
@@ -293,7 +294,7 @@ class OktaSharedSQLiteTests: XCTestCase {
         XCTAssertEqual(storedEnrollments.count, 2)
         XCTAssertNoThrow(try sqlite.deviceEnrollmentByOrgId(orgId))
         XCTAssertNoThrow(try sqlite.authenticatorPolicyForOrgId(orgId))
-        
+
         // WHEN1:
         // - one of AuthenticatorEnrollment get's deleted
         XCTAssertNoThrow(try sqlite.deleteEnrollment(enrollment))
@@ -326,7 +327,7 @@ class OktaSharedSQLiteTests: XCTestCase {
                                         cryptoManager: sqlite.cryptoManager,
                                         restAPIClient: sqlite.restAPIClient,
                                         logger: sqlite.logger)
-        let enrollment = entitiesGenerator.createAuthenticator(orgId :"myOrgId",
+        let enrollment = entitiesGenerator.createAuthenticator(orgId: "myOrgId",
                                                                enrollmentId: "id-1",
                                                                userId: "user1@hello.world",
                                                                enrolledFactors: [pushFactor])
@@ -397,7 +398,7 @@ class OktaSharedSQLiteTests: XCTestCase {
         XCTAssertEqual(retrievedSecond?.id, secondEnrollment.id)
         XCTAssertEqual(retrievedFirst?.id, retrievedSecond?.id)
         XCTAssertNotEqual(retrievedFirst?.orgId, retrievedSecond?.orgId)
-        
+
         let retrievedAll = try? sqlite.allDeviceEnrollmentsOrgIds()
         XCTAssertNotNil(retrievedAll)
         XCTAssertEqual(retrievedAll!.count, 2)
@@ -548,7 +549,7 @@ class OktaSharedSQLiteTests: XCTestCase {
         XCTAssertTrue(text.contains(enrollment.orgId))
         XCTAssertTrue(text.contains(enrollment.deviceId))
     }
-    
+
     // MARK: Private Helpers
 
     private func createStorage(fullDatabaseEncryption: Bool, prefersSecureEnclaveUsage: Bool) throws -> OktaSQLitePersistentStorage {

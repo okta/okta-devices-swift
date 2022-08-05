@@ -9,7 +9,7 @@
 *
 * See the License for the specific language governing permissions and limitations under the License.
 */
-
+// swiftlint:disable force_unwrapping
 import XCTest
 @testable import DeviceAuthenticator
 
@@ -39,7 +39,7 @@ class UserVerificationFlowTests: XCTestCase {
                          GoldenData.authenticatorMetaData(),
                          GoldenData.authenticatorData()]
     }
-    
+
     override func tearDownWithError() throws {
         enrollmentHelper = nil
         httpResponses = nil
@@ -71,7 +71,7 @@ class UserVerificationFlowTests: XCTestCase {
             XCTFail(error.localizedDescription)
         }
     }
-    
+
     func testDisableUserVerification_Success() throws {
 
         let disableSuccessExpectation = expectation(description: "Disable user verification should complete")
@@ -97,7 +97,7 @@ class UserVerificationFlowTests: XCTestCase {
             XCTFail(error.localizedDescription)
         }
     }
-    
+
     func testEnableUserVerification_ServerReturns401() throws {
 
         let enableServer401Expectation = expectation(description: "Enable user verification should fail")
@@ -125,7 +125,7 @@ class UserVerificationFlowTests: XCTestCase {
             XCTFail(error.localizedDescription)
         }
     }
-    
+
     func testDisableUserVerification_ServerReturns401() throws {
 
         let disableServer401Expectation = expectation(description: "Diable user verification should fail")

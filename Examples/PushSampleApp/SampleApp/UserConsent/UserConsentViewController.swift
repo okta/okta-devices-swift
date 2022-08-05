@@ -15,30 +15,30 @@ import UIKit
 class UserConsentViewController: UIViewController, StoryboardController {
 
     @IBOutlet weak var clientLocationLabel: UILabel!
-    
+
     @IBOutlet weak var clientOSLabel: UILabel!
-    
+
     @IBOutlet weak var urlLabel: UILabel!
 
     @IBOutlet weak var dateLabel: UILabel!
 
     @IBOutlet weak var timeLabel: UILabel!
-    
+
     var viewModel: UserConsentViewModel!
 
     override func viewDidLoad() {
         super.viewDidLoad()
         updateUI()
     }
-    
+
     @IBAction func didTapApproveButton(_ sender: Any) {
         viewModel.didTapApproveChallenge()
     }
-    
+
     @IBAction func didTapDenyButton(_ sender: Any) {
         viewModel.didTapDenyChallenge()
     }
-    
+
     func updateUI() {
         title = viewModel.titleString
         clientLocationLabel.text = viewModel.clientLocationString

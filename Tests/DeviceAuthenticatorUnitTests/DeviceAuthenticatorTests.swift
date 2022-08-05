@@ -17,7 +17,7 @@ import LocalAuthentication
 class DeviceAuthenticatorTests: XCTestCase {
     var secureStorageMock: OktaSecureStorageMock!
     let entitiesGenerator = OktaStorageEntitiesGenerator()
-    
+
     override func setUp() {
         super.setUp()
         UNUserNotificationCenter.current().setNotificationCategories([])

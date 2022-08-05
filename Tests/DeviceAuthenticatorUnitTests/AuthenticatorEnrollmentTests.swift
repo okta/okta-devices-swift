@@ -9,7 +9,9 @@
 *
 * See the License for the specific language governing permissions and limitations under the License.
 */
-
+// swiftlint:disable force_cast
+// swiftlint:disable force_try
+// swiftlint:disable force_unwrapping
 import XCTest
 @testable import DeviceAuthenticator
 
@@ -210,31 +212,31 @@ class AuthenticatorEnrollmentTests: XCTestCase {
                                                                  cryptoManager: cryptoManager,
                                                                  storageManager: mockStorageManager)
         XCTAssertEqual(enrollment.state, .active)
-        
+
         var error = oktaError(for: .deviceSuspended)
         enrollment.recordServerResponse(error: error)
         XCTAssertEqual(enrollment.state, .suspended)
-        
+
         error = oktaError(for: .deviceDeleted)
         enrollment.recordServerResponse(error: error)
         XCTAssertEqual(enrollment.state, .reset)
-        
+
         error = oktaError(for: .enrollmentSuspended)
         enrollment.recordServerResponse(error: error)
         XCTAssertEqual(enrollment.state, .suspended)
-        
+
         error = oktaError(for: .userDeleted)
         enrollment.recordServerResponse(error: error)
         XCTAssertEqual(enrollment.state, .deleted)
-        
+
         error = oktaError(for: .userSuspended)
         enrollment.recordServerResponse(error: error)
         XCTAssertEqual(enrollment.state, .suspended)
-        
+
         error = oktaError(for: .enrollmentDeleted)
         enrollment.recordServerResponse(error: error)
         XCTAssertEqual(enrollment.state, .reset)
-        
+
         // No err should be recorded as success
         enrollment.recordServerResponse(error: nil)
         XCTAssertEqual(enrollment.state, .active)

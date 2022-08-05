@@ -16,6 +16,7 @@ import XCTest
 class OktaTransactionEnrollMock: OktaTransactionEnroll {
     var rollbackCalled = false
     var cleanupOnSuccessCalled = false
+
     override func rollback() {
         rollbackCalled = true
     }

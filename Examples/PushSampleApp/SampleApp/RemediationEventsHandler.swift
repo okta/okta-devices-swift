@@ -16,8 +16,15 @@ import DeviceAuthenticator
 typealias UserConsentHandler = ((RemediationStepUserConsent) -> Void)
 typealias ChallengeResolvedHandler = (PushChallengeUserResponse) -> Void
 
+protocol RemediationEventsHandlerProtocol {
+    var onUserConsent: UserConsentHandler { get }
+    var onChallengeResolved: ChallengeResolvedHandler { get }
+
+    func handle(step: RemediationStep)
+}
+
 class RemediationEventsHandler: RemediationEventsHandlerProtocol {
-    
+
     let onUserConsent: UserConsentHandler
     let onChallengeResolved: ChallengeResolvedHandler
 
@@ -25,7 +32,7 @@ class RemediationEventsHandler: RemediationEventsHandlerProtocol {
         self.onUserConsent = onUserConsent
         self.onChallengeResolved = onChallengeResolved
     }
-    
+
     func handle(step: RemediationStep) {
         switch step {
         case let userConsentStep as RemediationStepUserConsent:
@@ -35,10 +42,4 @@ class RemediationEventsHandler: RemediationEventsHandlerProtocol {
             step.defaultProcess()
         }
     }
-}
-
-protocol RemediationEventsHandlerProtocol {
-    var onUserConsent: UserConsentHandler { get }
-    var onChallengeResolved: ChallengeResolvedHandler { get }
-    func handle(step: RemediationStep)
 }

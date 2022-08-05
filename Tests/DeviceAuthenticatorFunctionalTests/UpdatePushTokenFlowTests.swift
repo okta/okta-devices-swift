@@ -9,7 +9,7 @@
 *
 * See the License for the specific language governing permissions and limitations under the License.
 */
-
+// swiftlint:disable force_unwrapping
 import XCTest
 @testable import DeviceAuthenticator
 
@@ -40,7 +40,7 @@ class UpdatePushTokenFlowTests: XCTestCase {
                          GoldenData.authenticatorMetaData(),
                          GoldenData.authenticatorData()]
     }
-    
+
     override func tearDownWithError() throws {
         enrollmentHelper = nil
         httpResponses = nil
@@ -71,7 +71,7 @@ class UpdatePushTokenFlowTests: XCTestCase {
             XCTFail(error.localizedDescription)
         }
     }
-    
+
     func testUpdatePushTokenFlow_ServerReturns401() throws {
 
         let updateTokenServer401Expectation = expectation(description: "Update push token should failed")

@@ -16,18 +16,18 @@ import OktaLogger
 
 class StorageMock: PersistentStorageProtocol {
 
+    typealias storeEnrollmentType = (AuthenticatorEnrollmentProtocol) throws -> Void
+    typealias enrollmentByIdType = (String) -> AuthenticatorEnrollmentProtocol?
+    typealias deviceEnrollmentByOrgIdType = (String) throws -> OktaDeviceEnrollment
+
     var enrollments: [String: AuthenticatorEnrollmentProtocol] = [: ]
     var deviceEnrollments: [String: OktaDeviceEnrollment] = [: ]
     var policies: [String: AuthenticatorPolicyProtocol] = [: ]
-
     public var memoryCacheEnabled: Bool = true
     var enrollmentsByURLClosure: ((URL) -> [AuthenticatorEnrollmentProtocol])?
     var enrollmentsByOrgIdClosure: ((String) -> [AuthenticatorEnrollmentProtocol])?
-    typealias storeEnrollmentType = (AuthenticatorEnrollmentProtocol) throws -> Void
     var storeEnrollmentHook: storeEnrollmentType?
-    typealias enrollmentByIdType = (String) -> AuthenticatorEnrollmentProtocol?
     var enrollmentByIdHook: enrollmentByIdType?
-    typealias deviceEnrollmentByOrgIdType = (String) throws -> OktaDeviceEnrollment
     var deviceEnrollmentByOrgIdHook: deviceEnrollmentByOrgIdType?
 
     func enrollmentById(enrollmentId: String) -> AuthenticatorEnrollmentProtocol? {
@@ -61,7 +61,7 @@ class StorageMock: PersistentStorageProtocol {
     func allDeviceEnrollmentsOrgIds() throws -> [String] {
         return []
     }
-    
+
     func storeEnrollment(_ enrollment: AuthenticatorEnrollmentProtocol) throws {
         if let storeEnrollmentHook = storeEnrollmentHook {
             try storeEnrollmentHook(enrollment)
@@ -69,15 +69,15 @@ class StorageMock: PersistentStorageProtocol {
             enrollments[enrollment.enrollmentId] = enrollment
         }
     }
-    
+
     func deleteEnrollment(_ enrollment: AuthenticatorEnrollmentProtocol) throws {
         enrollments.removeValue(forKey: enrollment.enrollmentId)
     }
-    
+
     func deleteAllEnrollments() throws {
         enrollments.removeAll()
     }
-    
+
     func allEnrollments() -> [AuthenticatorEnrollmentProtocol] {
         return enrollments.values.map({ $0 })
     }
@@ -85,7 +85,7 @@ class StorageMock: PersistentStorageProtocol {
     func storeDeviceEnrollment(_ deviceEnrollment: OktaDeviceEnrollment, for orgId: String) throws {
         deviceEnrollments[orgId] = deviceEnrollment
     }
-    
+
     func deleteDeviceEnrollmentForOrgId(_ orgId: String) throws {
         deviceEnrollments.removeValue(forKey: orgId)
     }
@@ -93,7 +93,7 @@ class StorageMock: PersistentStorageProtocol {
     func allAuthenticatorPoliciesOrgIds() -> [String] {
         return policies.keys.map({ $0 })
     }
-    
+
     func storeAuthenticatorPolicy(_ authenticationPolicy: AuthenticatorPolicyProtocol, orgId: String) throws {
         policies[orgId] = authenticationPolicy
     }

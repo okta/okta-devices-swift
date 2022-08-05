@@ -9,7 +9,9 @@
 *
 * See the License for the specific language governing permissions and limitations under the License.
 */
-
+// swiftlint:disable force_try
+// swiftlint:disable force_cast
+// swiftlint:disable force_unwrapping
 import XCTest
 @testable import DeviceAuthenticator
 
@@ -131,12 +133,12 @@ class VerifyFlowTests: XCTestCase {
 
         struct PushChallenge: PushChallengeProtocol {
             var appInstanceName: String?
-            
             var clientOS: String? = nil
             var clientLocation: String? = nil
             var userResponse: PushChallengeUserResponse = .userNotResponded
             var originURL: URL? = nil
             var transactionTime: Date = Date()
+
             func resolve(onRemediation: @escaping (RemediationStep) -> Void,
                          onCompletion: @escaping (DeviceAuthenticatorError?) -> Void) {}
         }
@@ -255,7 +257,6 @@ class VerifyFlowTests: XCTestCase {
                 case .failure(let enrollmentError):
                     XCTFail(enrollmentError.errorDescription ?? enrollmentError.localizedDescription)
                 }
-                
                 invalidJWTStructureExpectation.fulfill()
             }
             wait(for: [invalidJWTStructureExpectation], timeout: expectationTimeout)
@@ -410,7 +411,7 @@ class VerifyFlowTests: XCTestCase {
                     enrollment.retrievePushChallenges(authenticationToken: self.authToken) { pushChallengesResult in
                         switch pushChallengesResult {
                         case .success(let pushChallenges):
-                            XCTAssertTrue(pushChallenges.count == 0)
+                            XCTAssertTrue(pushChallenges.isEmpty)
                             retrievePushChallengesEmptyPayloadExpectation.fulfill()
                         case .failure(let error):
                             XCTFail(error.errorDescription ?? error.localizedDescription)

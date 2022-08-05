@@ -15,16 +15,16 @@ import UIKit
 class SignInFasterViewController: UIViewController, StoryboardController {
 
     var didTapSetupButton: () -> Void = { }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         customizeButtons()
     }
-    
+
     @IBAction func didTapNotNowButon() {
         dismiss(animated: true)
     }
-    
+
     @IBAction func didTapSetupButton(_ sender: Any) {
         didTapSetupButton()
     }

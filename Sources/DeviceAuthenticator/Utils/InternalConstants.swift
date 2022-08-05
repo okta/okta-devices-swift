@@ -12,6 +12,10 @@
 
 import Foundation
 
+struct FeatureFlags {
+    static var totpKeyStretchingEnabled = false
+}
+
 struct InternalConstants {
     static let customAuthenticatorKey = "custom_app"
 
@@ -31,8 +35,4 @@ struct InternalConstants {
         static let denyActionIdentifier = "DENY_BUTTON"
         static let userVerificationActionIdentifier = "REVIEW_BUTTON"
     }
-}
-
-struct FeatureFlags {
-    static var totpKeyStretchingEnabled = false
 }

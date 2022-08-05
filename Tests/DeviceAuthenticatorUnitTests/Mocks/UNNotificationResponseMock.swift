@@ -9,26 +9,9 @@
 *
 * See the License for the specific language governing permissions and limitations under the License.
 */
-
+// swiftlint:disable force_unwrapping
 import Foundation
 import UserNotifications
-
-extension UNNotificationResponse {
-
-    static func testNotificationResponse(with parameters: [AnyHashable: Any], testIdentifier: String) -> UNNotificationResponse {
-        let notificationContent = UNMutableNotificationContent()
-        notificationContent.title = "Test Title"
-        notificationContent.body = "Test Body"
-        notificationContent.userInfo = parameters
-
-        let dateInfo = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute, .second], from: Date())
-        let trigger = UNCalendarNotificationTrigger(dateMatching: dateInfo, repeats: false)
-
-        let notificationRequest = UNNotificationRequest(identifier: "testIdentifier", content: notificationContent, trigger: trigger)
-        
-        return UNNotificationResponse(coder: TestNotificationCoder(with: notificationRequest, testIdentifier: testIdentifier))!
-    }
-}
 
 class TestNotificationCoder: NSCoder {
 
@@ -43,8 +26,10 @@ class TestNotificationCoder: NSCoder {
              targetConnectionEndpoint,
              targetSceneIdentifier
     }
+
     private let testIdentifier: String
     private let request: UNNotificationRequest
+
     override var allowsKeyedCoding: Bool { true }
 
     init(with request: UNNotificationRequest, testIdentifier: String) {
@@ -66,5 +51,22 @@ class TestNotificationCoder: NSCoder {
         default:
             return nil
         }
+    }
+}
+
+extension UNNotificationResponse {
+
+    static func testNotificationResponse(with parameters: [AnyHashable: Any], testIdentifier: String) -> UNNotificationResponse {
+        let notificationContent = UNMutableNotificationContent()
+        notificationContent.title = "Test Title"
+        notificationContent.body = "Test Body"
+        notificationContent.userInfo = parameters
+
+        let dateInfo = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute, .second], from: Date())
+        let trigger = UNCalendarNotificationTrigger(dateMatching: dateInfo, repeats: false)
+
+        let notificationRequest = UNNotificationRequest(identifier: "testIdentifier", content: notificationContent, trigger: trigger)
+
+        return UNNotificationResponse(coder: TestNotificationCoder(with: notificationRequest, testIdentifier: testIdentifier))!
     }
 }

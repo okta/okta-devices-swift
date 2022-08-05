@@ -19,6 +19,7 @@ protocol OktaWebAuthProtocol {
     func signOut(from window: WebAuthentication.WindowAnchor?, credential: Credential?, completion: @escaping (Result<Void, WebAuthenticationError>) -> Void)
     func signOut(from window: WebAuthentication.WindowAnchor?, completion: @escaping (Result<Void, WebAuthenticationError>) -> Void)
     func getAccessToken(completion: @escaping (Result<Token, OAuth2Error>) -> Void)
+
     var isSignedIn: Bool { get }
     var accessToken: String? { get }
     var baseURL: URL? { get }
@@ -32,27 +33,27 @@ extension WebAuthentication: OktaWebAuthProtocol {
         guard let _ = Credential.default?.token.accessToken else { return false }
         return true
     }
-    
+
     var accessToken: String? {
         Credential.default?.token.accessToken
     }
-    
+
     var baseURL: URL? {
         Credential.default?.oauth2.baseURL
     }
-    
+
     var clientId: String? {
         Credential.default?.oauth2.configuration.clientId
     }
-    
+
     var userName: String? {
         Credential.default?.token.idToken?.name
     }
-    
+
     var email: String? {
         Credential.default?.token.idToken?.email
     }
-    
+
     func signOut(from window: WebAuthentication.WindowAnchor?, completion: @escaping (Result<Void, WebAuthenticationError>) -> Void) {
         signOut(from: window, credential: Credential.default) { result in
             switch result {
@@ -64,11 +65,11 @@ extension WebAuthentication: OktaWebAuthProtocol {
             }
         }
     }
-    
+
     func clearCredential() {
         try? Credential.default?.remove()
     }
-    
+
     func getAccessToken(completion: @escaping (Result<Token, OAuth2Error>) -> Void) {
         Credential.default?.refreshIfNeeded(completion: { result in
             switch result {
@@ -83,5 +84,5 @@ extension WebAuthentication: OktaWebAuthProtocol {
             }
         })
     }
-    
+
 }
