@@ -135,6 +135,7 @@
 		7F88340B287C763C0034CA5E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7F883409287C763C0034CA5E /* LaunchScreen.storyboard */; };
 		7F8FF73D287F87DA000F17F2 /* DeviceAuthenticator.docc in Sources */ = {isa = PBXBuildFile; fileRef = 7F8FF73C287F87DA000F17F2 /* DeviceAuthenticator.docc */; };
 		98F2EBDD5510C097C38222F3 /* libPods-DeviceAuthenticatorFunctionalTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DD73FB7DC7E598DC865F395B /* libPods-DeviceAuthenticatorFunctionalTests.a */; };
+		9F47E556289C989000299CFB /* DeviceAuthenticatorConfigTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F47E555289C989000299CFB /* DeviceAuthenticatorConfigTests.swift */; };
 		9F7EFF07287E0D8A001E2C4E /* EnrollmentTestHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7EFF00287E0D8A001E2C4E /* EnrollmentTestHelper.swift */; };
 		9F7EFF08287E0D8A001E2C4E /* FakePushChallenge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7EFF01287E0D8A001E2C4E /* FakePushChallenge.swift */; };
 		9F7EFF09287E0D8A001E2C4E /* UpdatePushTokenFlowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7EFF02287E0D8A001E2C4E /* UpdatePushTokenFlowTests.swift */; };
@@ -372,6 +373,7 @@
 		7FFB5F74285BA94A006BC548 /* DeviceAuthenticator.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = DeviceAuthenticator.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7FFB5FFA286A7F4C006BC548 /* DeviceAuthenticatorUnitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DeviceAuthenticatorUnitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		7FFB6010286A80CF006BC548 /* DeviceAuthenticatorFunctionalTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DeviceAuthenticatorFunctionalTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		9F47E555289C989000299CFB /* DeviceAuthenticatorConfigTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceAuthenticatorConfigTests.swift; sourceTree = "<group>"; };
 		9F7EFF00287E0D8A001E2C4E /* EnrollmentTestHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EnrollmentTestHelper.swift; sourceTree = "<group>"; };
 		9F7EFF01287E0D8A001E2C4E /* FakePushChallenge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FakePushChallenge.swift; sourceTree = "<group>"; };
 		9F7EFF02287E0D8A001E2C4E /* UpdatePushTokenFlowTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UpdatePushTokenFlowTests.swift; sourceTree = "<group>"; };
@@ -860,6 +862,7 @@
 				9F9602652878A6CF0012C74C /* CryptoManagerTests.swift */,
 				9F9602662878A6CF0012C74C /* DeviceAuthenticatorTests.swift */,
 				9F9602622878A6860012C74C /* AuthenticatorEnrollmentTests.swift */,
+				9F47E555289C989000299CFB /* DeviceAuthenticatorConfigTests.swift */,
 				9F9602352878A5690012C74C /* Mocks */,
 			);
 			name = DeviceAuthenticatorUnitTests;
@@ -1343,6 +1346,7 @@
 				9F9602632878A6870012C74C /* AuthenticatorEnrollmentTests.swift in Sources */,
 				9F9602802878A8CE0012C74C /* OktaDeviceModelBuilderTests.swift in Sources */,
 				9F9602752878A7AE0012C74C /* FactorChallengeTests.swift in Sources */,
+				9F47E556289C989000299CFB /* DeviceAuthenticatorConfigTests.swift in Sources */,
 				9F96028B2878AEC80012C74C /* OktaEncryptionErrorTests.swift in Sources */,
 				9F96026B2878A6CF0012C74C /* AuthenticatorObjectTests.swift in Sources */,
 				9F96024C2878A5690012C74C /* UserMock.swift in Sources */,
