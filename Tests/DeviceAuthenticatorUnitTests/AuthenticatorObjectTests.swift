@@ -9,7 +9,8 @@
 *
 * See the License for the specific language governing permissions and limitations under the License.
 */
-
+// swiftlint:disable force_try
+// swiftlint:disable force_unwrapping
 import XCTest
 @testable import DeviceAuthenticator
 

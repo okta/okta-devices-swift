@@ -194,7 +194,7 @@ class OktaJWTTestData {
          */
         return "eyJhbGciOiJIUzI1NiIsInR5cCI6Im9rdGEtZGV2aWNlYmluZCtqd3QifQ.eyJpc3MiOiJodHRwczovL3lvdXItb3JnLm9rdGEuY29tIiwiYXVkIjoiaHR0cHM6Ly95b3VyLW9yZy5va3RhLmNvbSIsImlhdCI6MTQ2NzE0NTA5NCwiZXhwIjoxNDY3MTQ4Njk0LCJzaWduYWxzIjpbInNjcmVlbkxvY2siLCJyb290UHJpdmlsZWdlcyIsImZ1bGxEaXNrRW5jcnlwdGlvbiIsImlkIiwib3MiLCJvc1ZlcnNpb24iLCJtYW51ZmFjdHVyZXIiLCJtb2RlbCIsImRldmljZUF0dGVzdGF0aW9uIiwiYXBwSWQiLCJhcHBNYW5hZ2VkIl0sIm5vbmNlIjoiRldrZndGV2tmdzNqZmQzamZkIiwidHJhbnNhY3Rpb25JZCI6IjEyMzQ1Njc4OSIsIm9yZ0lkIjoiMDBvMW9mMTEwdFZCR1dGS0FXR0kiLCJrZXlUeXBlcyI6WyJ1c2VyVmVyaWZpY2F0aW9uIl0sIm1ldGhvZCI6InVua25vd24iLCJ2ZXJpZmljYXRpb25VcmkiOiJodHRwczovL3lvdXItb3JnLm9rdGEuY29tL2lkcC9pZHgvYXV0aGVudGljYXRvcnMvYXV0aGVudGljYXRvcklkL3RyYW5zYWN0aW9ucy90cmFuc2FjdGlvbklkL3ZlcmlmeSJ9.X4L_eC3xbtsmNZ0yLKywsc37yv0P_rqwnWRvTbscX6o"
     }
-    
+
     class func validDeviceChallengeRequestJWTWithUserMediationRequired() -> String {
         /*
          {
@@ -346,7 +346,7 @@ class func validDeviceChallengeRequestJWTWithUserMediationOptional() -> String {
          */
         return "eyJhbGciOiJIUzI1NiIsInR5cCI6Im9rdGEtZGV2aWNlYmluZCtqd3QifQ.eyJpc3MiOiJodHRwczovL3lvdXItb3JnLm9rdGEuY29tIiwiYXVkIjoiaHR0cHM6Ly95b3VyLW9yZy5va3RhLmNvbSIsImlhdCI6MTQ2NzE0NTA5NCwiZXhwIjoxNDY3MTQ4Njk0LCJzaWduYWxzIjpbInNjcmVlbkxvY2siLCJyb290UHJpdmlsZWdlcyIsImZ1bGxEaXNrRW5jcnlwdGlvbiIsImlkIiwib3MiLCJvc1ZlcnNpb24iLCJtYW51ZmFjdHVyZXIiLCJtb2RlbCIsImRldmljZUF0dGVzdGF0aW9uIiwiYXBwSWQiLCJhcHBNYW5hZ2VkIl0sIm5vbmNlIjoiRldrZndGV2tmdzNqZmQzamZkIiwidHJhbnNhY3Rpb25JZCI6IjEyMzQ1Njc4OSIsIm9yZ0lkIjoiMDBvMW9mMTEwdFZCR1dGS0FXR0kiLCJ1c2VyTWVkaWF0aW9uIjoiT1BUSU9OQUwiLCJtZXRob2QiOiJzaWduZWRfbm9uY2UiLCJ2ZXJpZmljYXRpb25VcmkiOiJodHRwczovL3lvdXItb3JnLm9rdGEuY29tL2lkcC9pZHgvYXV0aGVudGljYXRvcnMvYXV0aGVudGljYXRvcklkL3RyYW5zYWN0aW9ucy90cmFuc2FjdGlvbklkL3ZlcmlmeSIsImludGVncmF0aW9ucyI6W3sibmFtZSI6Im5hbWVfMSJ9XX0.ryzsvAH1hD_qOjMgMdfwjPs186tG9fY7ctbQ28pqWog"
     }
-    
+
     class func validDeviceChallengeRequestJWTWithUVDiscouraged() -> String {
             /*
              {
@@ -428,7 +428,7 @@ class func validDeviceChallengeRequestJWTWithUserMediationOptional() -> String {
          */
         return "eyJhbGciOiJIUzI1NiIsInR5cCI6Im9rdGEtZGV2aWNlYmluZCtqd3QifQ.eyJpc3MiOiJodHRwczovL3lvdXItb3JnLm9rdGEuY29tIiwiYXVkIjoiaHR0cHM6Ly95b3VyLW9yZy5va3RhLmNvbSIsImlhdCI6MTQ2NzE0NTA5NCwiZXhwIjoxNDY3MTQ4Njk0LCJzaWduYWxzIjpbInNjcmVlbkxvY2siLCJyb290UHJpdmlsZWdlcyIsImZ1bGxEaXNrRW5jcnlwdGlvbiIsImlkIiwib3MiLCJvc1ZlcnNpb24iLCJtYW51ZmFjdHVyZXIiLCJtb2RlbCIsImRldmljZUF0dGVzdGF0aW9uIiwiYXBwSWQiLCJhcHBNYW5hZ2VkIl0sIm5vbmNlIjoiRldrZndGV2tmdzNqZmQzamZkIiwidHJhbnNhY3Rpb25JZCI6IjEyMzQ1Njc4OSIsIm9yZ0lkIjoiMDBvMW9mMTEwdFZCR1dGS0FXR0kiLCJ1c2VyTWVkaWF0aW9uIjoiUkVRVUlSRUQiLCJ1c2VyVmVyaWZpY2F0aW9uIjoiUkVRVUlSRUQiLCJtZXRob2QiOiJzaWduZWRfbm9uY2UiLCJ2ZXJpZmljYXRpb25VcmkiOiJodHRwczovL3lvdXItb3JnLm9rdGEuY29tL2lkcC9pZHgvYXV0aGVudGljYXRvcnMvYXV0aGVudGljYXRvcklkL3RyYW5zYWN0aW9ucy90cmFuc2FjdGlvbklkL3ZlcmlmeSIsImludGVncmF0aW9ucyI6W3sibmFtZSI6Im5hbWVfMSJ9XX0.FsZRwZqN6DA58u0SLIMha_xG-gcoNB6wOn_5_JvXr6I"
     }
-    
+
     class func validDeviceChallengeRequestJWTWithUVPreferredAndUserMediationOptional() -> String {
         /*
          {
@@ -469,7 +469,7 @@ class func validDeviceChallengeRequestJWTWithUserMediationOptional() -> String {
          */
         return "eyJhbGciOiJIUzI1NiIsInR5cCI6Im9rdGEtZGV2aWNlYmluZCtqd3QifQ.eyJpc3MiOiJodHRwczovL3lvdXItb3JnLm9rdGEuY29tIiwiYXVkIjoiaHR0cHM6Ly95b3VyLW9yZy5va3RhLmNvbSIsImlhdCI6MTQ2NzE0NTA5NCwiZXhwIjoxNDY3MTQ4Njk0LCJzaWduYWxzIjpbInNjcmVlbkxvY2siLCJyb290UHJpdmlsZWdlcyIsImZ1bGxEaXNrRW5jcnlwdGlvbiIsImlkIiwib3MiLCJvc1ZlcnNpb24iLCJtYW51ZmFjdHVyZXIiLCJtb2RlbCIsImRldmljZUF0dGVzdGF0aW9uIiwiYXBwSWQiLCJhcHBNYW5hZ2VkIl0sIm5vbmNlIjoiRldrZndGV2tmdzNqZmQzamZkIiwidHJhbnNhY3Rpb25JZCI6IjEyMzQ1Njc4OSIsIm9yZ0lkIjoiMDBvMW9mMTEwdFZCR1dGS0FXR0kiLCJ1c2VyTWVkaWF0aW9uIjoiT1BUSU9OQUwiLCJ1c2VyVmVyaWZpY2F0aW9uIjoiUFJFRkVSUkVEIiwibWV0aG9kIjoic2lnbmVkX25vbmNlIiwidmVyaWZpY2F0aW9uVXJpIjoiaHR0cHM6Ly95b3VyLW9yZy5va3RhLmNvbS9pZHAvaWR4L2F1dGhlbnRpY2F0b3JzL2F1dGhlbnRpY2F0b3JJZC90cmFuc2FjdGlvbnMvdHJhbnNhY3Rpb25JZC92ZXJpZnkiLCJpbnRlZ3JhdGlvbnMiOlt7Im5hbWUiOiJuYW1lXzEifV19.rpunffAJ-BVyKYxW-02pWztLPBt6fuLfVSCpSbGy7HQ"
     }
-    
+
     class func validDeviceChallengeRequestJWTForMacOS() -> String {
         return "eyJraWQiOiJOR2hMekM5d25obDdrR255bHBCdjJZd3hEdHBHOHhoTGktQ3hYWFZvRy1jIiwidHlwIjoib2t0YS1kZXZpY2ViaW5kK2p3dCIsImFsZyI6IlJTMjU2In0.eyJpc3MiOiJodHRwczovL3FhLWR0LWF1dGgxLmhpb2t0YW5lLmNvbSIsImF1ZCI6Im9rdGEuNjNjMDgxZGItMWYxMy01MDg0LTg4MmYtZTc5ZTFlNWUyZGE3IiwiZXhwIjoxNTkyOTUzMzIwLCJpYXQiOjE1OTI5NTMwMjAsImp0aSI6ImZ0dDIzT25xZ0pxVGZnbEN6YXpfUmZoQnRaYVhFaWhEMUciLCJub25jZSI6Il91ajNORi1BMnZQcnFLNUl0UlhkeHdlOVFCb0h5Q0g2IiwidHJhbnNhY3Rpb25JZCI6ImZ0dDIzT25xZ0pxVGZnbEN6YXpfUmZoQnRaYVhFaWhEMUciLCJzaWduYWxzIjpbInNjcmVlbkxvY2siLCJyb290UHJpdmlsZWdlcyIsImZ1bGxEaXNrRW5jcnlwdGlvbiIsImlkIiwicGxhdGZvcm0iLCJvc1ZlcnNpb24iLCJtYW51ZmFjdHVyZXIiLCJtb2RlbCIsImRldmljZUF0dGVzdGF0aW9uIl0sInVzZXJWZXJpZmljYXRpb25SZXF1aXJlbWVudCI6ZmFsc2UsInZlcmlmaWNhdGlvblVyaSI6Imh0dHBzOi8vcWEtZHQtYXV0aDEuaGlva3RhbmUuY29tL2F1dGhlbnRpY2F0b3JzL3Nzb19leHRlbnNpb24vdHJhbnNhY3Rpb25zL2Z0dDIzT25xZ0pxVGZnbEN6YXpfUmZoQnRaYVhFaWhEMUcvdmVyaWZ5IiwiY2FTdWJqZWN0TmFtZXMiOlsiQ049bW9iaWxlLU4wNjctSDIwMy1DQSwgREM9bW9iaWxlLCBEQz1sb2NhbCJdLCJtZG1BdHRlc3RhdGlvbklzc3VlcnMiOlt7Imlzc3VlckROIjoiTUUweEZUQVRCZ29Ka2lhSmsvSXNaQUVaRmdWc2IyTmhiREVXTUJRR0NnbVNKb21UOGl4a0FSa1dCbTF2WW1sc1pURWNNQm9HQTFVRUF4TVRiVzlpYVd4bExVNHdOamN0U0RJd015MURRUT09IiwiYWtpIjoiaHVKSlhIL1dvUmpTeEMzOG1OMm9Cdkp0MnpjPSJ9XSwia2V5VHlwZSI6InByb29mT2ZQb3NzZXNzaW9uIiwiZmFjdG9yVHlwZSI6ImNyeXB0byIsIm9yZ0lkIjoiMDBvdGl5eURGdE5DeUZibkMwZzQiLCJ2ZXIiOjB9.G00gAKeAVo9N5C_rFCzGK39USPW-EEX9xp6t7iXnT8GhpeJ95LVADLXNVgFLboPWeTuhp7_KRCUR5zvligM68-kfFN6fXW_gVtWJ6tb-qx7qLci4SDWB-3zkVe8ykZ_RNmSxzEMP2Unew-xsfkajDNheP6kE-zFW2ZbiRiRsnVAIYQ2YhdZ7WFKb6ex7W8OtoaGCtGyse8g6II5KjMki_IhmTJn1glcC9P7B5CpHLIoQDYF-TQGISMpml1bhgBwpDHfLes4arOY2IN7ItmuB8Eps3rAJELhnxL1KGtmeHmklRf5Nj5qIiKf1XzeHofPHVOSrfYLkeBEmUS2krK8Ckg"
     }
@@ -547,8 +547,8 @@ class func validDeviceChallengeRequestJWTWithUserMediationOptional() -> String {
 
     static var validJWKCustomizeTypeHeader = [
         "alg": "RS256",
-          "e": "AQAB",
-          "n": "nzyis1ZjfNB0bBgKFMSvvkTtwlvBsaJq7S5wA-kzeVOVpVWwkWdVha4s38XM_pa_yr47av7-z3VTmvDRyAHcaT92whREFpLv9cj5lTeJSibyr_Mrm_YtjCZVWgaOYIhwrXwKLqPr_11inWsAkfIytvHWTxZYEcXLgAXFuUuaS3uF9gEiNQwzGTU1v0FqkqTBr4B8nW3HCN47XUu0t8Y0e-lf4s4OxQawWD79J9_5d3Ry0vbV3Am1FtGJiJvOwRsIfVChDpYStTcHTCMqtvWbV6L11BWkpzGXSW4Hv43qa-GSYOD2QU68Mb59oSk2OB-BtOLpJofmbGEGgvmwyCI9Mw",
+        "e": "AQAB",
+        "n": "nzyis1ZjfNB0bBgKFMSvvkTtwlvBsaJq7S5wA-kzeVOVpVWwkWdVha4s38XM_pa_yr47av7-z3VTmvDRyAHcaT92whREFpLv9cj5lTeJSibyr_Mrm_YtjCZVWgaOYIhwrXwKLqPr_11inWsAkfIytvHWTxZYEcXLgAXFuUuaS3uF9gEiNQwzGTU1v0FqkqTBr4B8nW3HCN47XUu0t8Y0e-lf4s4OxQawWD79J9_5d3Ry0vbV3Am1FtGJiJvOwRsIfVChDpYStTcHTCMqtvWbV6L11BWkpzGXSW4Hv43qa-GSYOD2QU68Mb59oSk2OB-BtOLpJofmbGEGgvmwyCI9Mw",
         "kid": "bee9f32b-63c5-4ee2-bbe0-5c17d7b0d507",
         "kty": "RSA",
         "use": "sig"
@@ -556,8 +556,8 @@ class func validDeviceChallengeRequestJWTWithUserMediationOptional() -> String {
 
     static var invalidJWKCustomizeTypeHeader = [
         "alg": "RS256",
-          "e": "AQAB",
-          "n": "nzyis1ZjfNB0bBgKFMSvvkTtwlvBsaJq7S5wA-kzeVOVpVWwkWdVha4s38XM_pa_yr47av7-z3VTmvDRyAHcaT92whREFpLv9cj5lTeJSibyr_Mrm_YtjCZVWgaOYIhwrXwKLqPr_11inWsAkfIytvHWTxZYEcXLgAXFuUuaS3uF9gEiNQwzGTU1v0FqkqTBr4B8nW3HCN47XUu0t8Y0e-lf4s4OxQawWD79J9_5d3Ry0vbV3Am1FtGJiJvOwRsIfVChDpYStTcHTCMqtvWbV6L11BWkpzGXSW4Hv43qa-GSYOD2QU68Mb59oSk2OB-BtOLpJofmbGEGgvmwyCI9Mw",
+        "e": "AQAB",
+        "n": "nzyis1ZjfNB0bBgKFMSvvkTtwlvBsaJq7S5wA-kzeVOVpVWwkWdVha4s38XM_pa_yr47av7-z3VTmvDRyAHcaT92whREFpLv9cj5lTeJSibyr_Mrm_YtjCZVWgaOYIhwrXwKLqPr_11inWsAkfIytvHWTxZYEcXLgAXFuUuaS3uF9gEiNQwzGTU1v0FqkqTBr4B8nW3HCN47XUu0t8Y0e-lf4s4OxQawWD79J9_5d3Ry0vbV3Am1FtGJiJvOwRsIfVChDpYStTcHTCMqtvWbV6L11BWkpzGXSW4Hv43qa-GSYOD2QU68Mb59oSk2OB-BtOLpJofmbGEGgvmwyCI9Mw",
         "kid": "None",
         "kty": "RSA",
         "use": "sig"

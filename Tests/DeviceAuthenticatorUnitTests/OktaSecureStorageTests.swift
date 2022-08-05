@@ -9,15 +9,15 @@
 *
 * See the License for the specific language governing permissions and limitations under the License.
 */
-
+// swiftlint:disable force_unwrapping
 import XCTest
 import LocalAuthentication
 @testable import DeviceAuthenticator
 
 class OktaSecureStorageTests: XCTestCase {
 
-    var secureStorage : OktaSecureStorage!
-    
+    var secureStorage: OktaSecureStorage!
+
     override func setUp() {
         secureStorage = OktaSecureStorage()
     }
@@ -53,8 +53,8 @@ class OktaSecureStorageTests: XCTestCase {
         } catch let error {
             XCTFail("Keychain operation failed - \(error)")
         }
-        
-        var accessGroup : String? = nil
+
+        var accessGroup: String? = nil
         do {
             let seedId = try secureStorage.bundleSeedId()
             accessGroup = seedId + ".\(ExampleAppConstants.bundleId)"
@@ -64,7 +64,7 @@ class OktaSecureStorageTests: XCTestCase {
         }
 
         do {
-            try secureStorage.set("token", forKey: "account4", behindBiometrics: false, accessGroup:accessGroup!)
+            try secureStorage.set("token", forKey: "account4", behindBiometrics: false, accessGroup: accessGroup!)
             let result = try secureStorage.get(key: "account4")
             XCTAssertEqual("token", result)
         } catch let error {
@@ -75,8 +75,8 @@ class OktaSecureStorageTests: XCTestCase {
             try secureStorage.set("token",
                                   forKey: "account5",
                                   behindBiometrics: false,
-                                  accessGroup:accessGroup,
-                                  accessibility:kSecAttrAccessibleAfterFirstUnlock)
+                                  accessGroup: accessGroup,
+                                  accessibility: kSecAttrAccessibleAfterFirstUnlock)
             let result = try secureStorage.get(key: "account5")
             XCTAssertEqual("token", result)
         } catch {
@@ -88,8 +88,8 @@ class OktaSecureStorageTests: XCTestCase {
             try secureStorage.set("token",
                                   forKey: "account6",
                                   behindBiometrics: true,
-                                  accessGroup:accessGroup,
-                                  accessibility:kSecAttrAccessibleAfterFirstUnlock)
+                                  accessGroup: accessGroup,
+                                  accessibility: kSecAttrAccessibleAfterFirstUnlock)
             let result = try secureStorage.get(key: "account6")
             XCTAssertEqual("token", result)
         } catch {
@@ -100,7 +100,7 @@ class OktaSecureStorageTests: XCTestCase {
 
     func testSetAndGetWithDataSuccessCases() {
         do {
-            try secureStorage.set(data:"token".data(using: .utf8)!, forKey: "account7", behindBiometrics: false)
+            try secureStorage.set(data: "token".data(using: .utf8)!, forKey: "account7", behindBiometrics: false)
             let result = try secureStorage.getData(key: "account7")
             XCTAssertEqual("token".data(using: .utf8)!, result)
         } catch let error {
@@ -109,23 +109,23 @@ class OktaSecureStorageTests: XCTestCase {
 
         #if !targetEnvironment(simulator)
         do {
-            try secureStorage.set(data:"token".data(using: .utf8)!, forKey: "account8", behindBiometrics: true)
+            try secureStorage.set(data: "token".data(using: .utf8)!, forKey: "account8", behindBiometrics: true)
             let result = try secureStorage.getData(key: "account8")
             XCTAssertEqual("token".data(using: .utf8)!, result)
         } catch let error {
             XCTFail("Keychain operation failed - \(error)")
         }
         #endif
-        
+
         do {
-            try secureStorage.set(data:"token".data(using: .utf8)!, forKey: "account9", behindBiometrics: false, accessibility: kSecAttrAccessibleAfterFirstUnlock)
+            try secureStorage.set(data: "token".data(using: .utf8)!, forKey: "account9", behindBiometrics: false, accessibility: kSecAttrAccessibleAfterFirstUnlock)
             let result = try secureStorage.getData(key: "account9")
             XCTAssertEqual("token".data(using: .utf8)!, result)
         } catch let error {
             XCTFail("Keychain operation failed - \(error)")
         }
 
-        var accessGroup : String? = nil
+        var accessGroup: String? = nil
         do {
             let seedId = try secureStorage.bundleSeedId()
             accessGroup = seedId + ".\(ExampleAppConstants.bundleId)"
@@ -135,19 +135,19 @@ class OktaSecureStorageTests: XCTestCase {
         }
 
         do {
-            try secureStorage.set(data:"token".data(using: .utf8)!, forKey: "account10", behindBiometrics: false, accessGroup:accessGroup!)
+            try secureStorage.set(data: "token".data(using: .utf8)!, forKey: "account10", behindBiometrics: false, accessGroup: accessGroup!)
             let result = try secureStorage.getData(key: "account10")
             XCTAssertEqual("token".data(using: .utf8)!, result)
         } catch let error {
             XCTFail("Keychain operation failed - \(error)")
         }
-        
+
         do {
-            try secureStorage.set(data:"token".data(using: .utf8)!,
+            try secureStorage.set(data: "token".data(using: .utf8)!,
                                   forKey: "account11",
                                   behindBiometrics: false,
-                                  accessGroup:accessGroup,
-                                  accessibility:kSecAttrAccessibleAfterFirstUnlock)
+                                  accessGroup: accessGroup,
+                                  accessibility: kSecAttrAccessibleAfterFirstUnlock)
             let result = try secureStorage.getData(key: "account11")
             XCTAssertEqual("token".data(using: .utf8)!, result)
         } catch {
@@ -156,11 +156,11 @@ class OktaSecureStorageTests: XCTestCase {
 
         #if !targetEnvironment(simulator)
         do {
-            try secureStorage.set(data:"token".data(using: .utf8)!,
+            try secureStorage.set(data: "token".data(using: .utf8)!,
                                   forKey: "account12",
                                   behindBiometrics: true,
-                                  accessGroup:accessGroup,
-                                  accessibility:kSecAttrAccessibleAfterFirstUnlock)
+                                  accessGroup: accessGroup,
+                                  accessibility: kSecAttrAccessibleAfterFirstUnlock)
             let result = try secureStorage.getData(key: "account12")
             XCTAssertEqual("token".data(using: .utf8)!, result)
         } catch {
@@ -197,7 +197,7 @@ class OktaSecureStorageTests: XCTestCase {
         } catch let error as NSError {
             XCTAssertEqual(-25293, error.code)
         }
-        
+
         do {
             secureStorage = OktaSecureStorage(applicationPassword: "password")
             let result = try secureStorage.get(key: "john doe")
@@ -207,7 +207,7 @@ class OktaSecureStorageTests: XCTestCase {
         }
 #endif
     }
-    
+
     func testSetAndGetWithEmptyApplicationPassword() {
 #if targetEnvironment(simulator)
         return
@@ -250,13 +250,13 @@ class OktaSecureStorageTests: XCTestCase {
         } catch let error {
             XCTFail("Keychain operation failed - \(error)")
         }
-        
+
         do {
             try secureStorage.clear()
         } catch let error {
             XCTFail("Keychain operation failed - \(error)")
         }
-        
+
         do {
             _ = try secureStorage.get(key: "account0")
             XCTFail("Exception expected here")
@@ -272,7 +272,7 @@ class OktaSecureStorageTests: XCTestCase {
         }
     }
     #endif
-    
+
     func testTouchIDSupported() {
         let laContext = LAContext()
         var touchIdSupported = false
@@ -324,14 +324,14 @@ class OktaSecureStorageTests: XCTestCase {
     #if !SWIFT_PACKAGE
     func testSetFailureCases() {
         do {
-            try secureStorage.set("token", forKey: "", behindBiometrics: false, accessibility:"" as CFString)
+            try secureStorage.set("token", forKey: "", behindBiometrics: false, accessibility: "" as CFString)
             XCTFail("Exception expected here")
         } catch let error as NSError {
             XCTAssert(error.code == errSecParam)
         }
 
         do {
-            try secureStorage.set("token", forKey: "", behindBiometrics: true, accessibility:"" as CFString)
+            try secureStorage.set("token", forKey: "", behindBiometrics: true, accessibility: "" as CFString)
             XCTFail("Exception expected here")
         } catch let error as NSError {
             XCTAssert(error.code == errSecParam)
@@ -378,7 +378,7 @@ class OktaSecureStorageTests: XCTestCase {
         }
     }
     #endif
-    
+
     func testGetFailureCases() {
         do {
             _ = try secureStorage.get(key: "")
@@ -387,7 +387,7 @@ class OktaSecureStorageTests: XCTestCase {
             XCTAssert(error.code == errSecItemNotFound)
         }
     }
-    
+
     private func verifyMultipleSetAndGetStoredKeys(behindBiometrics: Bool) {
         XCTAssertThrowsError(try secureStorage.getStoredKeys(biometricPrompt: nil), "getStoredKeys() throws for no keys stored") { error in
             XCTAssertEqual((error as NSError).code, -25300)

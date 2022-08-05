@@ -33,7 +33,7 @@ class PushNotificationService: NSObject, UNUserNotificationCenterDelegate {
         super.init()
         UNUserNotificationCenter.current().delegate = self
     }
-    
+
     private func getPermissions(completion: @escaping (Bool) -> Void) {
         UNUserNotificationCenter.current().getNotificationSettings { settings in
             switch settings.authorizationStatus {
@@ -59,7 +59,7 @@ class PushNotificationService: NSObject, UNUserNotificationCenterDelegate {
             completion()
         }
     }
-    
+
     private func requestNotificationsPermissions(completion: @escaping () -> Void) {
         var authorizationOptions: UNAuthorizationOptions = [.badge, .alert, .sound]
         if #available(iOS 15.0, *) {
@@ -94,7 +94,7 @@ class PushNotificationService: NSObject, UNUserNotificationCenterDelegate {
             }
         })
     }
-    
+
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
 
         do {
@@ -107,7 +107,7 @@ class PushNotificationService: NSObject, UNUserNotificationCenterDelegate {
         // handle non-okta push notification responses here
         completionHandler([])
     }
-    
+
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
         do {
             let pushChallenge = try deviceAuthenticator.parsePushNotificationResponse(response)
@@ -118,11 +118,11 @@ class PushNotificationService: NSObject, UNUserNotificationCenterDelegate {
         }
         completionHandler()
     }
-    
+
     private func getAccessToken(completion: @escaping (String) -> Void) {
         // Fetching a valid access token. WebAuthenticator will try to refresh it if expired.
         webAuthenticator.getAccessToken { result in
-            switch result  {
+            switch result {
             case .success(let token):
                 completion(token.accessToken)
             case .failure(let error):

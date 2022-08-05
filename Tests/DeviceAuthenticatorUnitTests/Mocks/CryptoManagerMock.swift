@@ -18,9 +18,10 @@ class CryptoManagerMock: OktaCryptoManager {
 
     var privateKey: SecKey?
     var publicKey: SecKey?
-    typealias deleteType = (String) -> Bool
     var deleteHook: deleteType?
-    
+
+    typealias deleteType = (String) -> Bool
+
     override public func generate(keyPairWith algorithm: Algorithm,
                                   with tag: String,
                                   useSecureEnclave: Bool,

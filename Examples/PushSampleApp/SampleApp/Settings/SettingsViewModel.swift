@@ -16,13 +16,51 @@ import OktaLogger
 
 protocol SettingsViewModelProtocol {
     func setup(cell: SettingsCell, with row: Int)
+
     var numberOfRows: Int { get }
     var title: String { get }
     var view: SettingsViewUpdatable? { get }
 }
 
+enum EnrollmentError: Error {
+    case accessTokenError, baseUrlError, clientIdError, deviceAuthenticatorError(DeviceAuthenticatorError?)
+
+    var description: String {
+        switch self {
+        case .accessTokenError:
+            return "Error getting access token"
+        case .baseUrlError:
+            return "Base url should not be nil"
+        case .clientIdError:
+            return "ClientId should not be nil"
+        case .deviceAuthenticatorError(let error):
+            return "DeviceAuthenticator error \(error)"
+        }
+    }
+
+    static let errorTitle = "Failed to enroll"
+    static let authConfigErrorTitle = "Error creating config"
+}
+
+enum EnrollmentDeleteError: Error {
+    case noEnrollmentDeleteError, accessTokenError, deviceAuthenticatorError(DeviceAuthenticatorError?)
+
+    var description: String {
+        switch self {
+        case .noEnrollmentDeleteError:
+            return "No enrollment to delete"
+        case .accessTokenError:
+            return "Error getting access token"
+        case .deviceAuthenticatorError(let error):
+            return "DeviceAuthenticator error \(error)"
+        }
+    }
+    static let errorTitle = "Failed to delete"
+}
+
+
 class SettingsViewModel: SettingsViewModelProtocol {
-    
+
     private let authenticator: DeviceAuthenticatorProtocol
     private let webAuthenticator: OktaWebAuthProtocol
     private let pushNotificationService: PushNotificationService
@@ -31,7 +69,7 @@ class SettingsViewModel: SettingsViewModelProtocol {
     weak var view: SettingsViewUpdatable?
     private var cellModels: [SettingsCellProtocol] = []
     private var deviceEnrollment: AuthenticatorEnrollmentProtocol?
-    
+
     init(deviceauthenticator: DeviceAuthenticatorProtocol,
          webAuthenticator: OktaWebAuthProtocol,
          pushNotificationService: PushNotificationService,
@@ -45,16 +83,16 @@ class SettingsViewModel: SettingsViewModelProtocol {
         deviceEnrollment = authenticator.allEnrollments().first
         setupCellModels()
     }
-    
+
     private var userVerificationCellModel: UserVerificationCellModel? {
         // Check if an enrollment exists on device.
         guard let enrollment = deviceEnrollment else { return nil }
-        
+
         return UserVerificationCellModel(isEnabled: enrollment.userVerificationEnabled, didToggleSwitch: { [weak self] isOn in
             self?.toggleUserVerification(enable: isOn)
         })
     }
-    
+
     private var enrollmentCellModel: PushSettingsCellModel {
         let isEnrolled = deviceEnrollment != nil
         return PushSettingsCellModel(isEnabled: isEnrolled, didToggleSwitch: { [weak self] isOn in
@@ -65,7 +103,7 @@ class SettingsViewModel: SettingsViewModelProtocol {
             self?.didEnableEnrollmentToggle()
         })
     }
-    
+
     private var deviceAuthenticatorConfig: DeviceAuthenticatorConfig? {
         guard let url = webAuthenticator.baseURL else {
             logger?.error(eventName: EnrollmentError.authConfigErrorTitle, message: EnrollmentError.baseUrlError.description)
@@ -79,15 +117,15 @@ class SettingsViewModel: SettingsViewModelProtocol {
         }
         return DeviceAuthenticatorConfig(orgURL: url, oidcClientId: clientId)
     }
-    
+
     var numberOfRows: Int {
         return cellModels.count
     }
-    
+
     func setup(cell: SettingsCell, with row: Int) {
         cell.setup(cellModel: cellModels[row])
     }
-    
+
     private func setupCellModels() {
         let cells: [SettingsCellProtocol?] = [
             EmailSettingsCellModel(email: webAuthenticator.email),
@@ -110,21 +148,21 @@ class SettingsViewModel: SettingsViewModelProtocol {
             }
         }
     }
-    
+
     private func didEnableEnrollmentToggle() {
         pushNotificationService.requestNotificationsPermissionsIfNeeded { [weak self] in
             self?.beginEnrollment()
         }
     }
-    
+
     private func beginEnrollment() {
         getAccessToken { token in
             self.enrollDeviceAuthenticator(with: token)
         }
     }
-    
+
     private func enrollDeviceAuthenticator(with accessToken: String) {
-        
+
         let authToken = AuthToken.bearer(accessToken)
 
         guard let deviceAuthenticatorConfig = deviceAuthenticatorConfig else { return }
@@ -136,11 +174,11 @@ class SettingsViewModel: SettingsViewModelProtocol {
             logger?.warning(eventName: LoggerEvent.enrollment.rawValue, message: "Device token is nil")
         }
         let enrollmentParams = EnrollmentParameters(deviceToken: deviceToken)
-        
+
         view?.updateView(shouldShowSpinner: true)
-        
+
         /**
-         
+
          - You may want to fetch the authenticator policy via `authenticator.downloadPolicy()` method before calling enroll to start the enrollment flow.
          - If policy *requires* user verification capabilities to be enabled for the enrollment then UI flow should force the user to enable device biometrics and give permissions to the app to use biometrics.
          - If policy *prefers* user verification capabilities then UI flow may suggest the user to additionally enable user verification for the enrollment.
@@ -150,7 +188,7 @@ class SettingsViewModel: SettingsViewModelProtocol {
         authenticator.enroll(authenticationToken: authToken,
                              authenticatorConfig: deviceAuthenticatorConfig,
                              enrollmentParameters: enrollmentParams) { [weak self] result in
-            
+
             switch result {
             case .success(let authenticator):
                 self?.deviceEnrollment = authenticator
@@ -164,7 +202,7 @@ class SettingsViewModel: SettingsViewModelProtocol {
             self?.view?.updateView(shouldShowSpinner: false)
         }
     }
-    
+
     private func beginEnrollmentDeletion() {
         guard let enrollment = deviceEnrollment else {
             view?.showAlert(alertTitle: EnrollmentDeleteError.errorTitle, alertText: EnrollmentDeleteError.noEnrollmentDeleteError.description)
@@ -175,7 +213,7 @@ class SettingsViewModel: SettingsViewModelProtocol {
             self.deleteEnrollment(enrollment: enrollment, accessToken: token)
         }
     }
-    
+
     private func deleteEnrollment(enrollment: AuthenticatorEnrollmentProtocol, accessToken: String) {
         let authToken = AuthToken.bearer(accessToken)
         view?.updateView(shouldShowSpinner: true)
@@ -191,7 +229,7 @@ class SettingsViewModel: SettingsViewModelProtocol {
             self?.view?.updateView(shouldShowSpinner: false)
         }
     }
-    
+
     private func toggleUserVerification(enable: Bool) {
         guard let enrollment = deviceEnrollment else {
             return
@@ -211,40 +249,4 @@ class SettingsViewModel: SettingsViewModelProtocol {
             }
         }
     }
-}
-
-enum EnrollmentError: Error {
-    case accessTokenError, baseUrlError, clientIdError, deviceAuthenticatorError(DeviceAuthenticatorError?)
-
-    var description: String {
-        switch self {
-        case .accessTokenError:
-            return "Error getting access token"
-        case .baseUrlError:
-            return "Base url should not be nil"
-        case .clientIdError:
-            return "ClientId should not be nil"
-        case .deviceAuthenticatorError(let error):
-            return "DeviceAuthenticator error \(error)"
-        }
-    }
-    
-    static let errorTitle = "Failed to enroll"
-    static let authConfigErrorTitle = "Error creating config"
-}
-
-enum EnrollmentDeleteError: Error {
-    case noEnrollmentDeleteError, accessTokenError, deviceAuthenticatorError(DeviceAuthenticatorError?)
-
-    var description: String {
-        switch self {
-        case .noEnrollmentDeleteError:
-            return "No enrollment to delete"
-        case .accessTokenError:
-            return "Error getting access token"
-        case .deviceAuthenticatorError(let error):
-            return "DeviceAuthenticator error \(error)"
-        }
-    }
-    static let errorTitle = "Failed to delete"
 }

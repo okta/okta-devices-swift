@@ -9,7 +9,7 @@
 *
 * See the License for the specific language governing permissions and limitations under the License.
 */
-
+// swiftlint:disable force_unwrapping
 import XCTest
 @testable import DeviceAuthenticator
 
@@ -36,7 +36,7 @@ class EnrollAuthenticatorRequestModelTests: XCTestCase {
                                                                               supportUserVerification: false,
                                                                               isFipsCompliant: true,
                                                                               keys: nil)
-        
+
         let requestModel = EnrollAuthenticatorRequestModel(authenticatorId: "autuowpr5VjVjQPU30g3",
                                                            key: "okta_verify",
                                                            device: signals,
@@ -60,7 +60,7 @@ class EnrollAuthenticatorRequestModelTests: XCTestCase {
         // test user verification with jwt
         keysModel = EnrollAuthenticatorRequestModel.AuthenticatorMethods.Keys(proofOfPossession: ["key": .string("value")],
                                                                              userVerification:
-                                                                                EnrollAuthenticatorRequestModel.AuthenticatorMethods.Keys.UserVerificationKey.keyValue(["uvKey" : .string("uvValue")]))
+                                                                                EnrollAuthenticatorRequestModel.AuthenticatorMethods.Keys.UserVerificationKey.keyValue(["uvKey": .string("uvValue")]))
         encodedData = try? encoder.encode(keysModel)
         XCTAssertNotNil(encodedData)
         encodedString = String(data: encodedData!, encoding: .utf8)

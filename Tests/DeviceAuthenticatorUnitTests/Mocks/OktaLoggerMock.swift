@@ -13,16 +13,6 @@
 import Foundation
 import OktaLogger
 
-class OktaLoggerMock: OktaLogger {
-    init() {
-        super.init(destinations: [OktaLoggerDestinationMock()])
-    }
-
-    required init(destinations: [OktaLoggerDestinationProtocol]) {
-        fatalError("init(destinations:) has not been implemented")
-    }
-}
-
 class OktaLoggerDestinationMock: OktaLoggerDestinationProtocol {
     var identifier: String = ""
 
@@ -40,5 +30,15 @@ class OktaLoggerDestinationMock: OktaLoggerDestinationProtocol {
     }
 
     func removeDefaultProperties(for key: AnyHashable) {
+    }
+}
+
+class OktaLoggerMock: OktaLogger {
+    init() {
+        super.init(destinations: [OktaLoggerDestinationMock()])
+    }
+
+    required init(destinations: [OktaLoggerDestinationProtocol]) {
+        fatalError("init(destinations:) has not been implemented")
     }
 }

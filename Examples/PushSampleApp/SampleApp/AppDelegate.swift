@@ -15,6 +15,17 @@ import WebAuthenticationUI
 import DeviceAuthenticator
 import OktaLogger
 
+private enum PushSettingsConstant {
+    static let applicationGroupID = "group.com.okta.SampleApp"
+    static let approveActionTitle = "Yes, it's me"
+    static let denyActionTitle = "No, it's not me"
+    static let userVerificationActionTitle = "Review"
+}
+
+enum LoggerEvent: String {
+    case appInit, pushService, webSignIn, enrollment, enrollmentDelete, userVerification, account
+}
+
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
@@ -28,7 +39,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
 
         window = .init(frame: UIScreen.main.bounds)
-        
+
         logger = OktaLogger()
         logger.addDestination(OktaLoggerConsoleLogger(identifier: "PushSDKSampleApp.console.logger", level: .all, defaultProperties: nil))
 
@@ -55,7 +66,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         rootCoordinator?.begin(on: window)
 
         UIApplication.shared.registerForRemoteNotifications()
-        
+
         return true
     }
 
@@ -88,7 +99,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             fatalError("Failed to initialize OktaAuthenticator SDK")
         }
     }
-    
+
     func initRemediationEventsHandler() {
         remediationEventsHandler = RemediationEventsHandler(onUserConsent: { [weak self] step in
             self?.rootCoordinator?.beginUserConsentFlow(remediationStep: step)
@@ -96,21 +107,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             self?.rootCoordinator?.handleChallengeResponse(userResponse: userResponse)
         })
     }
-    
+
     func applicationDidBecomeActive(_ application: UIApplication) {
         application.applicationIconBadgeNumber = 0
         pushNotificationService.retrievePushChallenges()
     }
-}
-
-
-private enum PushSettingsConstant {
-    static let applicationGroupID = "group.com.okta.SampleApp"
-    static let approveActionTitle = "Yes, it's me"
-    static let denyActionTitle = "No, it's not me"
-    static let userVerificationActionTitle = "Review"
-}
-
-enum LoggerEvent: String {
-    case appInit, pushService, webSignIn, enrollment, enrollmentDelete, userVerification, account
 }

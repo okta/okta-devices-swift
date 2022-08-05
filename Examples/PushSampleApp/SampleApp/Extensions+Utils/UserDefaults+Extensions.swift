@@ -13,7 +13,7 @@
 import Foundation
 
 extension UserDefaults {
-    
+
     private static let DeviceTokenKey = "DeviceTokenKey"
     private static let ConfigsKey = "OidcConfigs"
 
@@ -26,7 +26,7 @@ extension UserDefaults {
     static func save(deviceToken: Data) {
         UserDefaults.standard.set(deviceToken, forKey: DeviceTokenKey)
     }
-    
+
     static func deviceToken() -> Data? {
         return UserDefaults.standard.data(forKey: DeviceTokenKey)
     }

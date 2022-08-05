@@ -23,7 +23,7 @@ class OktaJWKGeneratorIntegrationTests: XCTestCase {
     }
 
     func testJWKGeneratorFromEC256() {
-        if let publicKey:SecKey = OktaKeyGeneratorHelper.getValidSecKeyES256(ec256ValidPublicKeyBase64, isPublic: true) {
+        if let publicKey: SecKey = OktaKeyGeneratorHelper.getValidSecKeyES256(ec256ValidPublicKeyBase64, isPublic: true) {
             do {
                 let kid = "test_id"
                 guard let jwkDictionary = try mut.generate(for: publicKey,

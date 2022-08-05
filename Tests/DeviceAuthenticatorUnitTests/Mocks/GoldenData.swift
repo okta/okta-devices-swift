@@ -9,7 +9,9 @@
 *
 * See the License for the specific language governing permissions and limitations under the License.
 */
-
+// swiftlint:disable force_try
+// swiftlint:disable force_cast
+// swiftlint:disable force_unwrapping
 import XCTest
 import DeviceAuthenticator
 
@@ -150,7 +152,7 @@ class GoldenData {
         let jsonData = try! JSONSerialization.data(withJSONObject: jsonArray, options: .prettyPrinted)
         return jsonData
     }
-    
+
     class func authenticatorMetaDataWithEmptyEnrollLink() -> Data {
         let authenticatorJson: String = """
         [{
@@ -325,7 +327,6 @@ class GoldenData {
                 "sid": "abcd",
                 "screenLockType": "BIOMETRIC",
                 "diskEncryptionType": "FULL",
-        
             },
             "clientInstanceId": "cli1zEPrHHW0w4i0ALF0",
         }
@@ -413,7 +414,7 @@ class GoldenData {
         let jsonData = try! JSONSerialization.data(withJSONObject: dict, options: .prettyPrinted)
         return jsonData
     }
-    
+
     class func orgDataIncomplete() -> Data {
         let orgDataJson: String = """
         {"_links":{"organization":{"href":"https://qa-dt-auth1.hioktane.com"}}}

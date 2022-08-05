@@ -26,11 +26,13 @@ class SignalPluginMock: _SignalPluginProtocol {
     var config = _SignalPluginConfig(name: "name", description: "desc", type: "type", typeData: [: ])
 
     var available = false
+
     func isAvailable() -> Bool {
         return available
     }
 
     var signals = _IntegrationData.error(SignalPluginMock.mockError)
+
     func collectSignals() -> _IntegrationData {
         return signals
     }

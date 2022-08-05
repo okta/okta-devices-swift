@@ -13,6 +13,24 @@
 import XCTest
 @testable import DeviceAuthenticator
 
+class BasicSignalsHelperMock: BasicSignalsHelperProtocol {
+    var screenLockType: ScreenLockValue
+    var secureHardwarePresent: Bool
+    var osVersion: String
+    var manufacturer: String
+    var deviceModel: String
+    var teamIdentifier: String?
+
+    init(screenLockType: ScreenLockValue, secureHardwarePresent: Bool, osVersion: String, manufacturer: String, deviceModel: String, teamIdentifier: String? = nil) {
+        self.screenLockType = screenLockType
+        self.secureHardwarePresent = secureHardwarePresent
+        self.osVersion = osVersion
+        self.manufacturer = manufacturer
+        self.deviceModel = deviceModel
+        self.teamIdentifier = teamIdentifier
+    }
+}
+
 class OktaUnmanagedDeviceSignalsTests: XCTestCase {
 
     var basicSignalsHelperMock: BasicSignalsHelperMock!
@@ -124,23 +142,5 @@ class OktaUnmanagedDeviceSignalsTests: XCTestCase {
         XCTAssertNil(deviceSignalModel.clientInstanceDeviceSdkVersion)
         XCTAssertNil(deviceSignalModel.clientInstanceId)
         XCTAssertNil(deviceSignalModel.clientInstanceVersion)
-    }
-}
-
-class BasicSignalsHelperMock: BasicSignalsHelperProtocol {
-    var screenLockType: ScreenLockValue
-    var secureHardwarePresent: Bool
-    var osVersion: String
-    var manufacturer: String
-    var deviceModel: String
-    var teamIdentifier: String?
-
-    init(screenLockType: ScreenLockValue, secureHardwarePresent: Bool, osVersion: String, manufacturer: String, deviceModel: String, teamIdentifier: String? = nil) {
-        self.screenLockType = screenLockType
-        self.secureHardwarePresent = secureHardwarePresent
-        self.osVersion = osVersion
-        self.manufacturer = manufacturer
-        self.deviceModel = deviceModel
-        self.teamIdentifier = teamIdentifier
     }
 }

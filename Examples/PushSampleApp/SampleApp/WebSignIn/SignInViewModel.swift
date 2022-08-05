@@ -77,7 +77,7 @@ class SignInViewModel: SignInViewModelProtocol {
     var infoLabelText: String {
         return "Welcome"
     }
-    
+
     var title: String {
         return "Magenta Bank"
     }

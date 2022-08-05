@@ -18,15 +18,15 @@ class SettingsCell: UITableViewCell {
     @IBOutlet weak var subtitleLabel: UILabel!
     @IBOutlet weak var actionableView: UIView!
     @IBOutlet weak var swithControl: UISwitch!
-    
+
     static let cellId: String = "SettingsCell"
-    
+
     override func awakeFromNib() {
         super.awakeFromNib()
     }
 
     var didSwitchToggle: ((Bool) -> Void)?
-    
+
     func setup(cellModel: SettingsCellProtocol) {
         titleLabel.text = cellModel.title
         subtitleLabel.text = cellModel.subtitle
@@ -34,7 +34,7 @@ class SettingsCell: UITableViewCell {
         swithControl.isOn = cellModel.isEnabled ?? false
         didSwitchToggle = cellModel.didToggleSwitch
     }
-    
+
     @IBAction func onSwitchToggle() {
         didSwitchToggle?(swithControl.isOn)
     }

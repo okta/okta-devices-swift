@@ -16,8 +16,9 @@ import Foundation
 class OktaJWTGeneratorMock: OktaJWTGenerator {
 
     var stringToReturn = "jwk.payload.jws"
-    typealias generateType = (String, String?, Encodable, SecKey, Algorithm) throws -> String
     var generateHook: generateType?
+
+    typealias generateType = (String, String?, Encodable, SecKey, Algorithm) throws -> String
 
     override public func generate<T: Any>(with jwtType: String,
                                           kid: String? = nil,

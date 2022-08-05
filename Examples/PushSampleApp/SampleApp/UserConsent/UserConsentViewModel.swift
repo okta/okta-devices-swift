@@ -21,13 +21,13 @@ protocol UserConsentViewModelProtocol {
     var dateString: String { get }
     var timeString: String { get }
     var onRemediationComplete: () -> Void { get set }
-    
+
     func didTapApproveChallenge()
     func didTapDenyChallenge()
 }
 
 struct UserConsentViewModel: UserConsentViewModelProtocol {
-    
+
     private let remediationStep: RemediationStepUserConsent
 
     var onRemediationComplete: () -> Void = {}
@@ -41,7 +41,7 @@ struct UserConsentViewModel: UserConsentViewModelProtocol {
     private var pushChallenge: PushChallengeProtocol? {
         return remediationStep.challenge as? PushChallengeProtocol
     }
-    
+
     var clientLocationString: String {
         "\(pushChallenge?.clientLocation ?? "Unknown location")"
     }
@@ -73,7 +73,7 @@ struct UserConsentViewModel: UserConsentViewModelProtocol {
         let timeString = formatter.string(from: transactionTime)
         return "\(timeString)"
     }
-    
+
     func didTapApproveChallenge() {
         remediationStep.provide(.approved)
         onRemediationComplete()

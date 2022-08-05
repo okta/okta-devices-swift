@@ -9,7 +9,7 @@
 *
 * See the License for the specific language governing permissions and limitations under the License.
 */
-
+// swiftlint:disable force_cast
 import Foundation
 @testable import DeviceAuthenticator
 
@@ -63,14 +63,14 @@ class TestUtils {
                                                                   storageManager: storage,
                                                                   applicationConfig: appConfig,
                                                                   logger: OktaLoggerMock())
-        
+
         return authenticatorEnrollment
     }
-    
+
     class func getValidEDRConfigs(path: String?) -> [[String: String]] {
         return [["name": "name_1", "description": "description_1", "location": path ?? "path", "type": "file", "format": "JWT"], ["name": "name_2", "description": "description_2", "location": "location_2", "type": "file", "format": "format_2"], ["name": "name_3", "description": "description_3", "location": "location_3", "type": "type_3", "format": "format_3"]]
     }
-    
+
     class func getInvalidEDRConfigs() -> [[String: String]] {
         return [["name": "name_1", "location": "location_1", "type": "type_1", "format": "format_1"], ["name": "name_2", "description": "description", "location": "location_2", "type": "type_2"]]
     }
@@ -130,7 +130,7 @@ class TestUtils {
         let settings = AuthenticatorMetaDataModel.Settings(appInstanceId: nil,
                                                            userVerification: userVerification,
                                                            oauthCliendId: nil)
-        
+
         var embeddedMethods = [AuthenticatorMetaDataModel.Method]()
         for method in methods {
             embeddedMethods.append(AuthenticatorMetaDataModel.Method(type: method, status: "ACTIVE", settings: nil))

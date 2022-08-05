@@ -9,7 +9,9 @@
 *
 * See the License for the specific language governing permissions and limitations under the License.
 */
-
+// swiftlint:disable force_try
+// swiftlint:disable force_cast
+// swiftlint:disable force_unwrapping
 import XCTest
 import LocalAuthentication
 @testable import DeviceAuthenticator
@@ -35,7 +37,7 @@ class TransactionTests: XCTestCase {
 
     func testGenerateAuthenticationJWTString_Success() {
         let mut = OktaTransaction(loginHint: nil, storageManager: storageMock, cryptoManager: cryptoManager, jwtGenerator: nil, logger: OktaLoggerMock())
-        let authenticator = TestUtils.createAuthenticatorEnrollment(orgHost: URL(string:"okta.okta.com")!,
+        let authenticator = TestUtils.createAuthenticatorEnrollment(orgHost: URL(string: "okta.okta.com")!,
                                                                     orgId: "orgId",
                                                                     enrollmentId: "enrollment_id",
                                                                     cryptoManager: cryptoManager)
@@ -49,11 +51,11 @@ class TransactionTests: XCTestCase {
 
     func testGenerateAuthenticationJWTString_CantGetKey() {
         let mut = OktaTransaction(loginHint: nil, storageManager: storageMock, cryptoManager: OktaCryptoManager(accessGroupId: "", logger: OktaLoggerMock()), jwtGenerator: nil, logger: OktaLoggerMock())
-        let authenticator = TestUtils.createAuthenticatorEnrollment(orgHost: URL(string:"okta.okta.com")!,
+        let authenticator = TestUtils.createAuthenticatorEnrollment(orgHost: URL(string: "okta.okta.com")!,
                                                                     orgId: "orgId",
                                                                     enrollmentId: "enrollment_id",
                                                                     cryptoManager: cryptoManager)
-        
+
         let ex = expectation(description: "Completion expected!")
         mut.generateAuthenticationJWTString(for: authenticator) { token, error in
             XCTAssertNil(token)
@@ -73,7 +75,7 @@ class TransactionTests: XCTestCase {
             throw DeviceAuthenticatorError.genericError("Some error")
         }
         let mut = OktaTransaction(loginHint: nil, storageManager: storageMock, cryptoManager: cryptoManager, jwtGenerator: jwtGeneratorMock, logger: OktaLoggerMock())
-        let authenticator = TestUtils.createAuthenticatorEnrollment(orgHost: URL(string:"okta.okta.com")!,
+        let authenticator = TestUtils.createAuthenticatorEnrollment(orgHost: URL(string: "okta.okta.com")!,
                                                                     orgId: "orgId",
                                                                     enrollmentId: "enrollment_id",
                                                                     cryptoManager: cryptoManager)
@@ -89,14 +91,14 @@ class TransactionTests: XCTestCase {
         }
         waitForExpectations(timeout: 1.0, handler: nil)
     }
-    
+
     func testGenerateAuthenticationJWTString_UserCancelled() {
         jwtGeneratorMock.generateHook = { jwtType, kid, payLoad, key, algo in
             XCTAssertEqual(kid, "userVerificationKeyTag")
             throw SecurityError.localAuthenticationCancelled(LAError(.userCancel))
         }
         let mut = OktaTransaction(loginHint: nil, storageManager: storageMock, cryptoManager: cryptoManager, jwtGenerator: jwtGeneratorMock, logger: OktaLoggerMock())
-        let authenticator = TestUtils.createAuthenticatorEnrollment(orgHost: URL(string:"okta.okta.com")!,
+        let authenticator = TestUtils.createAuthenticatorEnrollment(orgHost: URL(string: "okta.okta.com")!,
                                                                     orgId: "orgId",
                                                                     enrollmentId: "enrollment_id",
                                                                     cryptoManager: cryptoManager)
@@ -118,7 +120,7 @@ class TransactionTests: XCTestCase {
             throw DeviceAuthenticatorError.genericError("Some error")
         }
         let mut = OktaTransaction(loginHint: nil, storageManager: storageMock, cryptoManager: cryptoManager, jwtGenerator: jwtGeneratorMock, logger: OktaLoggerMock())
-        let authenticator = TestUtils.createAuthenticatorEnrollment(orgHost: URL(string:"okta.okta.com")!,
+        let authenticator = TestUtils.createAuthenticatorEnrollment(orgHost: URL(string: "okta.okta.com")!,
                                                                     orgId: "orgId",
                                                                     enrollmentId: "enrollment_id",
                                                                     cryptoManager: cryptoManager,

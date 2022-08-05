@@ -9,7 +9,8 @@
 *
 * See the License for the specific language governing permissions and limitations under the License.
 */
-
+// swiftlint:disable force_try
+// swiftlint:disable force_unwrapping
 import XCTest
 import LocalAuthentication
 import CryptoTokenKit
@@ -24,7 +25,7 @@ class OktaSQLiteEncryptionManagerTests: XCTestCase {
     func testEncryptDecryptSecureEnclaveDisabled() {
         encryptDecrypt(prefersSecureEnclaveUsage: false)
     }
-    
+
     func encryptDecrypt(prefersSecureEnclaveUsage: Bool) {
         let cryptoManager = OktaCryptoManager(accessGroupId: ExampleAppConstants.appGroupId, logger: OktaLoggerMock())
         let manager = OktaSQLiteEncryptionManager(cryptoManager: cryptoManager, prefersSecureEnclaveUsage: prefersSecureEnclaveUsage)
@@ -60,5 +61,4 @@ class OktaSQLiteEncryptionManagerTests: XCTestCase {
         let decryptedLongString = try! manager.decryptedColumnString(from: encryptedLongStringData)
         XCTAssertEqual(decryptedLongString, longString)
     }
-    
 }

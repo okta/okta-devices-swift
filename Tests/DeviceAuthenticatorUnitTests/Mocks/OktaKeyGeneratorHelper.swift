@@ -17,7 +17,7 @@ class OktaKeyGeneratorHelper {
         guard let data = Data(base64Encoded: base64Key) else {
             return nil
         }
-        let keyDict:[NSObject:NSObject] = [
+        let keyDict: [NSObject: NSObject] = [
                 kSecAttrKeyType: kSecAttrKeyTypeEC,
                 kSecAttrKeyClass: isPublic ? kSecAttrKeyClassPublic : kSecAttrKeyClassPrivate,
                 kSecAttrKeySizeInBits: NSNumber(value: 256),

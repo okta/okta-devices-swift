@@ -15,13 +15,13 @@ import Foundation
 
 class OktaSecureStorageMock: OktaSecureStorage {
 
+    typealias getDataHookType = (String, String?, String?) throws -> Data
+
     // set this flag to false if you want to simulate raising of excpetion or return
     var storeSuccessCase = true
     var readSuccessCase = true
     var deleteSuccessCase = true
     var keysValues = [String: Data]()
-
-    typealias getDataHookType = (String, String?, String?) throws -> Data
     var getDataHook: getDataHookType?
 
     override public func set(data: Data, forKey key: String, behindBiometrics: Bool, accessGroup: String) throws {
@@ -70,7 +70,7 @@ class OktaSecureStorageMock: OktaSecureStorage {
             throw NSError(domain: "secure storage", code: Int(errSecInvalidItemRef), userInfo: nil)
         }
     }
-    
+
     override func getStoredKeys(biometricPrompt prompt: String? = nil, accessGroup: String? = nil) throws -> [String] {
         if readSuccessCase {
             return Array(keysValues.keys)

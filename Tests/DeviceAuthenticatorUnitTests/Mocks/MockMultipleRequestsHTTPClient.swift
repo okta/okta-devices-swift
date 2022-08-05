@@ -9,7 +9,7 @@
 *
 * See the License for the specific language governing permissions and limitations under the License.
 */
-
+// swiftlint:disable force_unwrapping
 import Foundation
 import OktaLogger
 @testable import DeviceAuthenticator
@@ -48,9 +48,9 @@ class MockMultipleRequestsHTTPClient: HTTPClient {
     override func request(
         _ url: URL,
         method: HTTPMethod = .get,
-        urlParameters: [String : String] = [:],
-        bodyParameters: [String : Any] = [:],
-        headers: [String : String] = [:],
+        urlParameters: [String: String] = [:],
+        bodyParameters: [String: Any] = [:],
+        headers: [String: String] = [:],
         timeout: TimeInterval = 0
     ) -> URLRequestProtocol {
         counter += 1
@@ -60,9 +60,9 @@ class MockMultipleRequestsHTTPClient: HTTPClient {
     override func request(
         _ url: URL,
         method: HTTPMethod = .get,
-        urlParameters: [String : String] = [:],
+        urlParameters: [String: String] = [:],
         httpBody: Data?,
-        headers: [String : String] = [:],
+        headers: [String: String] = [:],
         timeout: TimeInterval = 0
     ) -> URLRequestProtocol {
         counter += 1

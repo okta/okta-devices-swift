@@ -9,6 +9,9 @@
 *
 * See the License for the specific language governing permissions and limitations under the License.
 */
+// swiftlint:disable force_try
+// swiftlint:disable force_unwrapping
+// swiftlint:disable file_types_order
 
 import XCTest
 import LocalAuthentication
@@ -523,7 +526,7 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
                                                                                            logos: nil),
                                                   _embedded: AuthenticatorMetaDataModel.Embedded(methods: []))
         let mut = createTransaction(enrollmentContext: enrollmentContext, enrollment: nil, jwtGenerator: OktaJWTGenerator(logger: OktaLoggerMock()))
-    
+
         let enrolledFactors = try? transaction.enrollFactors()
         mut.metaData = metaData
         XCTAssertNotNil(enrolledFactors)
@@ -829,7 +832,7 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
         transaction.doUpdate(enrollData: Data(),
                              enrollment: enrollment,
                              factorsMetaData: enrolledFactors!) { result in
-            
+
             if case Result.failure(let error) = result {
                 if case let .securityError(error) = error {
                     XCTAssertEqual(error, SecurityError.jwtError("Failed to sign jwt"))
@@ -839,7 +842,7 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
             } else {
                 XCTFail("Unexpected result")
             }
-            
+
             completionCalled.fulfill()
         }
 
@@ -1067,7 +1070,7 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
             }
         }
     }
-    
+
     func testUpdateEnrollment_WithoutAccessToken_UnEnrollUVKey() {
         let restAPIMock = RestAPIMock(client: HTTPClient(logger: OktaLoggerMock(), userAgent: ""), logger: OktaLoggerMock())
         restAPIMock.downloadOrgIdTypeHook = { url, completion in
@@ -1181,8 +1184,7 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
             downloadOrgIdCalled = true
             completion(nil, nil)
         }
-        transaction.enroll{ result in
-        }
+        transaction.enroll { result in }
 
         XCTAssertTrue(downloadOrgIdCalled)
     }
@@ -1399,8 +1401,8 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
                                                                  cryptoManager: cryptoManager,
                                                                  enrollPush: false)
         let enrollmentContext = createEnrollmentContext(deviceSignals: DeviceSignals(displayName: ""),
-                                                        applicationSignals: ["deleteV1TotpOnlyEnrollment" : _OktaCodableArbitaryType.bool(true),
-                                                                             "deleteV1EnrollmentByPushFactorId" : _OktaCodableArbitaryType.string("opf12345")],
+                                                        applicationSignals: ["deleteV1TotpOnlyEnrollment": _OktaCodableArbitaryType.bool(true),
+                                                                             "deleteV1EnrollmentByPushFactorId": _OktaCodableArbitaryType.string("opf12345")],
                                                         enrollBiometricKey: nil,
                                                         pushToken: nil)
         transaction = createTransaction(enrollmentContext: enrollmentContext, enrollment: enrollment)
@@ -1477,14 +1479,14 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
 fileprivate class OktaTransactionEnrollPartialMock: OktaTransactionEnroll {
     typealias doEnrollmentType = (Data, [EnrollingFactor], (Result<AuthenticatorEnrollmentProtocol, DeviceAuthenticatorError>) -> Void) -> Void
     typealias doUpdateType = (Data, AuthenticatorEnrollment, [EnrollingFactor], (Result<AuthenticatorEnrollmentProtocol, DeviceAuthenticatorError>) -> Void) -> Void
-    typealias registerKeyType = (Algorithm, String, Bool, Bool, BiometricEnrollmentSettings?) throws -> [String : _OktaCodableArbitaryType]
-    typealias createEnrollmentAndSaveToStorageType = (EnrolledAuthenticatorModel,  [OktaFactor], (Result<AuthenticatorEnrollmentProtocol, DeviceAuthenticatorError>) -> Void) -> Void
-    
+    typealias registerKeyType = (Algorithm, String, Bool, Bool, BiometricEnrollmentSettings?) throws -> [String: _OktaCodableArbitaryType]
+    typealias createEnrollmentAndSaveToStorageType = (EnrolledAuthenticatorModel, [OktaFactor], (Result<AuthenticatorEnrollmentProtocol, DeviceAuthenticatorError>) -> Void) -> Void
+
     var doEnrollmentHook: doEnrollmentType?
     var doUpdateHook: doUpdateType?
     var registerKeyHook: registerKeyType?
     var createEnrollmentAndSaveToStorageHook: createEnrollmentAndSaveToStorageType?
-    
+
     override func doEnrollment(enrollData: Data,
                                factorsMetaData: [EnrollingFactor],
                                onCompletion: @escaping (Result<AuthenticatorEnrollmentProtocol, DeviceAuthenticatorError>) -> Void) {
@@ -1506,7 +1508,7 @@ fileprivate class OktaTransactionEnrollPartialMock: OktaTransactionEnroll {
                               keyTag: String,
                               reuseKey: Bool = false,
                               useBiometrics: Bool = false,
-                              biometricSettings: BiometricEnrollmentSettings? = nil) throws -> [String : _OktaCodableArbitaryType] {
+                              biometricSettings: BiometricEnrollmentSettings? = nil) throws -> [String: _OktaCodableArbitaryType] {
         return try registerKeyHook?(algorithm, keyTag, reuseKey, useBiometrics, biometricSettings) ?? [:]
     }
 
@@ -1523,10 +1525,11 @@ fileprivate class OktaTransactionEnrollPartialMock: OktaTransactionEnroll {
 
 fileprivate class OktaCryptoManagerMock: OktaCryptoManager {
     typealias generateType = (Algorithm, String, Bool, Bool, BiometricEnrollmentSettings?) throws -> SecKey
-    var generateHook: generateType?
     typealias getType = (KeyType, String, LAContext) -> SecKey?
-    var getHook: getType?
     typealias deleteType = (String) -> Bool
+
+    var generateHook: generateType?
+    var getHook: getType?
     var deleteHook: deleteType?
 
     override func generate(keyPairWith algorithm: Algorithm, with tag: String, useSecureEnclave: Bool, useBiometrics: Bool = false, isAccessibleOnOtherDevice: Bool = false, biometricSettings: BiometricEnrollmentSettings? = nil) throws -> SecKey {

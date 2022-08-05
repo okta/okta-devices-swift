@@ -12,7 +12,12 @@
 
 import UIKit
 
-class SettingsViewController: UIViewController, StoryboardController,  UITableViewDelegate, UITableViewDataSource, SettingsViewUpdatable {
+protocol SettingsViewUpdatable: AnyObject {
+    func showAlert(alertTitle: String, alertText: String)
+    func updateView(shouldShowSpinner: Bool)
+}
+
+class SettingsViewController: UIViewController, StoryboardController, UITableViewDelegate, UITableViewDataSource, SettingsViewUpdatable {
 
     @IBOutlet weak var settingsTableView: UITableView!
     @IBOutlet weak var spinner: UIActivityIndicatorView!
@@ -24,7 +29,7 @@ class SettingsViewController: UIViewController, StoryboardController,  UITableVi
         setupTableView()
         navigationItem.title = viewModel.title
     }
-    
+
     private func setupTableView() {
         settingsTableView.delegate = self
         settingsTableView.dataSource = self
@@ -33,17 +38,17 @@ class SettingsViewController: UIViewController, StoryboardController,  UITableVi
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return viewModel.numberOfRows
     }
-    
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: SettingsCell.cellId) as? SettingsCell else { return UITableViewCell()}
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: SettingsCell.cellId) as? SettingsCell else { return UITableViewCell() }
         viewModel.setup(cell: cell, with: indexPath.row)
         return cell
     }
-    
+
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 70
     }
-    
+
     func showAlert(alertTitle: String, alertText: String) {
         DispatchQueue.main.async {
             let alert = UIAlertController(title: alertTitle, message: alertText, preferredStyle: .alert)
@@ -51,7 +56,7 @@ class SettingsViewController: UIViewController, StoryboardController,  UITableVi
             self.present(alert, animated: true, completion: nil)
         }
     }
-    
+
     func updateView(shouldShowSpinner: Bool) {
         DispatchQueue.main.async {
             guard shouldShowSpinner else {
@@ -62,9 +67,4 @@ class SettingsViewController: UIViewController, StoryboardController,  UITableVi
             self.spinner.startAnimating()
         }
     }
-}
-
-protocol SettingsViewUpdatable: AnyObject {
-    func showAlert(alertTitle: String, alertText: String)
-    func updateView(shouldShowSpinner: Bool)
 }

@@ -9,7 +9,10 @@
 *
 * See the License for the specific language governing permissions and limitations under the License.
 */
-
+// swiftlint:disable force_try
+// swiftlint:disable force_cast
+// swiftlint:disable force_unwrapping
+// swiftlint:disable file_types_order
 import XCTest
 import LocalAuthentication
 @testable import DeviceAuthenticator
@@ -44,7 +47,7 @@ class TransactionPossessionChallengeBaseTests: XCTestCase {
                                                               jwtGenerator: OktaJWTGenerator(logger: OktaLoggerMock()),
                                                               logger: OktaLoggerMock())
 
-        
+
     }
 
     func testVerifyChallengeTransactionWithStateHandle_Success() throws {
@@ -187,7 +190,7 @@ class TransactionPossessionChallengeBaseTests: XCTestCase {
                                                                        errorId: nil,
                                                                        status: nil,
                                                                        errorCauses: nil))
-        let authenticator = TestUtils.createAuthenticatorEnrollment(orgHost: URL(string:"okta.okta.com")!,
+        let authenticator = TestUtils.createAuthenticatorEnrollment(orgHost: URL(string: "okta.okta.com")!,
                                                                     orgId: "myOrgId",
                                                                     enrollmentId: "enrollment_id",
                                                                     cryptoManager: cryptoManager)
@@ -260,9 +263,10 @@ class TransactionPossessionChallengeBaseTests: XCTestCase {
 }
 
 fileprivate class OktaTransactionPossessionChallengeBasePartialMock: OktaTransactionPossessionChallengeBase {
-    typealias tryReadSigningKeyType = (OktaBindJWT.KeyType, OktaBindJWT.MethodType, AuthenticatorEnrollment,  (RemediationStep) -> Void, (KeyData?, DeviceAuthenticatorError?) -> Void) -> Void
-    var tryReadSigningKeyHook: tryReadSigningKeyType?
+    typealias tryReadSigningKeyType = (OktaBindJWT.KeyType, OktaBindJWT.MethodType, AuthenticatorEnrollment, (RemediationStep) -> Void, (KeyData?, DeviceAuthenticatorError?) -> Void) -> Void
     typealias signJWTAndSendRequestType = (OktaTransaction.TransactionContext, [OktaBindJWT.KeyType]) -> Void
+
+    var tryReadSigningKeyHook: tryReadSigningKeyType?
     var signJWTAndSendRequestHook: signJWTAndSendRequestType?
     var factorIdToReturn = "12345"
 
@@ -272,7 +276,7 @@ fileprivate class OktaTransactionPossessionChallengeBasePartialMock: OktaTransac
 
     override func handleSelectAccountStep(transactionContext: TransactionContext,
                                           appEventsQueue: [RemediationEvents]) {
-        transactionContext.enrollment = TestUtils.createAuthenticatorEnrollment(orgHost: URL(string:"okta.okta.com")!,
+        transactionContext.enrollment = TestUtils.createAuthenticatorEnrollment(orgHost: URL(string: "okta.okta.com")!,
                                                                                 orgId: "myOrgId",
                                                                                 enrollmentId: "enrollment_id",
                                                                                 cryptoManager: self.cryptoManager as! OktaCryptoManager)

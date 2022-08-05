@@ -9,76 +9,20 @@
 *
 * See the License for the specific language governing permissions and limitations under the License.
 */
-
+// swiftlint:disable force_unwrapping
 import Foundation
 import OktaLogger
 @testable import DeviceAuthenticator
 
-class MockHTTPClient: HTTPClient {
-    var result: HTTPURLResult?
-    let mockRequest = URLRequest(url: URL(string: "com.okta.example")!)
-
-    typealias requestHookType = (URL, HTTPMethod, [String : String], Data?, [String : String], TimeInterval) -> URLRequestProtocol
-    var requestHook: requestHookType?
-
-    required init(urlSession: URLSession?, logger: OktaLoggerProtocol, userAgent: String?) {
-        super.init(urlSession: urlSession, logger: OktaLoggerMock(), userAgent: userAgent ?? "")
-    }
-
-    convenience init(result: HTTPURLResult) {
-        self.init(urlSession: nil, logger: OktaLoggerMock(), userAgent: nil)
-        self.result = result
-    }
-
-    convenience init(response: HTTPURLResponse? = nil, data: Data? = nil) {
-        let result = HTTPURLResult(request: URLRequest(url: URL(string: "com.okta.example")!), response: response, data: data)
-        self.init(result: result)
-    }
-
-    convenience init(error: Error) {
-        let result = HTTPURLResult(request: URLRequest(url: URL(string: "com.okta.example")!), response: nil, data: nil, error: error)
-        self.init(result: result)
-    }
-
-    override func request(
-        _ url: URL,
-        method: HTTPMethod = .get,
-        urlParameters: [String : String] = [:],
-        bodyParameters: [String : Any] = [:],
-        headers: [String : String] = [:],
-        timeout: TimeInterval = 0
-    ) -> URLRequestProtocol {
-        if let requestHook = requestHook {
-            return requestHook(url, method, urlParameters, nil, headers, timeout)
-        } else {
-            return MockURLRequest(result: result!, headers: headers)
-        }
-    }
-
-    override func request(
-        _ url: URL,
-        method: HTTPMethod = .get,
-        urlParameters: [String : String] = [:],
-        httpBody: Data?,
-        headers: [String : String] = [:],
-        timeout: TimeInterval = 0
-    ) -> URLRequestProtocol {
-        if let requestHook = requestHook {
-            return requestHook(url, method, urlParameters, httpBody, headers, timeout)
-        } else {
-            return MockURLRequest(result: result!, headers: headers, httpBody: httpBody, method: method)
-        }
-    }
-}
-
 class MockURLRequest: URLRequestProtocol {
-    var currentRequest: URLRequest
-    var result: HTTPURLResult?
 
     typealias responseHookType = (@escaping (HTTPURLResult) -> Void) -> Void
-    var responseHook: responseHookType?
     typealias expectedRequestHeadersHook = (String, String) -> Void
+
+    var responseHook: responseHookType?
     var requestHeadersHook: expectedRequestHeadersHook?
+    var currentRequest: URLRequest
+    var result: HTTPURLResult?
 
     required init(urlSession: URLSession, request: URLRequest) {
         self.currentRequest = request
@@ -104,5 +48,63 @@ class MockURLRequest: URLRequestProtocol {
     func addHeader(name: String, value: String) -> Self {
         requestHeadersHook?(name, value)
         return self
+    }
+}
+
+class MockHTTPClient: HTTPClient {
+    var result: HTTPURLResult?
+    let mockRequest = URLRequest(url: URL(string: "com.okta.example")!)
+
+    typealias requestHookType = (URL, HTTPMethod, [String: String], Data?, [String: String], TimeInterval) -> URLRequestProtocol
+
+    var requestHook: requestHookType?
+
+    required init(urlSession: URLSession?, logger: OktaLoggerProtocol, userAgent: String?) {
+        super.init(urlSession: urlSession, logger: OktaLoggerMock(), userAgent: userAgent ?? "")
+    }
+
+    convenience init(result: HTTPURLResult) {
+        self.init(urlSession: nil, logger: OktaLoggerMock(), userAgent: nil)
+        self.result = result
+    }
+
+    convenience init(response: HTTPURLResponse? = nil, data: Data? = nil) {
+        let result = HTTPURLResult(request: URLRequest(url: URL(string: "com.okta.example")!), response: response, data: data)
+        self.init(result: result)
+    }
+
+    convenience init(error: Error) {
+        let result = HTTPURLResult(request: URLRequest(url: URL(string: "com.okta.example")!), response: nil, data: nil, error: error)
+        self.init(result: result)
+    }
+
+    override func request(
+        _ url: URL,
+        method: HTTPMethod = .get,
+        urlParameters: [String: String] = [:],
+        bodyParameters: [String: Any] = [:],
+        headers: [String: String] = [:],
+        timeout: TimeInterval = 0
+    ) -> URLRequestProtocol {
+        if let requestHook = requestHook {
+            return requestHook(url, method, urlParameters, nil, headers, timeout)
+        } else {
+            return MockURLRequest(result: result!, headers: headers)
+        }
+    }
+
+    override func request(
+        _ url: URL,
+        method: HTTPMethod = .get,
+        urlParameters: [String: String] = [:],
+        httpBody: Data?,
+        headers: [String: String] = [:],
+        timeout: TimeInterval = 0
+    ) -> URLRequestProtocol {
+        if let requestHook = requestHook {
+            return requestHook(url, method, urlParameters, httpBody, headers, timeout)
+        } else {
+            return MockURLRequest(result: result!, headers: headers, httpBody: httpBody, method: method)
+        }
     }
 }

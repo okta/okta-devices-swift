@@ -9,7 +9,7 @@
 *
 * See the License for the specific language governing permissions and limitations under the License.
 */
-
+// swiftlint:disable force_unwrapping
 import XCTest
 import LocalAuthentication
 import CryptoTokenKit
@@ -37,8 +37,8 @@ class CryptoManagerTests: XCTestCase {
         secKeyHelperMock = SecKeyHelperMock()
         mut = OktaCryptoManager(accessGroupId: "", secKeyHelper: secKeyHelperMock, logger: OktaLoggerMock())
         var expectedPrivateKeyDeleteAttr = [kSecAttrLabel: privateKeyInternalTag as Any,
-                                        kSecAttrKeyClass: kSecAttrKeyClassPrivate,
-                                        kSecClass: kSecClassKey]
+                                            kSecAttrKeyClass: kSecAttrKeyClassPrivate,
+                                            kSecClass: kSecClassKey]
         if #available(macOS 10.15, iOS 13.0, *) {
             expectedPrivateKeyDeleteAttr[kSecUseDataProtectionKeychain] = kCFBooleanTrue
         }
@@ -97,9 +97,9 @@ class CryptoManagerTests: XCTestCase {
         do {
             _ = try mut?.generate(keyPairWith: .ES256, with: privateKeyInternalTag, useSecureEnclave: false, useBiometrics: false)
             var accessControlError: Unmanaged<CFError>?
-            var privateKeyAttr: [NSObject : Any] = self.baseQuery(with: privateKeyInternalTag)
+            var privateKeyAttr: [NSObject: Any] = self.baseQuery(with: privateKeyInternalTag)
             privateKeyAttr[kSecAttrIsPermanent] = true
-            
+
             #if !targetEnvironment(simulator)
             privateKeyAttr[kSecAttrAccessControl] = SecAccessControlCreateWithFlags(kCFAllocatorDefault,
                                                                                     kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly,
@@ -128,9 +128,9 @@ class CryptoManagerTests: XCTestCase {
         do {
             _ = try mut?.generate(keyPairWith: .ES256, with: privateKeyInternalTag, useSecureEnclave: true, useBiometrics: false)
             var accessControlError: Unmanaged<CFError>?
-            var privateKeyAttr: [NSObject : Any] = self.baseQuery(with: privateKeyInternalTag)
+            var privateKeyAttr: [NSObject: Any] = self.baseQuery(with: privateKeyInternalTag)
             privateKeyAttr[kSecAttrIsPermanent] = true
-            
+
             #if !targetEnvironment(simulator)
             privateKeyAttr[kSecAttrAccessControl] = SecAccessControlCreateWithFlags(kCFAllocatorDefault,
                                                                                     kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly,
@@ -160,9 +160,9 @@ class CryptoManagerTests: XCTestCase {
         do {
             _ = try mut?.generate(keyPairWith: .ES256, with: privateKeyInternalTag, useSecureEnclave: false, useBiometrics: true)
             var accessControlError: Unmanaged<CFError>?
-            var privateKeyAttr: [NSObject : Any] = self.baseQuery(with: privateKeyInternalTag)
+            var privateKeyAttr: [NSObject: Any] = self.baseQuery(with: privateKeyInternalTag)
             privateKeyAttr[kSecAttrIsPermanent] = true
-            
+
             #if !targetEnvironment(simulator)
             privateKeyAttr[kSecAttrAccessControl] = SecAccessControlCreateWithFlags(kCFAllocatorDefault,
                                                                                     kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly,
@@ -191,9 +191,9 @@ class CryptoManagerTests: XCTestCase {
         do {
             _ = try mut?.generate(keyPairWith: .ES256, with: privateKeyInternalTag, useSecureEnclave: true, useBiometrics: true)
             var accessControlError: Unmanaged<CFError>?
-            var privateKeyAttr: [NSObject : Any] = self.baseQuery(with: privateKeyInternalTag)
+            var privateKeyAttr: [NSObject: Any] = self.baseQuery(with: privateKeyInternalTag)
             privateKeyAttr[kSecAttrIsPermanent] = true
-            
+
             #if !targetEnvironment(simulator)
             privateKeyAttr[kSecAttrAccessControl] = SecAccessControlCreateWithFlags(kCFAllocatorDefault,
                                                                                     kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly,

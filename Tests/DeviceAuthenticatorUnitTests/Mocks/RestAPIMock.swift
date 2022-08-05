@@ -9,7 +9,7 @@
 *
 * See the License for the specific language governing permissions and limitations under the License.
 */
-
+// swiftlint:disable force_try
 import Foundation
 @testable import DeviceAuthenticator
 
@@ -66,7 +66,7 @@ class RestAPIMock: OktaRestAPI {
                                                     token: OktaRestAPIToken,
                                                     completion: @escaping (HTTPURLResult?, DeviceAuthenticatorError?) -> Void) {
         if let oktaError = error {
-            completion(nil,  oktaError)
+            completion(nil, oktaError)
             return
         }
 
@@ -82,7 +82,7 @@ class RestAPIMock: OktaRestAPI {
 
     override public func updateAuthenticatorRequest(url: URL, data: Data, token: OktaRestAPIToken, completion: @escaping (HTTPURLResult?, DeviceAuthenticatorError?) -> Void) {
         if let oktaError = error {
-            completion(nil,  oktaError)
+            completion(nil, oktaError)
             return
         }
 
@@ -106,7 +106,7 @@ class RestAPIMock: OktaRestAPI {
                                                data: Data?,
                                                completion: @escaping (_ result: HTTPURLResult?, _ error: DeviceAuthenticatorError?) -> Void) {
         if let oktaError = error {
-            completion(nil,  oktaError)
+            completion(nil, oktaError)
         } else {
             var paramsToVerify: [String: Any] = ["verifyURL": verifyURL.absoluteString]
             paramsToVerify["httpHeaders"] = httpHeaders
@@ -114,7 +114,7 @@ class RestAPIMock: OktaRestAPI {
             let data = try! JSONSerialization.data(withJSONObject: paramsToVerify, options: .prettyPrinted)
             let urlResponse = HTTPURLResponse()
             let resut = HTTPURLResult(request: nil, response: urlResponse, data: data)
-            completion(resut,  nil)
+            completion(resut, nil)
         }
     }
 }

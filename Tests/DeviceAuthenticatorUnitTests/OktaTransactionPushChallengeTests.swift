@@ -9,7 +9,10 @@
 *
 * See the License for the specific language governing permissions and limitations under the License.
 */
-
+// swiftlint:disable force_try
+// swiftlint:disable force_cast
+// swiftlint:disable force_unwrapping
+// swiftlint:disable file_types_order
 import XCTest
 import LocalAuthentication
 @testable import DeviceAuthenticator
@@ -247,7 +250,7 @@ class OktaTransactionPushChallengeTests: XCTestCase {
                                             with: "userVerificationKeyTag",
                                             useSecureEnclave: false,
                                             useBiometrics: false,
-                                            biometricSettings:nil)
+                                            biometricSettings: nil)
         let transaction = try OktaTransactionPushChallengePartialMock(pushChallenge: pushChallenge,
                                                                       applicationConfig: applicationConfig,
                                                                       storageManager: storageMock,
@@ -257,10 +260,10 @@ class OktaTransactionPushChallengeTests: XCTestCase {
                                                                       logger: OktaLoggerMock())
 
         let completionExpectation = expectation(description: "Completion has been called!")
-        
+
         let authContextMock = LAContextMock()
         authContextMock.passcode = true
-        
+
         transaction.localAuthenticationContext = authContextMock
         transaction.tryReadUserVerificationKey(with: enrollment.pushFactor!.factorData.userVerificationKeyTag!, enrollment: enrollment, onIdentityStep: { identityStep in
             XCTFail("Unexpected closure call")
@@ -276,11 +279,12 @@ class OktaTransactionPushChallengeTests: XCTestCase {
 }
 
 fileprivate class OktaTransactionPushChallengePartialMock: OktaTransactionPushChallenge {
-    typealias tryReadSigningKeyType = (OktaBindJWT.KeyType, OktaBindJWT.MethodType, AuthenticatorEnrollment,  (RemediationStep) -> Void, (KeyData?, DeviceAuthenticatorError?) -> Void) -> Void
-    var tryReadSigningKeyHook: tryReadSigningKeyType?
+    typealias tryReadSigningKeyType = (OktaBindJWT.KeyType, OktaBindJWT.MethodType, AuthenticatorEnrollment, (RemediationStep) -> Void, (KeyData?, DeviceAuthenticatorError?) -> Void) -> Void
     typealias signJWTAndSendRequestType = (OktaTransaction.TransactionContext, [OktaBindJWT.KeyType]) -> Void
-    var signJWTAndSendRequestHook: signJWTAndSendRequestType?
     typealias triageRemediationEventsType = ([OktaTransaction.RemediationEvents], OktaTransaction.TransactionContext) -> Void
+
+    var tryReadSigningKeyHook: tryReadSigningKeyType?
+    var signJWTAndSendRequestHook: signJWTAndSendRequestType?
     var triageRemediationEventsHook: triageRemediationEventsType?
 
     override func signJWTAndSendRequest(transactionContext: OktaTransaction.TransactionContext, keysRequirements: [OktaBindJWT.KeyType]) {
@@ -309,7 +313,7 @@ fileprivate class OktaTransactionPushChallengePartialMock: OktaTransactionPushCh
         if let tryReadSigningKeyHook = tryReadSigningKeyHook {
             tryReadSigningKeyHook(keyType, methodType, enrollment, onIdentityStep, onCompletion)
         } else {
-            super.tryReadSigningKey(with: keyType, methodType: methodType, enrollment: enrollment, userVerificationType:userVerificationType, onIdentityStep: onIdentityStep, onCompletion: onCompletion)
+            super.tryReadSigningKey(with: keyType, methodType: methodType, enrollment: enrollment, userVerificationType: userVerificationType, onIdentityStep: onIdentityStep, onCompletion: onCompletion)
         }
     }
 }
@@ -322,7 +326,7 @@ class LAContextMock: LAContext {
     override var biometryType: LABiometryType {
         return biometry
     }
-    
+
     override func canEvaluatePolicy(_ policy: LAPolicy, error: NSErrorPointer) -> Bool {
         switch policy {
         case .deviceOwnerAuthenticationWithBiometrics:

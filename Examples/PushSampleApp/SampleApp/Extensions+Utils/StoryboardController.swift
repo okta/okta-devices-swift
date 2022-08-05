@@ -9,7 +9,7 @@
 *
 * See the License for the specific language governing permissions and limitations under the License.
 */
-
+// swiftlint:disable force_cast
 import UIKit
 
 protocol StoryboardController {
@@ -34,10 +34,10 @@ extension StoryboardController where Self: UIViewController {
     }
 
     func embedInNavigation() -> UINavigationController { UINavigationController(rootViewController: self) }
-    
+
     func customizeButtons() {
         guard #available(iOS 15, *) else {
-            view.subviews.compactMap({$0 as? UIButton}).forEach { button in
+            view.subviews.compactMap({ $0 as? UIButton }).forEach { button in
                 button.layer.cornerRadius = 15.0
                 button.backgroundColor = UIColor.purple
             }

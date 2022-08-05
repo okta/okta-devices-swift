@@ -9,7 +9,7 @@
 *
 * See the License for the specific language governing permissions and limitations under the License.
 */
-
+// swiftlint:disable force_unwrapping
 import XCTest
 @testable import DeviceAuthenticator
 
@@ -39,7 +39,7 @@ class DeleteEnrollmentFlowTests: XCTestCase {
                          GoldenData.authenticatorMetaData(),
                          GoldenData.authenticatorData()]
     }
-    
+
     override func tearDownWithError() throws {
         enrollmentHelper = nil
         httpResponses = nil
@@ -70,7 +70,7 @@ class DeleteEnrollmentFlowTests: XCTestCase {
             XCTFail(error.localizedDescription)
         }
     }
-    
+
     func testDeleteEnrollment_ServerReturns401() throws {
 
         let deleteServer401Expectation = expectation(description: "Delete enrollment should fail")
@@ -123,7 +123,7 @@ class DeleteEnrollmentFlowTests: XCTestCase {
             XCTFail(error.localizedDescription)
         }
     }
-    
+
     func testDeleteEnrollmentLocally_Fail() throws {
 
         let deleteLocallyFailExpectation = expectation(description: "Delete enrollment from device should completed")

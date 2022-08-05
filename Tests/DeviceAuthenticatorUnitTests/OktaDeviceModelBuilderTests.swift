@@ -9,7 +9,7 @@
 *
 * See the License for the specific language governing permissions and limitations under the License.
 */
-
+// swiftlint:disable force_unwrapping
 #if os(iOS)
 import UIKit
 #elseif os(macOS)
@@ -28,7 +28,7 @@ class OktaDeviceModelBuilderTests: XCTestCase {
     private let mockURL = URL(string: "https://example.okta.com")!
 
     var applicationConfig: ApplicationConfig!
-    
+
     override func setUp() {
         super.setUp()
 
@@ -88,7 +88,7 @@ class OktaDeviceModelBuilderTests: XCTestCase {
         XCTAssertEqual(deviceSignalsModel.clientInstanceId, "clientInstanceId")
         XCTAssertEqual(deviceSignalsModel.id, "id")
         XCTAssertNotNil(deviceSignalsModel.deviceAttestation)
-        XCTAssertEqual(deviceSignalsModel.deviceAttestation!["clientInstanceKeyAttestation"],  _OktaCodableArbitaryType.string(jwtGenerator.stringToReturn))
+        XCTAssertEqual(deviceSignalsModel.deviceAttestation!["clientInstanceKeyAttestation"], _OktaCodableArbitaryType.string(jwtGenerator.stringToReturn))
         validateDeviceSignals(deviceSignalsModel)
     }
 
@@ -107,7 +107,7 @@ class OktaDeviceModelBuilderTests: XCTestCase {
         XCTAssertEqual(deviceSignalsModel.clientInstanceId, "clientInstanceId")
         XCTAssertEqual(deviceSignalsModel.id, "id")
         XCTAssertNotNil(deviceSignalsModel.deviceAttestation)
-        XCTAssertEqual(deviceSignalsModel.deviceAttestation!["clientInstanceKeyAttestation"],  _OktaCodableArbitaryType.string(jwtGenerator.stringToReturn))
+        XCTAssertEqual(deviceSignalsModel.deviceAttestation!["clientInstanceKeyAttestation"], _OktaCodableArbitaryType.string(jwtGenerator.stringToReturn))
         validateDeviceSignals(deviceSignalsModel)
     }
 
@@ -165,7 +165,7 @@ class OktaDeviceModelBuilderTests: XCTestCase {
         var customSignals = DeviceSignals(displayName: "customDisplayName")
         customSignals.udid = "udid"
         customSignals.deviceAttestation = ["managementHint": _OktaCodableArbitaryType.string("managementHint")]
-        
+
         let mut = OktaDeviceModelBuilder(orgHost: "https://tenant.okta.com",
                                          applicationConfig: applicationConfig,
                                          requestedSignals: ["screenLockType"],
@@ -178,7 +178,7 @@ class OktaDeviceModelBuilderTests: XCTestCase {
 
         XCTAssertEqual(deviceSignalsModel.udid, "udid")
         XCTAssertEqual(deviceSignalsModel.displayName, "customDisplayName")
-        XCTAssertEqual(deviceSignalsModel.deviceAttestation!["managementHint"],  _OktaCodableArbitaryType.string("managementHint"))
+        XCTAssertEqual(deviceSignalsModel.deviceAttestation!["managementHint"], _OktaCodableArbitaryType.string("managementHint"))
     }
 
     func testBuildForVerify_WithCustomSignals() {
@@ -214,7 +214,7 @@ class OktaDeviceModelBuilderTests: XCTestCase {
         #else
         XCTAssertEqual(deviceSignalsModel.screenLockType, screenLockValue)
         #endif
-        XCTAssertEqual(deviceSignalsModel.deviceAttestation!["managementHint"],  _OktaCodableArbitaryType.string("managementHint"))
+        XCTAssertEqual(deviceSignalsModel.deviceAttestation!["managementHint"], _OktaCodableArbitaryType.string("managementHint"))
     }
 
     func validateDeviceSignals(_ deviceSignalsModel: DeviceSignalsModel) {

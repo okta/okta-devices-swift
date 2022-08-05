@@ -9,7 +9,9 @@
 *
 * See the License for the specific language governing permissions and limitations under the License.
 */
-
+// swiftlint:disable force_cast
+// swiftlint:disable force_unwrapping
+// swiftlint:disable file_types_order
 import XCTest
 import OktaJWT
 import OktaLogger
@@ -375,12 +377,12 @@ class OktaDeviceBindJWTPartialMock: OktaBindJWT {
 
     let ignoreExpValidation: Bool
     let ignoreIatValidation: Bool
-    var optionsToValidate:  [String : Any] = [: ]
+    var optionsToValidate: [String: Any] = [: ]
 
     init(string input: String,
          accessGroupId: String? = ExampleAppConstants.appGroupId,
          validatePayload: Bool = true,
-         customizableHeaders: [String : String] = [: ],
+         customizableHeaders: [String: String] = [:],
          ignoreExpValidation: Bool = true,
          ignoreIatValidation: Bool = true,
          allowedClockSkewInSeconds: Int = 60,
@@ -394,12 +396,11 @@ class OktaDeviceBindJWTPartialMock: OktaBindJWT {
                        customizableHeaders: customizableHeaders,
                        allowedClockSkewInSeconds: allowedClockSkewInSeconds,
                        logger: logger)
-        
     }
 
     override func validateJWT(with jwtString: String,
-                              with options: [String : Any],
-                              with customizableHeaders: [String : String],
+                              with options: [String: Any],
+                              with customizableHeaders: [String: String],
                               logger: OktaLoggerProtocol) throws {
         optionsToValidate = options
         if ignoreExpValidation {

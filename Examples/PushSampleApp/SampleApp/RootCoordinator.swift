@@ -45,7 +45,7 @@ class RootCoordinator {
             beginSignInFlow(on: window)
         }
     }
-    
+
     private func beginWelcomeFlow(on window: UIWindow?) {
         let welcomeVC = WelcomeViewController.loadFromStoryboard(storyboardName: Self.mainStoryboardName)
         welcomeVC.viewModel = WelcomeViewModel(webAuthenticator: oktaWebAuthenticator)
@@ -64,9 +64,9 @@ class RootCoordinator {
         self.navController = navController
         window?.makeKeyAndVisible()
     }
-    
+
     private func beginSignInFlow(on window: UIWindow?) {
-    
+
         let signInViewModel = SignInViewModel(deviceAuthenticator: deviceAuthenticator,
                                               oktaWebAuthProtocol: oktaWebAuthenticator,
                                               logger: logger)
@@ -81,7 +81,7 @@ class RootCoordinator {
         self.navController = navController
         window?.makeKeyAndVisible()
     }
-    
+
     func beginUserConsentFlow(remediationStep: RemediationStepUserConsent) {
         guard let nav = navController else { return }
         let userConsentVC = UserConsentViewController.loadFromStoryboard(storyboardName: Self.mainStoryboardName)
@@ -98,7 +98,7 @@ class RootCoordinator {
             nav.present(userConsentVC, animated: true)
         }
     }
-    
+
     func handleChallengeResponse(userResponse: PushChallengeUserResponse) {
         guard userResponse != .userNotResponded else {
             // Here you would handle if the user didn't respond to the challenge
@@ -107,7 +107,7 @@ class RootCoordinator {
         guard let nav = navController else { return }
         showVerificationAlert(didApprove: userResponse == .userApproved, nav: nav)
     }
-    
+
     private func showVerificationAlert(didApprove: Bool, nav: UINavigationController) {
         var alertTitle: String
         var alertText: String
@@ -134,10 +134,10 @@ class RootCoordinator {
 
         navController?.present(nav, animated: true)
     }
-    
+
     private func beginSignOut() {
         guard let window = navController?.navigationBar.window else { return }
-        
+
         /*
          Depending on your app's behavior, you may want to delete the current enrollment from both server and device when signing out of the User's session. This to avoid receiving the wrong push notifications for the next user that may sign in into your app.
          For this sample app, we are doing this by removing the existing enrollment via the SDK's `delete` API and signing out on completion.
@@ -152,7 +152,7 @@ class RootCoordinator {
             case .success(let token):
                 self?.deviceAuthenticator.delete(enrollment: enrollment, authenticationToken: AuthToken.bearer(token.accessToken), completion: { error in
                     self?.signOut(from: window)
-                    
+
                     if case .serverAPIError = error {
                         try? enrollment.deleteFromDevice()
                     }
@@ -163,9 +163,9 @@ class RootCoordinator {
                 self?.logger?.error(eventName: LoggerEvent.account.rawValue, message: error.errorDescription)
             }
         }
-        
+
     }
-    
+
     private func signOut(from window: UIWindow) {
         oktaWebAuthenticator.signOut(from: window) { [weak self] result in
             switch result {

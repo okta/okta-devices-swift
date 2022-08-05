@@ -14,7 +14,7 @@ import XCTest
 @testable import DeviceAuthenticator
 
 class ServerErrorCodesTests: XCTestCase {
-    
+
     ///  Verify that API errors which indicate permanent failure are marked as deleted
     func testIsResourceDeleted() {
         var errorCode = ServerErrorCode(raw: "E0000154")
@@ -42,7 +42,7 @@ class ServerErrorCodesTests: XCTestCase {
         errorCode = ServerErrorCode(raw: "E0000180")
         XCTAssertFalse(errorCode.isResourceDeleted)
     }
-    
+
     ///  Verify that expected errors match those listed
     ///  https://developer.okta.com/docs/reference/error-codes/
     func testErrorExpectations() {
@@ -56,7 +56,7 @@ class ServerErrorCodesTests: XCTestCase {
         verifyErrorCode("E0000156", expected: .userDeleted)
         verifyErrorCode("E0000180", expected: .enrollmentSuspended)
     }
-    
+
     private func verifyErrorCode(_ code: String, expected: ServerErrorCode) {
         XCTAssertEqual(code, expected.rawValue)
         let errorCode = ServerErrorCode(raw: code)
