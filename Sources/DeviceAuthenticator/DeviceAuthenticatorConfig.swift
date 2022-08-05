@@ -22,7 +22,14 @@ public struct DeviceAuthenticatorConfig {
     public let oidcClientId: String
 
     public init(orgURL: URL, oidcClientId: String) {
-        self.orgURL = orgURL
+        let scheme = "https://"
+        var preprocessURL = orgURL
+        if preprocessURL.scheme == nil {
+            preprocessURL = URL(string: scheme + preprocessURL.absoluteString) ?? orgURL
+            self.orgURL = URL(string: scheme + preprocessURL.hostString) ?? orgURL
+        } else {
+            self.orgURL = URL(string: scheme + preprocessURL.hostString) ?? orgURL
+        }
         self.oidcClientId = oidcClientId
         self.authenticatorKey = InternalConstants.customAuthenticatorKey
     }
