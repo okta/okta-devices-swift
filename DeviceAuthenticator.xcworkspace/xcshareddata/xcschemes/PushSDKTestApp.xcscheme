@@ -9,14 +9,14 @@
          <BuildActionEntry
             buildForTesting = "YES"
             buildForRunning = "YES"
-            buildForProfiling = "NO"
-            buildForArchiving = "NO"
-            buildForAnalyzing = "NO">
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "7FFB5FF9286A7F4C006BC548"
-               BuildableName = "DeviceAuthenticatorUnitTests.xctest"
-               BlueprintName = "DeviceAuthenticatorUnitTests"
+               BlueprintIdentifier = "7F8833FB287C763A0034CA5E"
+               BuildableName = "PushSDKTestApp.app"
+               BlueprintName = "PushSDKTestApp"
                ReferencedContainer = "container:DeviceAuthenticator.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -26,7 +26,18 @@
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      shouldUseLaunchSchemeArgsEnv = "YES">
+      shouldUseLaunchSchemeArgsEnv = "YES"
+      codeCoverageEnabled = "YES"
+      onlyGenerateCoverageForSpecifiedTargets = "YES">
+      <CodeCoverageTargets>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "7FFB5F73285BA94A006BC548"
+            BuildableName = "DeviceAuthenticator.framework"
+            BlueprintName = "DeviceAuthenticator"
+            ReferencedContainer = "container:DeviceAuthenticator.xcodeproj">
+         </BuildableReference>
+      </CodeCoverageTargets>
       <Testables>
          <TestableReference
             skipped = "NO">
@@ -37,32 +48,16 @@
                BlueprintName = "DeviceAuthenticatorUnitTests"
                ReferencedContainer = "container:DeviceAuthenticator.xcodeproj">
             </BuildableReference>
-            <SkippedTests>
-               <Test
-                  Identifier = "CryptoManagerTests/testEncryptionManager_BasicOperations()">
-               </Test>
-               <Test
-                  Identifier = "DeviceAuthenticatorTests">
-               </Test>
-               <Test
-                  Identifier = "OktaSQLiteEncryptionManagerTests">
-               </Test>
-               <Test
-                  Identifier = "OktaSecureStorageTests">
-               </Test>
-               <Test
-                  Identifier = "OktaSharedSQLiteTests">
-               </Test>
-               <Test
-                  Identifier = "OktaStorageManagerTests">
-               </Test>
-               <Test
-                  Identifier = "TransactionPossessionChallengeBaseTests">
-               </Test>
-               <Test
-                  Identifier = "TransactionTests">
-               </Test>
-            </SkippedTests>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "7FFB600F286A80CF006BC548"
+               BuildableName = "DeviceAuthenticatorFunctionalTests.xctest"
+               BlueprintName = "DeviceAuthenticatorFunctionalTests"
+               ReferencedContainer = "container:DeviceAuthenticator.xcodeproj">
+            </BuildableReference>
          </TestableReference>
       </Testables>
    </TestAction>
@@ -93,6 +88,16 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "7F8833FB287C763A0034CA5E"
+            BuildableName = "PushSDKTestApp.app"
+            BlueprintName = "PushSDKTestApp"
+            ReferencedContainer = "container:DeviceAuthenticator.xcodeproj">
+         </BuildableReference>
+      </BuildableProductRunnable>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

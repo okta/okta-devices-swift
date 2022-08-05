@@ -9,28 +9,28 @@
          <BuildActionEntry
             buildForTesting = "YES"
             buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "7FFB5F73285BA94A006BC548"
-               BuildableName = "DeviceAuthenticator.framework"
-               BlueprintName = "DeviceAuthenticator"
-               ReferencedContainer = "container:DeviceAuthenticator.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "NO"
             buildForProfiling = "NO"
             buildForArchiving = "NO"
             buildForAnalyzing = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "7FFB600F286A80CF006BC548"
-               BuildableName = "DeviceAuthenticatorFunctionalTests.xctest"
-               BlueprintName = "DeviceAuthenticatorFunctionalTests"
+               BlueprintIdentifier = "7FFB5FF9286A7F4C006BC548"
+               BuildableName = "DeviceAuthenticatorUnitTests.xctest"
+               BlueprintName = "DeviceAuthenticatorUnitTests"
+               ReferencedContainer = "container:DeviceAuthenticator.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "NO"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "7F8833FB287C763A0034CA5E"
+               BuildableName = "PushSDKTestApp.app"
+               BlueprintName = "PushSDKTestApp"
                ReferencedContainer = "container:DeviceAuthenticator.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -51,16 +51,32 @@
                BlueprintName = "DeviceAuthenticatorUnitTests"
                ReferencedContainer = "container:DeviceAuthenticator.xcodeproj">
             </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "7FFB600F286A80CF006BC548"
-               BuildableName = "DeviceAuthenticatorFunctionalTests.xctest"
-               BlueprintName = "DeviceAuthenticatorFunctionalTests"
-               ReferencedContainer = "container:DeviceAuthenticator.xcodeproj">
-            </BuildableReference>
+            <SkippedTests>
+               <Test
+                  Identifier = "CryptoManagerTests/testEncryptionManager_BasicOperations()">
+               </Test>
+               <Test
+                  Identifier = "DeviceAuthenticatorTests">
+               </Test>
+               <Test
+                  Identifier = "OktaSQLiteEncryptionManagerTests">
+               </Test>
+               <Test
+                  Identifier = "OktaSecureStorageTests">
+               </Test>
+               <Test
+                  Identifier = "OktaSharedSQLiteTests">
+               </Test>
+               <Test
+                  Identifier = "OktaStorageManagerTests">
+               </Test>
+               <Test
+                  Identifier = "TransactionPossessionChallengeBaseTests">
+               </Test>
+               <Test
+                  Identifier = "TransactionTests">
+               </Test>
+            </SkippedTests>
          </TestableReference>
       </Testables>
    </TestAction>
@@ -74,6 +90,16 @@
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "7F8833FB287C763A0034CA5E"
+            BuildableName = "PushSDKTestApp.app"
+            BlueprintName = "PushSDKTestApp"
+            ReferencedContainer = "container:DeviceAuthenticator.xcodeproj">
+         </BuildableReference>
+      </BuildableProductRunnable>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
@@ -84,9 +110,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "7FFB5F73285BA94A006BC548"
-            BuildableName = "DeviceAuthenticator.framework"
-            BlueprintName = "DeviceAuthenticator"
+            BlueprintIdentifier = "7FFB5FF9286A7F4C006BC548"
+            BuildableName = "DeviceAuthenticatorUnitTests.xctest"
+            BlueprintName = "DeviceAuthenticatorUnitTests"
             ReferencedContainer = "container:DeviceAuthenticator.xcodeproj">
          </BuildableReference>
       </MacroExpansion>

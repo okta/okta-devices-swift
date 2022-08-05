@@ -7,28 +7,74 @@ on:
     branches: [ master ]
 
 jobs:
-#### Uncomment once we move the code to this public repo.
   SampleApp:
-    runs-on: macos-11
-    env:
-      DEVELOPER_DIR: /Applications/Xcode_13.1.app/Contents/Developer
+    runs-on: macos-12
     steps:
     - uses: actions/checkout@v2
     - name: install pod
       run: cd Examples/PushSampleApp; pod install   
     - name: iOS Push Sample App
-      run: set -o pipefail && xcodebuild -workspace ./Examples/PushSampleApp/SampleApp.xcworkspace -scheme "SampleApp" -destination "platform=iOS Simulator,OS=latest,name=iPhone 11" clean build
-  Tests:
-    runs-on: macos-11
+      run: set -o pipefail && xcodebuild -workspace ./Examples/PushSampleApp/SampleApp.xcworkspace -scheme "SampleApp" -destination "platform=iOS Simulator,OS=latest,name=iPhone 12" clean build
+  BuildDeviceAuthenticator:
+    runs-on: macos-12
     env:
-      DEVELOPER_DIR: /Applications/Xcode_13.1.app/Contents/Developer
+      DERIVED_DATA_PATH: "DerivedData"
     steps:
     - uses: actions/checkout@v2
     - name: Install pod
       run: pod install
     - name: Build DeviceAuthenticator target
-      run: set -o pipefail && xcodebuild -workspace DeviceAuthenticator.xcworkspace -scheme "DeviceAuthenticator" -destination "platform=iOS Simulator,OS=latest,name=iPhone 11" clean build-for-testing -derivedDataPath "~/build"
+      run: set -o pipefail && xcodebuild -workspace DeviceAuthenticator.xcworkspace -scheme "PushSDKTestApp" -derivedDataPath $DERIVED_DATA_PATH -destination "platform=iOS Simulator,OS=latest,name=iPhone 12" clean build-for-testing -verbose
+    - name: Upload products
+      uses: actions/upload-artifact@v1
+      with:
+        name: Products
+        path: DerivedData/Build/Products
+  UnitTests:
+    runs-on: macos-12
+    env:
+      DERIVED_DATA_PATH: "DerivedData"
+    needs: BuildDeviceAuthenticator
+    steps:
+    - name: Checkout project
+      uses: actions/checkout@v2
+    - name: Download products
+      uses: actions/download-artifact@v1
+      with:
+        name: Products
     - name: Unit Tests
-      run: set -o pipefail && xcodebuild -workspace DeviceAuthenticator.xcworkspace -scheme "DeviceAuthenticatorUnitTests" -destination "platform=iOS Simulator,OS=latest,name=iPhone 11" test-without-building -derivedDataPath "~/build"
+      #run: set -o pipefail && xcodebuild -only-testing:DeviceAuthenticatorUnitTests -destination "platform=iOS Simulator,OS=latest,name=iPhone 12" -xctestrun $(find . -type f -name "*.xctestrun") -derivedDataPath $DERIVED_DATA_PATH test-without-building
+      run: |
+        mkdir -p DerivedData/Build
+        mv ./Products ./DerivedData/Build
+        set -o pipefail && xcodebuild -workspace DeviceAuthenticator.xcworkspace -scheme "DeviceAuthenticatorUnitTests" -derivedDataPath DerivedData -destination "platform=iOS Simulator,OS=latest,name=iPhone 12" test-without-building
+  FunctionalTests:
+    runs-on: macos-12
+    env:
+      DERIVED_DATA_PATH: "DerivedData"
+    needs: BuildDeviceAuthenticator
+    steps:
+    - name: Checkout project
+      uses: actions/checkout@v2
+    - name: Download products
+      uses: actions/download-artifact@v1
+      with:
+        name: Products
+    - name: Set up DerivedData
+      run: |
+        mkdir -p DerivedData/Build
+        mv ./Products DerivedData/Build
     - name: Functional Tests
-      run: set -o pipefail && xcodebuild -workspace DeviceAuthenticator.xcworkspace -scheme "DeviceAuthenticatorFunctionalTests" -destination "platform=iOS Simulator,OS=latest,name=iPhone 11" test-without-building -derivedDataPath "~/build"
+      run: set -o pipefail && xcodebuild -workspace DeviceAuthenticator.xcworkspace -scheme "DeviceAuthenticatorFunctionalTests" -derivedDataPath DerivedData -destination "platform=iOS Simulator,OS=latest,name=iPhone 12" test-without-building
+  CodeCoverage:
+    runs-on: macos-12
+    steps:
+    - name: Checkout project
+      uses: actions/checkout@v2
+    - name: Install xcov
+      run: gem install xcov
+    - name: Run code coverage for all tests
+      run: |
+        pod install
+        xcodebuild -workspace DeviceAuthenticator.xcworkspace -scheme "DeviceAuthenticator" -derivedDataPath CodeCov -destination "platform=iOS Simulator,OS=latest,name=iPhone 12" clean build test -quiet
+        xcov -s DeviceAuthenticator -j CodeCov
