@@ -645,9 +645,9 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
         if let pushRequestModel = enrolledFactors?.first(where: { $0.methodType == .push })?.requestModel {
             XCTAssertNil(pushRequestModel.isFipsCompliant)
             XCTAssertEqual(pushRequestModel.keys?.proofOfPossession?["okta:isFipsCompliant"],
-                           .bool(OktaEnvironment.isSecureEnclaveAvailable()))
+                           .bool(OktaEnvironment.canUseSecureEnclave()))
             XCTAssertEqual(pushRequestModel.keys?.userVerification?.value()?["okta:isFipsCompliant"],
-                           .bool(OktaEnvironment.isSecureEnclaveAvailable()))
+                           .bool(OktaEnvironment.canUseSecureEnclave()))
         } else {
             XCTFail()
         }

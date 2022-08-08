@@ -141,7 +141,7 @@ class OktaDeviceModelBuilder {
         var additionalParameters: [String: _OktaCodableArbitaryType] = [:]
         additionalParameters["okta:kpr"] = .string(OktaEnvironment.canUseSecureEnclave() ? "HARDWARE" : "SOFTWARE")
         #if os(iOS)
-        additionalParameters["okta:isFipsCompliant"] = .bool(OktaEnvironment.isSecureEnclaveAvailable())
+        additionalParameters["okta:isFipsCompliant"] = .bool(OktaEnvironment.canUseSecureEnclave())
         #endif
 
         if let secKey = try? cryptoManager.generate(keyPairWith: .ES256,

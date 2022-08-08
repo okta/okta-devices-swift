@@ -59,7 +59,7 @@ class OktaDeviceModelBuilderTests: XCTestCase {
         XCTAssertNotNil(deviceSignalsModel.screenLockType)
         #else
         XCTAssertEqual(deviceSignalsModel.clientInstanceKey!["okta:isFipsCompliant"],
-                       _OktaCodableArbitaryType.bool(OktaEnvironment.isSecureEnclaveAvailable()))
+                       _OktaCodableArbitaryType.bool(OktaEnvironment.canUseSecureEnclave()))
         XCTAssertNil(deviceSignalsModel.diskEncryptionType)
         XCTAssertEqual(deviceSignalsModel.screenLockType, BasicSignalsHelper().screenLockType)
         #endif

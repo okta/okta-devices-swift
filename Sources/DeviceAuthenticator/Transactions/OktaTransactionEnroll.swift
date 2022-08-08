@@ -428,7 +428,7 @@ class OktaTransactionEnroll: OktaTransaction {
 
         additionalParameters["okta:kpr"] = .string(keyProtection)
         #if os(iOS)
-        additionalParameters["okta:isFipsCompliant"] = .bool(OktaEnvironment.isSecureEnclaveAvailable())
+        additionalParameters["okta:isFipsCompliant"] = .bool(OktaEnvironment.canUseSecureEnclave())
         #endif
 
         guard let jwk = try jwkGenerator.generate(for: secKey,

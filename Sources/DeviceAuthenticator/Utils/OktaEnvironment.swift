@@ -39,18 +39,6 @@ class OktaEnvironment {
 #endif
     }
 
-    class func isSecureEnclaveAvailable() -> Bool {
-#if os(iOS)
-    #if targetEnvironment(simulator)
-        return false
-    #else
-        return SecureEnclave.isAvailable
-    #endif
-#else
-        return false
-#endif
-    }
-
     class func hasUserVerificationCapabilites(laContext: LAContext = LAContext()) -> (result: Bool, error: NSError?) {
         var error: NSError?
         let result = laContext.canEvaluatePolicy(.deviceOwnerAuthentication, error: &error)
