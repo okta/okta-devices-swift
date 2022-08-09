@@ -28,7 +28,8 @@ class GoldenData {
             "lastUpdated": "2017-01-24T19:52:34.000Z",
             "settings": {
                 "appInstanceId": "oidcAppId1234",
-                "userVerification": "preferred"
+                "userVerification": "preferred",
+                "oauthClientId": "someOAuth2ClientId"
             },
             "_links": {
                 "enroll": {
@@ -82,7 +83,8 @@ class GoldenData {
             "lastUpdated": "2017-01-24T19:52:34.000Z",
             "settings": {
                 "appInstanceId": "oidcAppId1234",
-                "userVerification": "preferred"
+                "userVerification": "preferred",
+                "oauthClientId": "someOAuth2ClientId"
             },
             "_links": {
                 "self": {

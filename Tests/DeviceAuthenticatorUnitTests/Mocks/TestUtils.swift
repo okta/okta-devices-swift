@@ -129,7 +129,7 @@ class TestUtils {
                                                 methods: [AuthenticatorMethod] = [.push, .signedNonce]) -> AuthenticatorMetaDataModel {
         let settings = AuthenticatorMetaDataModel.Settings(appInstanceId: nil,
                                                            userVerification: userVerification,
-                                                           oauthCliendId: nil)
+                                                           oauthClientId: nil)
 
         var embeddedMethods = [AuthenticatorMetaDataModel.Method]()
         for method in methods {

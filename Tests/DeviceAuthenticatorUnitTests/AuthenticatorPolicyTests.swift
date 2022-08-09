@@ -31,22 +31,22 @@ class AuthenticatorPolicyTests: XCTestCase {
         XCTAssertEqual(policy.userVerificationSetting, .preferred)
 
         policy = AuthenticatorPolicy(metadata: createMetadataWithSettings(
-                                        AuthenticatorMetaDataModel.Settings(appInstanceId: nil, userVerification: nil, oauthCliendId: nil)
+                                        AuthenticatorMetaDataModel.Settings(appInstanceId: nil, userVerification: nil, oauthClientId: nil)
         ))
         XCTAssertEqual(policy.userVerificationSetting, .preferred)
 
         policy = AuthenticatorPolicy(metadata: createMetadataWithSettings(
-            AuthenticatorMetaDataModel.Settings(appInstanceId: nil, userVerification: .preferred, oauthCliendId: nil)
+            AuthenticatorMetaDataModel.Settings(appInstanceId: nil, userVerification: .preferred, oauthClientId: nil)
         ))
         XCTAssertEqual(policy.userVerificationSetting, .preferred)
 
         policy = AuthenticatorPolicy(metadata: createMetadataWithSettings(
-            AuthenticatorMetaDataModel.Settings(appInstanceId: nil, userVerification: .required, oauthCliendId: nil)
+            AuthenticatorMetaDataModel.Settings(appInstanceId: nil, userVerification: .required, oauthClientId: nil)
         ))
         XCTAssertEqual(policy.userVerificationSetting, .required)
 
         policy = AuthenticatorPolicy(metadata: createMetadataWithSettings(
-            AuthenticatorMetaDataModel.Settings(appInstanceId: nil, userVerification: .unknown(""), oauthCliendId: nil)
+            AuthenticatorMetaDataModel.Settings(appInstanceId: nil, userVerification: .unknown(""), oauthClientId: nil)
         ))
         XCTAssertEqual(policy.userVerificationSetting, .unknown(""))
     }

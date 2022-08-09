@@ -26,7 +26,7 @@ struct AuthenticatorMetaDataModel: Codable {
     struct Settings: Codable {
         let appInstanceId: String?
         let userVerification: UserVerificationSetting?
-        let oauthCliendId: String?
+        let oauthClientId: String?
 
         public enum UserVerificationSetting {
             case preferred
