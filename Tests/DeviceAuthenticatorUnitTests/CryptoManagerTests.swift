@@ -39,9 +39,11 @@ class CryptoManagerTests: XCTestCase {
         var expectedPrivateKeyDeleteAttr = [kSecAttrLabel: privateKeyInternalTag as Any,
                                             kSecAttrKeyClass: kSecAttrKeyClassPrivate,
                                             kSecClass: kSecClassKey]
-        if #available(macOS 10.15, iOS 13.0, *) {
+        #if os(macOS)
+        if #available(macOS 10.15, *) {
             expectedPrivateKeyDeleteAttr[kSecUseDataProtectionKeychain] = kCFBooleanTrue
         }
+        #endif
         expectedListPublicPrivateDeleteAttr = [self.baseQuery(with: privateKeyInternalTag) as CFDictionary]
     }
 
@@ -106,9 +108,11 @@ class CryptoManagerTests: XCTestCase {
                                                                                     [],
                                                                                     &accessControlError) as Any
             #endif
-            if #available(macOS 10.15, iOS 13.0, *) {
+            #if os(macOS)
+            if #available(macOS 10.15, *) {
                 privateKeyAttr[kSecUseDataProtectionKeychain] = true
             }
+            #endif
 
             var keyPairAttr = self.baseQuery(with: privateKeyInternalTag)
             keyPairAttr[kSecPrivateKeyAttrs] = privateKeyAttr as Any
@@ -137,9 +141,11 @@ class CryptoManagerTests: XCTestCase {
                                                                                     [.privateKeyUsage],
                                                                                     &accessControlError) as Any
             #endif
-            if #available(macOS 10.15, iOS 13.0, *) {
+            #if os(macOS)
+            if #available(macOS 10.15, *) {
                 privateKeyAttr[kSecUseDataProtectionKeychain] = true
             }
+            #endif
 
             var keyPairAttr = self.baseQuery(with: privateKeyInternalTag)
             keyPairAttr[kSecPrivateKeyAttrs] = privateKeyAttr as Any
@@ -169,9 +175,11 @@ class CryptoManagerTests: XCTestCase {
                                                                                     [.biometryCurrentSet],
                                                                                     &accessControlError) as Any
             #endif
-            if #available(macOS 10.15, iOS 13.0, *) {
+            #if os(macOS)
+            if #available(macOS 10.15, *) {
                 privateKeyAttr[kSecUseDataProtectionKeychain] = true
             }
+            #endif
 
             var keyPairAttr = self.baseQuery(with: privateKeyInternalTag)
             keyPairAttr[kSecPrivateKeyAttrs] = privateKeyAttr as Any
@@ -200,9 +208,11 @@ class CryptoManagerTests: XCTestCase {
                                                                                     [.privateKeyUsage, .biometryCurrentSet],
                                                                                     &accessControlError) as Any
             #endif
+            #if os(macOS)
             if #available(macOS 10.15, iOS 13.0, *) {
                 privateKeyAttr[kSecUseDataProtectionKeychain] = true
             }
+            #endif
 
             var keyPairAttr = self.baseQuery(with: privateKeyInternalTag)
             keyPairAttr[kSecPrivateKeyAttrs] = privateKeyAttr as Any
@@ -261,9 +271,11 @@ class CryptoManagerTests: XCTestCase {
 
     func baseQuery(with tag: String) -> [NSObject: Any] {
         var query: [NSObject: Any] = [kSecClass: kSecClassKey, kSecAttrApplicationTag: tag]
+        #if os(macOS)
         if #available(macOS 10.15, iOS 13.0, *) {
             query[kSecUseDataProtectionKeychain] = kCFBooleanTrue
         }
+        #endif
         return query
     }
 

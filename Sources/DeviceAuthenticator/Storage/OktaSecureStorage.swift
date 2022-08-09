@@ -153,9 +153,11 @@ class OktaSecureStorage {
             let searchQuery = findQuery(for: key, accessGroup: accessGroup)
             query.removeValue(forKey: kSecClass as String)
             query.removeValue(forKey: kSecAttrService as String)
-            if #available(macOS 10.15, iOS 13.0, *) {
+            #if os(macOS)
+            if #available(macOS 10.15, *) {
                 query.removeValue(forKey: kSecUseDataProtectionKeychain as String)
             }
+            #endif
             errorCode = SecItemUpdate(searchQuery as CFDictionary, query as CFDictionary)
             if errorCode != noErr {
                 throw NSError(domain: OktaSecureStorage.keychainErrorDomain, code: Int(errorCode), userInfo: nil)
@@ -319,9 +321,11 @@ class OktaSecureStorage {
         var query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword as String,
             kSecAttrService as String: "OktaSecureStorage"]
-        if #available(macOS 10.15, iOS 13.0, *) {
+        #if os(macOS)
+        if #available(macOS 10.15, *) {
             query[kSecUseDataProtectionKeychain as String] = kCFBooleanTrue
         }
+        #endif
         return query
     }
 

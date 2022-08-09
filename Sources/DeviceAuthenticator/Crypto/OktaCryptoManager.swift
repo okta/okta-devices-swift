@@ -183,9 +183,12 @@ class OktaCryptoManager: OktaSharedCryptoProtocol {
 
     func baseQuery(with tag: String) -> [NSObject: Any] {
         var query: [NSObject: Any] = [kSecClass: kSecClassKey, kSecAttrApplicationTag: tag]
-        if #available(macOS 10.15, iOS 13.0, *) {
+        #if os(macOS)
+        if #available(macOS 10.15, *) {
+            logger.error(eventName: "CRYPTO", message: "Adding kSecUseDataProtectionKeychain key")
             query[kSecUseDataProtectionKeychain] = kCFBooleanTrue
         }
+        #endif
         return query
     }
 }
