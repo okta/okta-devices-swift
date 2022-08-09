@@ -31,3 +31,15 @@ jobs:
       run: pod install
     - name: Functional Tests
       run: set -o pipefail && xcodebuild -workspace DeviceAuthenticator.xcworkspace -scheme "DeviceAuthenticatorFunctionalTests" -destination "platform=iOS Simulator,OS=latest,name=iPhone 12" test | xcpretty
+  CodeCoverage:
+    runs-on: macos-12
+    steps:
+    - name: Checkout project
+      uses: actions/checkout@v2
+    - name: Install xcov
+      run: gem install xcov
+    - name: Run code coverage for all tests
+      run: |
+        pod install
+        xcodebuild -workspace DeviceAuthenticator.xcworkspace -scheme "DeviceAuthenticatorFramework" -derivedDataPath CodeCov -destination "platform=iOS Simulator,OS=latest,name=iPhone 12" -enableCodeCoverage YES clean build test -quiet
+        xcov -s DeviceAuthenticatorFramework -j CodeCov
