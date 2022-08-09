@@ -25,6 +25,7 @@ class AuthenticatorObjectTests: XCTestCase {
         XCTAssertEqual(metaData.key, "okta_verify")
         XCTAssertEqual(metaData.type, "APP")
         XCTAssertEqual(metaData._embedded.methods.count, 3)
+        XCTAssertEqual(metaData.settings?.oauthClientId, "someOAuth2ClientId")
         metaData._embedded.methods.forEach({ authenticatorType in
             if authenticatorType.type == .totp {
                 XCTAssertEqual(authenticatorType.status, "INACTIVE")
