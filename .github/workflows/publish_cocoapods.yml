@@ -25,10 +25,10 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     - uses: actions/checkout@v2
-    - name: Create tag
-      run: |
-          git tag ${{ github.event.inputs.tag }}
-          git push origin ${{ github.event.inputs.tag }}
+    #- name: Create tag
+    #  run: |
+    #      git tag ${{ github.event.inputs.tag }}
+    #      git push origin ${{ github.event.inputs.tag }}
     - name: Create session
       run: pod trunk register ${{ github.event.inputs.email }}
     - name: Pod lint
