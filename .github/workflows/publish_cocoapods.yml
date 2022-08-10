@@ -24,6 +24,7 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
+    - uses: actions/checkout@v2
     - name: Create tag
       run: |
           git tag ${{ github.event.inputs.tag }}
@@ -32,3 +33,5 @@ jobs:
       run: pod trunk register ${{ github.event.inputs.email }}
     - name: Pod lint
       run: pod lib lint
+    - name: Pod publish
+      run: pod trunk push DeviceAuthenticator.podspec
