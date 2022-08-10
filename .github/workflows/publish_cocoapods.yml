@@ -29,7 +29,9 @@ jobs:
       run: |
           git tag ${{ github.event.inputs.tag }}
           git push origin ${{ github.event.inputs.tag }}
-    #- name: Create session
-    #  run: pod trunk register ${{ github.event.inputs.email }}
-    #- name: Pod lint
-    #  run: pod lib lint
+    - name: Create session
+      run: pod trunk register ${{ github.event.inputs.email }}
+    - name: Pod lint
+      run: pod lib lint
+    - name: Pod publish
+      run: pod trunk push DeviceAuthenticator.podspec
