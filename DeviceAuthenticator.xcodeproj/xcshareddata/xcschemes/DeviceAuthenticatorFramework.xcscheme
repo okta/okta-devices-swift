@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "7FFB5F73285BA94A006BC548"
-               BuildableName = "DeviceAuthenticatorFramework.framework"
+               BuildableName = "DeviceAuthenticator.framework"
                BlueprintName = "DeviceAuthenticator"
                ReferencedContainer = "container:DeviceAuthenticator.xcodeproj">
             </BuildableReference>
@@ -47,7 +47,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "7FFB5F73285BA94A006BC548"
-            BuildableName = "DeviceAuthenticatorFramework.framework"
+            BuildableName = "DeviceAuthenticator.framework"
             BlueprintName = "DeviceAuthenticator"
             ReferencedContainer = "container:DeviceAuthenticator.xcodeproj">
          </BuildableReference>
@@ -96,7 +96,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "7FFB5F73285BA94A006BC548"
-            BuildableName = "DeviceAuthenticatorFramework.framework"
+            BuildableName = "DeviceAuthenticator.framework"
             BlueprintName = "DeviceAuthenticator"
             ReferencedContainer = "container:DeviceAuthenticator.xcodeproj">
          </BuildableReference>
