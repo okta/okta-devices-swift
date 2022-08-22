@@ -35,7 +35,11 @@ Locate `Okta.plist` file and update the following values:
     ```ruby
     cd Examples/PushSampleApp/
     ```
-    Then type:
+    Make sure you have the latest dependencies locally by running:
+    ```ruby
+    pod repo update
+    ```
+    Then run this to install the pod:
     ```ruby
     pod install
     ```

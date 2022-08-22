@@ -35,7 +35,6 @@ whitelist_rules:
   - file_header
 
   # Order
-  - file_types_order
   - modifier_order
   - protocol_property_accessors_order
 
@@ -110,9 +109,11 @@ class_delegate_protocol:
   severity: error
 cyclomatic_complexity:
   severity: error
+cyclomatic_complexity: 15
 
 # Paths to ignore
 excluded:
 - Pods
 - Core
+- Tests
 - Examples/PushSampleApp/Pods
