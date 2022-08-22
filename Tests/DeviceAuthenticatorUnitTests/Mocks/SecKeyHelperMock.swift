@@ -9,8 +9,7 @@
 *
 * See the License for the specific language governing permissions and limitations under the License.
 */
-// swiftlint:disable force_cast
-// swiftlint:disable force_unwrapping
+
 import Foundation
 @testable import DeviceAuthenticator
 

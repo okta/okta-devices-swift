@@ -9,9 +9,6 @@
 *
 * See the License for the specific language governing permissions and limitations under the License.
 */
-// swiftlint:disable force_cast
-// swiftlint:disable force_unwrapping
-// swiftlint:disable file_types_order
 import XCTest
 import OktaJWT
 import OktaLogger
