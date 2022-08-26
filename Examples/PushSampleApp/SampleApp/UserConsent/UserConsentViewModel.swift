@@ -28,7 +28,7 @@ protocol UserConsentViewModelProtocol {
 
 struct UserConsentViewModel: UserConsentViewModelProtocol {
 
-    private let remediationStep: RemediationStepUserConsent
+    let remediationStep: RemediationStepUserConsent
 
     var onRemediationComplete: () -> Void = {}
 
