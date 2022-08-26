@@ -22,6 +22,7 @@
 		7F808C292811C5CC004F7EB0 /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F808C282811C5CC004F7EB0 /* SettingsViewModel.swift */; };
 		7F808C2B2811C7C6004F7EB0 /* SettingsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F808C2A2811C7C6004F7EB0 /* SettingsCell.swift */; };
 		7F808C2F2811CA29004F7EB0 /* SettingsCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F808C2E2811CA29004F7EB0 /* SettingsCellModel.swift */; };
+		7FA3180928B8351D00770C88 /* MailService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FA3180828B8351D00770C88 /* MailService.swift */; };
 		7FA732AF27F6190000C38E10 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FA732AE27F6190000C38E10 /* AppDelegate.swift */; };
 		7FA732B327F6190000C38E10 /* WebSignInViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FA732B227F6190000C38E10 /* WebSignInViewController.swift */; };
 		7FA732BB27F6190200C38E10 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7FA732B927F6190200C38E10 /* LaunchScreen.storyboard */; };
@@ -35,7 +36,6 @@
 		7FD4370C27FE580E00B0717C /* StoryboardController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FD4370B27FE580E00B0717C /* StoryboardController.swift */; };
 		7FD4371027FE6A9100B0717C /* OktaWebAuthProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FD4370F27FE6A9100B0717C /* OktaWebAuthProtocol.swift */; };
 		7FD4371227FE7FDA00B0717C /* UserDefaults+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FD4371127FE7FDA00B0717C /* UserDefaults+Extensions.swift */; };
-		BD8D169B94FE20E05EE97E2B /* libPods-SampleApp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C364D2999DF9D37AC1BBA629 /* libPods-SampleApp.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -62,6 +62,7 @@
 		7F808C282811C5CC004F7EB0 /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
 		7F808C2A2811C7C6004F7EB0 /* SettingsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsCell.swift; sourceTree = "<group>"; };
 		7F808C2E2811CA29004F7EB0 /* SettingsCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsCellModel.swift; sourceTree = "<group>"; };
+		7FA3180828B8351D00770C88 /* MailService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MailService.swift; sourceTree = "<group>"; };
 		7FA732AB27F6190000C38E10 /* SampleApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SampleApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7FA732AE27F6190000C38E10 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7FA732B227F6190000C38E10 /* WebSignInViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebSignInViewController.swift; sourceTree = "<group>"; };
@@ -118,6 +119,7 @@
 			children = (
 				7F808C232811C28E004F7EB0 /* WelcomeViewController.swift */,
 				7F4BDF602820490700B4FC3B /* WelcomeViewModel.swift */,
+				7FA3180828B8351D00770C88 /* MailService.swift */,
 			);
 			path = WelcomeScreen;
 			sourceTree = "<group>";
@@ -379,6 +381,7 @@
 				7FD4371027FE6A9100B0717C /* OktaWebAuthProtocol.swift in Sources */,
 				7FA732AF27F6190000C38E10 /* AppDelegate.swift in Sources */,
 				7F808C272811C3CE004F7EB0 /* SettingsViewController.swift in Sources */,
+				7FA3180928B8351D00770C88 /* MailService.swift in Sources */,
 				7F1EC97A282C464800AE8ACE /* SignInFasterViewController.swift in Sources */,
 				7FB3137A281B9F5600CF0617 /* Appearance+Extensions.swift in Sources */,
 				7FD4370C27FE580E00B0717C /* StoryboardController.swift in Sources */,

@@ -20,6 +20,7 @@ class RootCoordinator {
     let deviceAuthenticator: DeviceAuthenticatorProtocol
     let oktaWebAuthenticator: OktaWebAuthProtocol
     let pushNotificationService: PushNotificationService
+    let mailService: MailService
     var remediationEventsHandler: RemediationEventsHandlerProtocol
     var logger: OktaLogger?
     var navController: UINavigationController?
@@ -36,6 +37,7 @@ class RootCoordinator {
         self.pushNotificationService = pushNotificationService
         self.logger = oktaLogger
         self.remediationEventsHandler = remediationEventsHandler
+        self.mailService = MailService()
     }
 
     func begin(on window: UIWindow?) {
@@ -57,6 +59,9 @@ class RootCoordinator {
         }
         welcomeVC.didRequestSignInFaster = { [weak self] in
             self?.beginSignInFasterFlow()
+        }
+        welcomeVC.didTapShareLogs = { [weak self] in
+            self?.beginLogSharing()
         }
         let navController = UINavigationController(rootViewController: welcomeVC)
         navController.setNavigationBarHidden(false, animated: false)
@@ -186,5 +191,11 @@ class RootCoordinator {
             }
         }
         navController?.present(vc, animated: true)
+    }
+
+    private func beginLogSharing() {
+        guard let navController = navController else { return }
+        guard let fileLogger = logger?.destinations[LoggingConstant.fileLoggerDestinationId] as? OktaLoggerFileLogger else { return }
+        mailService.sendFileLogs(fileLogger: fileLogger, nav: navController)
     }
 }
