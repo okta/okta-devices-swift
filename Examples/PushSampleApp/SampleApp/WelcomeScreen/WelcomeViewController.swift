@@ -17,6 +17,7 @@ class WelcomeViewController: UIViewController, StoryboardController {
     @IBOutlet weak var welcomeLabel: UILabel!
     var didTapSettings: () -> Void = {}
     var didTapSignOut: () -> Void = {}
+    var didTapShareLogs: () -> Void = {}
     var didRequestSignInFaster: () -> Void = {}
     var viewModel: WelcomeViewModel!
 
@@ -39,5 +40,9 @@ class WelcomeViewController: UIViewController, StoryboardController {
 
     @objc func didTapSignOutButton() {
         didTapSignOut()
+    }
+
+    @IBAction func didTapShareLogsButton() {
+        didTapShareLogs()
     }
 }

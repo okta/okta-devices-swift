@@ -298,6 +298,14 @@
                                     <constraint firstAttribute="height" constant="50" id="iZR-gg-r4j"/>
                                 </constraints>
                             </view>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4Qa-pW-ntg">
+                                <rect key="frame" x="297" y="831" width="97" height="31"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" title="Share Logs"/>
+                                <connections>
+                                    <action selector="didTapShareLogsButton" destination="LGN-ma-P9F" eventType="touchUpInside" id="Ckh-9j-Qtf"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="KZO-TI-xkQ"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -306,10 +314,12 @@
                             <constraint firstItem="d9A-fv-814" firstAttribute="leading" secondItem="WPI-5M-Cio" secondAttribute="trailing" constant="37" id="Ffl-ke-Wvd"/>
                             <constraint firstItem="j5p-ZD-qKA" firstAttribute="leading" secondItem="KZO-TI-xkQ" secondAttribute="leading" constant="20" id="Gi7-sm-rae"/>
                             <constraint firstItem="dN1-Wk-adO" firstAttribute="leading" secondItem="KZO-TI-xkQ" secondAttribute="leading" constant="20" id="NVW-yh-UFf"/>
+                            <constraint firstItem="KZO-TI-xkQ" firstAttribute="trailing" secondItem="4Qa-pW-ntg" secondAttribute="trailing" constant="20" id="Tlb-20-T2a"/>
                             <constraint firstItem="j5p-ZD-qKA" firstAttribute="top" secondItem="9QF-ks-tuK" secondAttribute="bottom" constant="20" id="UWO-Jk-ocH"/>
                             <constraint firstItem="ymJ-wI-Mdo" firstAttribute="leading" secondItem="KZO-TI-xkQ" secondAttribute="leading" constant="20" id="coI-JH-yug"/>
                             <constraint firstItem="ymJ-wI-Mdo" firstAttribute="top" secondItem="dN1-Wk-adO" secondAttribute="bottom" constant="25" id="dre-0k-pte"/>
                             <constraint firstItem="d9A-fv-814" firstAttribute="top" secondItem="j5p-ZD-qKA" secondAttribute="bottom" constant="40" id="fld-4y-4vK"/>
+                            <constraint firstItem="4Qa-pW-ntg" firstAttribute="bottom" secondItem="KZO-TI-xkQ" secondAttribute="bottom" id="jEF-GC-Kie"/>
                             <constraint firstItem="dN1-Wk-adO" firstAttribute="top" secondItem="WPI-5M-Cio" secondAttribute="bottom" constant="30" id="lSv-4I-YWM"/>
                             <constraint firstItem="WPI-5M-Cio" firstAttribute="top" secondItem="j5p-ZD-qKA" secondAttribute="bottom" constant="40" id="mKa-bG-ma6"/>
                             <constraint firstItem="9QF-ks-tuK" firstAttribute="top" secondItem="KZO-TI-xkQ" secondAttribute="top" id="o2N-Us-c5W"/>

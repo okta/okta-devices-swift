@@ -22,6 +22,11 @@ private enum PushSettingsConstant {
     static let userVerificationActionTitle = "Review"
 }
 
+enum LoggingConstant {
+    static let consoleLoggerDestinationId = "PushSDKSampleApp.console.logger"
+    static let fileLoggerDestinationId = "PushSDKSampleApp.file.logger"
+}
+
 enum LoggerEvent: String {
     case appInit, pushService, webSignIn, enrollment, enrollmentDelete, userVerification, account
 }
@@ -40,8 +45,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         window = .init(frame: UIScreen.main.bounds)
 
-        logger = OktaLogger()
-        logger.addDestination(OktaLoggerConsoleLogger(identifier: "PushSDKSampleApp.console.logger", level: .all, defaultProperties: nil))
+        initOktaLogger()
 
         guard let webAuthenticator = WebAuthentication.shared else {
             logger.error(eventName: LoggerEvent.appInit.rawValue, message: "Failed to initialize WebAuthenticator SDK")
@@ -79,7 +83,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         logger.error(eventName: LoggerEvent.appInit.rawValue, message: "didFailToRegisterForRemoteNotificationsWithError-\(error.localizedDescription)")
     }
 
-    func initOktaDeviceAuthenticator() {
+    private func initOktaLogger() {
+        logger = OktaLogger()
+        let consoleLogger = OktaLoggerConsoleLogger(identifier: LoggingConstant.consoleLoggerDestinationId, level: .all, defaultProperties: nil)
+        let config = OktaLoggerFileLoggerConfig()
+        config.reuseLogFiles = true
+        let fileLogger = OktaLoggerFileLogger(logConfig: config, identifier: LoggingConstant.fileLoggerDestinationId, level: .all, defaultProperties: nil)
+        [consoleLogger, fileLogger].forEach({ logger.addDestination($0) })
+    }
+
+    private func initOktaDeviceAuthenticator() {
         do {
             let applicationConfig = ApplicationConfig(applicationName: "PushSDKSampleApp-iOS",
                                                       applicationVersion: "1.0.0",
