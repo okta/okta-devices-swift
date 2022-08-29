@@ -16,7 +16,7 @@ import OktaLogger
 struct VerificationMethodFactory {
     static func pushFactorFromMetadata(_ metadata: OktaFactorMetadataPush,
                                        cryptoManager: OktaSharedCryptoProtocol,
-                                       restAPIClient: OktaRestAPI,
+                                       restAPIClient: ServerAPIProtocol,
                                        logger: OktaLoggerProtocol) -> OktaFactorPush {
         let pushFactor = OktaFactorPush(factorData: metadata,
                                         cryptoManager: cryptoManager,

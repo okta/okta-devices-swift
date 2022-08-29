@@ -122,7 +122,7 @@
 		7F8833ED2874FB820034CA5E /* OktaURLRequestProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F8833732874FB820034CA5E /* OktaURLRequestProtocol.swift */; };
 		7F8833EE2874FB820034CA5E /* HTTPMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F8833742874FB820034CA5E /* HTTPMethod.swift */; };
 		7F8833EF2874FB820034CA5E /* HTTPClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F8833752874FB820034CA5E /* HTTPClient.swift */; };
-		7F8833F02874FB820034CA5E /* OktaRestAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F8833762874FB820034CA5E /* OktaRestAPI.swift */; };
+		7F8833F02874FB820034CA5E /* OktaRestAPIToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F8833762874FB820034CA5E /* OktaRestAPIToken.swift */; };
 		7F8833F12874FB820034CA5E /* HTTPClientProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F8833772874FB820034CA5E /* HTTPClientProtocol.swift */; };
 		7F8833F22874FB820034CA5E /* HTTPURLResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F8833782874FB820034CA5E /* HTTPURLResult.swift */; };
 		7F8833F32874FB820034CA5E /* AuthToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F8833792874FB820034CA5E /* AuthToken.swift */; };
@@ -136,6 +136,8 @@
 		7F8FF73D287F87DA000F17F2 /* DeviceAuthenticator.docc in Sources */ = {isa = PBXBuildFile; fileRef = 7F8FF73C287F87DA000F17F2 /* DeviceAuthenticator.docc */; };
 		98F2EBDD5510C097C38222F3 /* libPods-DeviceAuthenticatorFunctionalTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DD73FB7DC7E598DC865F395B /* libPods-DeviceAuthenticatorFunctionalTests.a */; };
 		9F47E556289C989000299CFB /* DeviceAuthenticatorConfigTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F47E555289C989000299CFB /* DeviceAuthenticatorConfigTests.swift */; };
+		9F7AAD8E28BD297E00E15F59 /* ServerAPIProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7AAD8D28BD297E00E15F59 /* ServerAPIProtocol.swift */; };
+		9F7AAD9028BD739600E15F59 /* LegacyServerAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7AAD8F28BD739600E15F59 /* LegacyServerAPI.swift */; };
 		9F7EFF07287E0D8A001E2C4E /* EnrollmentTestHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7EFF00287E0D8A001E2C4E /* EnrollmentTestHelper.swift */; };
 		9F7EFF08287E0D8A001E2C4E /* FakePushChallenge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7EFF01287E0D8A001E2C4E /* FakePushChallenge.swift */; };
 		9F7EFF09287E0D8A001E2C4E /* UpdatePushTokenFlowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7EFF02287E0D8A001E2C4E /* UpdatePushTokenFlowTests.swift */; };
@@ -355,7 +357,7 @@
 		7F8833732874FB820034CA5E /* OktaURLRequestProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OktaURLRequestProtocol.swift; sourceTree = "<group>"; };
 		7F8833742874FB820034CA5E /* HTTPMethod.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPMethod.swift; sourceTree = "<group>"; };
 		7F8833752874FB820034CA5E /* HTTPClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPClient.swift; sourceTree = "<group>"; };
-		7F8833762874FB820034CA5E /* OktaRestAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OktaRestAPI.swift; sourceTree = "<group>"; };
+		7F8833762874FB820034CA5E /* OktaRestAPIToken.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OktaRestAPIToken.swift; sourceTree = "<group>"; };
 		7F8833772874FB820034CA5E /* HTTPClientProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPClientProtocol.swift; sourceTree = "<group>"; };
 		7F8833782874FB820034CA5E /* HTTPURLResult.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPURLResult.swift; sourceTree = "<group>"; };
 		7F8833792874FB820034CA5E /* AuthToken.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthToken.swift; sourceTree = "<group>"; };
@@ -374,6 +376,8 @@
 		7FFB5FFA286A7F4C006BC548 /* DeviceAuthenticatorUnitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DeviceAuthenticatorUnitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		7FFB6010286A80CF006BC548 /* DeviceAuthenticatorFunctionalTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DeviceAuthenticatorFunctionalTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9F47E555289C989000299CFB /* DeviceAuthenticatorConfigTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceAuthenticatorConfigTests.swift; sourceTree = "<group>"; };
+		9F7AAD8D28BD297E00E15F59 /* ServerAPIProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerAPIProtocol.swift; sourceTree = "<group>"; };
+		9F7AAD8F28BD739600E15F59 /* LegacyServerAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyServerAPI.swift; sourceTree = "<group>"; };
 		9F7EFF00287E0D8A001E2C4E /* EnrollmentTestHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EnrollmentTestHelper.swift; sourceTree = "<group>"; };
 		9F7EFF01287E0D8A001E2C4E /* FakePushChallenge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FakePushChallenge.swift; sourceTree = "<group>"; };
 		9F7EFF02287E0D8A001E2C4E /* UpdatePushTokenFlowTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UpdatePushTokenFlowTests.swift; sourceTree = "<group>"; };
@@ -710,12 +714,14 @@
 				7F8833732874FB820034CA5E /* OktaURLRequestProtocol.swift */,
 				7F8833742874FB820034CA5E /* HTTPMethod.swift */,
 				7F8833752874FB820034CA5E /* HTTPClient.swift */,
-				7F8833762874FB820034CA5E /* OktaRestAPI.swift */,
+				7F8833762874FB820034CA5E /* OktaRestAPIToken.swift */,
 				7F8833772874FB820034CA5E /* HTTPClientProtocol.swift */,
 				7F8833782874FB820034CA5E /* HTTPURLResult.swift */,
 				7F8833792874FB820034CA5E /* AuthToken.swift */,
 				7F88337A2874FB820034CA5E /* UserAgent.swift */,
 				7F88337B2874FB820034CA5E /* OktaURLRequest.swift */,
+				9F7AAD8D28BD297E00E15F59 /* ServerAPIProtocol.swift */,
+				9F7AAD8F28BD739600E15F59 /* LegacyServerAPI.swift */,
 			);
 			path = Networking;
 			sourceTree = "<group>";
@@ -1242,6 +1248,7 @@
 				7F8833E52874FB820034CA5E /* OktaUnmangedDeviceSignals.swift in Sources */,
 				7F88338F2874FB820034CA5E /* ServerErrorCodes.swift in Sources */,
 				7F8833902874FB820034CA5E /* DeviceSignalsModel.swift in Sources */,
+				9F7AAD8E28BD297E00E15F59 /* ServerAPIProtocol.swift in Sources */,
 				7F8833C82874FB820034CA5E /* OktaBackupableStorage.swift in Sources */,
 				7F8833D42874FB820034CA5E /* UserVerificationChallengeRequirement.swift in Sources */,
 				7F8833B72874FB820034CA5E /* RemediationStep.swift in Sources */,
@@ -1292,7 +1299,7 @@
 				7F8833D62874FB820034CA5E /* OktaTransactionEnroll+Push.swift in Sources */,
 				7F8833A32874FB820034CA5E /* ApplicationConfig.swift in Sources */,
 				7F8833CA2874FB820034CA5E /* OktaSharedKeychainStorage.swift in Sources */,
-				7F8833F02874FB820034CA5E /* OktaRestAPI.swift in Sources */,
+				7F8833F02874FB820034CA5E /* OktaRestAPIToken.swift in Sources */,
 				7F8833AC2874FB820034CA5E /* OktaJWKGenerator.swift in Sources */,
 				7F8833B22874FB820034CA5E /* OktaAuthenticationJWT.swift in Sources */,
 				7F8833912874FB820034CA5E /* EnrolledAuthenticatorModel.swift in Sources */,
@@ -1314,6 +1321,7 @@
 				7F8833F22874FB820034CA5E /* HTTPURLResult.swift in Sources */,
 				7F8833B52874FB820034CA5E /* DeviceAuthenticatorBuilder.swift in Sources */,
 				7F8833D52874FB820034CA5E /* OktaTransactionDeleteEnrollment.swift in Sources */,
+				9F7AAD9028BD739600E15F59 /* LegacyServerAPI.swift in Sources */,
 				7F88339D2874FB820034CA5E /* OktaDataExtensions.swift in Sources */,
 				7F8833B12874FB820034CA5E /* OktaBindJWT.swift in Sources */,
 				7F8833C52874FB820034CA5E /* OktaMigratableStorage.swift in Sources */,

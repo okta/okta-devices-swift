@@ -77,7 +77,7 @@ class DeviceAuthenticator: DeviceAuthenticatorProtocol {
         logger.info(eventName: "Initializing DeviceAuthenticator", message: nil)
         let cryptoManager = OktaCryptoManager(accessGroupId: applicationConfig.applicationInfo.applicationGroupId, logger: logger)
         let httpClientLocal = httpClient ?? HTTPClient(urlSession: nil, logger: logger, userAgent: UserAgent.standardUserAgent())
-        let restAPIClient = OktaRestAPI(client: httpClientLocal, logger: logger)
+        let restAPIClient = LegacyServerAPI(client: httpClientLocal, logger: logger)
         do {
             let storage = try OktaStorageManager(restApiClient: restAPIClient,
                                                  applicationConfig: applicationConfig,

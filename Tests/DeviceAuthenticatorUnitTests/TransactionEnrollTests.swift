@@ -1438,7 +1438,7 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
 
     func createTransaction(enrollmentContext: EnrollmentContext,
                            enrollment: AuthenticatorEnrollment?,
-                           restAPI: OktaRestAPI? = nil,
+                           restAPI: ServerAPIProtocol? = nil,
                            jwtGenerator: OktaJWTGenerator? = nil,
                            policy: AuthenticatorPolicy? = nil) -> OktaTransactionEnroll {
         return OktaTransactionEnroll(storageManager: mockStorageManager,

@@ -11,9 +11,10 @@
 */
 // swiftlint:disable force_try
 import Foundation
+@testable import OktaLogger
 @testable import DeviceAuthenticator
 
-class RestAPIMock: OktaRestAPI {
+class RestAPIMock: ServerAPIProtocol {
 
     typealias enrollAuthenticatorRequestType = (URL, Data, OktaRestAPIToken, (_ result: HTTPURLResult?, _ error: DeviceAuthenticatorError?) -> Void) -> Void
     typealias downloadOrgIdType = (URL, (HTTPURLResult?, DeviceAuthenticatorError?) -> Void) -> Void
@@ -30,41 +31,53 @@ class RestAPIMock: OktaRestAPI {
     var deleteAuthenticatorRequestHook: deleteAuthenticatorRequestType?
     var pendingChallengeRequestHook: pendingChallengeRequestType?
 
-    override func deleteAuthenticatorRequest(url: URL, token: OktaRestAPIToken, completion: @escaping (HTTPURLResult?, DeviceAuthenticatorError?) -> Void) {
+    let client: HTTPClientProtocol
+    let logger: OktaLoggerProtocol
+    let restAPI: ServerAPIProtocol
+
+    init(client: HTTPClientProtocol,
+         logger: OktaLoggerProtocol,
+         defaultAPI: ServerAPIProtocol? = nil) {
+        self.client = client
+        self.logger = logger
+        self.restAPI = defaultAPI ?? LegacyServerAPI(client: client, logger: logger)
+    }
+
+    func deleteAuthenticatorRequest(url: URL, token: OktaRestAPIToken, completion: @escaping (HTTPURLResult?, DeviceAuthenticatorError?) -> Void) {
         if let deleteAuthenticatorRequestHook = deleteAuthenticatorRequestHook {
             deleteAuthenticatorRequestHook(url, token, completion)
         } else {
-            super.deleteAuthenticatorRequest(url: url, token: token, completion: completion)
+            restAPI.deleteAuthenticatorRequest(url: url, token: token, completion: completion)
         }
     }
 
-    override public func downloadOrgId(for orgURL: URL, completion: @escaping (HTTPURLResult?, DeviceAuthenticatorError?) -> Void) {
+    public func downloadOrgId(for orgURL: URL, completion: @escaping (HTTPURLResult?, DeviceAuthenticatorError?) -> Void) {
         if let downloadOrgIdTypeHook = downloadOrgIdTypeHook {
             downloadOrgIdTypeHook(orgURL, completion)
         } else {
-            super.downloadOrgId(for: orgURL, completion: completion)
+            restAPI.downloadOrgId(for: orgURL, completion: completion)
         }
     }
 
-    override public func downloadAuthenticatorMetadata(orgHost: URL,
-                                                       authenticatorKey: String,
-                                                       oidcClientId: String?,
-                                                       token: OktaRestAPIToken,
-                                                       completion: @escaping (HTTPURLResult?, DeviceAuthenticatorError?) -> Void) {
+    public func downloadAuthenticatorMetadata(orgHost: URL,
+                                              authenticatorKey: String,
+                                              oidcClientId: String?,
+                                              token: OktaRestAPIToken,
+                                              completion: @escaping (HTTPURLResult?, DeviceAuthenticatorError?) -> Void) {
         if let downloadAuthenticatorMetadataHook = downloadAuthenticatorMetadataHook {
             downloadAuthenticatorMetadataHook(orgHost, authenticatorKey, token, completion)
         } else {
-            super.downloadAuthenticatorMetadata(orgHost: orgHost,
-                                                authenticatorKey: authenticatorKey,
-                                                oidcClientId: oidcClientId,
-                                                token: token,
-                                                completion: completion)
+            restAPI.downloadAuthenticatorMetadata(orgHost: orgHost,
+                                                  authenticatorKey: authenticatorKey,
+                                                  oidcClientId: oidcClientId,
+                                                  token: token,
+                                                  completion: completion)
         }
     }
 
-    override public func enrollAuthenticatorRequest(enrollURL: URL, data: Data,
-                                                    token: OktaRestAPIToken,
-                                                    completion: @escaping (HTTPURLResult?, DeviceAuthenticatorError?) -> Void) {
+    public func enrollAuthenticatorRequest(enrollURL: URL, data: Data,
+                                           token: OktaRestAPIToken,
+                                           completion: @escaping (HTTPURLResult?, DeviceAuthenticatorError?) -> Void) {
         if let oktaError = error {
             completion(nil, oktaError)
             return
@@ -73,14 +86,14 @@ class RestAPIMock: OktaRestAPI {
         if let enrollAuthenticatorRequestHook = enrollAuthenticatorRequestHook {
             enrollAuthenticatorRequestHook(enrollURL, data, token, completion)
         } else {
-            super.enrollAuthenticatorRequest(enrollURL: enrollURL,
-                                             data: data,
-                                             token: token,
-                                             completion: completion)
+            restAPI.enrollAuthenticatorRequest(enrollURL: enrollURL,
+                                               data: data,
+                                               token: token,
+                                               completion: completion)
         }
     }
 
-    override public func updateAuthenticatorRequest(url: URL, data: Data, token: OktaRestAPIToken, completion: @escaping (HTTPURLResult?, DeviceAuthenticatorError?) -> Void) {
+    public func updateAuthenticatorRequest(url: URL, data: Data, token: OktaRestAPIToken, completion: @escaping (HTTPURLResult?, DeviceAuthenticatorError?) -> Void) {
         if let oktaError = error {
             completion(nil, oktaError)
             return
@@ -89,22 +102,22 @@ class RestAPIMock: OktaRestAPI {
         if let updateAuthenticatorRequestHook = updateAuthenticatorRequestHook {
             updateAuthenticatorRequestHook(url, data, token, completion)
         } else {
-            super.updateAuthenticatorRequest(url: url, data: data, token: token, completion: completion)
+            restAPI.updateAuthenticatorRequest(url: url, data: data, token: token, completion: completion)
         }
     }
 
-    override public func pendingChallenge(with orgURL: URL, authenticationToken: AuthToken, completion: @escaping (HTTPURLResult?, DeviceAuthenticatorError?) -> Void) {
+    public func pendingChallenge(with orgURL: URL, authenticationToken: AuthToken, completion: @escaping (HTTPURLResult?, DeviceAuthenticatorError?) -> Void) {
         if let pendingChallengeRequestHook = pendingChallengeRequestHook {
             pendingChallengeRequestHook(orgURL, authenticationToken, completion)
         } else {
-            super.pendingChallenge(with: orgURL, authenticationToken: authenticationToken, completion: completion)
+            restAPI.pendingChallenge(with: orgURL, authenticationToken: authenticationToken, completion: completion)
         }
     }
 
-    override public func verifyDeviceChallenge(verifyURL: URL,
-                                               httpHeaders: [String: String]? = nil,
-                                               data: Data?,
-                                               completion: @escaping (_ result: HTTPURLResult?, _ error: DeviceAuthenticatorError?) -> Void) {
+    public func verifyDeviceChallenge(verifyURL: URL,
+                                      httpHeaders: [String: String]? = nil,
+                                      data: Data?,
+                                      completion: @escaping (_ result: HTTPURLResult?, _ error: DeviceAuthenticatorError?) -> Void) {
         if let oktaError = error {
             completion(nil, oktaError)
         } else {

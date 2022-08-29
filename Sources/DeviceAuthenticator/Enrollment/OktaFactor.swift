@@ -17,7 +17,7 @@ import OktaLogger
 class OktaFactor: CustomStringConvertible {
 
     init(cryptoManager: OktaSharedCryptoProtocol,
-         restAPIClient: OktaRestAPI,
+         restAPIClient: ServerAPIProtocol,
          logger: OktaLoggerProtocol) {
         self.logger = logger
         self.cryptoManager = cryptoManager
@@ -53,5 +53,5 @@ class OktaFactor: CustomStringConvertible {
 
     let logger: OktaLoggerProtocol
     let cryptoManager: OktaSharedCryptoProtocol
-    let restAPIClient: OktaRestAPI
+    let restAPIClient: ServerAPIProtocol
 }

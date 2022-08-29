@@ -14,7 +14,7 @@ import Foundation
 import OktaLogger
 
 class OktaTransactionPullChallenge: OktaTransaction {
-    let restAPI: OktaRestAPI
+    let restAPI: ServerAPIProtocol
     let enrollment: AuthenticatorEnrollment
     let authenticationToken: AuthToken
 
@@ -22,7 +22,7 @@ class OktaTransactionPullChallenge: OktaTransaction {
          authenticationToken: AuthToken,
          storageManager: PersistentStorageProtocol,
          cryptoManager: OktaSharedCryptoProtocol,
-         restAPI: OktaRestAPI,
+         restAPI: ServerAPIProtocol,
          logger: OktaLoggerProtocol) {
         self.restAPI = restAPI
         self.enrollment = enrollment

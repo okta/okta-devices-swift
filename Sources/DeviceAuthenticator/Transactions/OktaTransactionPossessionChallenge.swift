@@ -52,7 +52,7 @@ class OktaTransactionPossessionChallengeBase: OktaTransaction {
     let stateHandle: String?
     var localAuthenticationContext = LAContext()
     let signalsManager: SignalsManager
-    let restAPI: OktaRestAPI
+    let restAPI: ServerAPIProtocol
 
     init(applicationConfig: ApplicationConfig,
          challengeRequest: String,
@@ -62,7 +62,7 @@ class OktaTransactionPossessionChallengeBase: OktaTransaction {
          storageManager: PersistentStorageProtocol,
          cryptoManager: OktaSharedCryptoProtocol,
          signalsManager: SignalsManager,
-         restAPI: OktaRestAPI,
+         restAPI: ServerAPIProtocol,
          logger: OktaLoggerProtocol) throws {
         self.applicationConfig = applicationConfig
         self.challengeRequest = challengeRequest

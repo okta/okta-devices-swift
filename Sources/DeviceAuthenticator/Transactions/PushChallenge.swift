@@ -73,7 +73,7 @@ class PushChallenge: PushChallengeProtocol {
     let applicationConfig: ApplicationConfig
     let cryptoManager: OktaSharedCryptoProtocol
     let signalsManager: SignalsManager
-    let restAPI: OktaRestAPI
+    let restAPI: ServerAPIProtocol
     let logger: OktaLoggerProtocol
     let allowedClockSkewInSeconds: Int
 
@@ -83,7 +83,7 @@ class PushChallenge: PushChallengeProtocol {
          applicationConfig: ApplicationConfig,
          cryptoManager: OktaSharedCryptoProtocol,
          signalsManager: SignalsManager,
-         restAPI: OktaRestAPI,
+         restAPI: ServerAPIProtocol,
          logger: OktaLoggerProtocol,
          allowedClockSkewInSeconds: Int = 300) {
         self.pushBindJWT = pushBindJWT
