@@ -21,6 +21,7 @@ class PushNotificationService: NSObject, UNUserNotificationCenterDelegate {
     private let deviceAuthenticator: DeviceAuthenticatorProtocol
     private let remediationEventsHandler: RemediationEventsHandlerProtocol
     private let webAuthenticator: OktaWebAuthProtocol
+    private var unhandledChallenges: Set<String> = []
 
     init(deviceAuthenticator: DeviceAuthenticatorProtocol,
          remediationEventsHandler: RemediationEventsHandlerProtocol,
@@ -133,18 +134,31 @@ class PushNotificationService: NSObject, UNUserNotificationCenterDelegate {
     }
 
     private func resolvePushChallenge(_ pushChallenge: PushChallengeProtocol) {
+        guard shouldHandleChallenge(newChallenge: pushChallenge) else { return }
+        unhandledChallenges.insert(pushChallenge.transactionId)
+
         pushChallenge.resolve { step in
             self.remediationEventsHandler.handle(step: step)
-        } onCompletion: { error in
+        } onCompletion: { [weak self] error in
+            guard let self = self else { return }
             DispatchQueue.main.async {
+                self.unhandledChallenges.remove(pushChallenge.transactionId)
                 if let error = error {
                     self.logger?.error(eventName: LoggerEvent.account.rawValue, message: "Cannot resolve push challenge: \(error.localizedDescription)")
                 } else {
                     self.remediationEventsHandler.onChallengeResolved(pushChallenge.userResponse)
-                    self.logger?.error(eventName: LoggerEvent.account.rawValue, message: "Success resolving push challenge")
+                    self.logger?.info(eventName: LoggerEvent.account.rawValue, message: "Success resolving push challenge")
                 }
             }
         }
+    }
+
+    /**
+     Helper method to avoid showing a Consent screen twice for the same challenge delivered via push and via pending challenges call.
+     Needed for the case when the app is opened via tapping a push notification: as soon as the app becomes active, it will fetch pending challenges as well via retrievePushChallenges(), therefore you will get the same challenge twice from the SDK. This methods checks if the same transactionID is already being handled.
+    */
+    private func shouldHandleChallenge(newChallenge: PushChallengeProtocol) -> Bool {
+        return !unhandledChallenges.contains(newChallenge.transactionId)
     }
 
     func retrievePushChallenges() {

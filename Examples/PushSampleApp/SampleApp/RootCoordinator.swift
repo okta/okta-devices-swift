@@ -95,12 +95,12 @@ class RootCoordinator {
             nav.dismiss(animated: true)
         }
         userConsentVC.viewModel = viewModel
-        if nav.presentedViewController != nil {
+        if nav.presentedViewController == nil {
+            nav.present(userConsentVC, animated: true)
+        } else {
             nav.dismiss(animated: true) {
                 nav.present(userConsentVC, animated: true)
             }
-        } else {
-            nav.present(userConsentVC, animated: true)
         }
     }
 
