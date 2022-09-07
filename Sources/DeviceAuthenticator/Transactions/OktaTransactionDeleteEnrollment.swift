@@ -17,13 +17,13 @@ import OktaLogger
 class OktaTransactionDeleteEnrollment: OktaTransaction {
     let enrollmentToDelete: AuthenticatorEnrollment
     let accessToken: String?
-    let restAPI: OktaRestAPI
+    let restAPI: ServerAPIProtocol
 
     init(enrollmentToDelete: AuthenticatorEnrollment,
          accessToken: String?,
          storageManager: PersistentStorageProtocol,
          cryptoManager: OktaSharedCryptoProtocol,
-         restAPI: OktaRestAPI,
+         restAPI: ServerAPIProtocol,
          jwtGenerator: OktaJWTGenerator,
          logger: OktaLoggerProtocol) {
         self.enrollmentToDelete = enrollmentToDelete

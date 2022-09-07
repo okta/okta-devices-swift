@@ -51,7 +51,7 @@ struct EnrollmentContext {
 
 class OktaTransactionEnroll: OktaTransaction {
     let jwkGenerator: OktaJWKGenerator
-    let restAPI: OktaRestAPI
+    let restAPI: ServerAPIProtocol
     let enrollmentContext: EnrollmentContext
     let enrollmentToUpdate: AuthenticatorEnrollment?
     let applicationConfig: ApplicationConfig
@@ -72,7 +72,7 @@ class OktaTransactionEnroll: OktaTransaction {
 
     init(storageManager: PersistentStorageProtocol,
          cryptoManager: OktaSharedCryptoProtocol,
-         restAPI: OktaRestAPI,
+         restAPI: ServerAPIProtocol,
          enrollmentContext: EnrollmentContext,
          enrollmentToUpdate: AuthenticatorEnrollment? = nil,
          jwkGenerator: OktaJWKGenerator?,

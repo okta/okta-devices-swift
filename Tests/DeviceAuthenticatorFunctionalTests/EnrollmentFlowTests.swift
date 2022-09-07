@@ -44,7 +44,7 @@ class EnrollmentFlowTests: XCTestCase {
                                                                 [GoldenData.orgData(),
                                                                  GoldenData.authenticatorMetaData(),
                                                                  GoldenData.authenticatorData()])
-        let oktaRestAPI = OktaRestAPI(client: mockHTTPClient, logger: OktaLoggerMock())
+        let oktaRestAPI = LegacyServerAPI(client: mockHTTPClient, logger: OktaLoggerMock())
 
         let deviceAuthenticator: DeviceAuthenticatorProtocol
         do {
@@ -79,7 +79,7 @@ class EnrollmentFlowTests: XCTestCase {
                                                                 [GoldenData.orgDataIncomplete(),
                                                                  GoldenData.authenticatorMetaData(),
                                                                  GoldenData.authenticatorData()])
-        let oktaRestAPI = OktaRestAPI(client: mockHTTPClient, logger: OktaLoggerMock())
+        let oktaRestAPI = LegacyServerAPI(client: mockHTTPClient, logger: OktaLoggerMock())
 
         let deviceAuthenticator: DeviceAuthenticatorProtocol
         do {
@@ -109,7 +109,7 @@ class EnrollmentFlowTests: XCTestCase {
                                                                 [GoldenData.orgData(),
                                                                  GoldenData.authenticatorMetaDataInactive(),
                                                                  GoldenData.authenticatorData()])
-        let oktaRestAPI = OktaRestAPI(client: mockHTTPClient, logger: OktaLoggerMock())
+        let oktaRestAPI = LegacyServerAPI(client: mockHTTPClient, logger: OktaLoggerMock())
 
         let deviceAuthenticator: DeviceAuthenticatorProtocol
         do {

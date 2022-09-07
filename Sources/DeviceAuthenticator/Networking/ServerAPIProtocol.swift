@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2019, Okta, Inc. and/or its affiliates. All rights reserved.
+* Copyright (c) 2022, Okta, Inc. and/or its affiliates. All rights reserved.
 * The Okta software accompanied by this notice is provided pursuant to the Apache License, Version 2.0 (the "License.")
 *
 * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0.
@@ -13,107 +13,49 @@
 import Foundation
 import OktaLogger
 
-enum OktaRestAPIToken {
-    case authenticationToken(String)
-    case accessToken(String)
-    case activationToken(String)
-    case none
-
-    /// - Description: Takes the first token which is provided (i.e. non-nil) and maps to the OktaRestAPIToken enum value
-    /// - Parameters:
-    ///   - authenticationToken: Authentication JWT
-    ///   - authenticatorId:     Authenticator id for the request
-    ///   - accessToken:         Access Token as part of the request
-    init(authenticationToken: String? = nil, accessToken: String? = nil, activationToken: String? = nil) {
-        if let authenticationToken = authenticationToken {
-            self = .authenticationToken(authenticationToken)
-        } else if let accessToken = accessToken {
-            self = .accessToken(accessToken)
-        } else if let activationToken = activationToken {
-            self = .activationToken(activationToken)
-        } else {
-            self = .none
-        }
-    }
-
-    /// - Description: Returns the token type
-    var type: OktaAuthType {
-        switch self {
-        case .authenticationToken(_):
-            return .ssws
-        case .accessToken(_):
-            return .bearer
-        case .activationToken(_):
-            return .otdt
-        case .none:
-            return .basic
-        }
-    }
-
-    /// - Description: Returns the raw token string
-    var token: String {
-        switch self {
-        case .authenticationToken(let token):
-            return token
-        case .accessToken(let token):
-            return token
-        case .activationToken(let token):
-            return token
-        case .none:
-            return ""
-        }
-    }
+struct HTTPHeaderConstants {
+    static let authorizationHeader = "Authorization"
+    static let contentTypeHeader = "Content-Type"
 }
 
-class OktaRestAPI {
-    public let client: HTTPClientProtocol
-    public let logger: OktaLoggerProtocol
-    let httpAuthorizationHeaderName = "Authorization"
+protocol ServerAPIProtocol {
+    var client: HTTPClientProtocol { get }
+    var logger: OktaLoggerProtocol { get }
 
-    public init(client: HTTPClientProtocol, logger: OktaLoggerProtocol) {
-        self.client = client
-        self.logger = logger
-    }
-
-    /// - Description: Downloads Authenticator MetaData
-    /// - Parameters:
-    ///   - orgHost:         Organization host url
-    ///   - token:           Authentication token(access token, one time token or signed jwt)
-    ///   - completion:      Handler to execute after the async call completes
     func downloadAuthenticatorMetadata(orgHost: URL,
                                        authenticatorKey: String,
                                        oidcClientId: String?,
                                        token: OktaRestAPIToken,
-                                       completion: @escaping (_ result: HTTPURLResult?, _ error: DeviceAuthenticatorError?) -> Void
-    ) {
-        var urlComponents = URLComponents(url: orgHost.appendingPathComponent("/api/v1/authenticators"), resolvingAgainstBaseURL: true)
-        urlComponents?.queryItems = [URLQueryItem(name: "key", value: authenticatorKey),
-                                     URLQueryItem(name: "expand", value: "methods")]
-        if let oidcClientId = oidcClientId {
-            urlComponents?.queryItems?.append(URLQueryItem(name: "oauthClientId", value: oidcClientId))
-        }
-        guard let metaDataURL = urlComponents?.url else {
-            logger.error(eventName: "Invalid URL provided", message: nil)
-            completion(nil, DeviceAuthenticatorError.internalError("Invalid URL"))
-            return
-        }
+                                       completion: @escaping (_ result: HTTPURLResult?, _ error: DeviceAuthenticatorError?) -> Void)
 
-        //metaDataURL.query
-        logger.info(eventName: "Downloading Authenticator Metadata", message: "URL: \(metaDataURL)")
-        self.client
-            .request(metaDataURL)
-            .addHeader(name: httpAuthorizationHeaderName, value: authorizationHeaderValue(forAuthType: token.type, withToken: token.token))
-            .response { (result) in
-                if let error = result.error {
-                    let resultError = DeviceAuthenticatorError.networkError(error)
-                    self.logger.error(eventName: "API error", message: "error: \(resultError) for request at URL: \(metaDataURL)")
-                    completion(result, resultError)
-                    return
-                }
+    func enrollAuthenticatorRequest(enrollURL: URL,
+                                    data: Data,
+                                    token: OktaRestAPIToken,
+                                    completion: @escaping (_ result: HTTPURLResult?, _ error: DeviceAuthenticatorError?) -> Void)
 
-                self.validateResult(result, for: metaDataURL, andCall: completion)
-            }
-    }
+    func updateAuthenticatorRequest(url: URL,
+                                    data: Data,
+                                    token: OktaRestAPIToken,
+                                    completion: @escaping (_ result: HTTPURLResult?, _ error: DeviceAuthenticatorError?) -> Void)
+
+    func deleteAuthenticatorRequest(url: URL,
+                                    token: OktaRestAPIToken,
+                                    completion: @escaping (_ result: HTTPURLResult?, _ error: DeviceAuthenticatorError?) -> Void)
+
+    func verifyDeviceChallenge(verifyURL: URL,
+                               httpHeaders: [String: String]?,
+                               data: Data?,
+                               completion: @escaping (_ result: HTTPURLResult?, _ error: DeviceAuthenticatorError?) -> Void)
+
+    func downloadOrgId(for orgURL: URL,
+                       completion: @escaping (_ result: HTTPURLResult?, _ error: DeviceAuthenticatorError?) -> Void)
+
+    func pendingChallenge(with orgURL: URL,
+                          authenticationToken: AuthToken,
+                          completion: @escaping (_ result: HTTPURLResult?, _ error: DeviceAuthenticatorError?) -> Void)
+}
+
+extension ServerAPIProtocol {
 
     /// - Description: Enrolls Authenticator
     /// - Parameters:
@@ -127,8 +69,8 @@ class OktaRestAPI {
                                     completion: @escaping (_ result: HTTPURLResult?, _ error: DeviceAuthenticatorError?) -> Void) {
         logger.info(eventName: "Enrolling Authenticator", message: "URL: \(enrollURL)")
         self.client
-            .request(enrollURL, method: .post, httpBody: data, headers: ["Content-Type": "application/json"])
-            .addHeader(name: httpAuthorizationHeaderName, value: authorizationHeaderValue(forAuthType: token.type, withToken: token.token))
+            .request(enrollURL, method: .post, httpBody: data, headers: [HTTPHeaderConstants.contentTypeHeader: "application/json"])
+            .addHeader(name: HTTPHeaderConstants.authorizationHeader, value: authorizationHeaderValue(forAuthType: token.type, withToken: token.token))
             .response { (result) in
                 if let error = result.error {
                     let resultError = DeviceAuthenticatorError.networkError(error)
@@ -158,8 +100,8 @@ class OktaRestAPI {
         }
 
         self.client
-            .request(url, method: .put, httpBody: data, headers: ["Content-Type": "application/json"])
-            .addHeader(name: httpAuthorizationHeaderName, value: authorizationHeaderValue(forAuthType: token.type, withToken: token.token))
+            .request(url, method: .put, httpBody: data, headers: [HTTPHeaderConstants.contentTypeHeader: "application/json"])
+            .addHeader(name: HTTPHeaderConstants.authorizationHeader, value: authorizationHeaderValue(forAuthType: token.type, withToken: token.token))
             .response { (result) in
                 if let error = result.error {
                     let resultError = DeviceAuthenticatorError.networkError(error)
@@ -188,7 +130,7 @@ class OktaRestAPI {
 
         self.client
             .request(url, method: .delete, httpBody: nil)
-            .addHeader(name: httpAuthorizationHeaderName, value: authorizationHeaderValue(forAuthType: token.type, withToken: token.token))
+            .addHeader(name: HTTPHeaderConstants.authorizationHeader, value: authorizationHeaderValue(forAuthType: token.type, withToken: token.token))
             .response { (result) in
                 if let error = result.error {
                     let resultError = DeviceAuthenticatorError.networkError(error)
@@ -212,7 +154,7 @@ class OktaRestAPI {
                                data: Data? = nil,
                                completion: @escaping (_ result: HTTPURLResult?, _ error: DeviceAuthenticatorError?) -> Void
     ) {
-        let allHTTPHeaders = httpHeaders ?? ["Content-Type": "application/json"]
+        let allHTTPHeaders = httpHeaders ?? [HTTPHeaderConstants.contentTypeHeader: "application/json"]
         logger.info(eventName: "Verifying Device Challenge", message: "URL: \(verifyURL)")
         let requestType: HTTPMethod = data == nil ? .get : .post
         let request = self.client.request(
@@ -244,7 +186,7 @@ class OktaRestAPI {
         let orgMetaDataURL = orgURL.appendingPathComponent("/.well-known/okta-organization")
         let request = self.client.request(orgMetaDataURL,
                                           method: .get,
-                                          headers: ["Content-Type": "application/json"])
+                                          headers: [HTTPHeaderConstants.contentTypeHeader: "application/json"])
         logger.info(eventName: "Downloading Org ID", message: "URL: \(orgMetaDataURL)")
         request.response { result in
             if let error = result.error {
@@ -267,8 +209,8 @@ class OktaRestAPI {
                           completion: @escaping (_ result: HTTPURLResult?, _ error: DeviceAuthenticatorError?) -> Void) {
         self.client
         .request(orgURL)
-            .addHeader(name: httpAuthorizationHeaderName, value: authorizationHeaderValue(forAuthType: OktaAuthType.fromAuthToken(authenticationToken),
-                                                                                          withToken: authenticationToken.tokenValue()))
+            .addHeader(name: HTTPHeaderConstants.authorizationHeader, value: authorizationHeaderValue(forAuthType: OktaAuthType.fromAuthToken(authenticationToken),
+                                                                                                      withToken: authenticationToken.tokenValue()))
         .response { (result) in
             if let error = result.error {
                 let resultError = DeviceAuthenticatorError.networkError(error)

@@ -62,7 +62,7 @@ class AuthenticatorEnrollment: AuthenticatorEnrollmentProtocol {
 
     let logger: OktaLoggerProtocol
     let cryptoManager: OktaSharedCryptoProtocol
-    let restAPIClient: OktaRestAPI
+    let restAPIClient: ServerAPIProtocol
     let storageManager: PersistentStorageProtocol
     let applicationConfig: ApplicationConfig
     let userDefaultsStorage: UserDefaults
@@ -76,7 +76,7 @@ class AuthenticatorEnrollment: AuthenticatorEnrollmentProtocol {
          creationDate: Date,
          enrolledFactors: [OktaFactor],
          cryptoManager: OktaSharedCryptoProtocol,
-         restAPIClient: OktaRestAPI,
+         restAPIClient: ServerAPIProtocol,
          storageManager: PersistentStorageProtocol,
          applicationConfig: ApplicationConfig,
          logger: OktaLoggerProtocol) {

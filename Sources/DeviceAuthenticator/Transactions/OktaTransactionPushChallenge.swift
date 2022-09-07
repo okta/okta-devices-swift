@@ -22,7 +22,7 @@ class OktaTransactionPushChallenge: OktaTransactionPossessionChallengeBase {
          storageManager: PersistentStorageProtocol,
          cryptoManager: OktaSharedCryptoProtocol,
          signalsManager: SignalsManager,
-         restAPI: OktaRestAPI,
+         restAPI: ServerAPIProtocol,
          logger: OktaLoggerProtocol) throws {
         self.pushChallenge = pushChallenge
         try super.init(applicationConfig: applicationConfig,

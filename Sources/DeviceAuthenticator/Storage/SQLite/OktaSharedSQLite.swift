@@ -22,14 +22,14 @@ class OktaSharedSQLite: OktaSharedSQLiteProtocol {
 
     var sqlitePersistentStorage: OktaSQLitePersistentStorageProtocol
     let sqliteColumnEncryptionManager: OktaSQLiteColumnEncryptionManagerProtocol
-    let restAPIClient: OktaRestAPI
+    let restAPIClient: ServerAPIProtocol
     let cryptoManager: OktaSharedCryptoProtocol
     let applicationConfig: ApplicationConfig
     let logger: OktaLoggerProtocol
 
     init(sqlitePersistentStorage: OktaSQLitePersistentStorageProtocol,
          cryptoManager: OktaSharedCryptoProtocol,
-         restAPIClient: OktaRestAPI,
+         restAPIClient: ServerAPIProtocol,
          sqliteColumnEncryptionManager: OktaSQLiteColumnEncryptionManagerProtocol,
          applicationConfig: ApplicationConfig,
          logger: OktaLoggerProtocol) {

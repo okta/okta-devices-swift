@@ -46,7 +46,7 @@ class OktaFactorPush: OktaFactor {
 
     init(factorData: OktaFactorMetadataPush,
          cryptoManager: OktaSharedCryptoProtocol,
-         restAPIClient: OktaRestAPI,
+         restAPIClient: ServerAPIProtocol,
          logger: OktaLoggerProtocol) {
         self.factorData = factorData
         super.init(cryptoManager: cryptoManager, restAPIClient: restAPIClient, logger: logger)

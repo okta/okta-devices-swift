@@ -17,7 +17,7 @@ import OktaLogger
 public class _OktaAuthenticatorsManager {
 
     var logger: OktaLoggerProtocol
-    var restAPI: OktaRestAPI
+    var restAPI: ServerAPIProtocol
     var cryptoManager: OktaSharedCryptoProtocol
     var storageManager: PersistentStorageProtocol
     var jwkGenerator: OktaJWKGenerator
@@ -28,7 +28,7 @@ public class _OktaAuthenticatorsManager {
     init(applicationConfig: ApplicationConfig,
          storageManager: PersistentStorageProtocol,
          cryptoManager: OktaSharedCryptoProtocol,
-         restAPI: OktaRestAPI,
+         restAPI: ServerAPIProtocol,
          jwkGenerator: OktaJWKGenerator,
          jwtGenerator: OktaJWTGenerator,
          logger: OktaLoggerProtocol) {

@@ -27,7 +27,7 @@ class OktaStorageManager: PersistentStorageProtocol {
     let logger: OktaLoggerProtocol
     var storageMigrator: OktaStorageMigrator
 
-    init(restApiClient: OktaRestAPI,
+    init(restApiClient: ServerAPIProtocol,
          applicationConfig: ApplicationConfig,
          logger: OktaLoggerProtocol) throws {
         do {
@@ -69,7 +69,7 @@ class OktaStorageManager: PersistentStorageProtocol {
     }
 
     static func storage(applicationGroupId: String,
-                        restAPIClient: OktaRestAPI,
+                        restAPIClient: ServerAPIProtocol,
                         applicationConfig: ApplicationConfig,
                         logger: OktaLoggerProtocol) throws -> PersistentStorageProtocol {
         let cryptoManager = OktaCryptoManager(accessGroupId: applicationGroupId, logger: logger)
