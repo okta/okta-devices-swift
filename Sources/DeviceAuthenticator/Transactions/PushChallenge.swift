@@ -51,14 +51,20 @@ class PushChallenge: PushChallengeProtocol {
         return transactionDateTime
     }()
 
-    /// Transaction type associated with this push challenge, usually - LOGIN
-    lazy var transactionType: String? = {
-        return challengeContext["transactionType"] as? String
+    /// Transaction type associated with this push challenge - LOGIN or CIBA
+    lazy var transactionType: TransactionType? = {
+        guard let transactionType = challengeContext["transactionType"] as? String else { return nil }
+        return TransactionType(rawValue: transactionType)
     }()
 
     /// Application name
     lazy var appInstanceName: String? = {
         return pushBindJWT.appInstanceName
+    }()
+
+    /// Required if transactionType = CIBA
+    lazy var bindingMessage: String? = {
+        return challengeContext["bindingMessage"] as? String
     }()
 
     var isExpired: Bool {
