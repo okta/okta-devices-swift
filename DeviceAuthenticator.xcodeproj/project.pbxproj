@@ -134,6 +134,8 @@
 		7F883408287C763C0034CA5E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7F883407287C763C0034CA5E /* Assets.xcassets */; };
 		7F88340B287C763C0034CA5E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7F883409287C763C0034CA5E /* LaunchScreen.storyboard */; };
 		7F8FF73D287F87DA000F17F2 /* DeviceAuthenticator.docc in Sources */ = {isa = PBXBuildFile; fileRef = 7F8FF73C287F87DA000F17F2 /* DeviceAuthenticator.docc */; };
+		7FA3181028CA6A4100770C88 /* TransactionType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FA3180F28CA6A4100770C88 /* TransactionType.swift */; };
+		7FA3181228CA74B100770C88 /* PushChallengeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FA3181128CA74B100770C88 /* PushChallengeTests.swift */; };
 		98F2EBDD5510C097C38222F3 /* libPods-DeviceAuthenticatorFunctionalTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DD73FB7DC7E598DC865F395B /* libPods-DeviceAuthenticatorFunctionalTests.a */; };
 		9F47E556289C989000299CFB /* DeviceAuthenticatorConfigTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F47E555289C989000299CFB /* DeviceAuthenticatorConfigTests.swift */; };
 		9F7AAD8E28BD297E00E15F59 /* ServerAPIProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7AAD8D28BD297E00E15F59 /* ServerAPIProtocol.swift */; };
@@ -372,6 +374,8 @@
 		7F88340C287C763C0034CA5E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7F883414287CA8B80034CA5E /* PushSDKTestApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PushSDKTestApp.entitlements; sourceTree = "<group>"; };
 		7F8FF73C287F87DA000F17F2 /* DeviceAuthenticator.docc */ = {isa = PBXFileReference; lastKnownFileType = folder.documentationcatalog; path = DeviceAuthenticator.docc; sourceTree = "<group>"; };
+		7FA3180F28CA6A4100770C88 /* TransactionType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionType.swift; sourceTree = "<group>"; };
+		7FA3181128CA74B100770C88 /* PushChallengeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushChallengeTests.swift; sourceTree = "<group>"; };
 		7FFB5F74285BA94A006BC548 /* DeviceAuthenticator.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = DeviceAuthenticator.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7FFB5FFA286A7F4C006BC548 /* DeviceAuthenticatorUnitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DeviceAuthenticatorUnitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		7FFB6010286A80CF006BC548 /* DeviceAuthenticatorFunctionalTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DeviceAuthenticatorFunctionalTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -667,6 +671,7 @@
 				7F88335D2874FB820034CA5E /* AuthenticationMethodType.swift */,
 				7F88335E2874FB820034CA5E /* BiometricSettings.swift */,
 				7F88335F2874FB820034CA5E /* PushChallenge.swift */,
+				7FA3180F28CA6A4100770C88 /* TransactionType.swift */,
 				7F8833602874FB820034CA5E /* OktaTransactionPossessionChallenge.swift */,
 			);
 			path = Transactions;
@@ -844,6 +849,7 @@
 				9F9602A42878B0180012C74C /* OktaStorageManagerTests.swift */,
 				9F9602A22878B0170012C74C /* OktaStorageMigratorTests.swift */,
 				9F9602A32878B0170012C74C /* OktaTransactionPushChallengeTests.swift */,
+				7FA3181128CA74B100770C88 /* PushChallengeTests.swift */,
 				9F9602A52878B0180012C74C /* OktaUnmanagedDeviceSignalsTests.swift */,
 				9F9602A62878B0180012C74C /* OktaUpdateDeviceTokenJWTTests.swift */,
 				9F96028C2878AF310012C74C /* OktaJWTGeneratorIntegrationTests.swift */,
@@ -1232,6 +1238,7 @@
 				7F8833A92874FB820034CA5E /* OktaJWTHelper.swift in Sources */,
 				7F8833B62874FB820034CA5E /* PushChallengeProtocol.swift in Sources */,
 				7F8833932874FB820034CA5E /* EnrollAuthenticatorRequestModel.swift in Sources */,
+				7FA3181028CA6A4100770C88 /* TransactionType.swift in Sources */,
 				7F8833E32874FB820034CA5E /* BasicSignalsHelper.swift in Sources */,
 				7F8833B32874FB820034CA5E /* OktaJWTPayload.swift in Sources */,
 				7F8833B02874FB820034CA5E /* OktaDeviceBindJWTPayload.swift in Sources */,
@@ -1399,6 +1406,7 @@
 				9F9602B42878B35F0012C74C /* SignalsManagerTests.swift in Sources */,
 				9F96027D2878A8CE0012C74C /* OktaDeviceBindJWTTests.swift in Sources */,
 				9F96025A2878A5690012C74C /* OktaTransactionEnrollMock.swift in Sources */,
+				7FA3181228CA74B100770C88 /* PushChallengeTests.swift in Sources */,
 				9F9602692878A6CF0012C74C /* CryptoManagerTests.swift in Sources */,
 				9F9602AB2878B0180012C74C /* OktaUpdateDeviceTokenJWTTests.swift in Sources */,
 			);

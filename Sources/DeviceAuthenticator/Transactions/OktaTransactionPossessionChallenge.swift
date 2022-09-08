@@ -448,7 +448,7 @@ class OktaTransactionPossessionChallengeBase: OktaTransaction {
         let deviceModel = deviceModelBuilder.buildForVerifyTransaction(deviceEnrollmentId: deviceEnrollment.id,
                                                                        clientInstanceKey: deviceEnrollment.clientInstanceId)
         let factorId = getFactorIdFromEnrollment(authenticatorEnrollment)
-        let context = challengeContext(consent: consent)
+        let context = challengeContext(consent: consent, deviceBindJWT: deviceBindJWT)
         let convertedAmr = amr.map { $0.rawValue }
         let jwtResponse = try deviceBindJWT.generateDeviceChallengeResponseJWT(key: jwsKey,
                                                                                enrollmentId: authenticatorEnrollment.enrollmentId,
@@ -465,13 +465,23 @@ class OktaTransactionPossessionChallengeBase: OktaTransaction {
         return jwtResponse
     }
 
-    private func challengeContext(consent: OktaUserConsentValue) -> [String: String] {
+    private func challengeContext(consent: OktaUserConsentValue, deviceBindJWT: OktaBindJWT) -> [String: String] {
+        let transactionTypeKey = "transactionType"
         var context: [String: String] = [
             "userConsent": consent.rawValue
         ]
         if let httpHeaders = self.httpHeaders,
            let value = httpHeaders["Origin"] {
             context["originHeader"] = value
+        }
+
+        // Replay transactionType sent from push challenge
+        if let challengeContext = deviceBindJWT.jwt.payload["challengeContext"] as? [AnyHashable: Any],
+           let rawTransactionType = challengeContext[transactionTypeKey] as? String,
+           let transactionType = TransactionType(rawValue: rawTransactionType) {
+            context[transactionTypeKey] = transactionType.rawValue
+        } else {
+            context[transactionTypeKey] = TransactionType.login.rawValue
         }
         return context
     }
