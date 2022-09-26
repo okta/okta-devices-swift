@@ -11,7 +11,10 @@
 */
 import Foundation
 
-enum TransactionType: String {
+public enum TransactionType: String, Encodable {
+    /// Type for login transactions
     case login = "LOGIN"
+
+    ///  Type for Transactional MFA (CIBA) transactions
     case ciba = "CIBA"
 }

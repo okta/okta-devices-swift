@@ -200,7 +200,8 @@ class OktaAuthenticatorsManagerTests: XCTestCase {
                                                   pushToken: DeviceToken.tokenData("token".data(using: .utf8)!),
                                                   enrollBiometricKey: true,
                                                   deviceSignals: deviceSignals,
-                                                  biometricSettings: nil)
+                                                  biometricSettings: nil,
+                                                  supportCIBATransactions: nil)
         let deleteKeyHookCalled = expectation(description: "Delete hook expected!")
         // Delete push keys(pop, uv), delete clientInstanceKey = 5 calls
         deleteKeyHookCalled.expectedFulfillmentCount = 3
@@ -231,7 +232,8 @@ class OktaAuthenticatorsManagerTests: XCTestCase {
                                                   pushToken: .empty,
                                                   enrollBiometricKey: nil,
                                                   deviceSignals: nil,
-                                                  biometricSettings: nil)
+                                                  biometricSettings: nil,
+                                                  supportCIBATransactions: nil)
 
         // suspended
         var mockHTTPClient = MockAPIResponse.response(for: .deviceSuspended)

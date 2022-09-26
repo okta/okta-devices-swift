@@ -88,12 +88,17 @@ extension OktaTransactionEnroll {
         if keys != nil {
             let apsEnvironment = applicationConfig.pushSettings.apsEnvironment == .production ? APSEnvironmentEncodableValue.production :
                                                                                     APSEnvironmentEncodableValue.development
+            var transactionTypes: [TransactionType] = [.login]
+            if let isCibaSupported = enrollmentContext.supportCIBATransactions, isCibaSupported {
+                transactionTypes.append(.ciba)
+            }
+            let capabilities = EnrollAuthenticatorRequestModel.AuthenticatorMethods.Capabilities(transactionTypes: transactionTypes)
             methodModel = EnrollAuthenticatorRequestModel.AuthenticatorMethods(type: methodType,
                                                                                pushToken: methodType == .push ? pushToken : nil,
                                                                                apsEnvironment: methodType == .push ? apsEnvironment : nil,
                                                                                supportUserVerification: nil,
                                                                                isFipsCompliant: nil,
-                                                                               keys: keys)
+                                                                               keys: keys, capabilities: capabilities)
         }
 
         return (methodModel: methodModel, proofOfPossessionKeyTag: proofOfPossessionKeyTag, userVerificationKeyTag: userVerificationKeyTag)

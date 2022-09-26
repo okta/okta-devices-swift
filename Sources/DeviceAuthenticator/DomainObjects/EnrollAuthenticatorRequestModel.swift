@@ -30,6 +30,7 @@ struct EnrollAuthenticatorRequestModel: Encodable {
         let supportUserVerification: Bool? // For TOTP factor
         let isFipsCompliant: Bool? // For TOTP
         let keys: Keys?
+        let capabilities: Capabilities?
 
         enum APSEnvironment: String, Encodable {
             case development
@@ -62,6 +63,10 @@ struct EnrollAuthenticatorRequestModel: Encodable {
                     }
                 }
             }
+        }
+
+        struct Capabilities: Encodable {
+            let transactionTypes: [TransactionType]
         }
     }
 }

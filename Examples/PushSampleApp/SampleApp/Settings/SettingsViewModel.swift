@@ -175,6 +175,9 @@ class SettingsViewModel: SettingsViewModelProtocol {
         }
         let enrollmentParams = EnrollmentParameters(deviceToken: deviceToken)
 
+        /// Enable/Disable CIBA transactions for this device, by default, CIBA is enabled.
+        /// `enrollmentParams.enableCIBATransactions(enable: false)`
+
         view?.updateView(shouldShowSpinner: true)
 
         /**
