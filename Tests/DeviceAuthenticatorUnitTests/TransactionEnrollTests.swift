@@ -49,7 +49,7 @@ class TransactionEnrollTests: XCTestCase {
         metaData = metaDataArray[0]
         jwkGeneratorMock = OktaJWKGeneratorMock(logger: OktaLoggerMock())
         jwtGeneratorMock = OktaJWTGeneratorMock(logger: OktaLoggerMock())
-        enrollmentContext = createEnrollmentContext(enrollBiometricKey: true, pushToken: "push_token")
+        enrollmentContext = createEnrollmentContext(enrollBiometricKey: true, pushToken: "push_token", supportsCIBA: false)
         transaction = createTransaction(enrollmentContext: enrollmentContext, enrollment: nil, jwtGenerator: OktaJWTGenerator(logger: OktaLoggerMock()))
         transaction.metaData = metaData
         transaction.orgId = ""
@@ -680,7 +680,7 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
     }
 
     func testDoUpdate_SuccessWithUserVerificationKey() {
-        enrollmentContext = createEnrollmentContext(accessToken: nil, deviceSignals: nil, applicationSignals: nil, enrollBiometricKey: nil, pushToken: nil)
+        enrollmentContext = createEnrollmentContext(accessToken: nil, deviceSignals: nil, applicationSignals: nil, enrollBiometricKey: nil, pushToken: nil, supportsCIBA: false)
         transaction = createTransaction(enrollmentContext: enrollmentContext, enrollment: nil)
         transaction.metaData = metaData
         let enrollment = TestUtils.createAuthenticatorEnrollment(orgHost: URL(string: "tenant.okta.com")!,
@@ -721,7 +721,7 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
     }
 
     func testDoUpdate_Success() {
-        enrollmentContext = createEnrollmentContext(accessToken: nil, deviceSignals: nil, applicationSignals: nil, enrollBiometricKey: nil, pushToken: nil)
+        enrollmentContext = createEnrollmentContext(accessToken: nil, deviceSignals: nil, applicationSignals: nil, enrollBiometricKey: nil, pushToken: nil, supportsCIBA: false)
         transaction = createTransaction(enrollmentContext: enrollmentContext, enrollment: nil)
         transaction.metaData = metaData
         let enrollment = TestUtils.createAuthenticatorEnrollment(orgHost: URL(string: "tenant.okta.com")!,
@@ -755,7 +755,7 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
     }
 
     func testDoUpdate_NoPoPKeyError() {
-        enrollmentContext = createEnrollmentContext(accessToken: nil, deviceSignals: nil, applicationSignals: nil, enrollBiometricKey: nil, pushToken: nil)
+        enrollmentContext = createEnrollmentContext(accessToken: nil, deviceSignals: nil, applicationSignals: nil, enrollBiometricKey: nil, pushToken: nil, supportsCIBA: false)
         transaction = createTransaction(enrollmentContext: enrollmentContext, enrollment: nil)
         transaction.metaData = metaData
         let enrollment = TestUtils.createAuthenticatorEnrollment(orgHost: URL(string: "tenant.okta.com")!,
@@ -781,7 +781,7 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
     }
 
     func testDoUpdate_CantReadPoPKey() {
-        enrollmentContext = createEnrollmentContext(accessToken: nil, deviceSignals: nil, applicationSignals: nil, enrollBiometricKey: nil, pushToken: nil)
+        enrollmentContext = createEnrollmentContext(accessToken: nil, deviceSignals: nil, applicationSignals: nil, enrollBiometricKey: nil, pushToken: nil, supportsCIBA: false)
         transaction = createTransaction(enrollmentContext: enrollmentContext, enrollment: nil)
         transaction.metaData = metaData
         cryptoManager.getHook = { type, tag, context in
@@ -813,7 +813,7 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
     }
 
     func testDoUpdate_FailedToGenerateRequestJWT() {
-        enrollmentContext = createEnrollmentContext(accessToken: nil, deviceSignals: nil, applicationSignals: nil, enrollBiometricKey: nil, pushToken: nil)
+        enrollmentContext = createEnrollmentContext(accessToken: nil, deviceSignals: nil, applicationSignals: nil, enrollBiometricKey: nil, pushToken: nil, supportsCIBA: false)
         transaction = createTransaction(enrollmentContext: enrollmentContext, enrollment: nil)
         transaction.metaData = metaData
         jwtGeneratorMock.generateHook = { key, type, algo, kid, additionalParams in
@@ -891,7 +891,7 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
                                                                  orgId: "orgId",
                                                                  enrollmentId: "enrollmentId",
                                                                  cryptoManager: cryptoManager)
-        enrollmentContext = createEnrollmentContext(deviceSignals: nil, applicationSignals: nil, enrollBiometricKey: false, pushToken: nil)
+        enrollmentContext = createEnrollmentContext(deviceSignals: nil, applicationSignals: nil, enrollBiometricKey: false, pushToken: nil, supportsCIBA: false)
         transactionPartialMock = OktaTransactionEnrollPartialMock(storageManager: mockStorageManager,
                                                                   cryptoManager: cryptoManager,
                                                                   restAPI: restAPIMock,
@@ -1367,7 +1367,8 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
                                                                                 apsEnvironment: nil,
                                                                                 supportUserVerification: true,
                                                                                 isFipsCompliant: nil,
-                                                                                keys: nil)
+                                                                                keys: nil,
+                                                                                capabilities: nil)
         let signedNonceUpdatingFactor = OktaTransactionEnroll.EnrollingFactor(proofOfPossessionKeyTag: "proofOfPossessionKeyTag",
                                                                               userVerificationKeyTag: "userVerificationKeyTag",
                                                                               methodType: .signedNonce,
@@ -1378,7 +1379,8 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
                                                                             apsEnvironment: nil,
                                                                             supportUserVerification: true,
                                                                             isFipsCompliant: nil,
-                                                                            keys: nil)
+                                                                            keys: nil,
+                                                                            capabilities: nil)
         let pushUpdatingFactor = OktaTransactionEnroll.EnrollingFactor(proofOfPossessionKeyTag: "proofOfPossessionKeyTag",
                                                                        userVerificationKeyTag: "userVerificationKeyTag",
                                                                        methodType: .push,
@@ -1401,7 +1403,8 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
                                                         applicationSignals: ["deleteV1TotpOnlyEnrollment": _OktaCodableArbitaryType.bool(true),
                                                                              "deleteV1EnrollmentByPushFactorId": _OktaCodableArbitaryType.string("opf12345")],
                                                         enrollBiometricKey: nil,
-                                                        pushToken: nil)
+                                                        pushToken: nil,
+                                                        supportsCIBA: false)
         transaction = createTransaction(enrollmentContext: enrollmentContext, enrollment: enrollment)
         transaction.metaData = metaData
         let requestModel = EnrollAuthenticatorRequestModel.AuthenticatorMethods(type: .signedNonce,
@@ -1409,7 +1412,8 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
                                                                                 apsEnvironment: nil,
                                                                                 supportUserVerification: true,
                                                                                 isFipsCompliant: nil,
-                                                                                keys: nil)
+                                                                                keys: nil,
+                                                                                capabilities: nil)
         let signedNonceUpdatingFactor = OktaTransactionEnroll.EnrollingFactor(proofOfPossessionKeyTag: "proofOfPossessionKeyTag",
                                                                               userVerificationKeyTag: "userVerificationKeyTag",
                                                                               methodType: .signedNonce,
@@ -1422,7 +1426,8 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
                                                                                                                                           apsEnvironment: nil,
                                                                                                                                           supportUserVerification: true,
                                                                                                                                           isFipsCompliant: nil,
-                                                                                                                                          keys: nil))
+                                                                                                                                          keys: nil,
+                                                                                                                                          capabilities: nil))
         let data = try? transaction.buildEnrollmentModelData(factorsMetaData: [signedNonceUpdatingFactor, pushUpdatingFactor])
         XCTAssertNotNil(data)
         let decodedDictionary = try? JSONSerialization.jsonObject(with: data!, options: []) as? [String: Any]
@@ -1431,6 +1436,46 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
         let appSignalsDictionary = decodedDictionary?["appSignals"] as? [String: Any]
         XCTAssertNotNil(appSignalsDictionary?["deleteV1TotpOnlyEnrollment"])
         XCTAssertNotNil(appSignalsDictionary?["deleteV1EnrollmentByPushFactorId"])
+    }
+    
+    func testBuildEnrollmentModelData_CIBAEnabled_HasCIBATransactionType() {
+        let enrollment = TestUtils.createAuthenticatorEnrollment(orgHost: URL(string: "tenant.okta.com")!,
+                                                                 orgId: "orgId",
+                                                                 enrollmentId: "enrollmentId",
+                                                                 cryptoManager: cryptoManager,
+                                                                 enrollPush: false)
+        let enrollmentContext = createEnrollmentContext(deviceSignals: DeviceSignals(displayName: ""),
+                                                        applicationSignals: ["deleteV1TotpOnlyEnrollment": _OktaCodableArbitaryType.bool(true),
+                                                                             "deleteV1EnrollmentByPushFactorId": _OktaCodableArbitaryType.string("opf12345")],
+                                                        enrollBiometricKey: nil,
+                                                        pushToken: nil,
+                                                        supportsCIBA: true)
+        transaction = createTransaction(enrollmentContext: enrollmentContext, enrollment: enrollment)
+        transaction.metaData = metaData
+        
+        let capabilities = EnrollAuthenticatorRequestModel.AuthenticatorMethods.Capabilities(transactionTypes: [.login, .ciba])
+
+        let pushUpdatingFactor = OktaTransactionEnroll.EnrollingFactor(proofOfPossessionKeyTag: "proofOfPossessionKeyTag",
+                                                                       userVerificationKeyTag: "userVerificationKeyTag",
+                                                                       methodType: .push,
+                                                                       requestModel: EnrollAuthenticatorRequestModel.AuthenticatorMethods(type: .push,
+                                                                                                                                          pushToken: "token",
+                                                                                                                                          apsEnvironment: nil,
+                                                                                                                                          supportUserVerification: true,
+                                                                                                                                          isFipsCompliant: nil,
+                                                                                                                                          keys: nil,
+                                                                                                                                          capabilities: capabilities))
+        let data = try? transaction.buildEnrollmentModelData(factorsMetaData: [pushUpdatingFactor])
+        XCTAssertNotNil(data)
+        let decodedDictionary = try? JSONSerialization.jsonObject(with: data!, options: []) as? [String: Any]
+        XCTAssertNotNil(decodedDictionary)
+        XCTAssertNotNil(decodedDictionary?["methods"])
+        let methods = decodedDictionary?["methods"] as? [[String: Any]]
+        XCTAssertNotNil(methods?.first?["capabilities"])
+        let capabilitiesDict = methods?.first?["capabilities"] as? [String: Any]
+        XCTAssertNotNil(capabilitiesDict?["transactionTypes"])
+        let transactionTypes = capabilitiesDict?["transactionTypes"] as? [String]
+        XCTAssertTrue(transactionTypes?.contains("CIBA") ?? false)
     }
 
     func createTransaction(enrollmentContext: EnrollmentContext,
@@ -1454,7 +1499,8 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
                                  deviceSignals: DeviceSignals? = nil,
                                  applicationSignals: [String: _OktaCodableArbitaryType]? = nil,
                                  enrollBiometricKey: Bool? = nil,
-                                 pushToken: String? = nil) -> EnrollmentContext {
+                                 pushToken: String? = nil,
+                                 supportsCIBA: Bool) -> EnrollmentContext {
         var deviceToken = DeviceToken.empty
         if let pushToken = pushToken,
            let pushTokenData = pushToken.data(using: .utf8) {
@@ -1469,7 +1515,8 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
                                  enrollBiometricKey: enrollBiometricKey,
                                  deviceSignals: deviceSignals,
                                  biometricSettings: nil,
-                                 applicationSignals: applicationSignals)
+                                 applicationSignals: applicationSignals,
+                                 supportCIBATransactions: supportsCIBA)
     }
 }
 

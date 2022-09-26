@@ -55,7 +55,8 @@ public class _OktaAuthenticatorsManager {
                                                   enrollBiometricKey: enrollmentParameters.enrollUserVerificationKey,
                                                   deviceSignals: nil,
                                                   biometricSettings: enrollmentParameters.userVerificationSettings,
-                                                  applicationSignals: nil)
+                                                  applicationSignals: nil,
+                                                  supportCIBATransactions: enrollmentParameters.isCIBAEnabled)
         enroll(with: enrollmentContext,
                existingEnrollment: nil,
                onMetadataReceived: nil,
