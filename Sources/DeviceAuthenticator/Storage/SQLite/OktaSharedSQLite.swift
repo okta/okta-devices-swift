@@ -113,7 +113,7 @@ class OktaSharedSQLite: OktaSharedSQLiteProtocol {
                                                              orgId: enrollment.organization.id,
                                                              factorData: factor,
                                                              creationDate: enrollment.creationDate)
-                try db.execute(sql: "INSERT INTO EnrolledMethod (id, enrollmentId, orgId, type, proofOfPossessionKeyTag, userVerificationKeyTag, links, passCodeLength, timeIntervalSec, algorithm, sharedSecret, createdTimestamp, updatedTimestamp) VALUES (:id, :enrollmentId, :enrollmentOrgId, :type, :proofOfPossessionKeyTag, :userVerificationKeyTag, :links, :passCodeLength, :timeIntervalSec, :algorithm, :sharedSecret, :createdTimestamp, :updatedTimestamp) ON CONFLICT(id,enrollmentId,orgId) DO UPDATE SET id = :id, enrollmentId = :enrollmentId, orgId = :enrollmentOrgId, type = :type, proofOfPossessionKeyTag = :proofOfPossessionKeyTag, userVerificationKeyTag = :userVerificationKeyTag, links = :links, passCodeLength = :passCodeLength, timeIntervalSec = :timeIntervalSec, algorithm = :algorithm, sharedSecret = :sharedSecret, updatedTimestamp = :updatedTimestamp", arguments: writeArguments)
+                try db.execute(sql: "INSERT INTO EnrolledMethod (id, enrollmentId, orgId, type, proofOfPossessionKeyTag, userVerificationKeyTag, links, passCodeLength, timeIntervalSec, algorithm, sharedSecret, createdTimestamp, updatedTimestamp, transactionTypes) VALUES (:id, :enrollmentId, :enrollmentOrgId, :type, :proofOfPossessionKeyTag, :userVerificationKeyTag, :links, :passCodeLength, :timeIntervalSec, :algorithm, :sharedSecret, :createdTimestamp, :updatedTimestamp, :transactionTypes) ON CONFLICT(id,enrollmentId,orgId) DO UPDATE SET id = :id, enrollmentId = :enrollmentId, orgId = :enrollmentOrgId, type = :type, proofOfPossessionKeyTag = :proofOfPossessionKeyTag, userVerificationKeyTag = :userVerificationKeyTag, links = :links, passCodeLength = :passCodeLength, timeIntervalSec = :timeIntervalSec, algorithm = :algorithm, sharedSecret = :sharedSecret, updatedTimestamp = :updatedTimestamp", arguments: writeArguments)
             }
         } catch {
             throw DeviceAuthenticatorError.storageError(StorageError.sqliteError(error.localizedDescription))
@@ -524,7 +524,8 @@ class OktaSharedSQLite: OktaSharedSQLiteProtocol {
                                        Column.passCodeLength: nil,
                                        Column.timeIntervalSec: nil,
                                        Column.algorithm: nil,
-                                       Column.sharedSecret: nil
+                                       Column.sharedSecret: nil,
+                                       Column.transactionTypes: nil
         ])
 
         if let push = factorData as? OktaFactorMetadataPush {

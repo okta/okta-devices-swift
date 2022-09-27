@@ -43,7 +43,8 @@ class SQLiteSchema_200: SQLiteSchemaProtocol {
     'algorithm' INTEGER DEFAULT NULL,
     'sharedSecret' BLOB DEFAULT NULL,
     'createdTimestamp' TEXT DEFAULT NULL,
-    'updatedTimestamp' TEXT DEFAULT NULL
+    'updatedTimestamp' TEXT DEFAULT NULL,
+    'transactionTypes' INTEGER DEFAULT NULL
     );
 
     CREATE UNIQUE INDEX method_index ON EnrolledMethod(id, enrollmentId, orgId);
