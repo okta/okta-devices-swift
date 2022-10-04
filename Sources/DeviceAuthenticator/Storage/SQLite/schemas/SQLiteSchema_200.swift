@@ -42,6 +42,7 @@ class SQLiteSchema_200: SQLiteSchemaProtocol {
     'timeIntervalSec' INTEGER DEFAULT NULL,
     'algorithm' INTEGER DEFAULT NULL,
     'sharedSecret' BLOB DEFAULT NULL,
+    'transactionTypes' INTEGER DEFAULT 1,
     'createdTimestamp' TEXT DEFAULT NULL,
     'updatedTimestamp' TEXT DEFAULT NULL
     );

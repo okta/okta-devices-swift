@@ -117,3 +117,4 @@ excluded:
 - Core
 - Tests
 - Examples/PushSampleApp/Pods
+- DerivedData

@@ -46,6 +46,7 @@ extension OktaSharedSQLite {
         static let passCodeLength = "passCodeLength"
         static let timeIntervalSec = "timeIntervalSec"
         static let algorithm = "algorithm"
+        static let transactionTypes = "transactionTypes"
 
         // AuthenticatorPolicy
         static let policyId = "policyId"
@@ -118,6 +119,10 @@ extension GRDB.Row {
 
     var totpSecret: Data? {
         return self[OktaSharedSQLite.Column.sharedSecret]
+    }
+
+    var transactionTypes: Int? {
+        return self[OktaSharedSQLite.Column.transactionTypes]
     }
 
     var links: Data? {
