@@ -141,6 +141,24 @@ class OktaSharedSQLiteTests: XCTestCase {
     func testStoreRetrieveEnrollmentWithError() throws {
         try storeRetrieveEnrollmentWithError(fullDatabaseEncryption: false, prefersSecureEnclaveUsage: false)
     }
+    
+    func testEnrollmentsCount_MultipleItems_ReturnsCount() throws {
+        let sqlite = try createSqlite(fullDatabaseEncryption: false, prefersSecureEnclaveUsage: false)
+        let createdDate = "2020-09-08T19:30:30.166Z"
+        let enrollmentA = entitiesGenerator.createAuthenticator(createdDate: createdDate)
+        try? sqlite.storeEnrollment(enrollmentA)
+        let enrollmentB = entitiesGenerator.createAuthenticator(createdDate: createdDate)
+        try? sqlite.storeEnrollment(enrollmentB)
+        let enrollmentC = entitiesGenerator.createAuthenticator(createdDate: createdDate)
+        try? sqlite.storeEnrollment(enrollmentC)
+        
+        XCTAssertEqual(sqlite.enrollmentsCount, 3)
+    }
+    
+    func testEnrollmentsCount_emptyItems_Returns0() throws {
+        let sqlite = try createSqlite(fullDatabaseEncryption: false, prefersSecureEnclaveUsage: false)        
+        XCTAssertEqual(sqlite.enrollmentsCount, 0)
+    }
 
     func storeRetrieveEnrollmentWithError(fullDatabaseEncryption: Bool, prefersSecureEnclaveUsage: Bool) throws {
         let sqlite = try createSqlite(fullDatabaseEncryption: fullDatabaseEncryption, prefersSecureEnclaveUsage: prefersSecureEnclaveUsage)
