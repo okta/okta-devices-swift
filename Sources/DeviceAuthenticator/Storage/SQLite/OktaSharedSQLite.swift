@@ -200,6 +200,18 @@ class OktaSharedSQLite: OktaSharedSQLiteProtocol {
         return enrollments
     }
 
+    var enrollmentsCount: Int? {
+        var count: Int?
+        do {
+            try pool?.read({ db in
+                count = try Int.fetchOne(db, sql: "SELECT COUNT(*) from Enrollment")
+            })
+        } catch {
+            logger.error(eventName: "Error while getting authenticators count from SQLite", message: "Error: \(error)")
+        }
+        return count
+    }
+
     func enrollment(from row: Row, db: Database) -> AuthenticatorEnrollmentProtocol? {
         guard let enrollmentId = row.enrollmentId,
               let orgId = row.orgId,
