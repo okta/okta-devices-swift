@@ -40,7 +40,7 @@ class PushChallengeTests: XCTestCase {
                                                                logger: OktaLoggerMock()),
                                           logger: OktaLoggerMock())
         XCTAssertNotNil(pushChallenge)
-        XCTAssertEqual(pushChallenge.transactionType, TransactionType.login)
+        XCTAssertEqual(pushChallenge.transactionType, TransactionTypeModel.login)
     }
     
     func testPushChallenge_CibaType() {
@@ -62,7 +62,7 @@ class PushChallengeTests: XCTestCase {
                                                                logger: OktaLoggerMock()),
                                           logger: OktaLoggerMock())
         XCTAssertNotNil(pushChallenge)
-        XCTAssertEqual(pushChallenge.transactionType, TransactionType.ciba)
+        XCTAssertEqual(pushChallenge.transactionType, TransactionTypeModel.ciba)
         XCTAssertEqual(pushChallenge.bindingMessage, "Did you make a $300 purchase?")
     }
 }

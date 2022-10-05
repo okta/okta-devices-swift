@@ -40,5 +40,5 @@ public struct EnrollmentParameters {
     let deviceToken: DeviceToken
     var enrollUserVerificationKey: Bool?
     var userVerificationSettings: BiometricEnrollmentSettings?
-    var isCIBAEnabled: Bool = true
+    var isCIBAEnabled: Bool = false
 }

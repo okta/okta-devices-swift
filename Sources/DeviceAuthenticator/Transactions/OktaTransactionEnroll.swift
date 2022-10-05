@@ -25,7 +25,11 @@ struct EnrollmentContext {
     let biometricSettings: BiometricEnrollmentSettings?
     let pushToken: DeviceToken
     let enrollBiometricKey: Bool?
-    let supportCIBATransactions: Bool?
+    let transactionTypes: [TransactionType]?
+
+    var isCibaSupported: Bool {
+        return transactionTypes?.contains(.ciba) ?? false
+    }
 
     init(accessToken: String?,
          activationToken: String?,
@@ -37,7 +41,7 @@ struct EnrollmentContext {
          deviceSignals: DeviceSignals?,
          biometricSettings: BiometricEnrollmentSettings?,
          applicationSignals: [String: _OktaCodableArbitaryType]? = nil,
-         supportCIBATransactions: Bool?) {
+         transactionTypes: [TransactionType]?) {
         self.accessToken = accessToken
         self.activationToken = activationToken
         self.orgHost = orgHost
@@ -48,7 +52,7 @@ struct EnrollmentContext {
         self.deviceSignals = deviceSignals
         self.biometricSettings = biometricSettings ?? BiometricEnrollmentSettings.default
         self.applicationSignals = applicationSignals
-        self.supportCIBATransactions = supportCIBATransactions
+        self.transactionTypes = transactionTypes
     }
 }
 

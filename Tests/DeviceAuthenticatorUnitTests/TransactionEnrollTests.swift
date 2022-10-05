@@ -1516,7 +1516,7 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
                                  deviceSignals: deviceSignals,
                                  biometricSettings: nil,
                                  applicationSignals: applicationSignals,
-                                 supportCIBATransactions: supportsCIBA)
+                                 transactionTypes: nil)
     }
 }
 

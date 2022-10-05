@@ -120,7 +120,7 @@ class AuthenticatorEnrollment: AuthenticatorEnrollmentProtocol {
                                                   deviceSignals: nil,
                                                   biometricSettings: nil,
                                                   applicationSignals: nil,
-                                                  supportCIBATransactions: nil)
+                                                  transactionTypes: nil)
         let updateTransaction = OktaTransactionPushTokenUpdate(storageManager: self.storageManager,
                                                                cryptoManager: self.cryptoManager,
                                                                restAPI: self.restAPIClient,
@@ -196,7 +196,7 @@ class AuthenticatorEnrollment: AuthenticatorEnrollmentProtocol {
                                                   deviceSignals: nil,
                                                   biometricSettings: .default,
                                                   applicationSignals: nil,
-                                                  supportCIBATransactions: nil)
+                                                  transactionTypes: nil)
         let enrollTransaction = OktaTransactionEnroll(storageManager: self.storageManager,
                                                       cryptoManager: self.cryptoManager,
                                                       restAPI: restAPIClient,

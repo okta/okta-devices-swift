@@ -11,10 +11,14 @@
 */
 import Foundation
 
-public enum TransactionType: String, Encodable {
-    /// Type for login transactions
-    case login = "LOGIN"
+public struct TransactionType: OptionSet {
 
-    ///  Type for Transactional MFA (CIBA) transactions
-    case ciba = "CIBA"
+    public let rawValue: Int
+
+    public init(rawValue: Int) {
+        self.rawValue = rawValue
+    }
+
+    public static let login = TransactionType(rawValue: 1 << 0)
+    public static let ciba = TransactionType(rawValue: 1 << 1)
 }
