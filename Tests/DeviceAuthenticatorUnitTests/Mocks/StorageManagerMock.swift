@@ -16,6 +16,8 @@ import OktaLogger
 
 class StorageMock: PersistentStorageProtocol {
 
+    var enrollmentsCount: Int?
+
     typealias storeEnrollmentType = (AuthenticatorEnrollmentProtocol) throws -> Void
     typealias enrollmentByIdType = (String) -> AuthenticatorEnrollmentProtocol?
     typealias deviceEnrollmentByOrgIdType = (String) throws -> OktaDeviceEnrollment
