@@ -25,7 +25,8 @@ extension OktaTransactionEnroll {
         let factor = OktaFactorMetadataPush(id: enrolledModel.id,
                                             proofOfPossessionKeyTag: proofOfPossessionKeyTag,
                                             userVerificationKeyTag: factorModel.userVerificationKeyTag,
-                                            links: OktaFactorMetadataPush.Links(pendingLink: links.pending?.href))
+                                            links: OktaFactorMetadataPush.Links(pendingLink: links.pending?.href),
+                                            transactionTypes: factorModel.transactionTypes)
         return factor
     }
 
@@ -34,7 +35,8 @@ extension OktaTransactionEnroll {
                                         methodType: AuthenticatorMethod,
                                         pushToken: String?) throws -> (methodModel: EnrollAuthenticatorRequestModel.AuthenticatorMethods?,
                                                                        proofOfPossessionKeyTag: String,
-                                                                       userVerificationKeyTag: String?) {
+                                                                       userVerificationKeyTag: String?,
+                                                                       transactionTypes: TransactionType?) {
         // Note: for update operation we need to rebuild the whole Factor object
         var proofOfPossessionJWK: [String: _OktaCodableArbitaryType]? = nil
         let proofOfPossessionKeyTag: String
@@ -88,7 +90,7 @@ extension OktaTransactionEnroll {
         if keys != nil {
             let apsEnvironment = applicationConfig.pushSettings.apsEnvironment == .production ? APSEnvironmentEncodableValue.production :
                                                                                     APSEnvironmentEncodableValue.development
-            var transactionTypes: [TransactionTypeModel] = [.login]
+            var transactionTypes: [TransactionTypesModel] = [.login]
             if enrollmentContext.isCibaSupported {
                 transactionTypes.append(.ciba)
             }
@@ -101,7 +103,7 @@ extension OktaTransactionEnroll {
                                                                                keys: keys, capabilities: capabilities)
         }
 
-        return (methodModel: methodModel, proofOfPossessionKeyTag: proofOfPossessionKeyTag, userVerificationKeyTag: userVerificationKeyTag)
+        return (methodModel: methodModel, proofOfPossessionKeyTag: proofOfPossessionKeyTag, userVerificationKeyTag: userVerificationKeyTag, transactionTypes: enrollmentContext.transactionTypes)
     }
 
     func factorTypeFromAuthenticatorMethod(_ method: AuthenticatorMethod) -> AuthenticationMethodType {

@@ -478,10 +478,10 @@ class OktaTransactionPossessionChallengeBase: OktaTransaction {
         // Replay transactionType sent from push challenge
         if let challengeContext = deviceBindJWT.jwt.payload["challengeContext"] as? [AnyHashable: Any],
            let rawTransactionType = challengeContext[transactionTypeKey] as? String,
-           let transactionType = TransactionTypeModel(rawValue: rawTransactionType) {
+           let transactionType = TransactionTypesModel(rawValue: rawTransactionType) {
             context[transactionTypeKey] = transactionType.rawValue
         } else {
-            context[transactionTypeKey] = TransactionTypeModel.login.rawValue
+            context[transactionTypeKey] = TransactionTypesModel.login.rawValue
         }
         return context
     }

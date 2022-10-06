@@ -36,6 +36,10 @@ class OktaFactorPush: OktaFactor {
         return factorData.userVerificationKeyTag
     }
 
+    override var enrolledWithCibaSupport: Bool {
+        return factorData.transactionTypes?.supportsCiba ?? false
+    }
+
     override var description: String {
         let info: [String: Any] =  ["type": "Push",
                                     "id": factorData.id,
@@ -56,6 +60,7 @@ class OktaFactorPush: OktaFactor {
         super.cleanup()
         _ = cryptoManager.delete(keyPairWith: factorData.proofOfPossessionKeyTag)
         removeUserVerificationKey()
+        factorData.transactionTypes = .login
     }
 
     override func removeUserVerificationKey() {

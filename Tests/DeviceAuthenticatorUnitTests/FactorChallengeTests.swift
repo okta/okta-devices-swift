@@ -47,7 +47,7 @@ class FactorChallengeTests: XCTestCase {
         XCTAssertNotNil(pushChallenge)
         XCTAssertTrue(pushChallenge.showClientLocation)
         XCTAssertEqual(pushChallenge.clientLocation, "Unknown location")
-        XCTAssertEqual(pushChallenge.transactionType, TransactionTypeModel.login)
+        XCTAssertEqual(pushChallenge.transactionType, TransactionTypesModel.login)
         XCTAssertEqual(pushChallenge.clientOS, "UNKNOWN")
         XCTAssertEqual(pushChallenge.appInstanceName, "TestApp")
         let dateFormatter = DateFormatter()

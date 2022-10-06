@@ -66,12 +66,12 @@ struct EnrollAuthenticatorRequestModel: Encodable {
         }
 
         struct Capabilities: Encodable {
-            let transactionTypes: [TransactionTypeModel]
+            let transactionTypes: [TransactionTypesModel]
         }
     }
 }
 
-enum TransactionTypeModel: String, Encodable {
+enum TransactionTypesModel: String, Codable {
     /// Type for login transactions
     case login = "LOGIN"
 

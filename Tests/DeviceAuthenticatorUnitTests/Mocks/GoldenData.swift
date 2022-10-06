@@ -48,7 +48,10 @@ class GoldenData {
                     },
                     {
                         "type": "push",
-                        "status": "ACTIVE"
+                        "status": "ACTIVE",
+                        "settings": {
+                            "transactionTypes": ["LOGIN", "CIBA"]
+                        }
                     },
                     {
                         "type": "totp",

@@ -25,7 +25,7 @@ struct EnrollmentContext {
     let biometricSettings: BiometricEnrollmentSettings?
     let pushToken: DeviceToken
     let enrollBiometricKey: Bool?
-    let transactionTypes: [TransactionType]?
+    let transactionTypes: TransactionType?
 
     var isCibaSupported: Bool {
         return transactionTypes?.contains(.ciba) ?? false
@@ -41,7 +41,7 @@ struct EnrollmentContext {
          deviceSignals: DeviceSignals?,
          biometricSettings: BiometricEnrollmentSettings?,
          applicationSignals: [String: _OktaCodableArbitaryType]? = nil,
-         transactionTypes: [TransactionType]?) {
+         transactionTypes: TransactionType?) {
         self.accessToken = accessToken
         self.activationToken = activationToken
         self.orgHost = orgHost
@@ -75,6 +75,7 @@ class OktaTransactionEnroll: OktaTransaction {
         let userVerificationKeyTag: String?
         let methodType: AuthenticationMethodType
         let requestModel: EnrollAuthenticatorRequestModel.AuthenticatorMethods?
+        let transactionTypes: TransactionType?
     }
 
     init(storageManager: PersistentStorageProtocol,

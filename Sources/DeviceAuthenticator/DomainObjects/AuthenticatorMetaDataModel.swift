@@ -90,6 +90,7 @@ struct AuthenticatorMetaDataModel: Codable {
             let encoding: TOTPSecretEncoding?
             let algorithm: TOTPAlgorithms?
             let passCodeLength: UInt?
+            let transactionTypes: [TransactionTypesModel]?
         }
 
         enum CodingKeys: String, CodingKey {

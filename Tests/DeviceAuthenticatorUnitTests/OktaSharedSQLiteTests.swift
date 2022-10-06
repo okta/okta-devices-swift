@@ -104,7 +104,7 @@ class OktaSharedSQLiteTests: XCTestCase {
 
     func storeRetrieveEnrollment(fullDatabaseEncryption: Bool, prefersSecureEnclaveUsage: Bool) throws -> AuthenticatorEnrollment {
         let sqlite = try createSqlite(fullDatabaseEncryption: fullDatabaseEncryption, prefersSecureEnclaveUsage: prefersSecureEnclaveUsage)
-        let enrollment = entitiesGenerator.createAuthenticator(methodTypes: [AuthenticatorMethod.signedNonce, AuthenticatorMethod.push, AuthenticatorMethod.totp])
+        let enrollment = entitiesGenerator.createAuthenticator(methodTypes: [AuthenticatorMethod.signedNonce, AuthenticatorMethod.push, AuthenticatorMethod.totp], transactionTypes: [.login, .ciba])
         let push = enrollment.pushFactor
         try? sqlite.storeEnrollment(enrollment)
 
@@ -118,6 +118,8 @@ class OktaSharedSQLiteTests: XCTestCase {
         XCTAssertEqual(retrieved.userName, enrollment.userName)
         XCTAssertEqual(retrieved.orgId, enrollment.orgId)
         XCTAssertEqual(retrieved.deviceId, enrollment.deviceId)
+        
+        XCTAssertTrue(retrieved.isCibaEnabled)
 
         // Spot check key factor values for expected key values
         XCTAssertEqual(retrieved.pushFactor?.factorData.proofOfPossessionKeyTag, enrollment.pushFactor?.factorData.proofOfPossessionKeyTag)

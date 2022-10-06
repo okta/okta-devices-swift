@@ -27,7 +27,8 @@ extension OktaTransactionEnroll {
         let enrollingFactor = EnrollingFactor(proofOfPossessionKeyTag: returnedTuple.proofOfPossessionKeyTag,
                                               userVerificationKeyTag: returnedTuple.userVerificationKeyTag,
                                               methodType: .push,
-                                              requestModel: returnedTuple.methodModel)
+                                              requestModel: returnedTuple.methodModel,
+                                              transactionTypes: returnedTuple.transactionTypes)
         return enrollingFactor
     }
 }

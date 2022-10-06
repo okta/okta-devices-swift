@@ -91,7 +91,7 @@ class AuthenticatorEnrollmentTests: XCTestCase {
     func testUpdatePushTokenSuccess() {
         cryptoManager.accessGroupId = ""
         let pushFactor = OktaFactorPush(factorData: OktaFactorMetadataPush(id: "id",
-                                                                           proofOfPossessionKeyTag: "proofOfPossessionKeyTag"),
+                                                                           proofOfPossessionKeyTag: "proofOfPossessionKeyTag", transactionTypes: .login),
                                         cryptoManager: cryptoManager,
                                         restAPIClient: restAPIMock,
                                         logger: OktaLoggerMock())
@@ -150,7 +150,7 @@ class AuthenticatorEnrollmentTests: XCTestCase {
         cryptoManager.accessGroupId = ""
         let pushFactor = OktaFactorPush(factorData: OktaFactorMetadataPush(id: "id",
                                                                            proofOfPossessionKeyTag: "proofOfPossessionKeyTag",
-                                                                           links: OktaFactorMetadataPush.Links(pendingLink: "https://test.okta.com/pending_challenge")),
+                                                                           links: OktaFactorMetadataPush.Links(pendingLink: "https://test.okta.com/pending_challenge"), transactionTypes: .login),
                                         cryptoManager: cryptoManager,
                                         restAPIClient: restAPIMock,
                                         logger: OktaLoggerMock())
@@ -256,7 +256,8 @@ class AuthenticatorEnrollmentTests: XCTestCase {
         }
 
         let pushFactor = OktaFactorPush(factorData: OktaFactorMetadataPush(id: "id",
-                                                                           proofOfPossessionKeyTag: "proofOfPossessionKeyTag"),
+                                                                           proofOfPossessionKeyTag: "proofOfPossessionKeyTag",
+                                                                           transactionTypes: .login),
                                         cryptoManager: cryptoManager,
                                         restAPIClient: restAPIMock,
                                         logger: OktaLoggerMock())

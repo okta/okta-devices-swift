@@ -46,10 +46,8 @@ public class _OktaAuthenticatorsManager {
                 authenticatorConfig: DeviceAuthenticatorConfig,
                 enrollmentParameters: EnrollmentParameters,
                 completion: @escaping (Result<AuthenticatorEnrollmentProtocol, DeviceAuthenticatorError>) -> Void) {
-        var transactionTypes: [TransactionType] = [.login]
-        if enrollmentParameters.isCIBAEnabled {
-            transactionTypes.append(.ciba)
-        }
+
+        var transactionTypes = TransactionType.initEnrollmentTypes(supportsCiba: enrollmentParameters.isCIBAEnabled)
         let enrollmentContext = EnrollmentContext(accessToken: authenticationToken.tokenValue(),
                                                   activationToken: nil,
                                                   orgHost: authenticatorConfig.orgURL,

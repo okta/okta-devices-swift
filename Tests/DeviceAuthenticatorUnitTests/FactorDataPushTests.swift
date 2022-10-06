@@ -18,8 +18,9 @@ class FactorDataPushTests: XCTestCase {
 
     override func setUp() {
         oktaFactor = OktaFactorMetadataPush(id: "id",
-                                             proofOfPossessionKeyTag: "proofOfPossessionKeyTag",
-                                             userVerificationKeyTag: "userVerificationKeyTag")
+                                            proofOfPossessionKeyTag: "proofOfPossessionKeyTag",
+                                            userVerificationKeyTag: "userVerificationKeyTag",
+                                            transactionTypes: .login)
     }
 
     func testCreationWithUserVerificationKey() {
@@ -33,6 +34,10 @@ class FactorDataPushTests: XCTestCase {
         XCTAssertEqual(oktaFactor.id, "id")
         XCTAssertEqual(oktaFactor.proofOfPossessionKeyTag, "proofOfPossessionKeyTag")
         XCTAssertNil(oktaFactor.userVerificationKeyTag)
+    }
+    
+    func testCreationWithTransactionTypes() {
+        XCTAssertEqual(oktaFactor.transactionTypes, .login)
     }
 
     func testSerialization_WithUVKey() {
@@ -57,4 +62,32 @@ class FactorDataPushTests: XCTestCase {
         XCTAssertNil(pushFactorToTest?.userVerificationKeyTag)
         XCTAssertEqual(pushFactorToTest?.type, .push)
     }
+    
+    func testSerialization_withLoginTransactionTypes() {
+        let data = try? JSONEncoder().encode(oktaFactor)
+        XCTAssertNotNil(data)
+        let pushFactorToTest = try? JSONDecoder().decode(OktaFactorMetadataPush.self, from: data!)
+        XCTAssertNotNil(pushFactorToTest)
+        XCTAssertEqual(pushFactorToTest?.transactionTypes, .login)
+    }
+    
+    func testSerialization_withLoginAndCibaTransactionTypes() {
+        oktaFactor.transactionTypes = [.login, .ciba]
+        let data = try? JSONEncoder().encode(oktaFactor)
+        XCTAssertNotNil(data)
+        let pushFactorToTest = try? JSONDecoder().decode(OktaFactorMetadataPush.self, from: data!)
+        XCTAssertNotNil(pushFactorToTest)
+        XCTAssertEqual(pushFactorToTest?.transactionTypes, [.login, .ciba])
+        XCTAssertTrue(pushFactorToTest?.transactionTypes?.supportsCiba ?? false)
+    }
+    
+    func testSerialization_withoutTransactionTypes_loginByDefault() {
+        oktaFactor.transactionTypes = nil
+        let data = try? JSONEncoder().encode(oktaFactor)
+        XCTAssertNotNil(data)
+        let pushFactorToTest = try? JSONDecoder().decode(OktaFactorMetadataPush.self, from: data!)
+        XCTAssertNotNil(pushFactorToTest)
+        XCTAssertEqual(pushFactorToTest?.transactionTypes, .login)
+    }
+    
 }

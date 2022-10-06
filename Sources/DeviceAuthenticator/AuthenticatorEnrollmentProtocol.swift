@@ -33,6 +33,11 @@ public protocol AuthenticatorEnrollmentProtocol {
     ///   - completion: Closure called when the process has completed
     func setUserVerification(authenticationToken: AuthToken, enable: Bool, completion: @escaping (DeviceAuthenticatorError?) -> Void)
 
+    var isCibaEnabled: Bool { get }
+
+    func enableCibaTransactions(authenticationToken: AuthToken, enable: Bool, completion: @escaping (DeviceAuthenticatorError?) -> Void)
+
+
     ///  Update the push token associated with all enrollments on this device
     /// - Parameters:
     ///   - token: APNS token to be updated, will be performed for all enrollments on this device

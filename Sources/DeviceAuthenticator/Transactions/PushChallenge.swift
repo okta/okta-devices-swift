@@ -52,9 +52,9 @@ class PushChallenge: PushChallengeProtocol {
     }()
 
     /// Transaction type associated with this push challenge - LOGIN or CIBA
-    lazy var transactionType: TransactionTypeModel? = {
+    lazy var transactionType: TransactionTypesModel? = {
         guard let transactionType = challengeContext["transactionType"] as? String else { return nil }
-        return TransactionTypeModel(rawValue: transactionType)
+        return TransactionTypesModel(rawValue: transactionType)
     }()
 
     /// Application name

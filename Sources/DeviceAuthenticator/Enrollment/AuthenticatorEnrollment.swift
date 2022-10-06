@@ -224,6 +224,14 @@ class AuthenticatorEnrollment: AuthenticatorEnrollmentProtocol {
         }
     }
 
+    var isCibaEnabled: Bool {
+        return enrolledFactors.first(where: { $0.enrolledWithCibaSupport }) != nil
+    }
+
+    func enableCibaTransactions(authenticationToken: AuthToken, enable: Bool, completion: @escaping (DeviceAuthenticatorError?) -> Void) {
+        // TODO: Implement ciba update
+    }
+
     // TODO: Remove saveDeviceToken function when server will implement PATCH request
     func saveDeviceToken(_ token: Data) {
         userDefaultsStorage.set(token, forKey: "device_token_" + self.enrollmentId)

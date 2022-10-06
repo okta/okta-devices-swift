@@ -24,15 +24,19 @@ class OktaFactorMetadataPush: OktaFactorMetadata {
     /// Unique id of user verification key. Used to read SecKey reference from the keychain
     var userVerificationKeyTag: String?
 
+    var transactionTypes: TransactionType?
+
     let pushLinks: Links?
 
     init(id: String,
          proofOfPossessionKeyTag: String,
          userVerificationKeyTag: String? = nil,
-         links: Links? = nil) {
+         links: Links? = nil,
+         transactionTypes: TransactionType?) {
         self.pushLinks = links
         self.proofOfPossessionKeyTag = proofOfPossessionKeyTag
         self.userVerificationKeyTag = userVerificationKeyTag
+        self.transactionTypes = transactionTypes
         super.init(id: id)
         type = .push
     }
@@ -42,6 +46,7 @@ class OktaFactorMetadataPush: OktaFactorMetadata {
         case links
         case proofOfPossessionKeyTag
         case pushUserVerificationKey
+        case transactionTypes
     }
 
     override func encode(to encoder: Encoder) throws {
@@ -51,6 +56,7 @@ class OktaFactorMetadataPush: OktaFactorMetadata {
         try container.encode(EnrolledAuthenticatorModel.AuthenticatorMethods.Links(pending: nil), forKey: .links)
         try container.encode(proofOfPossessionKeyTag, forKey: .proofOfPossessionKeyTag)
         try container.encode(userVerificationKeyTag, forKey: .pushUserVerificationKey)
+        try container.encode(transactionTypes?.rawValue, forKey: .transactionTypes)
     }
 
     required init(from decoder: Decoder) throws {
@@ -58,6 +64,11 @@ class OktaFactorMetadataPush: OktaFactorMetadata {
         self.pushLinks = nil
         proofOfPossessionKeyTag = try container.decode(String.self, forKey: .proofOfPossessionKeyTag)
         userVerificationKeyTag = try container.decodeIfPresent(String.self, forKey: .pushUserVerificationKey)
+        if let rawTransactionType = try container.decodeIfPresent(Int.self, forKey: .transactionTypes) {
+            transactionTypes = TransactionType(rawValue: rawTransactionType)
+        } else {
+            transactionTypes = .login
+        }
         try super.init(from: decoder)
     }
 }

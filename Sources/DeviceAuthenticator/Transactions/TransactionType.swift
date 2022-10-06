@@ -21,4 +21,16 @@ public struct TransactionType: OptionSet {
 
     public static let login = TransactionType(rawValue: 1 << 0)
     public static let ciba = TransactionType(rawValue: 1 << 1)
+
+    public var supportsCiba: Bool {
+        return self.contains(.ciba)
+    }
+
+    public static func initEnrollmentTypes(supportsCiba: Bool) -> Self {
+        if supportsCiba {
+            return [.login, .ciba]
+        } else {
+            return .login
+        }
+    }
 }

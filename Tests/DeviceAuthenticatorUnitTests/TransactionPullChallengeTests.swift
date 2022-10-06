@@ -122,7 +122,8 @@ class TransactionPullChallengeTests: XCTestCase {
         let factorData = OktaFactorMetadataPush(id: "id",
                                                 proofOfPossessionKeyTag: "proofOfPossessionKeyTag",
                                                 userVerificationKeyTag: "userVerificationKeyTag",
-                                                links: links)
+                                                links: links,
+                                                transactionTypes: .login)
         let pushFactor = OktaFactorPush(factorData: factorData,
                                         cryptoManager: cryptoManager,
                                         restAPIClient: restAPIClient,
