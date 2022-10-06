@@ -121,6 +121,10 @@ extension OktaStorageManager: OktaEnrollmentStorageProtocol {
     public func enrollmentsByOrgId(_ orgId: String) -> [AuthenticatorEnrollmentProtocol] {
         return storage.enrollmentsByOrgId(orgId)
     }
+
+    var enrollmentsCount: Int? {
+        return storage.enrollmentsCount
+    }
 }
 
 extension OktaStorageManager: OktaDeviceEnrollmentStorageProtocol {
