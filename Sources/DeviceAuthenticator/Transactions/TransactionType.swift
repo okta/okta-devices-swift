@@ -19,7 +19,10 @@ public struct TransactionType: OptionSet {
         self.rawValue = rawValue
     }
 
+    ///  Type for Login transactions
     public static let login = TransactionType(rawValue: 1 << 0)
+
+    ///  Type for Transactional MFA (CIBA) transactions
     public static let ciba = TransactionType(rawValue: 1 << 1)
 
     public var supportsCiba: Bool {

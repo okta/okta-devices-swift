@@ -41,7 +41,8 @@ class TestUtils {
         if enrollPush {
             let pushFactorMetadata = OktaFactorMetadataPush(id: "push_id",
                                                     proofOfPossessionKeyTag: "proofOfPossessionKeyTag",
-                                                            userVerificationKeyTag: userVerificationKeyTag, transactionTypes: transactionTypes)
+                                                            userVerificationKeyTag: userVerificationKeyTag,
+                                                            transactionTypes: transactionTypes)
             let pushFactor = VerificationMethodFactory.pushFactorFromMetadata(pushFactorMetadata,
                                                                               cryptoManager: cryptoManager,
                                                                               restAPIClient: restAPIMock,

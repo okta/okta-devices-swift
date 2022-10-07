@@ -72,9 +72,6 @@ struct EnrollAuthenticatorRequestModel: Encodable {
 }
 
 enum TransactionTypesModel: String, Codable {
-    /// Type for login transactions
     case login = "LOGIN"
-
-    ///  Type for Transactional MFA (CIBA) transactions
     case ciba = "CIBA"
 }

@@ -29,8 +29,8 @@ public struct EnrollmentParameters {
         self.userVerificationSettings = userVerificationSettings
     }
 
-    /// Enables/disables CIBA transactions (Transactional MFA) for the enrollment in addition to Login transactions. By default is true
-    /// By disabling it, this device won't receive CIBA transactions via Push or Pending challenges.
+    /// Enables/disables CIBA transactions (Transactional MFA) for the enrollment in addition to Login transactions. By default is false
+    /// By disabling it, this authenticator won't receive CIBA transactions via Push or Pending challenges.
     /// - Parameters:
     ///     - enable: Boolean for enabling/disabling CIBA transactions for this enrollment.
     public mutating func enableCIBATransactions(enable: Bool) {

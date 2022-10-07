@@ -91,7 +91,8 @@ class AuthenticatorEnrollmentTests: XCTestCase {
     func testUpdatePushTokenSuccess() {
         cryptoManager.accessGroupId = ""
         let pushFactor = OktaFactorPush(factorData: OktaFactorMetadataPush(id: "id",
-                                                                           proofOfPossessionKeyTag: "proofOfPossessionKeyTag", transactionTypes: .login),
+                                                                           proofOfPossessionKeyTag: "proofOfPossessionKeyTag",
+                                                                           transactionTypes: .login),
                                         cryptoManager: cryptoManager,
                                         restAPIClient: restAPIMock,
                                         logger: OktaLoggerMock())
