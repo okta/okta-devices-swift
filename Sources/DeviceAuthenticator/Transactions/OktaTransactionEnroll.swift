@@ -27,7 +27,7 @@ struct EnrollmentContext {
     let enrollBiometricKey: Bool?
     let transactionTypes: TransactionType?
 
-    var isCibaSupported: Bool {
+    var isCIBASupported: Bool {
         return transactionTypes?.contains(.ciba) ?? false
     }
 

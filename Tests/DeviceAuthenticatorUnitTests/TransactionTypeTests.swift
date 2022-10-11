@@ -29,28 +29,28 @@ final class TransactionTypeTests: XCTestCase {
         XCTAssertFalse(transactionTypes.contains(.ciba))
     }
     
-    func testTransactionType_with2_ReturnsCiba() {
+    func testTransactionType_with2_ReturnsCIBA() {
         let transactionTypes = TransactionType(rawValue: 2)
         XCTAssertFalse(transactionTypes.contains(.login))
         XCTAssertTrue(transactionTypes.contains(.ciba))
     }
     
-    func testTransactionType_3_ReturnCibaAndLogin() {
+    func testTransactionType_3_ReturnCIBAAndLogin() {
         let transactionTypes = TransactionType(rawValue: 3)
         XCTAssertTrue(transactionTypes.contains(.login))
         XCTAssertTrue(transactionTypes.contains(.ciba))
-        XCTAssertEqual(transactionTypes, TransactionType.initEnrollmentTypes(supportsCiba: true))
+        XCTAssertEqual(transactionTypes, TransactionType.defaultEnrollmentTypes(supportsCIBA: true))
     }
     
-    func testInitEnrollmentTypes_WithCibaEnabled() {
-        let transactionTypes = TransactionType.initEnrollmentTypes(supportsCiba: true)
+    func testInitEnrollmentTypes_WithCIBAEnabled() {
+        let transactionTypes = TransactionType.defaultEnrollmentTypes(supportsCIBA: true)
         XCTAssertTrue(transactionTypes.contains(.login))
-        XCTAssertTrue(transactionTypes.supportsCiba)
+        XCTAssertTrue(transactionTypes.supportsCIBA)
     }
     
-    func testInitEnrollmentTypes_WithCibaDisabled() {
-        let transactionTypes = TransactionType.initEnrollmentTypes(supportsCiba: false)
+    func testInitEnrollmentTypes_WithCIBADisabled() {
+        let transactionTypes = TransactionType.defaultEnrollmentTypes(supportsCIBA: false)
         XCTAssertTrue(transactionTypes.contains(.login))
-        XCTAssertFalse(transactionTypes.supportsCiba)
+        XCTAssertFalse(transactionTypes.supportsCIBA)
     }
 }

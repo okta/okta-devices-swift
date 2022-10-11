@@ -224,11 +224,13 @@ class AuthenticatorEnrollment: AuthenticatorEnrollmentProtocol {
         }
     }
 
-    var isCibaEnabled: Bool {
-        return enrolledFactors.first(where: { $0.enrolledWithCibaSupport }) != nil
+    var isCIBAEnabled: Bool {
+        return enrolledFactors.first(where: {
+            ($0 as? OktaFactorPush)?.enrolledWithCIBASupport ?? false
+        }) != nil
     }
 
-    func enableCibaTransactions(authenticationToken: AuthToken, enable: Bool, completion: @escaping (DeviceAuthenticatorError?) -> Void) {
+    func enableCIBATransactions(authenticationToken: AuthToken, enable: Bool, completion: @escaping (DeviceAuthenticatorError?) -> Void) {
         // TODO: Implement ciba update
     }
 

@@ -78,7 +78,7 @@ class FactorDataPushTests: XCTestCase {
         let pushFactorToTest = try? JSONDecoder().decode(OktaFactorMetadataPush.self, from: data!)
         XCTAssertNotNil(pushFactorToTest)
         XCTAssertEqual(pushFactorToTest?.transactionTypes, [.login, .ciba])
-        XCTAssertTrue(pushFactorToTest?.transactionTypes?.supportsCiba ?? false)
+        XCTAssertTrue(pushFactorToTest?.transactionTypes?.supportsCIBA ?? false)
     }
     
     func testSerialization_withoutTransactionTypes_loginByDefault() {

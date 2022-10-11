@@ -119,7 +119,7 @@ class OktaSharedSQLiteTests: XCTestCase {
         XCTAssertEqual(retrieved.orgId, enrollment.orgId)
         XCTAssertEqual(retrieved.deviceId, enrollment.deviceId)
         
-        XCTAssertTrue(retrieved.isCibaEnabled)
+        XCTAssertTrue(retrieved.isCIBAEnabled)
 
         // Spot check key factor values for expected key values
         XCTAssertEqual(retrieved.pushFactor?.factorData.proofOfPossessionKeyTag, enrollment.pushFactor?.factorData.proofOfPossessionKeyTag)

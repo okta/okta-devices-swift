@@ -25,12 +25,12 @@ public struct TransactionType: OptionSet {
     ///  Type for Transactional MFA (CIBA) transactions
     public static let ciba = TransactionType(rawValue: 1 << 1)
 
-    public var supportsCiba: Bool {
+    public var supportsCIBA: Bool {
         return self.contains(.ciba)
     }
 
-    public static func initEnrollmentTypes(supportsCiba: Bool) -> Self {
-        if supportsCiba {
+    public static func defaultEnrollmentTypes(supportsCIBA: Bool) -> Self {
+        if supportsCIBA {
             return [.login, .ciba]
         } else {
             return .login

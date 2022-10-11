@@ -39,11 +39,6 @@ class OktaFactor: CustomStringConvertible {
         return false
     }
 
-    var enrolledWithCibaSupport: Bool {
-        // override
-        return false
-    }
-
     var description: String {
         return ""
     }

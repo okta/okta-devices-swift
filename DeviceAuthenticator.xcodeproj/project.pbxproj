@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		2BC969C31E576D617731C08B /* libPods-DeviceAuthenticatorUnitTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EB271FBD2D22391CF51DB162 /* libPods-DeviceAuthenticatorUnitTests.a */; };
 		7F4E2DC328EE06FE003131C8 /* TransactionTypeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F4E2DC228EE06FE003131C8 /* TransactionTypeTests.swift */; };
+		7F4E2DC728F4FAF9003131C8 /* CIBAChallengeProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F4E2DC628F4FAF9003131C8 /* CIBAChallengeProtocol.swift */; };
 		7F88337D2874FB820034CA5E /* AuthenticatorPolicyProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F8832F52874FB810034CA5E /* AuthenticatorPolicyProtocol.swift */; };
 		7F88337E2874FB820034CA5E /* OktaFactorMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F8832F62874FB810034CA5E /* OktaFactorMetadata.swift */; };
 		7F88337F2874FB820034CA5E /* OktaFactor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F8832F72874FB810034CA5E /* OktaFactor.swift */; };
@@ -246,6 +247,7 @@
 		51D52AE94A384B20D4375636 /* Pods-DeviceAuthenticatorFunctionalTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DeviceAuthenticatorFunctionalTests.release.xcconfig"; path = "Target Support Files/Pods-DeviceAuthenticatorFunctionalTests/Pods-DeviceAuthenticatorFunctionalTests.release.xcconfig"; sourceTree = "<group>"; };
 		7D58871E27E4DC288975B1D0 /* Pods-DeviceAuthenticator.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DeviceAuthenticator.release.xcconfig"; path = "Target Support Files/Pods-DeviceAuthenticator/Pods-DeviceAuthenticator.release.xcconfig"; sourceTree = "<group>"; };
 		7F4E2DC228EE06FE003131C8 /* TransactionTypeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionTypeTests.swift; sourceTree = "<group>"; };
+		7F4E2DC628F4FAF9003131C8 /* CIBAChallengeProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CIBAChallengeProtocol.swift; sourceTree = "<group>"; };
 		7F8832F52874FB810034CA5E /* AuthenticatorPolicyProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthenticatorPolicyProtocol.swift; sourceTree = "<group>"; };
 		7F8832F62874FB810034CA5E /* OktaFactorMetadata.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OktaFactorMetadata.swift; sourceTree = "<group>"; };
 		7F8832F72874FB810034CA5E /* OktaFactor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OktaFactor.swift; sourceTree = "<group>"; };
@@ -804,6 +806,7 @@
 				7F8833052874FB810034CA5E /* Managers */,
 				7F8833712874FB820034CA5E /* Networking */,
 				7F8833322874FB820034CA5E /* PushChallengeProtocol.swift */,
+				7F4E2DC628F4FAF9003131C8 /* CIBAChallengeProtocol.swift */,
 				7F8833332874FB820034CA5E /* Remediation */,
 				7F88337C2874FB820034CA5E /* SecurityError.swift */,
 				7F8833372874FB820034CA5E /* Storage */,
@@ -1278,6 +1281,7 @@
 				7F8833EC2874FB820034CA5E /* OktaAuthType.swift in Sources */,
 				7F88339C2874FB820034CA5E /* OktaEnvironment.swift in Sources */,
 				7F8833C62874FB820034CA5E /* AuthenticatorPolicyStorageProtocol.swift in Sources */,
+				7F4E2DC728F4FAF9003131C8 /* CIBAChallengeProtocol.swift in Sources */,
 				7F8833E12874FB820034CA5E /* SignalPluginConfigCollection.swift in Sources */,
 				7F8833952874FB820034CA5E /* ServerAPIError.swift in Sources */,
 				7F88338B2874FB820034CA5E /* OktaFactorMetadataPush.swift in Sources */,

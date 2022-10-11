@@ -36,8 +36,8 @@ class OktaFactorPush: OktaFactor {
         return factorData.userVerificationKeyTag
     }
 
-    override var enrolledWithCibaSupport: Bool {
-        return factorData.transactionTypes?.supportsCiba ?? false
+    var enrolledWithCIBASupport: Bool {
+        return factorData.transactionTypes?.supportsCIBA ?? false
     }
 
     override var description: String {

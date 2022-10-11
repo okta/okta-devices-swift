@@ -91,7 +91,7 @@ extension OktaTransactionEnroll {
             let apsEnvironment = applicationConfig.pushSettings.apsEnvironment == .production ? APSEnvironmentEncodableValue.production :
                                                                                     APSEnvironmentEncodableValue.development
             var transactionTypes: [TransactionTypesModel] = [.login]
-            if enrollmentContext.isCibaSupported {
+            if enrollmentContext.isCIBASupported {
                 transactionTypes.append(.ciba)
             }
             let capabilities = EnrollAuthenticatorRequestModel.AuthenticatorMethods.Capabilities(transactionTypes: transactionTypes)

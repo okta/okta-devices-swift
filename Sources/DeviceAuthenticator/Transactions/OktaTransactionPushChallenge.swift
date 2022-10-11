@@ -112,7 +112,8 @@ class OktaTransactionPushChallenge: OktaTransactionPossessionChallengeBase {
             let doNotProcessClosure = {
                 completeStep(with: .none)
             }
-            let consentStep = RemediationStepUserConsent(challenge: pushChallenge,
+            let abstractPushChallenge = pushChallenge.transactionType == .ciba ? pushChallenge as CIBAChallengeProtocol : pushChallenge as PushChallengeProtocol
+            let consentStep = RemediationStepUserConsent(challenge: abstractPushChallenge,
                                                          enrollment: transactionContext.enrollment,
                                                          logger: logger,
                                                                   defaultProcessClosure: doNotProcessClosure) { response in

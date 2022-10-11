@@ -58,12 +58,12 @@ class OktaFactorPushTests: XCTestCase {
     }
     
     func testEnrolledWithLoginTransactionTypes() {
-        XCTAssertFalse(factor.enrolledWithCibaSupport)
+        XCTAssertFalse(factor.enrolledWithCIBASupport)
     }
     
     func testEnrolledWithCibaAndLoginTransactionTypes() {
         factor.cleanup()
         factor.factorData.transactionTypes = [.login, .ciba]
-        XCTAssertTrue(factor.enrolledWithCibaSupport)
+        XCTAssertTrue(factor.enrolledWithCIBASupport)
     }
 }

@@ -30,8 +30,4 @@ public protocol PushChallengeProtocol: ChallengeProtocol {
     var clientOS: String? { get }
     ///  What is the user's response to this challenge?
     var userResponse: PushChallengeUserResponse { get set }
-    ///  Type of transaction for this challenge: Login or Transactional MFA (CIBA)
-    var transactionType: TransactionType { get }
-    ///  Transaction message for CIBA challenges (e.g. "Did you attempt this transaction?"
-    var bindingMessage: String? { get }
 }
