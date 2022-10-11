@@ -72,7 +72,7 @@ class TransactionEnrollTests: XCTestCase {
                                                     clientInstanceKeyTag: "clientInstanceTag")
         try? mockStorageManager.storeDeviceEnrollment(deviceEnrollment, for: transactionPartialMock.orgId)
         let enrollExpectation = expectation(description: "Do enrollment expectation")
-        transactionPartialMock.doEnrollmentHook = { data, factorsMetaData, completion in
+        transactionPartialMock.doEnrollmentHook = { factorsMetaData, completion in
             XCTAssertTrue(factorsMetaData.count == 1)
             XCTAssertNil(self.transactionPartialMock.deviceEnrollment)
             enrollExpectation.fulfill()
@@ -168,9 +168,10 @@ class TransactionEnrollTests: XCTestCase {
             XCTAssertEqual(pushMethod?.methodType, .push)
             XCTAssertNotNil(pushMethod?.proofOfPossessionKeyTag)
             XCTAssertNotNil(pushMethod?.userVerificationKeyTag)
-            XCTAssertNotNil(pushMethod?.requestModel?.pushToken)
-            XCTAssertEqual(pushMethod?.requestModel?.pushToken, "push_token".data(using: .utf8)?.hexString())
-            XCTAssertEqual(pushMethod?.requestModel?.type, AuthenticatorMethod.push)
+            XCTAssertNotNil(pushMethod?.keys)
+            XCTAssertNotNil(pushMethod?.pushToken)
+            XCTAssertEqual(pushMethod?.pushToken, "push_token".data(using: .utf8)?.hexString())
+            XCTAssertEqual(pushMethod?.methodType, AuthenticatorMethod.push)
         } catch {
             XCTFail("Unexpected exception thrown - \(error)")
         }
@@ -189,9 +190,11 @@ class TransactionEnrollTests: XCTestCase {
             transaction.metaData = metaData
             let enrollingFactor = try transaction.enrollPushFactor(serverMethod: transaction.metaData._embedded.methods[1])
             XCTAssertNotNil(enrollingFactor)
-            XCTAssertNotNil(enrollingFactor?.requestModel)
             XCTAssertNotNil(enrollingFactor?.proofOfPossessionKeyTag)
             XCTAssertNotNil(enrollingFactor?.userVerificationKeyTag)
+            XCTAssertNotNil(enrollingFactor?.keys)
+            XCTAssertNotNil(enrollingFactor?.pushToken)
+            XCTAssertEqual(enrollingFactor?.apsEnvironment, .production)
             XCTAssertEqual(enrollingFactor?.methodType, .push)
         } catch {
             XCTFail("Unexpected exception thrown - \(error)")
@@ -209,8 +212,8 @@ class TransactionEnrollTests: XCTestCase {
             transaction.metaData = metaData
             let enrollingFactor = try transaction.enrollPushFactor(serverMethod: transaction.metaData._embedded.methods[1])
             XCTAssertNotNil(enrollingFactor)
-            XCTAssertNotNil(enrollingFactor?.requestModel)
-            XCTAssertNotNil(enrollingFactor?.requestModel?.pushToken)
+            XCTAssertNotNil(enrollingFactor?.pushToken)
+            XCTAssertNotNil(enrollingFactor?.keys)
             XCTAssertNotNil(enrollingFactor?.proofOfPossessionKeyTag)
             XCTAssertNotNil(enrollingFactor?.userVerificationKeyTag)
             XCTAssertEqual(enrollingFactor?.methodType, .push)
@@ -230,7 +233,8 @@ class TransactionEnrollTests: XCTestCase {
             transaction.metaData = metaData
             let enrollingFactor = try transaction.enrollPushFactor(serverMethod: transaction.metaData._embedded.methods[1])
             XCTAssertNotNil(enrollingFactor)
-            XCTAssertNotNil(enrollingFactor?.requestModel)
+            XCTAssertNotNil(enrollingFactor?.keys)
+            XCTAssertNotNil(enrollingFactor?.pushToken)
             XCTAssertNotNil(enrollingFactor?.proofOfPossessionKeyTag)
             XCTAssertNotNil(enrollingFactor?.userVerificationKeyTag)
             XCTAssertEqual(enrollingFactor?.methodType, .push)
@@ -251,6 +255,8 @@ class TransactionEnrollTests: XCTestCase {
             let method = transaction.metaData._embedded.methods.first { $0.type == .push }
             let enrollingFactor = try transaction.enrollPushFactor(serverMethod: method!)
             XCTAssertNotNil(enrollingFactor)
+            XCTAssertNotNil(enrollingFactor?.keys)
+            XCTAssertNotNil(enrollingFactor?.pushToken)
             XCTAssertNotNil(enrollingFactor?.proofOfPossessionKeyTag)
             XCTAssertNotNil(enrollingFactor?.userVerificationKeyTag)
         } catch {
@@ -268,7 +274,8 @@ class TransactionEnrollTests: XCTestCase {
             transaction.metaData = metaData
             let enrollingFactor = try transaction.enrollPushFactor(serverMethod: transaction.metaData._embedded.methods[1])
             XCTAssertNotNil(enrollingFactor)
-            XCTAssertNotNil(enrollingFactor?.requestModel)
+            XCTAssertNotNil(enrollingFactor?.keys)
+            XCTAssertNotNil(enrollingFactor?.pushToken)
             XCTAssertNotNil(enrollingFactor?.proofOfPossessionKeyTag)
             XCTAssertNotNil(enrollingFactor?.userVerificationKeyTag)
             XCTAssertEqual(enrollingFactor?.methodType, .push)
@@ -472,12 +479,10 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
         XCTAssertNotNil(enrolledFactors)
         transaction.clientInstanceKeyTag = "clientInstanceKeyTag"
         var hookCalled = false
-        restAPIMock.enrollAuthenticatorRequestHook = { url, data, _, completion in
+        restAPIMock.enrollAuthenticatorRequestHook = { _, _, _, _, _, _, completion in
             hookCalled = true
         }
-        transaction.doEnrollment(
-            enrollData: Data(),
-            factorsMetaData: enrolledFactors!) { result in
+        transaction.doEnrollment(factorsMetaData: enrolledFactors!) { result in
         }
 
         XCTAssertTrue(hookCalled)
@@ -498,15 +503,13 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
         XCTAssertNotNil(enrolledFactors)
         transaction.clientInstanceKeyTag = "clientInstanceKeyTag"
         var hookCalled = false
-        restAPIMock.enrollAuthenticatorRequestHook = { url, data, _, completion in
+        restAPIMock.enrollAuthenticatorRequestHook = { _, _, _, _, _, _, completion in
             hookCalled = true
         }
-        transaction.doEnrollment(
-            enrollData: Data(),
-            factorsMetaData: enrolledFactors!) { result in
-                if case Result.failure(_) = result {
-                    XCTFail("Unexpected result")
-                }
+        transaction.doEnrollment(factorsMetaData: enrolledFactors!) { result in
+            if case Result.failure(_) = result {
+                XCTFail("Unexpected result")
+            }
         }
 
         XCTAssertTrue(hookCalled)
@@ -528,19 +531,16 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
         mut.metaData = metaData
         XCTAssertNotNil(enrolledFactors)
 
-        restAPIMock.enrollAuthenticatorRequestHook = { url, _, _, completion in
-            XCTAssertEqual(url.absoluteString, "tenant.okta.com/idp/authenticators")
+        restAPIMock.enrollAuthenticatorRequestHook = { orgHost, _, _, _, _, _, completion in
+            XCTAssertEqual(orgHost.absoluteString, "tenant.okta.com")
         }
 
-        mut.doEnrollment(
-            enrollData: Data(),
-            factorsMetaData: enrolledFactors!) { result in
+        mut.doEnrollment(factorsMetaData: enrolledFactors!) { result in
         }
     }
 
     func testDoEnrollment_ServerError() {
-        restAPIMock.enrollAuthenticatorRequestHook = { url, _, token, completion in
-            XCTAssertEqual(url.absoluteString, "https://atko.oktapreview.com/idp/authenticators")
+        restAPIMock.enrollAuthenticatorRequestHook = { _, _, _, _, _, token, completion in
             if case .accessToken(_) = token {
                 XCTAssertEqual(token.token, self.transaction.enrollmentContext.accessToken)
             } else {
@@ -551,70 +551,62 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
 
         let enrolledFactors = try? transaction.enrollFactors()
         XCTAssertNotNil(enrolledFactors)
-        transaction.doEnrollment(
-            enrollData: Data(),
-            factorsMetaData: enrolledFactors!) { result in
-                if case Result.failure(let error) = result {
-                    XCTAssertEqual(error.errorCode, DeviceAuthenticatorError.internalError("").errorCode)
-                } else {
-                    XCTFail("Unexpected result")
-                }
+        transaction.doEnrollment(factorsMetaData: enrolledFactors!) { result in
+            if case Result.failure(let error) = result {
+                XCTAssertEqual(error.errorCode, DeviceAuthenticatorError.internalError("").errorCode)
+            } else {
+                XCTFail("Unexpected result")
+            }
         }
     }
 
     func testDoEnrollment_EmptyData() {
-        restAPIMock.enrollAuthenticatorRequestHook = { url, _, _, completion in
+        restAPIMock.enrollAuthenticatorRequestHook = { _, _, _, _, _, token, completion in
             completion(nil, nil)
         }
 
         let enrolledFactors = try? transaction.enrollFactors()
         XCTAssertNotNil(enrolledFactors)
-        transaction.doEnrollment(
-            enrollData: Data(),
-            factorsMetaData: enrolledFactors!) { result in
-                if case Result.failure(let error) = result {
-                    XCTAssertEqual(error.errorCode, DeviceAuthenticatorError.internalError("").errorCode)
-                } else {
-                    XCTFail("Unexpected result")
-                }
+        transaction.doEnrollment(factorsMetaData: enrolledFactors!) { result in
+            if case Result.failure(let error) = result {
+                XCTAssertEqual(error.errorCode, DeviceAuthenticatorError.internalError("").errorCode)
+            } else {
+                XCTFail("Unexpected result")
+            }
         }
     }
 
     func testDoEnrollment_EmptyMethodsInPayloadError() {
-        restAPIMock.enrollAuthenticatorRequestHook = { url, _, _, completion in
+        restAPIMock.enrollAuthenticatorRequestHook = { _, _, _, _, _, _, completion in
             let result = HTTPURLResult(request: nil, response: nil, data: GoldenData.authenticatorDataWithEmptyMethods())
             completion(result, nil)
         }
 
         let enrolledFactors = try? transaction.enrollFactors()
         XCTAssertNotNil(enrolledFactors)
-        transaction.doEnrollment(
-            enrollData: Data(),
-            factorsMetaData: enrolledFactors!) { result in
-                if case Result.failure(let error) = result {
-                    XCTAssertEqual(error.errorCode, DeviceAuthenticatorError.internalError("").errorCode)
-                } else {
-                    XCTFail("Unexpected result")
-                }
+        transaction.doEnrollment(factorsMetaData: enrolledFactors!) { result in
+            if case Result.failure(let error) = result {
+                XCTAssertEqual(error.errorCode, DeviceAuthenticatorError.internalError("").errorCode)
+            } else {
+                XCTFail("Unexpected result")
+            }
         }
     }
 
     func testDoEnrollment_DecodingError() {
-        restAPIMock.enrollAuthenticatorRequestHook = { url, _, _, completion in
+        restAPIMock.enrollAuthenticatorRequestHook = { _, _, _, _, _, _, completion in
             let result = HTTPURLResult(request: nil, response: nil, data: GoldenData.authenticatorMetaData())
             completion(result, nil)
         }
 
         let enrolledFactors = try? transaction.enrollFactors()
         XCTAssertNotNil(enrolledFactors)
-        transaction.doEnrollment(
-            enrollData: Data(),
-            factorsMetaData: enrolledFactors!) { result in
-                if case Result.failure(let error) = result {
-                    XCTAssertEqual(error.errorCode, DeviceAuthenticatorError.internalError("").errorCode)
-                } else {
-                    XCTFail("Unexpected result")
-                }
+        transaction.doEnrollment(factorsMetaData: enrolledFactors!) { result in
+            if case Result.failure(let error) = result {
+                XCTAssertEqual(error.errorCode, DeviceAuthenticatorError.internalError("").errorCode)
+            } else {
+                XCTFail("Unexpected result")
+            }
         }
     }
 
@@ -639,11 +631,11 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
 
         #if os(iOS)
 
-        if let pushRequestModel = enrolledFactors?.first(where: { $0.methodType == .push })?.requestModel {
-            XCTAssertNil(pushRequestModel.isFipsCompliant)
-            XCTAssertEqual(pushRequestModel.keys?.proofOfPossession?["okta:isFipsCompliant"],
+        if let pushFactor = enrolledFactors?.first(where: { $0.methodType == .push }) {
+            XCTAssertNil(pushFactor.isFipsCompliant)
+            XCTAssertEqual(pushFactor.keys?.proofOfPossession?["okta:isFipsCompliant"],
                            .bool(OktaEnvironment.isSecureEnclaveAvailable()))
-            XCTAssertEqual(pushRequestModel.keys?.userVerification?.value()?["okta:isFipsCompliant"],
+            XCTAssertEqual(pushFactor.keys?.userVerification?.value()?["okta:isFipsCompliant"],
                            .bool(OktaEnvironment.isSecureEnclaveAvailable()))
         } else {
             XCTFail()
@@ -689,8 +681,8 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
                                                                  cryptoManager: cryptoManager)
 
         let restAPIHookCalled = expectation(description: "Rest API hook expected!")
-        self.restAPIMock.updateAuthenticatorRequestHook = { url, data, token, completion in
-            XCTAssertEqual(url.absoluteString, "tenant.okta.com/idp/authenticators/enrollmentId")
+        self.restAPIMock.updateAuthenticatorRequestHook = { orgHost, _, _, _, _, _, token, completion in
+            XCTAssertEqual(orgHost.absoluteString, "tenant.okta.com")
             if case .authenticationToken(_) = token {
                 XCTAssertNotNil(token.token)
             } else {
@@ -711,8 +703,7 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
             return self.cryptoManager.get(keyOf: type, with: tag, context: context)
         }
         let completionCalled = expectation(description: "Completion should be called!")
-        transaction.doUpdate(enrollData: Data(),
-                             enrollment: enrollment,
+        transaction.doUpdate(enrollment: enrollment,
                              factorsMetaData: enrolledFactors!) { result in
             completionCalled.fulfill()
         }
@@ -731,8 +722,7 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
                                                                  userVerificationKeyTag: nil)
 
         let hookCalled = expectation(description: "Rest API hook expected!")
-        self.restAPIMock.updateAuthenticatorRequestHook = { url, data, token, completion in
-            XCTAssertEqual(url.absoluteString, "tenant.okta.com/idp/authenticators/enrollmentId")
+        self.restAPIMock.updateAuthenticatorRequestHook = { orgHost, _, _, _, _, _, token, completion in
             if case .authenticationToken(_) = token {
                 XCTAssertNotNil(token.token)
             } else {
@@ -745,8 +735,7 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
         let enrolledFactors = try? transaction.enrollFactors()
         XCTAssertNotNil(enrolledFactors)
         let completionCalled = expectation(description: "Completion should be called!")
-        transaction.doUpdate(enrollData: Data(),
-                             enrollment: enrollment,
+        transaction.doUpdate(enrollment: enrollment,
                              factorsMetaData: enrolledFactors!) { result in
             completionCalled.fulfill()
         }
@@ -766,8 +755,7 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
         let enrolledFactors = try? transaction.enrollFactors()
         XCTAssertNotNil(enrolledFactors)
         let completionCalled = expectation(description: "Completion expected!")
-        transaction.doUpdate(enrollData: Data(),
-                             enrollment: enrollment,
+        transaction.doUpdate(enrollment: enrollment,
                              factorsMetaData: enrolledFactors!) { result in
             if case Result.failure(let error) = result {
                 XCTAssertEqual(error.localizedDescription, "Proof of possession key tag is not found")
@@ -794,8 +782,7 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
         let enrolledFactors = try? transaction.enrollFactors()
         XCTAssertNotNil(enrolledFactors)
         var completionCalled = false
-        transaction.doUpdate(enrollData: Data(),
-                             enrollment: enrollment,
+        transaction.doUpdate(enrollment: enrollment,
                              factorsMetaData: enrolledFactors!) { result in
             if case Result.failure(let error) = result {
                 if case let .securityError(error) = error {
@@ -826,8 +813,7 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
         let enrolledFactors = try? transaction.enrollFactors()
         XCTAssertNotNil(enrolledFactors)
         let completionCalled = expectation(description: "Completion should be called!")
-        transaction.doUpdate(enrollData: Data(),
-                             enrollment: enrollment,
+        transaction.doUpdate(enrollment: enrollment,
                              factorsMetaData: enrolledFactors!) { result in
 
             if case Result.failure(let error) = result {
@@ -872,7 +858,7 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
                                                                   logger: OktaLoggerMock())
 
         let enrollExpectation = expectation(description: "Do enrollment expectation")
-        transactionPartialMock.doUpdateHook = { data, enrollment, factorsMetaData, completion in
+        transactionPartialMock.doUpdateHook = { _, _, completion in
             XCTAssertNotNil(self.transactionPartialMock.deviceEnrollment)
             enrollExpectation.fulfill()
         }
@@ -1078,7 +1064,7 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
         }
 
         let updateAuthenticatorCompletionCalled = expectation(description: "Update authenticator expected!")
-        restAPIMock.updateAuthenticatorRequestHook = { url, data, _, completion in
+        restAPIMock.updateAuthenticatorRequestHook = { _, _, _, _, _, _, _, completion in
             updateAuthenticatorCompletionCalled.fulfill()
             completion(nil, nil)
         }
@@ -1109,7 +1095,7 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
         restAPIMock.downloadAuthenticatorMetadataHook = { _, _, _, _ in
             XCTFail("Unexpected call")
         }
-        restAPIMock.updateAuthenticatorRequestHook = { url, data, _, completion in
+        restAPIMock.updateAuthenticatorRequestHook = { _, _, _, _, _, _, _, completion in
             XCTFail("Unexpected call")
         }
 
@@ -1145,13 +1131,12 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
             XCTFail("Unexpected call")
         }
         restAPIMock.downloadAuthenticatorMetadataHook = { _, _, _, completion in
-            let urlResponse = HTTPURLResponse(url: URL(string: "tenant.okta.com")!, statusCode: 200, httpVersion: nil, headerFields: nil)!
-            let result = HTTPURLResult(request: URLRequest(url: URL(string: "tenant.okta.com")!), response: urlResponse, data: GoldenData.authenticatorMetaData(), error: nil)
-            completion(result, nil)
+            let metadata = try! JSONDecoder().decode([AuthenticatorMetaDataModel].self, from: GoldenData.authenticatorMetaData())
+            completion(.success(metadata[0]))
         }
 
         var updateAuthenticatorCompletionCalled = false
-        restAPIMock.updateAuthenticatorRequestHook = { url, data, _, completion in
+        restAPIMock.updateAuthenticatorRequestHook = { _, _, _, _, _, _, _, completion in
             updateAuthenticatorCompletionCalled = true
             completion(nil, nil)
         }
@@ -1194,7 +1179,7 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
             XCTFail("Unexpected call")
         }
         let updateAuthenticatorRequestHookCalled = expectation(description: "Update authenticator request expected!")
-        restAPIMock.updateAuthenticatorRequestHook = { url, data, _, completion in
+        restAPIMock.updateAuthenticatorRequestHook = { _, _, _, _, _, _, _, completion in
             updateAuthenticatorRequestHookCalled.fulfill()
             completion(nil, nil)
         }
@@ -1221,8 +1206,8 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
             completion(result, nil)
         }
         restAPIMock.downloadAuthenticatorMetadataHook = { _, _, _, completion in
-            let result = HTTPURLResult(request: nil, response: nil, data: GoldenData.authenticatorMetaData())
-            completion(result, nil)
+            let metadata = try! JSONDecoder().decode([AuthenticatorMetaDataModel].self, from: GoldenData.authenticatorMetaData())
+            completion(.success(metadata[0]))
         }
 
         var enrollClosureCalled = false
@@ -1251,8 +1236,8 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
         }
         let metadataDownloadExpectation = expectation(description: "Download metadata expectation")
         restAPIMock.downloadAuthenticatorMetadataHook = { _, _, _, completion in
-            let result = HTTPURLResult(request: nil, response: nil, data: GoldenData.authenticatorMetaData())
-            completion(result, nil)
+            let metadata = try! JSONDecoder().decode([AuthenticatorMetaDataModel].self, from: GoldenData.authenticatorMetaData())
+            completion(.success(metadata[0]))
             metadataDownloadExpectation.fulfill()
         }
 
@@ -1354,85 +1339,6 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
         XCTAssertTrue(completionCalled)
     }
 
-    func testBuildEnrollmentModelData_WithAuthenticationToken() {
-        let enrollment = TestUtils.createAuthenticatorEnrollment(orgHost: URL(string: "tenant.okta.com")!,
-                                                                 orgId: "orgId",
-                                                                 enrollmentId: "enrollmentId",
-                                                                 cryptoManager: cryptoManager,
-                                                                 enrollPush: false)
-        transaction = createTransaction(enrollmentContext: enrollmentContext, enrollment: enrollment)
-        transaction.metaData = metaData
-        var requestModel = EnrollAuthenticatorRequestModel.AuthenticatorMethods(type: .signedNonce,
-                                                                                pushToken: "token",
-                                                                                apsEnvironment: nil,
-                                                                                supportUserVerification: true,
-                                                                                isFipsCompliant: nil,
-                                                                                keys: nil)
-        let signedNonceUpdatingFactor = OktaTransactionEnroll.EnrollingFactor(proofOfPossessionKeyTag: "proofOfPossessionKeyTag",
-                                                                              userVerificationKeyTag: "userVerificationKeyTag",
-                                                                              methodType: .signedNonce,
-                                                                              requestModel: requestModel)
-
-        requestModel = EnrollAuthenticatorRequestModel.AuthenticatorMethods(type: .push,
-                                                                            pushToken: "token",
-                                                                            apsEnvironment: nil,
-                                                                            supportUserVerification: true,
-                                                                            isFipsCompliant: nil,
-                                                                            keys: nil)
-        let pushUpdatingFactor = OktaTransactionEnroll.EnrollingFactor(proofOfPossessionKeyTag: "proofOfPossessionKeyTag",
-                                                                       userVerificationKeyTag: "userVerificationKeyTag",
-                                                                       methodType: .push,
-                                                                       requestModel: requestModel)
-        let data = try? transaction.buildEnrollmentModelData(factorsMetaData: [signedNonceUpdatingFactor, pushUpdatingFactor])
-        XCTAssertNotNil(data)
-        let decodedDictionary = try? JSONSerialization.jsonObject(with: data!, options: []) as? [String: Any]
-        XCTAssertNotNil(decodedDictionary)
-        XCTAssertNotNil(decodedDictionary?["methods"])
-        XCTAssertTrue((decodedDictionary?["methods"] as? [Any])!.count == 2)
-    }
-
-    func testBuildEnrollmentModelData_VerifyAppSignals() {
-        let enrollment = TestUtils.createAuthenticatorEnrollment(orgHost: URL(string: "tenant.okta.com")!,
-                                                                 orgId: "orgId",
-                                                                 enrollmentId: "enrollmentId",
-                                                                 cryptoManager: cryptoManager,
-                                                                 enrollPush: false)
-        let enrollmentContext = createEnrollmentContext(deviceSignals: DeviceSignals(displayName: ""),
-                                                        applicationSignals: ["deleteV1TotpOnlyEnrollment": _OktaCodableArbitaryType.bool(true),
-                                                                             "deleteV1EnrollmentByPushFactorId": _OktaCodableArbitaryType.string("opf12345")],
-                                                        enrollBiometricKey: nil,
-                                                        pushToken: nil)
-        transaction = createTransaction(enrollmentContext: enrollmentContext, enrollment: enrollment)
-        transaction.metaData = metaData
-        let requestModel = EnrollAuthenticatorRequestModel.AuthenticatorMethods(type: .signedNonce,
-                                                                                pushToken: "token",
-                                                                                apsEnvironment: nil,
-                                                                                supportUserVerification: true,
-                                                                                isFipsCompliant: nil,
-                                                                                keys: nil)
-        let signedNonceUpdatingFactor = OktaTransactionEnroll.EnrollingFactor(proofOfPossessionKeyTag: "proofOfPossessionKeyTag",
-                                                                              userVerificationKeyTag: "userVerificationKeyTag",
-                                                                              methodType: .signedNonce,
-                                                                              requestModel: requestModel)
-        let pushUpdatingFactor = OktaTransactionEnroll.EnrollingFactor(proofOfPossessionKeyTag: "proofOfPossessionKeyTag",
-                                                                       userVerificationKeyTag: "userVerificationKeyTag",
-                                                                       methodType: .push,
-                                                                       requestModel: EnrollAuthenticatorRequestModel.AuthenticatorMethods(type: .push,
-                                                                                                                                          pushToken: "token",
-                                                                                                                                          apsEnvironment: nil,
-                                                                                                                                          supportUserVerification: true,
-                                                                                                                                          isFipsCompliant: nil,
-                                                                                                                                          keys: nil))
-        let data = try? transaction.buildEnrollmentModelData(factorsMetaData: [signedNonceUpdatingFactor, pushUpdatingFactor])
-        XCTAssertNotNil(data)
-        let decodedDictionary = try? JSONSerialization.jsonObject(with: data!, options: []) as? [String: Any]
-        XCTAssertNotNil(decodedDictionary)
-        XCTAssertNotNil(decodedDictionary?["appSignals"])
-        let appSignalsDictionary = decodedDictionary?["appSignals"] as? [String: Any]
-        XCTAssertNotNil(appSignalsDictionary?["deleteV1TotpOnlyEnrollment"])
-        XCTAssertNotNil(appSignalsDictionary?["deleteV1EnrollmentByPushFactorId"])
-    }
-
     func createTransaction(enrollmentContext: EnrollmentContext,
                            enrollment: AuthenticatorEnrollment?,
                            restAPI: ServerAPIProtocol? = nil,
@@ -1474,8 +1380,8 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
 }
 
 fileprivate class OktaTransactionEnrollPartialMock: OktaTransactionEnroll {
-    typealias doEnrollmentType = (Data, [EnrollingFactor], (Result<AuthenticatorEnrollmentProtocol, DeviceAuthenticatorError>) -> Void) -> Void
-    typealias doUpdateType = (Data, AuthenticatorEnrollment, [EnrollingFactor], (Result<AuthenticatorEnrollmentProtocol, DeviceAuthenticatorError>) -> Void) -> Void
+    typealias doEnrollmentType = ([EnrollingFactor], (Result<AuthenticatorEnrollmentProtocol, DeviceAuthenticatorError>) -> Void) -> Void
+    typealias doUpdateType = (AuthenticatorEnrollment, [EnrollingFactor], (Result<AuthenticatorEnrollmentProtocol, DeviceAuthenticatorError>) -> Void) -> Void
     typealias registerKeyType = (Algorithm, String, Bool, Bool, BiometricEnrollmentSettings?) throws -> [String: _OktaCodableArbitaryType]
     typealias createEnrollmentAndSaveToStorageType = (EnrolledAuthenticatorModel, [OktaFactor], (Result<AuthenticatorEnrollmentProtocol, DeviceAuthenticatorError>) -> Void) -> Void
 
@@ -1484,20 +1390,18 @@ fileprivate class OktaTransactionEnrollPartialMock: OktaTransactionEnroll {
     var registerKeyHook: registerKeyType?
     var createEnrollmentAndSaveToStorageHook: createEnrollmentAndSaveToStorageType?
 
-    override func doEnrollment(enrollData: Data,
-                               factorsMetaData: [EnrollingFactor],
+    override func doEnrollment(factorsMetaData: [EnrollingFactor],
                                onCompletion: @escaping (Result<AuthenticatorEnrollmentProtocol, DeviceAuthenticatorError>) -> Void) {
-        doEnrollmentHook?(enrollData, factorsMetaData, onCompletion)
+        doEnrollmentHook?(factorsMetaData, onCompletion)
     }
 
-    override func doUpdate(enrollData: Data,
-                           enrollment: AuthenticatorEnrollment,
+    override func doUpdate(enrollment: AuthenticatorEnrollment,
                            factorsMetaData: [EnrollingFactor],
                            onCompletion: @escaping (Result<AuthenticatorEnrollmentProtocol, DeviceAuthenticatorError>) -> Void) {
         if let doUpdateHook = doUpdateHook {
-            doUpdateHook(enrollData, enrollment, factorsMetaData, onCompletion)
+            doUpdateHook(enrollment, factorsMetaData, onCompletion)
         } else {
-            super.doUpdate(enrollData: enrollData, enrollment: enrollment, factorsMetaData: factorsMetaData, onCompletion: onCompletion)
+            super.doUpdate(enrollment: enrollment, factorsMetaData: factorsMetaData, onCompletion: onCompletion)
         }
     }
 

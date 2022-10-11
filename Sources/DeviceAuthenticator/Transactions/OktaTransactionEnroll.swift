@@ -63,13 +63,6 @@ class OktaTransactionEnroll: OktaTransaction {
     var factorsKeyTags: [String] = []
     var clientInstanceKeyTag: String?
 
-    struct EnrollingFactor {
-        let proofOfPossessionKeyTag: String?
-        let userVerificationKeyTag: String?
-        let methodType: AuthenticationMethodType
-        let requestModel: EnrollAuthenticatorRequestModel.AuthenticatorMethods?
-    }
-
     init(storageManager: PersistentStorageProtocol,
          cryptoManager: OktaSharedCryptoProtocol,
          restAPI: ServerAPIProtocol,
@@ -205,43 +198,25 @@ class OktaTransactionEnroll: OktaTransaction {
         self.restAPI.downloadAuthenticatorMetadata(orgHost: enrollmentContext.orgHost,
                                                    authenticatorKey: enrollmentContext.authenticatorKey,
                                                    oidcClientId: enrollmentContext.oidcClientId,
-                                                   token: token) { result, error in
-            if let error = error {
-                self.logger.error(eventName: self.logEventName, message: "\(error)")
-                onCompletion(Result.failure(error))
-                return
-            }
-
-            guard let result = result,
-                  let metaDataJson = result.data else {
-                    let resultError = DeviceAuthenticatorError.internalError("Server replied with an empty data")
+                                                   token: token) { result in
+            switch result {
+            case .failure(let error): onCompletion(.failure(error))
+            case .success(let metadata):
+                let authenticatorPolicy = AuthenticatorPolicy(metadata: metadata)
+                do {
+                    try self.storageManager.storeAuthenticatorPolicy(authenticatorPolicy, orgId: orgId)
+                } catch {
+                    let resultError = DeviceAuthenticatorError.internalError(error.localizedDescription)
                     self.logger.error(eventName: self.logEventName, message: "Download metadata error - \(resultError)")
-                onCompletion(Result.failure(resultError))
-                return
-            }
-
-            let metaData: AuthenticatorMetaDataModel
-            do {
-                let metaDataArray = try JSONDecoder().decode([AuthenticatorMetaDataModel].self, from: metaDataJson).filter({
-                    $0.status == .active
-                })
-                guard !metaDataArray.isEmpty else {
-                    throw DeviceAuthenticatorError.internalError("Server replied with empty active authenticators array")
+                    onCompletion(Result.failure(resultError))
+                    return
                 }
-                metaData = metaDataArray[0]
-                let authenticatorPolicy = AuthenticatorPolicy(metadata: metaData)
-                try self.storageManager.storeAuthenticatorPolicy(authenticatorPolicy, orgId: orgId)
-            } catch {
-                let resultError = DeviceAuthenticatorError.internalError(error.localizedDescription)
-                self.logger.error(eventName: self.logEventName, message: "Download metadata error - \(resultError)")
-                onCompletion(Result.failure(resultError))
-                return
-            }
 
-            onMetadataReceived?(metaData)
-            self.continueEnrollment(with: orgId,
-                                    metaData: metaData,
-                                    onCompletion: onCompletion)
+                onMetadataReceived?(metadata)
+                self.continueEnrollment(with: orgId,
+                                        metaData: metadata,
+                                        onCompletion: onCompletion)
+            }
         }
     }
 
@@ -255,13 +230,9 @@ class OktaTransactionEnroll: OktaTransaction {
             self.deviceEnrollment = try? self.storageManager.deviceEnrollmentByOrgId(orgId)
         }
         let enrolledFactors: [EnrollingFactor]
-        let enrollRequestJson: Data
         do {
-            // #1: Build factors based on metadata requirements
+            // Build factors based on metadata requirements
             enrolledFactors = try self.enrollFactors()
-
-            // #2: Build request model
-            enrollRequestJson = try self.buildEnrollmentModelData(factorsMetaData: enrolledFactors)
         } catch let oktaError as DeviceAuthenticatorError {
             logger.error(eventName: self.logEventName, message: "Error: \(oktaError)")
             onCompletion(Result.failure(oktaError))
@@ -273,73 +244,46 @@ class OktaTransactionEnroll: OktaTransaction {
             return
         }
 
-        // #3: Send RestAPI request
+        // Send RestAPI request
         if let enrollmentToUpdate = enrollmentToUpdate {
-            doUpdate(enrollData: enrollRequestJson,
-                     enrollment: enrollmentToUpdate,
+            doUpdate(enrollment: enrollmentToUpdate,
                      factorsMetaData: enrolledFactors,
                      onCompletion: onCompletion)
         } else {
-            doEnrollment(enrollData: enrollRequestJson,
-                         factorsMetaData: enrolledFactors,
+            doEnrollment(factorsMetaData: enrolledFactors,
                          onCompletion: onCompletion)
         }
     }
 
-    func buildEnrollmentModelData(factorsMetaData: [EnrollingFactor]) throws -> Data {
-        logger.info(eventName: self.logEventName, message: "Building enrollment request")
-        let deviceModel = buildDeviceModelData(customDeviceSignals: enrollmentContext.deviceSignals)
-        let methods = factorsMetaData.compactMap { factor in
-            return factor.requestModel
-        }
-        let enrollRequestModel = EnrollAuthenticatorRequestModel(authenticatorId: metaData.id,
-                                                                 key: enrollmentContext.authenticatorKey,
-                                                                 device: deviceModel,
-                                                                 appSignals: enrollmentContext.applicationSignals,
-                                                                 methods: methods)
-        do {
-            let enrollRequestJson = try JSONEncoder().encode(enrollRequestModel)
-            logger.info(eventName: self.logEventName, message: nil)
-            return enrollRequestJson
-        } catch {
-            let resultError = DeviceAuthenticatorError.internalError(error.localizedDescription)
-            logger.error(eventName: self.logEventName, message: "Error: \(resultError)")
-            throw resultError
-        }
-    }
-
-    func doEnrollment(enrollData: Data,
-                      factorsMetaData: [EnrollingFactor],
+    func doEnrollment(factorsMetaData: [EnrollingFactor],
                       onCompletion: @escaping (Result<AuthenticatorEnrollmentProtocol, DeviceAuthenticatorError>) -> Void) {
         logger.info(eventName: self.logEventName, message: "Sending enrollment request")
-        let finalURL: URL
-        if let enrollLink = metaData._links.enroll?.href,
-            let enrollURL = URL(string: enrollLink) {
-            finalURL = enrollURL
-        } else {
-            finalURL = enrollmentContext.orgHost.appendingPathComponent("/idp/authenticators")
-        }
-
         let token = OktaRestAPIToken(accessToken: enrollmentContext.accessToken,
                                      activationToken: enrollmentContext.activationToken)
-        self.restAPI.enrollAuthenticatorRequest(enrollURL: finalURL,
-                                                data: enrollData,
+        let deviceModel = buildDeviceModelData(customDeviceSignals: enrollmentContext.deviceSignals)
+        self.restAPI.enrollAuthenticatorRequest(orgHost: enrollmentContext.orgHost,
+                                                metadata: metaData,
+                                                deviceModel: deviceModel,
+                                                appSignals: enrollmentContext.applicationSignals,
+                                                enrollingFactors: factorsMetaData,
                                                 token: token) { result, error in
             self.handleServerResult(result, error: error, factorsMetaData: factorsMetaData, andCall: onCompletion)
         }
     }
 
-    func doUpdate(enrollData: Data,
-                  enrollment: AuthenticatorEnrollment,
+    func doUpdate(enrollment: AuthenticatorEnrollment,
                   factorsMetaData: [EnrollingFactor],
                   onCompletion: @escaping (Result<AuthenticatorEnrollmentProtocol, DeviceAuthenticatorError>) -> Void) {
-        let finalURL: URL = enrollmentContext.orgHost.appendingPathComponent("/idp/authenticators/" + enrollment.enrollmentId)
-
         let updateRequest: (String?) -> Void = { authenticationToken in
             let token = OktaRestAPIToken(authenticationToken: authenticationToken,
                                          accessToken: self.enrollmentContext.accessToken)
-            self.restAPI.updateAuthenticatorRequest(url: finalURL,
-                                                    data: enrollData,
+            let deviceModel = self.buildDeviceModelData(customDeviceSignals: self.enrollmentContext.deviceSignals)
+            self.restAPI.updateAuthenticatorRequest(orgHost: self.enrollmentContext.orgHost,
+                                                    enrollmentId: enrollment.enrollmentId,
+                                                    metadata: self.metaData,
+                                                    deviceModel: deviceModel,
+                                                    appSignals: self.enrollmentContext.applicationSignals,
+                                                    enrollingFactors: factorsMetaData,
                                                     token: token) { result, error in
                 self.handleServerResult(result, error: error, factorsMetaData: factorsMetaData, andCall: onCompletion)
             }

@@ -18,6 +18,17 @@ struct HTTPHeaderConstants {
     static let contentTypeHeader = "Content-Type"
 }
 
+struct EnrollingFactor {
+    let proofOfPossessionKeyTag: String?
+    let userVerificationKeyTag: String?
+    let methodType: AuthenticatorMethod
+    let apsEnvironment: APSEnvironment?
+    let pushToken: String?
+    let supportUserVerification: Bool?
+    let isFipsCompliant: Bool?
+    let keys: SigningKeysModel?
+}
+
 protocol ServerAPIProtocol {
     var client: HTTPClientProtocol { get }
     var logger: OktaLoggerProtocol { get }
@@ -26,15 +37,22 @@ protocol ServerAPIProtocol {
                                        authenticatorKey: String,
                                        oidcClientId: String?,
                                        token: OktaRestAPIToken,
-                                       completion: @escaping (_ result: HTTPURLResult?, _ error: DeviceAuthenticatorError?) -> Void)
+                                       completion: @escaping (_ result: Result<AuthenticatorMetaDataModel, DeviceAuthenticatorError>) -> Void)
 
-    func enrollAuthenticatorRequest(enrollURL: URL,
-                                    data: Data,
+    func enrollAuthenticatorRequest(orgHost: URL,
+                                    metadata: AuthenticatorMetaDataModel,
+                                    deviceModel: DeviceSignalsModel,
+                                    appSignals: [String: _OktaCodableArbitaryType]?,
+                                    enrollingFactors: [EnrollingFactor],
                                     token: OktaRestAPIToken,
                                     completion: @escaping (_ result: HTTPURLResult?, _ error: DeviceAuthenticatorError?) -> Void)
 
-    func updateAuthenticatorRequest(url: URL,
-                                    data: Data,
+    func updateAuthenticatorRequest(orgHost: URL,
+                                    enrollmentId: String,
+                                    metadata: AuthenticatorMetaDataModel,
+                                    deviceModel: DeviceSignalsModel,
+                                    appSignals: [String: _OktaCodableArbitaryType]?,
+                                    enrollingFactors: [EnrollingFactor],
                                     token: OktaRestAPIToken,
                                     completion: @escaping (_ result: HTTPURLResult?, _ error: DeviceAuthenticatorError?) -> Void)
 
@@ -56,63 +74,6 @@ protocol ServerAPIProtocol {
 }
 
 extension ServerAPIProtocol {
-
-    /// - Description: Enrolls Authenticator
-    /// - Parameters:
-    ///   - enrollURL:   Organization host url
-    ///   - data:        Data to post
-    ///   - token:       Authentication token(access token, one time token or signed jwt)
-    ///   - completion:  Handler to execute after the async call completes
-    func enrollAuthenticatorRequest(enrollURL: URL,
-                                    data: Data,
-                                    token: OktaRestAPIToken,
-                                    completion: @escaping (_ result: HTTPURLResult?, _ error: DeviceAuthenticatorError?) -> Void) {
-        logger.info(eventName: "Enrolling Authenticator", message: "URL: \(enrollURL)")
-        self.client
-            .request(enrollURL, method: .post, httpBody: data, headers: [HTTPHeaderConstants.contentTypeHeader: "application/json"])
-            .addHeader(name: HTTPHeaderConstants.authorizationHeader, value: authorizationHeaderValue(forAuthType: token.type, withToken: token.token))
-            .response { (result) in
-                if let error = result.error {
-                    let resultError = DeviceAuthenticatorError.networkError(error)
-                    self.logger.error(eventName: "API error", message: "error: \(resultError) for request at URL: \(enrollURL)")
-                    completion(result, resultError)
-                    return
-                }
-
-                self.validateResult(result, for: enrollURL, andCall: completion)
-            }
-    }
-
-    /// - Description: Updates Authenticator
-    /// - Parameters:
-    ///   - url:         Organization host url
-    ///   - data:        Data to post
-    ///   - token:       Authentication token(access token, one time token or signed jwt)
-    ///   - completion:  Handler to execute after the async call completes
-    func updateAuthenticatorRequest(url: URL,
-                                    data: Data,
-                                    token: OktaRestAPIToken,
-                                    completion: @escaping (_ result: HTTPURLResult?, _ error: DeviceAuthenticatorError?) -> Void) {
-        logger.info(eventName: "Updating Authenticator", message: "URL: \(url)")
-        if case .none = token {
-            completion(nil, DeviceAuthenticatorError.internalError("No token provided for update enrollment request"))
-            return
-        }
-
-        self.client
-            .request(url, method: .put, httpBody: data, headers: [HTTPHeaderConstants.contentTypeHeader: "application/json"])
-            .addHeader(name: HTTPHeaderConstants.authorizationHeader, value: authorizationHeaderValue(forAuthType: token.type, withToken: token.token))
-            .response { (result) in
-                if let error = result.error {
-                    let resultError = DeviceAuthenticatorError.networkError(error)
-                    self.logger.error(eventName: "API error", message: "\(resultError), for request at URL: \(url)")
-                    completion(result, resultError)
-                    return
-                }
-
-                self.validateResult(result, for: url, andCall: completion)
-            }
-    }
 
     /// - Description: Deletes Authenticator
     /// - Parameters:
@@ -257,6 +218,12 @@ extension ServerAPIProtocol {
      *   - result:        Result of the API request
      */
     func validateResult(_ result: HTTPURLResult, for url: URL) throws {
+        if let error = result.error {
+            let resultError = DeviceAuthenticatorError.networkError(error)
+            self.logger.error(eventName: "API error", message: "error: \(resultError) for request at URL: \(url)")
+            throw resultError
+        }
+
         // Handle Status Codes
         guard let response = result.response else {
             let resultError = DeviceAuthenticatorError.internalError("Unable to parse the HTTPURLResponse from the Result type.")

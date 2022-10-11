@@ -47,9 +47,8 @@ class EnrollAuthenticatorRequestModelTests: XCTestCase {
 
     func testKeysEncoding() {
         // test user verification `null` value
-        var keysModel = EnrollAuthenticatorRequestModel.AuthenticatorMethods.Keys(proofOfPossession: ["key": .string("value")],
-                                                                             userVerification:
-                                                                                EnrollAuthenticatorRequestModel.AuthenticatorMethods.Keys.UserVerificationKey.null)
+        var keysModel = SigningKeysModel(proofOfPossession: ["key": .string("value")],
+                                         userVerification: SigningKeysModel.UserVerificationKey.null)
         let encoder = JSONEncoder()
         var encodedData = try? encoder.encode(keysModel)
         XCTAssertNotNil(encodedData)
@@ -57,9 +56,8 @@ class EnrollAuthenticatorRequestModelTests: XCTestCase {
         XCTAssertTrue(encodedString!.contains("\"userVerification\":null"))
 
         // test user verification with jwt
-        keysModel = EnrollAuthenticatorRequestModel.AuthenticatorMethods.Keys(proofOfPossession: ["key": .string("value")],
-                                                                             userVerification:
-                                                                                EnrollAuthenticatorRequestModel.AuthenticatorMethods.Keys.UserVerificationKey.keyValue(["uvKey": .string("uvValue")]))
+        keysModel = SigningKeysModel(proofOfPossession: ["key": .string("value")],
+                                     userVerification: SigningKeysModel.UserVerificationKey.keyValue(["uvKey": .string("uvValue")]))
         encodedData = try? encoder.encode(keysModel)
         XCTAssertNotNil(encodedData)
         encodedString = String(data: encodedData!, encoding: .utf8)
