@@ -60,7 +60,6 @@ class OktaFactorPush: OktaFactor {
         super.cleanup()
         _ = cryptoManager.delete(keyPairWith: factorData.proofOfPossessionKeyTag)
         removeUserVerificationKey()
-        factorData.transactionTypes = .login
     }
 
     override func removeUserVerificationKey() {

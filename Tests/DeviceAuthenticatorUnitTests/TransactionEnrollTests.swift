@@ -1509,7 +1509,7 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
            let pushTokenData = pushToken.data(using: .utf8) {
             deviceToken = .tokenData(pushTokenData)
         }
-        let transactionTypes = TransactionType.defaultEnrollmentTypes(supportsCIBA: supportsCIBA)
+        let transactionTypes: TransactionType = supportsCIBA ? [.login, .ciba] : .login
         return EnrollmentContext(accessToken: accessToken,
                                  activationToken: nil,
                                  orgHost: URL(string: "tenant.okta.com")!,

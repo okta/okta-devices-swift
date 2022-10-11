@@ -28,12 +28,4 @@ public struct TransactionType: OptionSet {
     public var supportsCIBA: Bool {
         return self.contains(.ciba)
     }
-
-    public static func defaultEnrollmentTypes(supportsCIBA: Bool) -> Self {
-        if supportsCIBA {
-            return [.login, .ciba]
-        } else {
-            return .login
-        }
-    }
 }
