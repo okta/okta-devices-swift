@@ -14,12 +14,16 @@ import Foundation
 import OktaLogger
 
 class LegacyServerAPI: ServerAPIProtocol {
-    public let client: HTTPClientProtocol
-    public let logger: OktaLoggerProtocol
+    let client: HTTPClientProtocol
+    let crypto: OktaSharedCryptoProtocol
+    let logger: OktaLoggerProtocol
     let httpAuthorizationHeaderName = "Authorization"
 
-    public init(client: HTTPClientProtocol, logger: OktaLoggerProtocol) {
+    public init(client: HTTPClientProtocol,
+                crypto: OktaSharedCryptoProtocol,
+                logger: OktaLoggerProtocol) {
         self.client = client
+        self.crypto = crypto
         self.logger = logger
     }
 
@@ -92,7 +96,7 @@ class LegacyServerAPI: ServerAPIProtocol {
                                     appSignals: [String: _OktaCodableArbitaryType]?,
                                     enrollingFactors: [EnrollingFactor],
                                     token: OktaRestAPIToken,
-                                    completion: @escaping (_ result: HTTPURLResult?, _ error: DeviceAuthenticatorError?) -> Void) {
+                                    completion: @escaping (_ result: Result<EnrollmentSummary, DeviceAuthenticatorError>) -> Void) {
         let enrollRequestJson: Data
         do {
             logger.info(eventName: "Enroll request", message: "Building request json object")
@@ -103,7 +107,7 @@ class LegacyServerAPI: ServerAPIProtocol {
         } catch {
             let resultError = DeviceAuthenticatorError.internalError(error.localizedDescription)
             logger.error(eventName: "Enroll request", message: "Error: \(resultError)")
-            completion(nil, resultError)
+            completion(.failure(resultError))
             return
         }
 
@@ -118,31 +122,25 @@ class LegacyServerAPI: ServerAPIProtocol {
         self.client
             .request(finalURL, method: .post, httpBody: enrollRequestJson, headers: [HTTPHeaderConstants.contentTypeHeader: "application/json"])
             .addHeader(name: HTTPHeaderConstants.authorizationHeader, value: authorizationHeaderValue(forAuthType: token.type, withToken: token.token))
-            .response { (result) in
+            .response { result in
                 if let error = result.error {
                     let resultError = DeviceAuthenticatorError.networkError(error)
                     self.logger.error(eventName: "API error", message: "error: \(resultError) for request at URL: \(finalURL)")
-                    completion(result, resultError)
-                    return
-                }
-
-                guard result.data != nil else {
-                    let resultError = DeviceAuthenticatorError.internalError("Server replied with an empty data")
-                    self.logger.error(eventName: "Policy request", message: "Download metadata error - \(resultError)")
-                    completion(nil, resultError)
+                    completion(.failure(resultError))
                     return
                 }
 
                 do {
                     try self.validateResult(result, for: finalURL)
-                    completion(result, nil)
+                    let enrollmentSummary = try self.createEnrollmentSummary(from: result, enrollingFactorsData: enrollingFactors)
+                    completion(.success(enrollmentSummary))
                 } catch let oktaError as DeviceAuthenticatorError {
-                    completion(nil, oktaError)
+                    completion(Result.failure(oktaError))
                     return
                 } catch {
                     let resultError = DeviceAuthenticatorError.internalError(error.localizedDescription)
                     self.logger.error(eventName: "API error", message: "error: \(resultError) for request at URL: \(finalURL)")
-                    completion(nil, resultError)
+                    completion(Result.failure(resultError))
                     return
                 }
             }
@@ -155,7 +153,7 @@ class LegacyServerAPI: ServerAPIProtocol {
                                     appSignals: [String: _OktaCodableArbitaryType]?,
                                     enrollingFactors: [EnrollingFactor],
                                     token: OktaRestAPIToken,
-                                    completion: @escaping (_ result: HTTPURLResult?, _ error: DeviceAuthenticatorError?) -> Void) {
+                                    completion: @escaping (_ result: Result<EnrollmentSummary, DeviceAuthenticatorError>) -> Void) {
         let enrollRequestJson: Data
         do {
             logger.info(eventName: "Update request", message: "Building enrollment request")
@@ -166,14 +164,14 @@ class LegacyServerAPI: ServerAPIProtocol {
         } catch {
             let resultError = DeviceAuthenticatorError.internalError(error.localizedDescription)
             logger.error(eventName: "Update request", message: "Error: \(resultError)")
-            completion(nil, resultError)
+            completion(.failure(resultError))
             return
         }
 
         let finalURL: URL = orgHost.appendingPathComponent("/idp/authenticators/" + enrollmentId)
         logger.info(eventName: "Updating Authenticator", message: "URL: \(finalURL)")
         if case .none = token {
-            completion(nil, DeviceAuthenticatorError.internalError("No token provided for update enrollment request"))
+            completion(.failure(DeviceAuthenticatorError.internalError("No token provided for update enrollment request")))
             return
         }
 
@@ -184,20 +182,21 @@ class LegacyServerAPI: ServerAPIProtocol {
                 if let error = result.error {
                     let resultError = DeviceAuthenticatorError.networkError(error)
                     self.logger.error(eventName: "API error", message: "\(resultError), for request at URL: \(finalURL)")
-                    completion(result, resultError)
+                    completion(.failure(resultError))
                     return
                 }
 
                 do {
                     try self.validateResult(result, for: finalURL)
-                    completion(result, nil)
+                    let enrollmentSummary = try self.createEnrollmentSummary(from: result, enrollingFactorsData: enrollingFactors)
+                    completion(.success(enrollmentSummary))
                 } catch let oktaError as DeviceAuthenticatorError {
-                    completion(nil, oktaError)
+                    completion(Result.failure(oktaError))
                     return
                 } catch {
                     let resultError = DeviceAuthenticatorError.internalError(error.localizedDescription)
                     self.logger.error(eventName: "API error", message: "error: \(resultError) for request at URL: \(finalURL)")
-                    completion(nil, resultError)
+                    completion(Result.failure(resultError))
                     return
                 }
             }
@@ -228,4 +227,72 @@ class LegacyServerAPI: ServerAPIProtocol {
                                                                  methods: methods)
         return try JSONEncoder().encode(enrollRequestModel)
     }
+
+    private func createFactorMetadataBasedOnServerResponse(method: EnrolledAuthenticatorModel.AuthenticatorMethods,
+                                                           enrollingFactorsData: [EnrollingFactor]) -> OktaFactor? {
+        guard method.type == .push,
+              let pushFactor = self.createEnrolledPushFactor(from: enrollingFactorsData, and: method) else {
+            return nil
+        }
+
+        return pushFactor
+    }
+
+    private func createEnrolledPushFactor(from factorModels: [EnrollingFactor],
+                                          and enrolledModel: EnrolledAuthenticatorModel.AuthenticatorMethods) -> OktaFactor? {
+        guard let factorModel = factorModels.first(where: { $0.methodType == .push }),
+              let proofOfPossessionKeyTag = factorModel.proofOfPossessionKeyTag else {
+            return nil
+        }
+
+        let links = enrolledModel.links ?? EnrolledAuthenticatorModel.AuthenticatorMethods.Links(pending: nil)
+        let factorMetadata = OktaFactorMetadataPush(id: enrolledModel.id,
+                                                    proofOfPossessionKeyTag: proofOfPossessionKeyTag,
+                                                    userVerificationKeyTag: factorModel.userVerificationKeyTag,
+                                                    links: OktaFactorMetadataPush.Links(pendingLink: links.pending?.href))
+        let factor = OktaFactorPush(factorData: factorMetadata,
+                                    cryptoManager: crypto,
+                                    restAPIClient: self,
+                                    logger: logger)
+        return factor
+    }
+
+    private func createEnrollmentSummary(from result: HTTPURLResult,
+                                         enrollingFactorsData: [EnrollingFactor]) throws -> EnrollmentSummary {
+        guard result.data != nil,
+              let resultJsonData = result.data,
+              !resultJsonData.isEmpty else {
+            let resultError = DeviceAuthenticatorError.internalError("Server replied with an empty data")
+            self.logger.error(eventName: "Enroll request", message: "Download metadata error - \(resultError)")
+            throw resultError
+        }
+
+        var enrolledFactors: [OktaFactor] = []
+        let enrolledAuthenticatorModel = try JSONDecoder().decode(EnrolledAuthenticatorModel.self, from: resultJsonData)
+        enrolledAuthenticatorModel.methods?.forEach({ method in
+            let factor: OktaFactor?
+            factor = self.createFactorMetadataBasedOnServerResponse(method: method, enrollingFactorsData: enrollingFactorsData)
+            if let factor = factor {
+                self.logger.info(eventName: "Enroll request", message: "Enrolled factor type: \(method.type.rawValue)")
+                enrolledFactors.append(factor)
+            } else {
+                self.logger.error(eventName: "Enroll request", message: "Failed to enroll server method with type: \(method.type)")
+            }
+        })
+        guard !enrolledFactors.isEmpty else {
+            let jsonString = String(data: resultJsonData, encoding: .utf8) ?? ""
+            let resultError = DeviceAuthenticatorError.internalError("Server replied with unexpected enrollment data")
+            self.logger.error(eventName: "Enroll request", message: "\(resultError)\n\(jsonString)")
+            throw resultError
+        }
+        let enrollmentSummary = EnrollmentSummary(enrollmentId: enrolledAuthenticatorModel.id,
+                                                  userId: enrolledAuthenticatorModel.user.id,
+                                                  username: enrolledAuthenticatorModel.user.username,
+                                                  deviceId: enrolledAuthenticatorModel.device.id,
+                                                  clientInstanceId: enrolledAuthenticatorModel.device.clientInstanceId,
+                                                  creationDate: enrolledAuthenticatorModel.creationDate,
+                                                  factors: enrolledFactors)
+        return enrollmentSummary
+    }
+
 }

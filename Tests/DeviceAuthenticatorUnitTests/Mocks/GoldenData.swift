@@ -38,26 +38,13 @@ class GoldenData {
                 }
             },
             "_embedded": {
-                "methods": [{
-                        "type": "signed_nonce",
-                        "status": "INACTIVE",
+                "methods": [
+                    {
+                        "type": "push",
+                        "status": "ACTIVE",
                         "settings": {
                             "algorithms": ["RS256", "ES256"],
                             "keyProtection": "ANY"
-                        }
-                    },
-                    {
-                        "type": "push",
-                        "status": "ACTIVE"
-                    },
-                    {
-                        "type": "totp",
-                        "status": "INACTIVE",
-                        "settings": {
-                            "timeIntervalInSeconds": 10,
-                            "encoding": "Base32",
-                            "algorithm": "HMACSHA1",
-                            "passCodeLength": 6
                         }
                     }
                 ]

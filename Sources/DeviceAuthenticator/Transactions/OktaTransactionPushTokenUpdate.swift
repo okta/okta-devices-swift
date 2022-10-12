@@ -13,8 +13,7 @@
 import Foundation
 
 class OktaTransactionPushTokenUpdate: OktaTransactionEnroll {
-    override func createEnrollmentAndSaveToStorage(enrolledAuthenticatorModel: EnrolledAuthenticatorModel,
-                                                   enrolledFactors: [OktaFactor],
+    override func createEnrollmentAndSaveToStorage(enrollmentSummary: EnrollmentSummary,
                                                    onCompletion: @escaping (Result<AuthenticatorEnrollmentProtocol, DeviceAuthenticatorError>) -> Void) {
         if let enrollmentToUpdate = enrollmentToUpdate {
             onCompletion(Result.success(enrollmentToUpdate))

@@ -163,7 +163,7 @@ class TransactionEnrollTests: XCTestCase {
             return [:]
         }
         do {
-            let pushMethod = try transactionPartialMock.enrollPushFactor(serverMethod: transaction.metaData._embedded.methods[1])
+            let pushMethod = try transactionPartialMock.enrollPushFactor(serverMethod: transaction.metaData._embedded.methods[0])
             XCTAssertNotNil(pushMethod)
             XCTAssertEqual(pushMethod?.methodType, .push)
             XCTAssertNotNil(pushMethod?.proofOfPossessionKeyTag)
@@ -188,7 +188,7 @@ class TransactionEnrollTests: XCTestCase {
                                                                      enrollPush: false)
             transaction = createTransaction(enrollmentContext: enrollmentContext, enrollment: enrollment, jwtGenerator: OktaJWTGenerator(logger: OktaLoggerMock()))
             transaction.metaData = metaData
-            let enrollingFactor = try transaction.enrollPushFactor(serverMethod: transaction.metaData._embedded.methods[1])
+            let enrollingFactor = try transaction.enrollPushFactor(serverMethod: transaction.metaData._embedded.methods[0])
             XCTAssertNotNil(enrollingFactor)
             XCTAssertNotNil(enrollingFactor?.proofOfPossessionKeyTag)
             XCTAssertNotNil(enrollingFactor?.userVerificationKeyTag)
@@ -210,7 +210,7 @@ class TransactionEnrollTests: XCTestCase {
                                                                      enrollPush: false)
             transaction = createTransaction(enrollmentContext: enrollmentContext, enrollment: enrollment, jwtGenerator: OktaJWTGenerator(logger: OktaLoggerMock()))
             transaction.metaData = metaData
-            let enrollingFactor = try transaction.enrollPushFactor(serverMethod: transaction.metaData._embedded.methods[1])
+            let enrollingFactor = try transaction.enrollPushFactor(serverMethod: transaction.metaData._embedded.methods[0])
             XCTAssertNotNil(enrollingFactor)
             XCTAssertNotNil(enrollingFactor?.pushToken)
             XCTAssertNotNil(enrollingFactor?.keys)
@@ -231,7 +231,7 @@ class TransactionEnrollTests: XCTestCase {
                                                                      enrollPush: true)
             transaction = createTransaction(enrollmentContext: enrollmentContext, enrollment: enrollment, jwtGenerator: OktaJWTGenerator(logger: OktaLoggerMock()))
             transaction.metaData = metaData
-            let enrollingFactor = try transaction.enrollPushFactor(serverMethod: transaction.metaData._embedded.methods[1])
+            let enrollingFactor = try transaction.enrollPushFactor(serverMethod: transaction.metaData._embedded.methods[0])
             XCTAssertNotNil(enrollingFactor)
             XCTAssertNotNil(enrollingFactor?.keys)
             XCTAssertNotNil(enrollingFactor?.pushToken)
@@ -272,7 +272,7 @@ class TransactionEnrollTests: XCTestCase {
                                                                      cryptoManager: cryptoManager)
             transaction = createTransaction(enrollmentContext: enrollmentContext, enrollment: enrollment, jwtGenerator: OktaJWTGenerator(logger: OktaLoggerMock()))
             transaction.metaData = metaData
-            let enrollingFactor = try transaction.enrollPushFactor(serverMethod: transaction.metaData._embedded.methods[1])
+            let enrollingFactor = try transaction.enrollPushFactor(serverMethod: transaction.metaData._embedded.methods[0])
             XCTAssertNotNil(enrollingFactor)
             XCTAssertNotNil(enrollingFactor?.keys)
             XCTAssertNotNil(enrollingFactor?.pushToken)
@@ -539,77 +539,6 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
         }
     }
 
-    func testDoEnrollment_ServerError() {
-        restAPIMock.enrollAuthenticatorRequestHook = { _, _, _, _, _, token, completion in
-            if case .accessToken(_) = token {
-                XCTAssertEqual(token.token, self.transaction.enrollmentContext.accessToken)
-            } else {
-                XCTFail()
-            }
-            completion(nil, DeviceAuthenticatorError.internalError("error"))
-        }
-
-        let enrolledFactors = try? transaction.enrollFactors()
-        XCTAssertNotNil(enrolledFactors)
-        transaction.doEnrollment(factorsMetaData: enrolledFactors!) { result in
-            if case Result.failure(let error) = result {
-                XCTAssertEqual(error.errorCode, DeviceAuthenticatorError.internalError("").errorCode)
-            } else {
-                XCTFail("Unexpected result")
-            }
-        }
-    }
-
-    func testDoEnrollment_EmptyData() {
-        restAPIMock.enrollAuthenticatorRequestHook = { _, _, _, _, _, token, completion in
-            completion(nil, nil)
-        }
-
-        let enrolledFactors = try? transaction.enrollFactors()
-        XCTAssertNotNil(enrolledFactors)
-        transaction.doEnrollment(factorsMetaData: enrolledFactors!) { result in
-            if case Result.failure(let error) = result {
-                XCTAssertEqual(error.errorCode, DeviceAuthenticatorError.internalError("").errorCode)
-            } else {
-                XCTFail("Unexpected result")
-            }
-        }
-    }
-
-    func testDoEnrollment_EmptyMethodsInPayloadError() {
-        restAPIMock.enrollAuthenticatorRequestHook = { _, _, _, _, _, _, completion in
-            let result = HTTPURLResult(request: nil, response: nil, data: GoldenData.authenticatorDataWithEmptyMethods())
-            completion(result, nil)
-        }
-
-        let enrolledFactors = try? transaction.enrollFactors()
-        XCTAssertNotNil(enrolledFactors)
-        transaction.doEnrollment(factorsMetaData: enrolledFactors!) { result in
-            if case Result.failure(let error) = result {
-                XCTAssertEqual(error.errorCode, DeviceAuthenticatorError.internalError("").errorCode)
-            } else {
-                XCTFail("Unexpected result")
-            }
-        }
-    }
-
-    func testDoEnrollment_DecodingError() {
-        restAPIMock.enrollAuthenticatorRequestHook = { _, _, _, _, _, _, completion in
-            let result = HTTPURLResult(request: nil, response: nil, data: GoldenData.authenticatorMetaData())
-            completion(result, nil)
-        }
-
-        let enrolledFactors = try? transaction.enrollFactors()
-        XCTAssertNotNil(enrolledFactors)
-        transaction.doEnrollment(factorsMetaData: enrolledFactors!) { result in
-            if case Result.failure(let error) = result {
-                XCTAssertEqual(error.errorCode, DeviceAuthenticatorError.internalError("").errorCode)
-            } else {
-                XCTFail("Unexpected result")
-            }
-        }
-    }
-
     #if os(iOS)
     func testCreateEnrolledPushFactor_Success() {
         let enrolledFactors = try? transaction.enrollFactors()
@@ -688,7 +617,7 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
             } else {
                 XCTFail()
             }
-            completion(nil, nil)
+            completion(.failure(.genericError("")))
             restAPIHookCalled.fulfill()
         }
 
@@ -728,7 +657,7 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
             } else {
                 XCTFail()
             }
-            completion(nil, nil)
+            completion(.failure(.genericError("")))
             hookCalled.fulfill()
         }
 
@@ -923,19 +852,16 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
                                                     clientInstanceId: "clientInstanceId",
                                                     clientInstanceKeyTag: "clientInstanceKeyTag")
         transaction.deviceEnrollment = deviceEnrollment
-        let pushMetadata = OktaFactorMetadataPush(id: "id",
-                                                  proofOfPossessionKeyTag: "proofOfPossessionKeyTag",
-                                                  userVerificationKeyTag: "userVerificationKeyTag")
-        let pushFactor = OktaFactorPush(factorData: pushMetadata,
-                                        cryptoManager: cryptoManager,
-                                        restAPIClient: restAPIMock,
-                                        logger: OktaLoggerMock())
-        let enrolledAuthenticatorModel = try! JSONDecoder().decode(EnrolledAuthenticatorModel.self, from: GoldenData.authenticatorData())
         transaction.orgId = "orgId"
         let policy = AuthenticatorPolicy(metadata: TestUtils.createAuthenticatorMetadataModel())
         try? mockStorageManager.storeAuthenticatorPolicy(policy, orgId: transaction.orgId)
-        transaction.createEnrollmentAndSaveToStorage(enrolledAuthenticatorModel: enrolledAuthenticatorModel,
-                                                     enrolledFactors: [pushFactor]) { result in
+        let enrollmentSummary = EnrollmentSummary(enrollmentId: "",
+                                                  userId: "",
+                                                  username: nil,
+                                                  deviceId: "",
+                                                  clientInstanceId: "",
+                                                  creationDate: Date(), factors: [])
+        transaction.createEnrollmentAndSaveToStorage(enrollmentSummary: enrollmentSummary) { result in
             if case Result.success(_) = result {
                 XCTAssertEqual(self.mockStorageManager.allEnrollments().count, 1)
                 XCTAssertNotNil(try? self.mockStorageManager.deviceEnrollmentByOrgId(self.transaction.orgId))
@@ -946,20 +872,17 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
     }
 
     func testCreateEnrollmentAndSaveToStorage_SuccessWithNewDeviceEnrollment() {
-        let pushMetadata = OktaFactorMetadataPush(id: "id",
-                                                  proofOfPossessionKeyTag: "proofOfPossessionKeyTag",
-                                                  userVerificationKeyTag: "userVerificationKeyTag")
-        let pushFactor = OktaFactorPush(factorData: pushMetadata,
-                                        cryptoManager: cryptoManager,
-                                        restAPIClient: restAPIMock,
-                                        logger: OktaLoggerMock())
-        let enrolledAuthenticatorModel = try! JSONDecoder().decode(EnrolledAuthenticatorModel.self, from: GoldenData.authenticatorData())
         transaction.orgId = "orgId"
         transaction.clientInstanceKeyTag = "clientInstanceKeyTag"
         let policy = AuthenticatorPolicy(metadata: TestUtils.createAuthenticatorMetadataModel())
         try? mockStorageManager.storeAuthenticatorPolicy(policy, orgId: transaction.orgId)
-        transaction.createEnrollmentAndSaveToStorage(enrolledAuthenticatorModel: enrolledAuthenticatorModel,
-                                                     enrolledFactors: [pushFactor]) { result in
+        let enrollmentSummary = EnrollmentSummary(enrollmentId: "",
+                                                  userId: "",
+                                                  username: nil,
+                                                  deviceId: "",
+                                                  clientInstanceId: "",
+                                                  creationDate: Date(), factors: [])
+        transaction.createEnrollmentAndSaveToStorage(enrollmentSummary: enrollmentSummary) { result in
             if case Result.success(_) = result {
                 XCTAssertEqual(self.mockStorageManager.allEnrollments().count, 1)
                 XCTAssertNotNil(try? self.mockStorageManager.deviceEnrollmentByOrgId(self.transaction.orgId))
@@ -978,18 +901,15 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
                                                     clientInstanceId: "clientInstanceId",
                                                     clientInstanceKeyTag: "keyTag")
         try? mockStorageManager.storeDeviceEnrollment(deviceEnrollment, for: transaction.orgId)
-        let pushMetadata = OktaFactorMetadataPush(id: "id",
-                                                  proofOfPossessionKeyTag: "proofOfPossessionKeyTag",
-                                                  userVerificationKeyTag: "userVerificationKeyTag")
-        let pushFactor = OktaFactorPush(factorData: pushMetadata,
-                                        cryptoManager: cryptoManager,
-                                        restAPIClient: restAPIMock,
-                                        logger: OktaLoggerMock())
-        let enrolledAuthenticatorModel = try! JSONDecoder().decode(EnrolledAuthenticatorModel.self, from: GoldenData.authenticatorData())
         let policy = AuthenticatorPolicy(metadata: TestUtils.createAuthenticatorMetadataModel())
         try? mockStorageManager.storeAuthenticatorPolicy(policy, orgId: transaction.orgId)
-        transaction.createEnrollmentAndSaveToStorage(enrolledAuthenticatorModel: enrolledAuthenticatorModel,
-                                                     enrolledFactors: [pushFactor]) { result in
+        let enrollmentSummary = EnrollmentSummary(enrollmentId: "",
+                                                  userId: "",
+                                                  username: nil,
+                                                  deviceId: "",
+                                                  clientInstanceId: "",
+                                                  creationDate: Date(), factors: [])
+        transaction.createEnrollmentAndSaveToStorage(enrollmentSummary: enrollmentSummary) { result in
             if case Result.success(_) = result {
                 XCTAssertEqual(self.mockStorageManager.allEnrollments().count, 1)
                 let deviceEnrollment = try? self.mockStorageManager.deviceEnrollmentByOrgId(self.transaction.orgId)
@@ -1001,17 +921,14 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
     }
 
     func testCreateEnrollmentAndSaveToStorage_SuccessWithNewDeviceEnrollment_NoClientInstanceTag() {
-        let pushMetadata = OktaFactorMetadataPush(id: "id",
-                                                  proofOfPossessionKeyTag: "proofOfPossessionKeyTag",
-                                                  userVerificationKeyTag: "userVerificationKeyTag")
-        let pushFactor = OktaFactorPush(factorData: pushMetadata,
-                                        cryptoManager: cryptoManager,
-                                        restAPIClient: restAPIMock,
-                                        logger: OktaLoggerMock())
-        let enrolledAuthenticatorModel = try! JSONDecoder().decode(EnrolledAuthenticatorModel.self, from: GoldenData.authenticatorData())
         transaction.orgId = "orgId"
-        transaction.createEnrollmentAndSaveToStorage(enrolledAuthenticatorModel: enrolledAuthenticatorModel,
-                                                     enrolledFactors: [pushFactor]) { result in
+        let enrollmentSummary = EnrollmentSummary(enrollmentId: "",
+                                                  userId: "",
+                                                  username: nil,
+                                                  deviceId: "",
+                                                  clientInstanceId: "",
+                                                  creationDate: Date(), factors: [])
+        transaction.createEnrollmentAndSaveToStorage(enrollmentSummary: enrollmentSummary) { result in
             if case Result.failure(let error) = result {
                 XCTAssertEqual(error.errorDescription, "Failed to create device enrollment object")
             } else {
@@ -1031,21 +948,18 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
                                                        applicationConfig: applicationConfig,
                                                        logger: OktaLoggerMock())
         transaction.metaData = metaData
-        let pushMetadata = OktaFactorMetadataPush(id: "id",
-                                                  proofOfPossessionKeyTag: "proofOfPossessionKeyTag",
-                                                  userVerificationKeyTag: "userVerificationKeyTag")
-        let pushFactor = OktaFactorPush(factorData: pushMetadata,
-                                        cryptoManager: cryptoManager,
-                                        restAPIClient: restAPIMock,
-                                        logger: OktaLoggerMock())
-        let enrolledAuthenticatorModel = try! JSONDecoder().decode(EnrolledAuthenticatorModel.self, from: GoldenData.authenticatorData())
         transaction.orgId = "orgId"
         transaction.clientInstanceKeyTag = "clientInstanceKeyTag"
         storageMock.storeEnrollmentHook = { enrollment in
             throw DeviceAuthenticatorError.genericError("Generic Error")
         }
-        transaction.createEnrollmentAndSaveToStorage(enrolledAuthenticatorModel: enrolledAuthenticatorModel,
-                                                     enrolledFactors: [pushFactor]) { result in
+        let enrollmentSummary = EnrollmentSummary(enrollmentId: "",
+                                                  userId: "",
+                                                  username: nil,
+                                                  deviceId: "",
+                                                  clientInstanceId: "",
+                                                  creationDate: Date(), factors: [])
+        transaction.createEnrollmentAndSaveToStorage(enrollmentSummary: enrollmentSummary) { result in
             if case Result.failure(let error) = result {
                 XCTAssertEqual(error.errorDescription, "Generic Error")
             } else {
@@ -1066,7 +980,13 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
         let updateAuthenticatorCompletionCalled = expectation(description: "Update authenticator expected!")
         restAPIMock.updateAuthenticatorRequestHook = { _, _, _, _, _, _, _, completion in
             updateAuthenticatorCompletionCalled.fulfill()
-            completion(nil, nil)
+            let enrollmentSummary = EnrollmentSummary(enrollmentId: "",
+                                                      userId: "",
+                                                      username: nil,
+                                                      deviceId: "",
+                                                      clientInstanceId: "",
+                                                      creationDate: Date(), factors: [])
+            completion(.success(enrollmentSummary))
         }
 
         let enrollment = TestUtils.createAuthenticatorEnrollment(orgHost: URL(string: "tenant.okta.com")!,
@@ -1138,7 +1058,13 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
         var updateAuthenticatorCompletionCalled = false
         restAPIMock.updateAuthenticatorRequestHook = { _, _, _, _, _, _, _, completion in
             updateAuthenticatorCompletionCalled = true
-            completion(nil, nil)
+            let enrollmentSummary = EnrollmentSummary(enrollmentId: "",
+                                                      userId: "",
+                                                      username: nil,
+                                                      deviceId: "",
+                                                      clientInstanceId: "",
+                                                      creationDate: Date(), factors: [])
+            completion(.success(enrollmentSummary))
         }
 
         let enrollment = TestUtils.createAuthenticatorEnrollment(orgHost: URL(string: "tenant.okta.com")!,
@@ -1181,7 +1107,13 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
         let updateAuthenticatorRequestHookCalled = expectation(description: "Update authenticator request expected!")
         restAPIMock.updateAuthenticatorRequestHook = { _, _, _, _, _, _, _, completion in
             updateAuthenticatorRequestHookCalled.fulfill()
-            completion(nil, nil)
+            let enrollmentSummary = EnrollmentSummary(enrollmentId: "",
+                                                      userId: "",
+                                                      username: nil,
+                                                      deviceId: "",
+                                                      clientInstanceId: "",
+                                                      creationDate: Date(), factors: [])
+            completion(.success(enrollmentSummary))
         }
         let enrollment = TestUtils.createAuthenticatorEnrollment(orgHost: URL(string: "tenant.okta.com")!,
                                                                  orgId: "orgId",
@@ -1251,6 +1183,7 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
         wait(for: [enrollExpectation, metadataDownloadExpectation], timeout: 0.5)
     }
 
+    /*
     func testHandleServerResult_Success() {
         let urlResponse = HTTPURLResponse(url: URL(string: "tenant.okta.com")!, statusCode: 200, httpVersion: nil, headerFields: nil)!
         let result = HTTPURLResult(request: URLRequest(url: URL(string: "tenant.okta.com")!),
@@ -1338,6 +1271,7 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
         }
         XCTAssertTrue(completionCalled)
     }
+     */
 
     func createTransaction(enrollmentContext: EnrollmentContext,
                            enrollment: AuthenticatorEnrollment?,
@@ -1383,7 +1317,7 @@ fileprivate class OktaTransactionEnrollPartialMock: OktaTransactionEnroll {
     typealias doEnrollmentType = ([EnrollingFactor], (Result<AuthenticatorEnrollmentProtocol, DeviceAuthenticatorError>) -> Void) -> Void
     typealias doUpdateType = (AuthenticatorEnrollment, [EnrollingFactor], (Result<AuthenticatorEnrollmentProtocol, DeviceAuthenticatorError>) -> Void) -> Void
     typealias registerKeyType = (Algorithm, String, Bool, Bool, BiometricEnrollmentSettings?) throws -> [String: _OktaCodableArbitaryType]
-    typealias createEnrollmentAndSaveToStorageType = (EnrolledAuthenticatorModel, [OktaFactor], (Result<AuthenticatorEnrollmentProtocol, DeviceAuthenticatorError>) -> Void) -> Void
+    typealias createEnrollmentAndSaveToStorageType = (EnrollmentSummary, (Result<AuthenticatorEnrollmentProtocol, DeviceAuthenticatorError>) -> Void) -> Void
 
     var doEnrollmentHook: doEnrollmentType?
     var doUpdateHook: doUpdateType?
@@ -1413,12 +1347,12 @@ fileprivate class OktaTransactionEnrollPartialMock: OktaTransactionEnroll {
         return try registerKeyHook?(algorithm, keyTag, reuseKey, useBiometrics, biometricSettings) ?? [:]
     }
 
-    override func createEnrollmentAndSaveToStorage(enrolledAuthenticatorModel: EnrolledAuthenticatorModel, enrolledFactors: [OktaFactor], onCompletion: @escaping (Result<AuthenticatorEnrollmentProtocol, DeviceAuthenticatorError>) -> Void) {
+    override func createEnrollmentAndSaveToStorage(enrollmentSummary: EnrollmentSummary,
+                                                   onCompletion: @escaping (Result<AuthenticatorEnrollmentProtocol, DeviceAuthenticatorError>) -> Void) {
         if let createEnrollmentAndSaveToStorageHook = createEnrollmentAndSaveToStorageHook {
-            createEnrollmentAndSaveToStorageHook(enrolledAuthenticatorModel, enrolledFactors, onCompletion)
+            createEnrollmentAndSaveToStorageHook(enrollmentSummary, onCompletion)
         } else {
-            super.createEnrollmentAndSaveToStorage(enrolledAuthenticatorModel: enrolledAuthenticatorModel,
-                                                   enrolledFactors: enrolledFactors,
+            super.createEnrollmentAndSaveToStorage(enrollmentSummary: enrollmentSummary,
                                                    onCompletion: onCompletion)
         }
     }
