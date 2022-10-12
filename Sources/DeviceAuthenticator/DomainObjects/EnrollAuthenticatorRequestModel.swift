@@ -12,8 +12,41 @@
 
 import Foundation
 
-typealias UserVerificationEncodableValue = EnrollAuthenticatorRequestModel.AuthenticatorMethods.Keys.UserVerificationKey
-typealias APSEnvironmentEncodableValue = EnrollAuthenticatorRequestModel.AuthenticatorMethods.APSEnvironment
+typealias UserVerificationEncodableValue = SigningKeysModel.UserVerificationKey
+typealias APSEnvironmentEncodableValue = APSEnvironment
+
+enum APSEnvironment: String, Encodable {
+    case development
+    case production
+}
+
+struct SigningKeysModel: Encodable {
+    let proofOfPossession: [String: _OktaCodableArbitaryType]?
+    let userVerification: UserVerificationKey?
+
+    enum UserVerificationKey: Encodable {
+        case null
+        case keyValue([String: _OktaCodableArbitaryType])
+        func encode(to encoder: Encoder) throws {
+            var container = encoder.singleValueContainer()
+            switch self {
+            case .null:
+                try container.encodeNil()
+            case .keyValue(let kayValue):
+                try container.encode(kayValue)
+            }
+        }
+
+        func value() -> [String: _OktaCodableArbitaryType]? {
+            switch self {
+            case .null:
+                return nil
+            case .keyValue(let kayValue):
+                return kayValue
+            }
+        }
+    }
+}
 
 struct EnrollAuthenticatorRequestModel: Encodable {
 
@@ -29,39 +62,6 @@ struct EnrollAuthenticatorRequestModel: Encodable {
         let apsEnvironment: APSEnvironment?
         let supportUserVerification: Bool? // For TOTP factor
         let isFipsCompliant: Bool? // For TOTP
-        let keys: Keys?
-
-        enum APSEnvironment: String, Encodable {
-            case development
-            case production
-        }
-
-        struct Keys: Encodable {
-            let proofOfPossession: [String: _OktaCodableArbitaryType]?
-            let userVerification: UserVerificationKey?
-
-            enum UserVerificationKey: Encodable {
-                case null
-                case keyValue([String: _OktaCodableArbitaryType])
-                func encode(to encoder: Encoder) throws {
-                    var container = encoder.singleValueContainer()
-                    switch self {
-                    case .null:
-                        try container.encodeNil()
-                    case .keyValue(let kayValue):
-                        try container.encode(kayValue)
-                    }
-                }
-
-                func value() -> [String: _OktaCodableArbitaryType]? {
-                    switch self {
-                    case .null:
-                        return nil
-                    case .keyValue(let kayValue):
-                        return kayValue
-                    }
-                }
-            }
-        }
+        let keys: SigningKeysModel?
     }
 }

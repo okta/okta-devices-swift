@@ -204,7 +204,7 @@ class OktaAuthenticatorsManagerTests: XCTestCase {
         let deleteKeyHookCalled = expectation(description: "Delete hook expected!")
         // Delete push keys(pop, uv), delete clientInstanceKey = 5 calls
         deleteKeyHookCalled.expectedFulfillmentCount = 3
-        restAPI.enrollAuthenticatorRequestHook = { _, _, _, completion in
+        restAPI.enrollAuthenticatorRequestHook = { _, _, _, _, _, _, completion in
             self.secHelperMock.deleteKeyHook = { query in
                 deleteKeyHookCalled.fulfill()
                 return noErr

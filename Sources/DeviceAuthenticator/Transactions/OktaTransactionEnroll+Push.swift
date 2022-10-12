@@ -19,15 +19,10 @@ extension OktaTransactionEnroll {
         let pushFactor = enrollmentToUpdate?.enrolledFactors.first(where: { $0 is OktaFactorPush }) as? OktaFactorPush
         let proofOfPossessionKeyTag = pushFactor?.proofOfPossessionKeyTag
         let userVerificationKeyTag = pushFactor?.userVerificationKeyTag
-        let returnedTuple = try createAuthenticatorMethodModel(with: proofOfPossessionKeyTag,
-                                                               uvKeyTag: userVerificationKeyTag,
-                                                               methodType: .push,
-                                                               pushToken: enrollmentContext.pushToken.rawValue)
-
-        let enrollingFactor = EnrollingFactor(proofOfPossessionKeyTag: returnedTuple.proofOfPossessionKeyTag,
-                                              userVerificationKeyTag: returnedTuple.userVerificationKeyTag,
-                                              methodType: .push,
-                                              requestModel: returnedTuple.methodModel)
+        let enrollingFactor = try createEnrollingFactorModel(with: proofOfPossessionKeyTag,
+                                                                 uvKeyTag: userVerificationKeyTag,
+                                                                 methodType: .push,
+                                                                 pushToken: enrollmentContext.pushToken.rawValue)
         return enrollingFactor
     }
 }

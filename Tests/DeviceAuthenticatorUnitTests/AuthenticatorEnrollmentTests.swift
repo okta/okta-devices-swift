@@ -99,14 +99,13 @@ class AuthenticatorEnrollmentTests: XCTestCase {
         enrollment.enrolledFactors.append(pushFactor)
         var updateAuthenticatorRequestHookCalled = false
         let pushTokenToCompare = "push_token".data(using: .utf8)!
-        restAPIMock.updateAuthenticatorRequestHook = { url, data, token, completion in
-            let dict = try! JSONSerialization.jsonObject(with: data, options: []) as! [String: Any]
-            let pushMethod = (dict["methods"] as! Array<[String: Any]>).first
-            let pushToken = pushMethod!["pushToken"] as! String
+        restAPIMock.updateAuthenticatorRequestHook = { url, enrollmentId, metadata, deviceSignalsModel, allSignals, factors, _, completion in
+            let pushMethod = factors.first(where: { $0.methodType == .push })
+            let pushToken = pushMethod?.pushToken
             XCTAssertEqual(pushToken, pushTokenToCompare.hexString())
             let result = HTTPURLResult(request: URLRequest(url: URL(string: "com.okta.example")!),
-                                    response: HTTPURLResponse(url: self.mockURL, statusCode: 200, httpVersion: nil, headerFields: nil)!,
-                                    data: GoldenData.authenticatorData())
+                                       response: HTTPURLResponse(url: self.mockURL, statusCode: 200, httpVersion: nil, headerFields: nil)!,
+                                       data: GoldenData.authenticatorData())
             updateAuthenticatorRequestHookCalled = true
             completion(result, nil)
         }
@@ -247,7 +246,7 @@ class AuthenticatorEnrollmentTests: XCTestCase {
                                                                                               methods: [.push]))
         try? mockStorageManager.storeAuthenticatorPolicy(policy, orgId: enrollment.orgId)
         var updateAuthenticatorRequestHookCalled = false
-        restAPIMock.updateAuthenticatorRequestHook = { url, data, token, completion in
+        restAPIMock.updateAuthenticatorRequestHook = { url, data, token, _, _, _, _, completion in
             let result = HTTPURLResult(request: URLRequest(url: URL(string: "com.okta.example")!),
                                     response: HTTPURLResponse(url: self.mockURL, statusCode: 200, httpVersion: nil, headerFields: nil)!,
                                     data: GoldenData.authenticatorData())
