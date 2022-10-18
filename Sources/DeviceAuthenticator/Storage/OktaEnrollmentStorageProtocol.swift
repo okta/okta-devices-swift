@@ -19,4 +19,6 @@ protocol OktaEnrollmentStorageProtocol {
     func allEnrollments() -> [AuthenticatorEnrollmentProtocol]
     func enrollmentById(enrollmentId: String) -> AuthenticatorEnrollmentProtocol?
     func enrollmentsByOrgId(_ orgId: String) -> [AuthenticatorEnrollmentProtocol]
+
+    var enrollmentsCount: Int? { get }
 }

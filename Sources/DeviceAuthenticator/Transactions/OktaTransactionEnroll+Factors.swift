@@ -30,13 +30,10 @@ extension OktaTransactionEnroll {
         return factor
     }
 
-    func createAuthenticatorMethodModel(with popKeyTag: String?,
-                                        uvKeyTag: String?,
-                                        methodType: AuthenticatorMethod,
-                                        pushToken: String?) throws -> (methodModel: EnrollAuthenticatorRequestModel.AuthenticatorMethods?,
-                                                                       proofOfPossessionKeyTag: String,
-                                                                       userVerificationKeyTag: String?,
-                                                                       transactionTypes: TransactionType?) {
+    func createEnrollingFactorModel(with popKeyTag: String?,
+                                    uvKeyTag: String?,
+                                    methodType: AuthenticatorMethod,
+                                    pushToken: String?) throws -> EnrollingFactor {
         // Note: for update operation we need to rebuild the whole Factor object
         var proofOfPossessionJWK: [String: _OktaCodableArbitaryType]? = nil
         let proofOfPossessionKeyTag: String
@@ -81,29 +78,25 @@ extension OktaTransactionEnroll {
             }
         }
 
-        var keys: EnrollAuthenticatorRequestModel.AuthenticatorMethods.Keys? = nil
+        var signingKeys: SigningKeysModel? = nil
         if proofOfPossessionJWK != nil || userVerificationEncodableValue != nil {
-            keys = EnrollAuthenticatorRequestModel.AuthenticatorMethods.Keys(proofOfPossession: proofOfPossessionJWK,
-                                                                             userVerification: userVerificationEncodableValue)
-        }
-        var methodModel: EnrollAuthenticatorRequestModel.AuthenticatorMethods? = nil
-        if keys != nil {
-            let apsEnvironment = applicationConfig.pushSettings.apsEnvironment == .production ? APSEnvironmentEncodableValue.production :
-                                                                                    APSEnvironmentEncodableValue.development
-            var transactionTypes: [TransactionTypesModel] = [.login]
-            if enrollmentContext.isCIBASupported {
-                transactionTypes.append(.ciba)
-            }
-            let capabilities = EnrollAuthenticatorRequestModel.AuthenticatorMethods.Capabilities(transactionTypes: transactionTypes)
-            methodModel = EnrollAuthenticatorRequestModel.AuthenticatorMethods(type: methodType,
-                                                                               pushToken: methodType == .push ? pushToken : nil,
-                                                                               apsEnvironment: methodType == .push ? apsEnvironment : nil,
-                                                                               supportUserVerification: nil,
-                                                                               isFipsCompliant: nil,
-                                                                               keys: keys, capabilities: capabilities)
+            signingKeys = SigningKeysModel(proofOfPossession: proofOfPossessionJWK,
+                                           userVerification: userVerificationEncodableValue)
         }
 
-        return (methodModel: methodModel, proofOfPossessionKeyTag: proofOfPossessionKeyTag, userVerificationKeyTag: userVerificationKeyTag, transactionTypes: enrollmentContext.transactionTypes)
+        let apsEnvironment = applicationConfig.pushSettings.apsEnvironment == .production ? APSEnvironment.production : APSEnvironment.development
+        let transactionTypes: TransactionType = enrollmentContext.isCIBASupported ? [.login, .ciba] : .login
+        let enrollingFactor = EnrollingFactor(proofOfPossessionKeyTag: proofOfPossessionKeyTag,
+                                              userVerificationKeyTag: userVerificationKeyTag,
+                                              methodType: methodType,
+                                              apsEnvironment: methodType == .push ? apsEnvironment : nil,
+                                              pushToken: pushToken,
+                                              supportUserVerification: nil,
+                                              isFipsCompliant: nil,
+                                              keys: signingKeys,
+                                              transactionTypes: transactionTypes)
+
+        return enrollingFactor
     }
 
     func factorTypeFromAuthenticatorMethod(_ method: AuthenticatorMethod) -> AuthenticationMethodType {

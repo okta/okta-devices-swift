@@ -139,6 +139,7 @@
 		7FA3181028CA6A4100770C88 /* TransactionType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FA3180F28CA6A4100770C88 /* TransactionType.swift */; };
 		7FA3181228CA74B100770C88 /* PushChallengeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FA3181128CA74B100770C88 /* PushChallengeTests.swift */; };
 		98F2EBDD5510C097C38222F3 /* libPods-DeviceAuthenticatorFunctionalTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DD73FB7DC7E598DC865F395B /* libPods-DeviceAuthenticatorFunctionalTests.a */; };
+		9F206D1428FDC698006993A8 /* LegacyServerAPITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F206D1328FDC698006993A8 /* LegacyServerAPITests.swift */; };
 		9F47E556289C989000299CFB /* DeviceAuthenticatorConfigTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F47E555289C989000299CFB /* DeviceAuthenticatorConfigTests.swift */; };
 		9F7AAD8E28BD297E00E15F59 /* ServerAPIProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7AAD8D28BD297E00E15F59 /* ServerAPIProtocol.swift */; };
 		9F7AAD9028BD739600E15F59 /* LegacyServerAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7AAD8F28BD739600E15F59 /* LegacyServerAPI.swift */; };
@@ -383,6 +384,7 @@
 		7FFB5F74285BA94A006BC548 /* DeviceAuthenticator.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = DeviceAuthenticator.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7FFB5FFA286A7F4C006BC548 /* DeviceAuthenticatorUnitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DeviceAuthenticatorUnitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		7FFB6010286A80CF006BC548 /* DeviceAuthenticatorFunctionalTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DeviceAuthenticatorFunctionalTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		9F206D1328FDC698006993A8 /* LegacyServerAPITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyServerAPITests.swift; sourceTree = "<group>"; };
 		9F47E555289C989000299CFB /* DeviceAuthenticatorConfigTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceAuthenticatorConfigTests.swift; sourceTree = "<group>"; };
 		9F7AAD8D28BD297E00E15F59 /* ServerAPIProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerAPIProtocol.swift; sourceTree = "<group>"; };
 		9F7AAD8F28BD739600E15F59 /* LegacyServerAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyServerAPI.swift; sourceTree = "<group>"; };
@@ -882,6 +884,7 @@
 				9F9602622878A6860012C74C /* AuthenticatorEnrollmentTests.swift */,
 				9F47E555289C989000299CFB /* DeviceAuthenticatorConfigTests.swift */,
 				9F9602352878A5690012C74C /* Mocks */,
+				9F206D1328FDC698006993A8 /* LegacyServerAPITests.swift */,
 			);
 			name = DeviceAuthenticatorUnitTests;
 			path = Tests/DeviceAuthenticatorUnitTests;
@@ -1370,6 +1373,7 @@
 				9F9602562878A5690012C74C /* StorageManagerMock.swift in Sources */,
 				9F9602B12878B35F0012C74C /* TransactionEnrollTests.swift in Sources */,
 				9F96025D2878A5690012C74C /* TestUtils.swift in Sources */,
+				9F206D1428FDC698006993A8 /* LegacyServerAPITests.swift in Sources */,
 				9F96026A2878A6CF0012C74C /* DeviceAuthenticatorTests.swift in Sources */,
 				9F9602A92878B0180012C74C /* OktaStorageManagerTests.swift in Sources */,
 				9F96024A2878A5690012C74C /* GoldenData.swift in Sources */,

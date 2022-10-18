@@ -15,11 +15,10 @@ import Foundation
 @testable import DeviceAuthenticator
 
 class RestAPIMock: ServerAPIProtocol {
-
-    typealias enrollAuthenticatorRequestType = (URL, Data, OktaRestAPIToken, (_ result: HTTPURLResult?, _ error: DeviceAuthenticatorError?) -> Void) -> Void
+    typealias enrollAuthenticatorRequestType = (URL, AuthenticatorMetaDataModel, DeviceSignalsModel, [String : _OktaCodableArbitaryType]?, [EnrollingFactor], OktaRestAPIToken, (_ result: Result<EnrollmentSummary, DeviceAuthenticatorError>) -> Void) -> Void
     typealias downloadOrgIdType = (URL, (HTTPURLResult?, DeviceAuthenticatorError?) -> Void) -> Void
-    typealias updateAuthenticatorRequestType = (URL, Data, OktaRestAPIToken, @escaping (_ result: HTTPURLResult?, _ error: DeviceAuthenticatorError?) -> Void) -> Void
-    typealias downloadAuthenticatorMetadataType = (URL, String, OktaRestAPIToken, (HTTPURLResult?, DeviceAuthenticatorError?) -> Void) -> Void
+    typealias updateAuthenticatorRequestType = (URL, String, AuthenticatorMetaDataModel, DeviceSignalsModel, [String : _OktaCodableArbitaryType]?, [EnrollingFactor], OktaRestAPIToken, @escaping (_ result: Result<EnrollmentSummary, DeviceAuthenticatorError>) -> Void) -> Void
+    typealias downloadAuthenticatorMetadataType = (URL, String, OktaRestAPIToken, (Result<AuthenticatorMetaDataModel, DeviceAuthenticatorError>) -> Void) -> Void
     typealias deleteAuthenticatorRequestType = (URL, OktaRestAPIToken, (_ result: HTTPURLResult?, _ error: DeviceAuthenticatorError?) -> Void) -> Void
     typealias pendingChallengeRequestType = (URL, AuthToken, (HTTPURLResult?, DeviceAuthenticatorError?) -> Void) -> Void
 
@@ -40,7 +39,10 @@ class RestAPIMock: ServerAPIProtocol {
          defaultAPI: ServerAPIProtocol? = nil) {
         self.client = client
         self.logger = logger
-        self.restAPI = defaultAPI ?? LegacyServerAPI(client: client, logger: logger)
+        self.restAPI = defaultAPI ?? LegacyServerAPI(client: client,
+                                                     crypto: OktaCryptoManager(accessGroupId: ExampleAppConstants.appGroupId,
+                                                                               logger: logger),
+                                                     logger: logger)
     }
 
     func deleteAuthenticatorRequest(url: URL, token: OktaRestAPIToken, completion: @escaping (HTTPURLResult?, DeviceAuthenticatorError?) -> Void) {
@@ -63,7 +65,7 @@ class RestAPIMock: ServerAPIProtocol {
                                               authenticatorKey: String,
                                               oidcClientId: String?,
                                               token: OktaRestAPIToken,
-                                              completion: @escaping (HTTPURLResult?, DeviceAuthenticatorError?) -> Void) {
+                                              completion: @escaping (Result<AuthenticatorMetaDataModel, DeviceAuthenticatorError>) -> Void) {
         if let downloadAuthenticatorMetadataHook = downloadAuthenticatorMetadataHook {
             downloadAuthenticatorMetadataHook(orgHost, authenticatorKey, token, completion)
         } else {
@@ -75,34 +77,55 @@ class RestAPIMock: ServerAPIProtocol {
         }
     }
 
-    public func enrollAuthenticatorRequest(enrollURL: URL, data: Data,
+    public func enrollAuthenticatorRequest(orgHost: URL,
+                                           metadata: AuthenticatorMetaDataModel,
+                                           deviceModel: DeviceSignalsModel,
+                                           appSignals: [String : _OktaCodableArbitaryType]?,
+                                           enrollingFactors: [EnrollingFactor],
                                            token: OktaRestAPIToken,
-                                           completion: @escaping (HTTPURLResult?, DeviceAuthenticatorError?) -> Void) {
+                                           completion: @escaping (Result<EnrollmentSummary, DeviceAuthenticatorError>) -> Void) {
         if let oktaError = error {
-            completion(nil, oktaError)
+            completion(.failure(oktaError))
             return
         }
 
         if let enrollAuthenticatorRequestHook = enrollAuthenticatorRequestHook {
-            enrollAuthenticatorRequestHook(enrollURL, data, token, completion)
+            enrollAuthenticatorRequestHook(orgHost, metadata, deviceModel, appSignals, enrollingFactors, token, completion)
         } else {
-            restAPI.enrollAuthenticatorRequest(enrollURL: enrollURL,
-                                               data: data,
+            restAPI.enrollAuthenticatorRequest(orgHost: orgHost,
+                                               metadata: metadata,
+                                               deviceModel: deviceModel,
+                                               appSignals: appSignals,
+                                               enrollingFactors: enrollingFactors,
                                                token: token,
                                                completion: completion)
         }
     }
 
-    public func updateAuthenticatorRequest(url: URL, data: Data, token: OktaRestAPIToken, completion: @escaping (HTTPURLResult?, DeviceAuthenticatorError?) -> Void) {
+    public func updateAuthenticatorRequest(orgHost: URL,
+                                           enrollmentId: String,
+                                           metadata: AuthenticatorMetaDataModel,
+                                           deviceModel: DeviceSignalsModel,
+                                           appSignals: [String: _OktaCodableArbitaryType]?,
+                                           enrollingFactors: [EnrollingFactor],
+                                           token: OktaRestAPIToken,
+                                           completion: @escaping (Result<EnrollmentSummary, DeviceAuthenticatorError>) -> Void) {
         if let oktaError = error {
-            completion(nil, oktaError)
+            completion(.failure(oktaError))
             return
         }
 
         if let updateAuthenticatorRequestHook = updateAuthenticatorRequestHook {
-            updateAuthenticatorRequestHook(url, data, token, completion)
+            updateAuthenticatorRequestHook(orgHost, enrollmentId, metadata, deviceModel, appSignals, enrollingFactors, token, completion)
         } else {
-            restAPI.updateAuthenticatorRequest(url: url, data: data, token: token, completion: completion)
+            restAPI.updateAuthenticatorRequest(orgHost: orgHost,
+                                               enrollmentId: enrollmentId,
+                                               metadata: metadata,
+                                               deviceModel: deviceModel,
+                                               appSignals: appSignals,
+                                               enrollingFactors: enrollingFactors,
+                                               token: token,
+                                               completion: completion)
         }
     }
 

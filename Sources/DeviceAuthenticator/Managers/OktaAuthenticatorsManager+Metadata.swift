@@ -23,40 +23,13 @@ extension _OktaAuthenticatorsManager {
         self.restAPI.downloadAuthenticatorMetadata(orgHost: orgHost,
                                                    authenticatorKey: authenticatorKey,
                                                    oidcClientId: oidcClientId,
-                                                   token: token) { result, error in
-            if let error = error {
-                self.logger.error(eventName: "Download Authenticator Metadata", message: "\(error)")
-                onCompletion(Result.failure(error))
-                return
+                                                   token: token) { result in
+            switch result {
+            case .failure(let error): onCompletion(.failure(error))
+            case .success(let metadata):
+                let authenticatorPolicy = AuthenticatorPolicy(metadata: metadata)
+                onCompletion(Result.success(authenticatorPolicy))
             }
-
-            guard let result = result, let metaDataJson = result.data else {
-                    let resultError = DeviceAuthenticatorError.internalError("Server replied with an empty data")
-                    self.logger.error(eventName: "Download Authenticator Metadata",
-                                      message: "Download metadata error - \(resultError)")
-                onCompletion(Result.failure(resultError))
-                return
-            }
-
-            let metaData: AuthenticatorMetaDataModel
-            do {
-                let metaDataArray = try JSONDecoder().decode([AuthenticatorMetaDataModel].self, from: metaDataJson).filter({
-                    $0.status == .active
-                })
-                guard !metaDataArray.isEmpty else {
-                    throw DeviceAuthenticatorError.internalError("Server replied with empty active authenticators array")
-                }
-                metaData = metaDataArray[0]
-            } catch {
-                let resultError = DeviceAuthenticatorError.internalError(error.localizedDescription)
-                self.logger.error(eventName: "Download Authenticator Metadata",
-                                  message: "Download metadata error - \(resultError)")
-                onCompletion(Result.failure(resultError))
-                return
-            }
-
-            let authenticatorPolicy = AuthenticatorPolicy(metadata: metaData)
-            onCompletion(Result.success(authenticatorPolicy))
         }
     }
 }
