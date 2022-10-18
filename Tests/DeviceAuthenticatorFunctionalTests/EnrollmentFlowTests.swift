@@ -44,7 +44,10 @@ class EnrollmentFlowTests: XCTestCase {
                                                                 [GoldenData.orgData(),
                                                                  GoldenData.authenticatorMetaData(),
                                                                  GoldenData.authenticatorData()])
-        let oktaRestAPI = LegacyServerAPI(client: mockHTTPClient, logger: OktaLoggerMock())
+        let oktaRestAPI = LegacyServerAPI(client: mockHTTPClient,
+                                          crypto: OktaCryptoManager(accessGroupId: ExampleAppConstants.appGroupId,
+                                                                    logger: OktaLoggerMock()),
+                                          logger: OktaLoggerMock())
 
         let deviceAuthenticator: DeviceAuthenticatorProtocol
         do {
@@ -79,7 +82,10 @@ class EnrollmentFlowTests: XCTestCase {
                                                                 [GoldenData.orgDataIncomplete(),
                                                                  GoldenData.authenticatorMetaData(),
                                                                  GoldenData.authenticatorData()])
-        let oktaRestAPI = LegacyServerAPI(client: mockHTTPClient, logger: OktaLoggerMock())
+        let oktaRestAPI = LegacyServerAPI(client: mockHTTPClient,
+                                          crypto: OktaCryptoManager(accessGroupId: ExampleAppConstants.appGroupId,
+                                                                    logger: OktaLoggerMock()),
+                                          logger: OktaLoggerMock())
 
         let deviceAuthenticator: DeviceAuthenticatorProtocol
         do {
@@ -109,7 +115,10 @@ class EnrollmentFlowTests: XCTestCase {
                                                                 [GoldenData.orgData(),
                                                                  GoldenData.authenticatorMetaDataInactive(),
                                                                  GoldenData.authenticatorData()])
-        let oktaRestAPI = LegacyServerAPI(client: mockHTTPClient, logger: OktaLoggerMock())
+        let oktaRestAPI = LegacyServerAPI(client: mockHTTPClient,
+                                          crypto: OktaCryptoManager(accessGroupId: ExampleAppConstants.appGroupId,
+                                                                    logger: OktaLoggerMock()),
+                                          logger: OktaLoggerMock())
 
         let deviceAuthenticator: DeviceAuthenticatorProtocol
         do {

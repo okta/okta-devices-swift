@@ -29,6 +29,16 @@ struct EnrollingFactor {
     let keys: SigningKeysModel?
 }
 
+struct EnrollmentSummary {
+    let enrollmentId: String
+    let userId: String
+    let username: String?
+    let deviceId: String
+    let clientInstanceId: String
+    let creationDate: Date
+    let factors: [OktaFactor]
+}
+
 protocol ServerAPIProtocol {
     var client: HTTPClientProtocol { get }
     var logger: OktaLoggerProtocol { get }
@@ -45,7 +55,7 @@ protocol ServerAPIProtocol {
                                     appSignals: [String: _OktaCodableArbitaryType]?,
                                     enrollingFactors: [EnrollingFactor],
                                     token: OktaRestAPIToken,
-                                    completion: @escaping (_ result: HTTPURLResult?, _ error: DeviceAuthenticatorError?) -> Void)
+                                    completion: @escaping (_ result: Result<EnrollmentSummary, DeviceAuthenticatorError>) -> Void)
 
     func updateAuthenticatorRequest(orgHost: URL,
                                     enrollmentId: String,
@@ -54,7 +64,7 @@ protocol ServerAPIProtocol {
                                     appSignals: [String: _OktaCodableArbitaryType]?,
                                     enrollingFactors: [EnrollingFactor],
                                     token: OktaRestAPIToken,
-                                    completion: @escaping (_ result: HTTPURLResult?, _ error: DeviceAuthenticatorError?) -> Void)
+                                    completion: @escaping (_ result: Result<EnrollmentSummary, DeviceAuthenticatorError>) -> Void)
 
     func deleteAuthenticatorRequest(url: URL,
                                     token: OktaRestAPIToken,

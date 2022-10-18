@@ -26,7 +26,10 @@ class OktaFactorPushTests: XCTestCase {
         secKeyHelper = SecKeyHelperMock()
         cryptoManager = CryptoManagerMock(accessGroupId: "", secKeyHelper: secKeyHelper, logger: OktaLoggerMock())
         let mockHTTPClient = MockMultipleRequestsHTTPClient(responseArray: [], dataArray: [])
-        restAPIClient = LegacyServerAPI(client: mockHTTPClient, logger: OktaLoggerMock())
+        restAPIClient = LegacyServerAPI(client: mockHTTPClient,
+                                        crypto: OktaCryptoManager(accessGroupId: ExampleAppConstants.appGroupId,
+                                                                  logger: OktaLoggerMock()),
+                                        logger: OktaLoggerMock())
         factorData = OktaFactorMetadataPush(id: "id",
                                             proofOfPossessionKeyTag: "proofOfPossessionKeyTag",
                                             userVerificationKeyTag: "userVerificationKeyTag")

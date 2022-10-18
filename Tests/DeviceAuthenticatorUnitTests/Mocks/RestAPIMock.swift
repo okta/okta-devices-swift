@@ -15,10 +15,9 @@ import Foundation
 @testable import DeviceAuthenticator
 
 class RestAPIMock: ServerAPIProtocol {
-
-    typealias enrollAuthenticatorRequestType = (URL, AuthenticatorMetaDataModel, DeviceSignalsModel, [String : _OktaCodableArbitaryType]?, [EnrollingFactor], OktaRestAPIToken, (_ result: HTTPURLResult?, _ error: DeviceAuthenticatorError?) -> Void) -> Void
+    typealias enrollAuthenticatorRequestType = (URL, AuthenticatorMetaDataModel, DeviceSignalsModel, [String : _OktaCodableArbitaryType]?, [EnrollingFactor], OktaRestAPIToken, (_ result: Result<EnrollmentSummary, DeviceAuthenticatorError>) -> Void) -> Void
     typealias downloadOrgIdType = (URL, (HTTPURLResult?, DeviceAuthenticatorError?) -> Void) -> Void
-    typealias updateAuthenticatorRequestType = (URL, String, AuthenticatorMetaDataModel, DeviceSignalsModel, [String : _OktaCodableArbitaryType]?, [EnrollingFactor], OktaRestAPIToken, @escaping (_ result: HTTPURLResult?, _ error: DeviceAuthenticatorError?) -> Void) -> Void
+    typealias updateAuthenticatorRequestType = (URL, String, AuthenticatorMetaDataModel, DeviceSignalsModel, [String : _OktaCodableArbitaryType]?, [EnrollingFactor], OktaRestAPIToken, @escaping (_ result: Result<EnrollmentSummary, DeviceAuthenticatorError>) -> Void) -> Void
     typealias downloadAuthenticatorMetadataType = (URL, String, OktaRestAPIToken, (Result<AuthenticatorMetaDataModel, DeviceAuthenticatorError>) -> Void) -> Void
     typealias deleteAuthenticatorRequestType = (URL, OktaRestAPIToken, (_ result: HTTPURLResult?, _ error: DeviceAuthenticatorError?) -> Void) -> Void
     typealias pendingChallengeRequestType = (URL, AuthToken, (HTTPURLResult?, DeviceAuthenticatorError?) -> Void) -> Void
@@ -40,7 +39,10 @@ class RestAPIMock: ServerAPIProtocol {
          defaultAPI: ServerAPIProtocol? = nil) {
         self.client = client
         self.logger = logger
-        self.restAPI = defaultAPI ?? LegacyServerAPI(client: client, logger: logger)
+        self.restAPI = defaultAPI ?? LegacyServerAPI(client: client,
+                                                     crypto: OktaCryptoManager(accessGroupId: ExampleAppConstants.appGroupId,
+                                                                               logger: logger),
+                                                     logger: logger)
     }
 
     func deleteAuthenticatorRequest(url: URL, token: OktaRestAPIToken, completion: @escaping (HTTPURLResult?, DeviceAuthenticatorError?) -> Void) {
@@ -81,9 +83,9 @@ class RestAPIMock: ServerAPIProtocol {
                                            appSignals: [String : _OktaCodableArbitaryType]?,
                                            enrollingFactors: [EnrollingFactor],
                                            token: OktaRestAPIToken,
-                                           completion: @escaping (HTTPURLResult?, DeviceAuthenticatorError?) -> Void) {
+                                           completion: @escaping (Result<EnrollmentSummary, DeviceAuthenticatorError>) -> Void) {
         if let oktaError = error {
-            completion(nil, oktaError)
+            completion(.failure(oktaError))
             return
         }
 
@@ -107,9 +109,9 @@ class RestAPIMock: ServerAPIProtocol {
                                            appSignals: [String: _OktaCodableArbitaryType]?,
                                            enrollingFactors: [EnrollingFactor],
                                            token: OktaRestAPIToken,
-                                           completion: @escaping (HTTPURLResult?, DeviceAuthenticatorError?) -> Void) {
+                                           completion: @escaping (Result<EnrollmentSummary, DeviceAuthenticatorError>) -> Void) {
         if let oktaError = error {
-            completion(nil, oktaError)
+            completion(.failure(oktaError))
             return
         }
 

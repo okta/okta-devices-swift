@@ -266,8 +266,8 @@ class OktaTransactionEnroll: OktaTransaction {
                                                 deviceModel: deviceModel,
                                                 appSignals: enrollmentContext.applicationSignals,
                                                 enrollingFactors: factorsMetaData,
-                                                token: token) { result, error in
-            self.handleServerResult(result, error: error, factorsMetaData: factorsMetaData, andCall: onCompletion)
+                                                token: token) { result in
+            self.handleServerResult(result, andCall: onCompletion)
         }
     }
 
@@ -284,8 +284,8 @@ class OktaTransactionEnroll: OktaTransaction {
                                                     deviceModel: deviceModel,
                                                     appSignals: self.enrollmentContext.applicationSignals,
                                                     enrollingFactors: factorsMetaData,
-                                                    token: token) { result, error in
-                self.handleServerResult(result, error: error, factorsMetaData: factorsMetaData, andCall: onCompletion)
+                                                    token: token) { result in
+                self.handleServerResult(result, andCall: onCompletion)
             }
         }
 
@@ -388,76 +388,27 @@ class OktaTransactionEnroll: OktaTransaction {
         return jwk
     }
 
-    func handleServerResult(_ result: HTTPURLResult?,
-                            error: DeviceAuthenticatorError?,
-                            factorsMetaData: [EnrollingFactor],
+    func handleServerResult(_ result: Result<EnrollmentSummary, DeviceAuthenticatorError>,
                             andCall onCompletion: @escaping (Result<AuthenticatorEnrollmentProtocol, DeviceAuthenticatorError>) -> Void) {
-        if let error = error {
-            self.logger.error(eventName: self.logEventName, message: "Error: \(error)")
-            onCompletion(Result.failure(error))
+        switch result {
+        case .failure(let error):
+            onCompletion(.failure(error))
             return
-        }
-
-        guard let result = result, let resultJsonData = result.data, !resultJsonData.isEmpty else {
-            let resultError = DeviceAuthenticatorError.internalError("Server replied with empty data")
-            self.logger.error(eventName: self.logEventName, message: "Error: \(resultError)")
-            onCompletion(Result.failure(resultError))
-            return
-        }
-
-        do {
-            var enrolledFactors: [OktaFactor] = []
-            let enrolledAuthenticatorModel = try JSONDecoder().decode(EnrolledAuthenticatorModel.self, from: resultJsonData)
-            enrolledAuthenticatorModel.methods?.forEach({ method in
-                let factor: OktaFactor?
-                factor = createFactorMetadataBasedOnServerResponse(method: method, enrollingFactorsData: factorsMetaData)
-                if let factor = factor {
-                    self.logger.info(eventName: self.logEventName, message: "Enrolled factor type: \(method.type.rawValue)")
-                    enrolledFactors.append(factor)
-                } else {
-                    self.logger.error(eventName: self.logEventName, message: "Failed to enroll server method with type: \(method.type)")
-                }
-            })
-            guard !enrolledFactors.isEmpty else {
-                let jsonString = String(data: resultJsonData, encoding: .utf8) ?? ""
-                let resultError = DeviceAuthenticatorError.internalError("Server replied with unexpected enrollment data")
-                self.logger.error(eventName: self.logEventName, message: "\(resultError)\n\(jsonString)")
-                onCompletion(Result.failure(resultError))
-                return
-            }
-            self.logger.info(eventName: self.logEventName, message: "\(enrolledFactors) enrolled for org ID: \(self.orgId ?? "")")
-
-            createEnrollmentAndSaveToStorage(enrolledAuthenticatorModel: enrolledAuthenticatorModel,
-                                             enrolledFactors: enrolledFactors,
+        case .success(let enrollmentSummary):
+            createEnrollmentAndSaveToStorage(enrollmentSummary: enrollmentSummary,
                                              onCompletion: onCompletion)
-        } catch {
-            let resultError = DeviceAuthenticatorError.internalError(error.localizedDescription)
-            self.logger.error(eventName: self.logEventName, message: "Failed to decode enrollment data - \(resultError)")
-            onCompletion(Result.failure(resultError))
-            return
         }
     }
 
-    func createFactorMetadataBasedOnServerResponse(method: EnrolledAuthenticatorModel.AuthenticatorMethods,
-                                                   enrollingFactorsData: [EnrollingFactor]) -> OktaFactor? {
-        guard method.type == .push,
-              let pushFactorMetadata = self.createEnrolledPushFactor(from: enrollingFactorsData, and: method) as? OktaFactorMetadataPush else {
-            return nil
-        }
-
-        return OktaFactorPush(factorData: pushFactorMetadata, cryptoManager: cryptoManager, restAPIClient: restAPI, logger: logger)
-    }
-
-    func createEnrollmentAndSaveToStorage(enrolledAuthenticatorModel: EnrolledAuthenticatorModel,
-                                          enrolledFactors: [OktaFactor],
+    func createEnrollmentAndSaveToStorage(enrollmentSummary: EnrollmentSummary,
                                           onCompletion: @escaping (Result<AuthenticatorEnrollmentProtocol, DeviceAuthenticatorError>) -> Void) {
         do {
             var newDeviceEnrollment: OktaDeviceEnrollment! = self.deviceEnrollment
             if newDeviceEnrollment == nil {
                 if let clientInstanceKeyTag = self.clientInstanceKeyTag {
-                    newDeviceEnrollment = OktaDeviceEnrollment(id: enrolledAuthenticatorModel.device.id,
+                    newDeviceEnrollment = OktaDeviceEnrollment(id: enrollmentSummary.deviceId,
                                                                orgId: self.orgId,
-                                                               clientInstanceId: enrolledAuthenticatorModel.device.clientInstanceId,
+                                                               clientInstanceId: enrollmentSummary.clientInstanceId,
                                                                clientInstanceKeyTag: clientInstanceKeyTag)
                 } else {
                     let resultError = DeviceAuthenticatorError.internalError("Failed to create device enrollment object")
@@ -468,12 +419,12 @@ class OktaTransactionEnroll: OktaTransaction {
             }
 
             let enrollment = AuthenticatorEnrollment(organization: Organization(id: self.orgId, url: enrollmentContext.orgHost),
-                                                     user: User(id: enrolledAuthenticatorModel.user.id, name: enrolledAuthenticatorModel.user.username),
-                                                     enrollmentId: enrolledAuthenticatorModel.id,
-                                                     deviceId: enrolledAuthenticatorModel.device.id,
+                                                     user: User(id: enrollmentSummary.userId, name: enrollmentSummary.username),
+                                                     enrollmentId: enrollmentSummary.enrollmentId,
+                                                     deviceId: enrollmentSummary.deviceId,
                                                      serverError: nil,
-                                                     creationDate: enrolledAuthenticatorModel.creationDate,
-                                                     enrolledFactors: enrolledFactors,
+                                                     creationDate: enrollmentSummary.creationDate,
+                                                     enrolledFactors: enrollmentSummary.factors,
                                                      cryptoManager: self.cryptoManager,
                                                      restAPIClient: self.restAPI,
                                                      storageManager: storageManager,

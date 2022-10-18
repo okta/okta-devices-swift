@@ -18,7 +18,9 @@ class OktaFactorTests: XCTestCase {
     func testCreation() {
         let cryptoManager = CryptoManagerMock(accessGroupId: "", secKeyHelper: SecKeyHelperMock(), logger: OktaLoggerMock())
         let mockHTTPClient = MockMultipleRequestsHTTPClient(responseArray: [], dataArray: [])
-        let restAPIClient = LegacyServerAPI(client: mockHTTPClient, logger: OktaLoggerMock())
+        let restAPIClient = LegacyServerAPI(client: mockHTTPClient,
+                                            crypto: cryptoManager,
+                                            logger: OktaLoggerMock())
         let factor = OktaFactor(cryptoManager: cryptoManager, restAPIClient: restAPIClient, logger: OktaLoggerMock())
         XCTAssertFalse(factor.enrolledWithUserVerificationKey)
     }
