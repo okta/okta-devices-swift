@@ -429,3 +429,63 @@ class GoldenData {
         return jsonData
     }
 }
+
+class MyAccountTestData {
+    class func policyResponse() -> Data {
+        let authenticatorJson: String = """
+        {
+          "authenticatorId": "aut6nfu6soyk3GD2U0g4",
+          "key": "custom_app",
+          "type": "app",
+          "name": "My Custom Authenticator",
+          "created": "2019-06-08T23:54:48.000Z",
+          "lastUpdated": "2021-03-03T00:13:33.000Z",
+          "settings": {
+              "userVerification": "PREFERRED"
+          },
+          "supportedMethods" : [
+            {
+              "type" : "push",
+              "status" : "ACTIVE",
+              "settings" : {
+                "keyProtection" : "ANY",
+                "algorithms" : [
+                  "ES256",
+                  "RS256"
+                ],
+                "transactionTypes" : [
+                  "LOGIN",
+                  "CIBA"
+                ]
+              }
+            }
+          ],
+          "app_authenticator_enroll_endpoint": "https://your-org.okta.com/idp/myaccount/app-authenticator"
+        }
+        """
+        let jsonArray = try! JSONSerialization.jsonObject(with: authenticatorJson.data(using: .utf8)!, options: [])
+        let jsonData = try! JSONSerialization.data(withJSONObject: jsonArray, options: .prettyPrinted)
+        return jsonData
+    }
+
+    class func policyResponseWithEmptyMethods() -> Data {
+        let authenticatorJson: String = """
+                {
+                  "authenticatorId": "aut6nfu6soyk3GD2U0g4",
+                  "key": "custom_app",
+                  "type": "app",
+                  "name": "My Custom Authenticator",
+                  "created": "2019-06-08T23:54:48.000Z",
+                  "lastUpdated": "2021-03-03T00:13:33.000Z",
+                  "settings": {
+                      "userVerification": "PREFERRED"
+                  },
+                  "supportedMethods" : [],
+                  "app_authenticator_enroll_endpoint": "https://your-org.okta.com/idp/myaccount/app-authenticator"
+                }
+        """
+        let dict = try! JSONSerialization.jsonObject(with: authenticatorJson.data(using: .utf8)!, options: []) as! [String: Any]
+        let jsonData = try! JSONSerialization.data(withJSONObject: dict, options: .prettyPrinted)
+        return jsonData
+    }
+}

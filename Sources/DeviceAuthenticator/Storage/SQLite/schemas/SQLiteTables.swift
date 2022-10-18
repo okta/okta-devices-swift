@@ -157,12 +157,12 @@ extension GRDB.Row {
         return self[OktaSharedSQLite.Column.clientInstanceKeyTag]
     }
 
-    var userVerificationSetting: AuthenticatorMetaDataModel.Settings.UserVerificationSetting? {
+    var userVerificationSetting: AuthenticatorSettingsModel.UserVerificationSetting? {
         guard let value: String = self[OktaSharedSQLite.Column.userVerification] else {
             return nil
         }
 
-        return AuthenticatorMetaDataModel.Settings.UserVerificationSetting(raw: value)
+        return AuthenticatorSettingsModel.UserVerificationSetting(raw: value)
     }
 
     var activeMethods: [AuthenticatorMethod]? {
