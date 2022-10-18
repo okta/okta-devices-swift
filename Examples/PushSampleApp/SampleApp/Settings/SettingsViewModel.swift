@@ -92,6 +92,14 @@ class SettingsViewModel: SettingsViewModelProtocol {
             self?.toggleUserVerification(enable: isOn)
         })
     }
+    
+    private var enableCIBACellModel: CIBACellModel? {
+        guard let enrollment = deviceEnrollment else { return nil }
+        
+        return CIBACellModel(isEnabled: enrollment.isCIBAEnabled) { [weak self] isOn in
+            self?.toggleCIBATransactions(enable: isOn)
+        }
+    }
 
     private var enrollmentCellModel: PushSettingsCellModel {
         let isEnrolled = deviceEnrollment != nil
@@ -130,7 +138,8 @@ class SettingsViewModel: SettingsViewModelProtocol {
         let cells: [SettingsCellProtocol?] = [
             EmailSettingsCellModel(email: webAuthenticator.email),
             enrollmentCellModel,
-            userVerificationCellModel
+            userVerificationCellModel,
+            enableCIBACellModel
         ]
         cellModels = cells.compactMap({ $0 })
     }
@@ -243,6 +252,24 @@ class SettingsViewModel: SettingsViewModelProtocol {
                     self?.logger?.error(eventName: LoggerEvent.userVerification.rawValue, message: error.localizedDescription)
                 } else {
                     self?.view?.showAlert(alertTitle: "Success updating User Verification", alertText: "")
+                }
+                self?.setupCellModels()
+                self?.view?.updateView(shouldShowSpinner: false)
+            }
+        }
+    }
+    
+    private func toggleCIBATransactions(enable: Bool) {
+        guard let enrollment = deviceEnrollment else { return }
+        view?.updateView(shouldShowSpinner: true)
+        getAccessToken { accessToken in
+            let authToken = AuthToken.bearer(accessToken)
+            enrollment.enableCIBATransactions(authenticationToken: authToken, enable: enable) { [weak self] error in
+                if let error = error {
+                    self?.view?.showAlert(alertTitle: "Error updating transaction types", alertText: error.localizedDescription)
+                    self?.logger?.error(eventName: LoggerEvent.ciba.rawValue, message: error.localizedDescription)
+                } else {
+                    self?.view?.showAlert(alertTitle: "Success updating supported transaction types", alertText: "")
                 }
                 self?.setupCellModels()
                 self?.view?.updateView(shouldShowSpinner: false)

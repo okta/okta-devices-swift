@@ -21,6 +21,7 @@ protocol UserConsentViewModelProtocol {
     var dateString: String { get }
     var timeString: String { get }
     var onRemediationComplete: () -> Void { get set }
+    var cibaTransactionMessage: String? { get }
 
     func didTapApproveChallenge()
     func didTapDenyChallenge()
@@ -72,6 +73,16 @@ struct UserConsentViewModel: UserConsentViewModelProtocol {
         formatter.locale = locale
         let timeString = formatter.string(from: transactionTime)
         return "\(timeString)"
+    }
+
+    var cibaTransactionMessage: String? {
+        guard let cibaChallenge = pushChallenge as? CIBAChallengeProtocol else {
+            return nil
+        }
+        guard let bindingMessage = cibaChallenge.cibaBindingMessage else {
+            return nil
+        }
+        return "Transaction message: \(bindingMessage)"
     }
 
     func didTapApproveChallenge() {

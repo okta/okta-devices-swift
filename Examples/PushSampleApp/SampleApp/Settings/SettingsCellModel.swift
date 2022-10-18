@@ -13,7 +13,7 @@
 import Foundation
 
 enum SettingsCellType {
-    case email, pushSignIn, userVerification
+    case email, pushSignIn, userVerification, ciba
 }
 
 protocol SettingsCellProtocol {
@@ -42,6 +42,20 @@ struct UserVerificationCellModel: SettingsCellProtocol {
     var title: String? = ""
     var subtitle: String? = "Enable biometrics"
     var type: SettingsCellType = .userVerification
+    var isEnabled: Bool?
+    var shouldShowSwitch: Bool = true
+    var didToggleSwitch: ((Bool) -> Void)?
+
+    init(isEnabled: Bool, didToggleSwitch: @escaping (Bool) -> Void) {
+        self.isEnabled = isEnabled
+        self.didToggleSwitch = didToggleSwitch
+    }
+}
+
+struct CIBACellModel: SettingsCellProtocol {
+    var title: String? = ""
+    var subtitle: String? = "Enable CIBA transactions"
+    var type: SettingsCellType = .ciba
     var isEnabled: Bool?
     var shouldShowSwitch: Bool = true
     var didToggleSwitch: ((Bool) -> Void)?
