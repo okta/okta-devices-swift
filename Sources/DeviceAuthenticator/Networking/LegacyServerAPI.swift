@@ -132,7 +132,9 @@ class LegacyServerAPI: ServerAPIProtocol {
 
                 do {
                     try self.validateResult(result, for: finalURL)
-                    let enrollmentSummary = try self.createEnrollmentSummary(from: result, enrollingFactorsData: enrollingFactors)
+                    let enrollmentSummary = try self.createEnrollmentSummary(from: result,
+                                                                             metadata: metadata,
+                                                                             enrollingFactorsData: enrollingFactors)
                     completion(.success(enrollmentSummary))
                 } catch let oktaError as DeviceAuthenticatorError {
                     completion(Result.failure(oktaError))
@@ -188,7 +190,9 @@ class LegacyServerAPI: ServerAPIProtocol {
 
                 do {
                     try self.validateResult(result, for: finalURL)
-                    let enrollmentSummary = try self.createEnrollmentSummary(from: result, enrollingFactorsData: enrollingFactors)
+                    let enrollmentSummary = try self.createEnrollmentSummary(from: result,
+                                                                             metadata: metadata,
+                                                                             enrollingFactorsData: enrollingFactors)
                     completion(.success(enrollmentSummary))
                 } catch let oktaError as DeviceAuthenticatorError {
                     completion(Result.failure(oktaError))
@@ -229,9 +233,12 @@ class LegacyServerAPI: ServerAPIProtocol {
     }
 
     func createFactorMetadataBasedOnServerResponse(method: EnrolledAuthenticatorModel.AuthenticatorMethods,
+                                                   metadata: AuthenticatorMetaDataModel,
                                                    enrollingFactorsData: [EnrollingFactor]) -> OktaFactor? {
         guard method.type == .push,
-              let pushFactor = self.createEnrolledPushFactor(from: enrollingFactorsData, and: method) else {
+              let pushFactor = self.createEnrolledPushFactor(from: enrollingFactorsData,
+                                                             metadata: metadata,
+                                                             and: method) else {
             return nil
         }
 
@@ -239,6 +246,7 @@ class LegacyServerAPI: ServerAPIProtocol {
     }
 
     func createEnrolledPushFactor(from factorModels: [EnrollingFactor],
+                                  metadata: AuthenticatorMetaDataModel,
                                   and enrolledModel: EnrolledAuthenticatorModel.AuthenticatorMethods) -> OktaFactor? {
         guard let factorModel = factorModels.first(where: { $0.methodType == .push }),
               let proofOfPossessionKeyTag = factorModel.proofOfPossessionKeyTag else {
@@ -258,6 +266,7 @@ class LegacyServerAPI: ServerAPIProtocol {
     }
 
     func createEnrollmentSummary(from result: HTTPURLResult,
+                                 metadata: AuthenticatorMetaDataModel,
                                  enrollingFactorsData: [EnrollingFactor]) throws -> EnrollmentSummary {
         guard result.data != nil,
               let resultJsonData = result.data,
@@ -271,7 +280,9 @@ class LegacyServerAPI: ServerAPIProtocol {
         let enrolledAuthenticatorModel = try JSONDecoder().decode(EnrolledAuthenticatorModel.self, from: resultJsonData)
         enrolledAuthenticatorModel.methods?.forEach({ method in
             let factor: OktaFactor?
-            factor = self.createFactorMetadataBasedOnServerResponse(method: method, enrollingFactorsData: enrollingFactorsData)
+            factor = self.createFactorMetadataBasedOnServerResponse(method: method,
+                                                                    metadata: metadata,
+                                                                    enrollingFactorsData: enrollingFactorsData)
             if let factor = factor {
                 self.logger.info(eventName: "Enroll request", message: "Enrolled factor type: \(method.type.rawValue)")
                 enrolledFactors.append(factor)
