@@ -16,7 +16,7 @@ import XCTest
 class AuthenticatorPolicyTests: XCTestCase {
 
     func testUserVerificationSetting() {
-        let createMetadataWithSettings: (AuthenticatorMetaDataModel.Settings?) -> AuthenticatorMetaDataModel = { settings in
+        let createMetadataWithSettings: (AuthenticatorSettingsModel?) -> AuthenticatorMetaDataModel = { settings in
             return AuthenticatorMetaDataModel(id: "id",
                                               key: "key",
                                               type: "type",
@@ -31,28 +31,28 @@ class AuthenticatorPolicyTests: XCTestCase {
         XCTAssertEqual(policy.userVerificationSetting, .preferred)
 
         policy = AuthenticatorPolicy(metadata: createMetadataWithSettings(
-                                        AuthenticatorMetaDataModel.Settings(appInstanceId: nil, userVerification: nil, oauthClientId: nil)
+            AuthenticatorSettingsModel(appInstanceId: nil, userVerification: nil, oauthClientId: nil)
         ))
         XCTAssertEqual(policy.userVerificationSetting, .preferred)
 
         policy = AuthenticatorPolicy(metadata: createMetadataWithSettings(
-            AuthenticatorMetaDataModel.Settings(appInstanceId: nil, userVerification: .preferred, oauthClientId: nil)
+            AuthenticatorSettingsModel(appInstanceId: nil, userVerification: .preferred, oauthClientId: nil)
         ))
         XCTAssertEqual(policy.userVerificationSetting, .preferred)
 
         policy = AuthenticatorPolicy(metadata: createMetadataWithSettings(
-            AuthenticatorMetaDataModel.Settings(appInstanceId: nil, userVerification: .required, oauthClientId: nil)
+            AuthenticatorSettingsModel(appInstanceId: nil, userVerification: .required, oauthClientId: nil)
         ))
         XCTAssertEqual(policy.userVerificationSetting, .required)
 
         policy = AuthenticatorPolicy(metadata: createMetadataWithSettings(
-            AuthenticatorMetaDataModel.Settings(appInstanceId: nil, userVerification: .unknown(""), oauthClientId: nil)
+            AuthenticatorSettingsModel(appInstanceId: nil, userVerification: .unknown(""), oauthClientId: nil)
         ))
         XCTAssertEqual(policy.userVerificationSetting, .unknown(""))
     }
 
     func testHasMethodOfType() {
-        let createMetadataWithMethods: ([AuthenticatorMetaDataModel.Method]) -> AuthenticatorMetaDataModel = { methods in
+        let createMetadataWithMethods: ([MethodResponseModel]) -> AuthenticatorMetaDataModel = { methods in
             return AuthenticatorMetaDataModel(id: "id",
                                               key: "key",
                                               type: "type",
@@ -69,30 +69,30 @@ class AuthenticatorPolicyTests: XCTestCase {
         XCTAssertFalse(policy.hasMethod(ofType: .signedNonce))
 
         policy = AuthenticatorPolicy(metadata: createMetadataWithMethods([
-            AuthenticatorMetaDataModel.Method(type: .push, status: "ok", settings: nil),
+            MethodResponseModel(type: .push, status: "ok", settings: nil),
         ]))
         XCTAssertTrue(policy.hasMethod(ofType: .push))
         XCTAssertFalse(policy.hasMethod(ofType: .totp))
         XCTAssertFalse(policy.hasMethod(ofType: .signedNonce))
 
         policy = AuthenticatorPolicy(metadata: createMetadataWithMethods([
-            AuthenticatorMetaDataModel.Method(type: .totp, status: "ok", settings: nil),
+            MethodResponseModel(type: .totp, status: "ok", settings: nil),
         ]))
         XCTAssertFalse(policy.hasMethod(ofType: .push))
         XCTAssertTrue(policy.hasMethod(ofType: .totp))
         XCTAssertFalse(policy.hasMethod(ofType: .signedNonce))
 
         policy = AuthenticatorPolicy(metadata: createMetadataWithMethods([
-            AuthenticatorMetaDataModel.Method(type: .signedNonce, status: "ok", settings: nil),
+            MethodResponseModel(type: .signedNonce, status: "ok", settings: nil),
         ]))
         XCTAssertFalse(policy.hasMethod(ofType: .push))
         XCTAssertFalse(policy.hasMethod(ofType: .totp))
         XCTAssertTrue(policy.hasMethod(ofType: .signedNonce))
 
         policy = AuthenticatorPolicy(metadata: createMetadataWithMethods([
-            AuthenticatorMetaDataModel.Method(type: .push, status: "ok", settings: nil),
-            AuthenticatorMetaDataModel.Method(type: .totp, status: "ok", settings: nil),
-            AuthenticatorMetaDataModel.Method(type: .signedNonce, status: "ok", settings: nil),
+            MethodResponseModel(type: .push, status: "ok", settings: nil),
+            MethodResponseModel(type: .totp, status: "ok", settings: nil),
+            MethodResponseModel(type: .signedNonce, status: "ok", settings: nil),
         ]))
         XCTAssertTrue(policy.hasMethod(ofType: .push))
         XCTAssertTrue(policy.hasMethod(ofType: .totp))
@@ -100,7 +100,7 @@ class AuthenticatorPolicyTests: XCTestCase {
     }
 
     func testHasActiveMethodOfType() {
-        let createMetadataWithMethods: ([AuthenticatorMetaDataModel.Method]) -> AuthenticatorMetaDataModel = { methods in
+        let createMetadataWithMethods: ([MethodResponseModel]) -> AuthenticatorMetaDataModel = { methods in
             return AuthenticatorMetaDataModel(id: "id",
                                               key: "key",
                                               type: "type",
@@ -117,60 +117,60 @@ class AuthenticatorPolicyTests: XCTestCase {
         XCTAssertFalse(policy.hasActiveMethod(ofType: .signedNonce))
 
         policy = AuthenticatorPolicy(metadata: createMetadataWithMethods([
-            AuthenticatorMetaDataModel.Method(type: .push, status: "ACTIVE", settings: nil),
+            MethodResponseModel(type: .push, status: "ACTIVE", settings: nil),
         ]))
         XCTAssertTrue(policy.hasActiveMethod(ofType: .push))
         XCTAssertFalse(policy.hasActiveMethod(ofType: .totp))
         XCTAssertFalse(policy.hasActiveMethod(ofType: .signedNonce))
 
         policy = AuthenticatorPolicy(metadata: createMetadataWithMethods([
-            AuthenticatorMetaDataModel.Method(type: .push, status: "INACTIVE", settings: nil),
+            MethodResponseModel(type: .push, status: "INACTIVE", settings: nil),
         ]))
         XCTAssertFalse(policy.hasActiveMethod(ofType: .push))
         XCTAssertFalse(policy.hasActiveMethod(ofType: .totp))
         XCTAssertFalse(policy.hasActiveMethod(ofType: .signedNonce))
 
         policy = AuthenticatorPolicy(metadata: createMetadataWithMethods([
-            AuthenticatorMetaDataModel.Method(type: .totp, status: "ACTIVE", settings: nil),
+            MethodResponseModel(type: .totp, status: "ACTIVE", settings: nil),
         ]))
         XCTAssertFalse(policy.hasActiveMethod(ofType: .push))
         XCTAssertTrue(policy.hasActiveMethod(ofType: .totp))
         XCTAssertFalse(policy.hasActiveMethod(ofType: .signedNonce))
 
         policy = AuthenticatorPolicy(metadata: createMetadataWithMethods([
-            AuthenticatorMetaDataModel.Method(type: .totp, status: "INACTIVE", settings: nil),
+            MethodResponseModel(type: .totp, status: "INACTIVE", settings: nil),
         ]))
         XCTAssertFalse(policy.hasActiveMethod(ofType: .push))
         XCTAssertFalse(policy.hasActiveMethod(ofType: .totp))
         XCTAssertFalse(policy.hasActiveMethod(ofType: .signedNonce))
 
         policy = AuthenticatorPolicy(metadata: createMetadataWithMethods([
-            AuthenticatorMetaDataModel.Method(type: .signedNonce, status: "ACTIVE", settings: nil),
+            MethodResponseModel(type: .signedNonce, status: "ACTIVE", settings: nil),
         ]))
         XCTAssertFalse(policy.hasActiveMethod(ofType: .push))
         XCTAssertFalse(policy.hasActiveMethod(ofType: .totp))
         XCTAssertTrue(policy.hasActiveMethod(ofType: .signedNonce))
 
         policy = AuthenticatorPolicy(metadata: createMetadataWithMethods([
-            AuthenticatorMetaDataModel.Method(type: .signedNonce, status: "INACTIVE", settings: nil),
+            MethodResponseModel(type: .signedNonce, status: "INACTIVE", settings: nil),
         ]))
         XCTAssertFalse(policy.hasActiveMethod(ofType: .push))
         XCTAssertFalse(policy.hasActiveMethod(ofType: .totp))
         XCTAssertFalse(policy.hasActiveMethod(ofType: .signedNonce))
 
         policy = AuthenticatorPolicy(metadata: createMetadataWithMethods([
-            AuthenticatorMetaDataModel.Method(type: .push, status: "ACTIVE", settings: nil),
-            AuthenticatorMetaDataModel.Method(type: .totp, status: "ACTIVE", settings: nil),
-            AuthenticatorMetaDataModel.Method(type: .signedNonce, status: "ACTIVE", settings: nil),
+            MethodResponseModel(type: .push, status: "ACTIVE", settings: nil),
+            MethodResponseModel(type: .totp, status: "ACTIVE", settings: nil),
+            MethodResponseModel(type: .signedNonce, status: "ACTIVE", settings: nil),
         ]))
         XCTAssertTrue(policy.hasActiveMethod(ofType: .push))
         XCTAssertTrue(policy.hasActiveMethod(ofType: .totp))
         XCTAssertTrue(policy.hasActiveMethod(ofType: .signedNonce))
 
         policy = AuthenticatorPolicy(metadata: createMetadataWithMethods([
-            AuthenticatorMetaDataModel.Method(type: .push, status: "INACTIVE", settings: nil),
-            AuthenticatorMetaDataModel.Method(type: .totp, status: "INACTIVE", settings: nil),
-            AuthenticatorMetaDataModel.Method(type: .signedNonce, status: "INACTIVE", settings: nil),
+            MethodResponseModel(type: .push, status: "INACTIVE", settings: nil),
+            MethodResponseModel(type: .totp, status: "INACTIVE", settings: nil),
+            MethodResponseModel(type: .signedNonce, status: "INACTIVE", settings: nil),
         ]))
         XCTAssertFalse(policy.hasActiveMethod(ofType: .push))
         XCTAssertFalse(policy.hasActiveMethod(ofType: .totp))

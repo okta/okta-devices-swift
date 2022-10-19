@@ -26,7 +26,7 @@ class OktaStorageEntitiesGenerator {
     }
 
     func createPolicy(id: String = "id",
-                      userVerification: AuthenticatorMetaDataModel.Settings.UserVerificationSetting = .preferred,
+                      userVerification: AuthenticatorSettingsModel.UserVerificationSetting = .preferred,
                       methods: [AuthenticatorMethod] = [.push]) -> AuthenticatorPolicy {
         let metadata = TestUtils.createAuthenticatorMetadataModel(id: id,
                                                                   userVerification: userVerification,

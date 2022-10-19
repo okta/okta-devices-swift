@@ -30,11 +30,11 @@ class AuthenticatorObjectTests: XCTestCase {
                 XCTAssertNotNil(authenticatorType.settings)
                 XCTAssertEqual(authenticatorType.settings?.timeIntervalInSeconds, 10)
                 XCTAssertEqual(authenticatorType.settings?.passCodeLength, 6)
-                XCTAssertEqual(authenticatorType.settings?.algorithm, AuthenticatorMetaDataModel.Method.Settings.TOTPAlgorithms.HMACSHA1)
-                XCTAssertEqual(authenticatorType.settings?.encoding, AuthenticatorMetaDataModel.Method.Settings.TOTPSecretEncoding.Base32)
+                XCTAssertEqual(authenticatorType.settings?.algorithm, MethodSettingsModel.TOTPAlgorithms.HMACSHA1)
+                XCTAssertEqual(authenticatorType.settings?.encoding, MethodSettingsModel.TOTPSecretEncoding.Base32)
             } else if authenticatorType.type == .push {
                 XCTAssertEqual(authenticatorType.status, "ACTIVE")
-                XCTAssertEqual(authenticatorType.settings?.transactionTypes, [TransactionTypesModel.login, TransactionTypesModel.ciba])
+                XCTAssertEqual(authenticatorType.settings?.transactionTypes, [MethodSettingsModel.TransactionType.LOGIN, MethodSettingsModel.TransactionType.CIBA])
             } else if authenticatorType.type == .signedNonce {
                 XCTAssertEqual(authenticatorType.status, "INACTIVE")
                 XCTAssertEqual(authenticatorType.settings?.keyProtection, .ANY)

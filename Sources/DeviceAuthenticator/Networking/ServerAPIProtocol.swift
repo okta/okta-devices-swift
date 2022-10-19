@@ -16,6 +16,7 @@ import OktaLogger
 struct HTTPHeaderConstants {
     static let authorizationHeader = "Authorization"
     static let contentTypeHeader = "Content-Type"
+    static let acceptHeader = "Accept"
 }
 
 struct EnrollingFactor {

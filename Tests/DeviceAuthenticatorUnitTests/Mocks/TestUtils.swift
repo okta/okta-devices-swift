@@ -127,15 +127,15 @@ class TestUtils {
     }
 
     class func createAuthenticatorMetadataModel(id: String = "id",
-                                                userVerification: AuthenticatorMetaDataModel.Settings.UserVerificationSetting = .preferred,
+                                                userVerification: AuthenticatorSettingsModel.UserVerificationSetting = .preferred,
                                                 methods: [AuthenticatorMethod] = [.push, .signedNonce]) -> AuthenticatorMetaDataModel {
-        let settings = AuthenticatorMetaDataModel.Settings(appInstanceId: nil,
-                                                           userVerification: userVerification,
-                                                           oauthClientId: nil)
+        let settings = AuthenticatorSettingsModel(appInstanceId: nil,
+                                                  userVerification: userVerification,
+                                                  oauthClientId: nil)
 
-        var embeddedMethods = [AuthenticatorMetaDataModel.Method]()
+        var embeddedMethods = [MethodResponseModel]()
         for method in methods {
-            embeddedMethods.append(AuthenticatorMetaDataModel.Method(type: method, status: "ACTIVE", settings: nil))
+            embeddedMethods.append(MethodResponseModel(type: method, status: "ACTIVE", settings: nil))
         }
         return AuthenticatorMetaDataModel(id: id,
                                           key: "okta_verify",
