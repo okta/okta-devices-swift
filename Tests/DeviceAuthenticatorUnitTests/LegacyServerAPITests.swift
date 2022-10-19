@@ -390,7 +390,7 @@ final class LegacyServerAPITests: XCTestCase {
 
         XCTAssertTrue(closureCalled)
 
-        // Validate response with empty enrolled factors array
+        // Validate response with unexpected data
         httpResult = HTTPURLResult(request: URLRequest(url: mockURL),
                                        response: HTTPURLResponse(url: mockURL, statusCode: 200, httpVersion: nil, headerFields: nil)!,
                                        data: GoldenData.authenticatorDataWithEmptyMethods())

@@ -13,16 +13,16 @@
 import Foundation
 
 extension OktaTransactionEnroll {
-    func enrollPushFactor(serverMethod: AuthenticatorMetaDataModel.Method) throws -> EnrollingFactor? {
+    func enrollPushFactor(serverMethod: MethodResponseModel) throws -> EnrollingFactor? {
         logger.info(eventName: self.logEventName, message: "Enrolling PUSH factor")
 
         let pushFactor = enrollmentToUpdate?.enrolledFactors.first(where: { $0 is OktaFactorPush }) as? OktaFactorPush
         let proofOfPossessionKeyTag = pushFactor?.proofOfPossessionKeyTag
         let userVerificationKeyTag = pushFactor?.userVerificationKeyTag
         let enrollingFactor = try createEnrollingFactorModel(with: proofOfPossessionKeyTag,
-                                                                 uvKeyTag: userVerificationKeyTag,
-                                                                 methodType: .push,
-                                                                 pushToken: enrollmentContext.pushToken.rawValue)
+                                                             uvKeyTag: userVerificationKeyTag,
+                                                             methodType: .push,
+                                                             pushToken: enrollmentContext.pushToken.rawValue)
         return enrollingFactor
     }
 }

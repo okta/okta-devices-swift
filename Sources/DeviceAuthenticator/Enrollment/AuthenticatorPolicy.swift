@@ -47,7 +47,7 @@ class AuthenticatorPolicy: Codable, AuthenticatorPolicyProtocol {
         } else {
             methods = metadata._embedded.methods.compactMap({ $0.type })
         }
-        if let deserializedUserVerification = try? values.decode(AuthenticatorMetaDataModel.Settings.UserVerificationSetting.self, forKey: ._userVerification) {
+        if let deserializedUserVerification = try? values.decode(AuthenticatorSettingsModel.UserVerificationSetting.self, forKey: ._userVerification) {
             _userVerification = deserializedUserVerification
         } else {
             _userVerification = metadata.settings?.userVerification
@@ -55,7 +55,7 @@ class AuthenticatorPolicy: Codable, AuthenticatorPolicyProtocol {
     }
 
     init(metadata: AuthenticatorMetaDataModel,
-         userVerification: AuthenticatorMetaDataModel.Settings.UserVerificationSetting? = nil,
+         userVerification: AuthenticatorSettingsModel.UserVerificationSetting? = nil,
          methods: [AuthenticatorMethod]? = nil) {
         self.metadata = metadata
         self._userVerification = userVerification ?? metadata.settings?.userVerification
@@ -64,7 +64,7 @@ class AuthenticatorPolicy: Codable, AuthenticatorPolicyProtocol {
 
     let methods: [AuthenticatorMethod]
 
-    private let _userVerification: AuthenticatorMetaDataModel.Settings.UserVerificationSetting?
+    private let _userVerification: AuthenticatorSettingsModel.UserVerificationSetting?
 
     enum CodingKeys: String, CodingKey {
         case metadata

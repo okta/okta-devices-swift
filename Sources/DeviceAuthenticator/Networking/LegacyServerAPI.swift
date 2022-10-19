@@ -228,8 +228,8 @@ class LegacyServerAPI: ServerAPIProtocol {
         return try JSONEncoder().encode(enrollRequestModel)
     }
 
-    private func createFactorMetadataBasedOnServerResponse(method: EnrolledAuthenticatorModel.AuthenticatorMethods,
-                                                           enrollingFactorsData: [EnrollingFactor]) -> OktaFactor? {
+    func createFactorMetadataBasedOnServerResponse(method: EnrolledAuthenticatorModel.AuthenticatorMethods,
+                                                   enrollingFactorsData: [EnrollingFactor]) -> OktaFactor? {
         guard method.type == .push,
               let pushFactor = self.createEnrolledPushFactor(from: enrollingFactorsData, and: method) else {
             return nil
@@ -238,8 +238,8 @@ class LegacyServerAPI: ServerAPIProtocol {
         return pushFactor
     }
 
-    private func createEnrolledPushFactor(from factorModels: [EnrollingFactor],
-                                          and enrolledModel: EnrolledAuthenticatorModel.AuthenticatorMethods) -> OktaFactor? {
+    func createEnrolledPushFactor(from factorModels: [EnrollingFactor],
+                                  and enrolledModel: EnrolledAuthenticatorModel.AuthenticatorMethods) -> OktaFactor? {
         guard let factorModel = factorModels.first(where: { $0.methodType == .push }),
               let proofOfPossessionKeyTag = factorModel.proofOfPossessionKeyTag else {
             return nil
@@ -257,8 +257,8 @@ class LegacyServerAPI: ServerAPIProtocol {
         return factor
     }
 
-    private func createEnrollmentSummary(from result: HTTPURLResult,
-                                         enrollingFactorsData: [EnrollingFactor]) throws -> EnrollmentSummary {
+    func createEnrollmentSummary(from result: HTTPURLResult,
+                                 enrollingFactorsData: [EnrollingFactor]) throws -> EnrollmentSummary {
         guard result.data != nil,
               let resultJsonData = result.data,
               !resultJsonData.isEmpty else {
@@ -294,5 +294,4 @@ class LegacyServerAPI: ServerAPIProtocol {
                                                   factors: enrolledFactors)
         return enrollmentSummary
     }
-
 }
