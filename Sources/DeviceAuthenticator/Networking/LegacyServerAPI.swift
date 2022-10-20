@@ -210,7 +210,7 @@ class LegacyServerAPI: ServerAPIProtocol {
                                     deviceModel: DeviceSignalsModel,
                                     appSignals: [String: _OktaCodableArbitaryType]?,
                                     enrollingFactors: [EnrollingFactor]) throws -> Data {
-        let methods = enrollingFactors.compactMap { factor in
+        let methods: [EnrollAuthenticatorRequestModel.AuthenticatorMethods] = enrollingFactors.compactMap { factor in
             if factor.keys != nil {
                 let methodModel = EnrollAuthenticatorRequestModel.AuthenticatorMethods(type: factor.methodType,
                                                                                        pushToken: factor.methodType == .push ? factor.pushToken : nil,
