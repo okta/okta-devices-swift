@@ -241,7 +241,7 @@ class AuthenticatorEnrollment: AuthenticatorEnrollmentProtocol {
 
     func state(from errorCode: ServerErrorCode) -> EnrollmentState {
         switch errorCode {
-        case .userDeleted, .enrollmentNotFound:
+        case .userDeleted, .enrollmentNotFound, .phishingAttemptDetected:
             return .deleted
         case .resourceNotFound:
             return .active

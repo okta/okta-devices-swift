@@ -52,6 +52,8 @@ class AuthenticatorEnrollmentTests: XCTestCase {
         XCTAssertEqual(enrollment.state, .reset)
         enrollment.recordError(.enrollmentNotFound)
         XCTAssertEqual(enrollment.state, .deleted)
+        enrollment.recordError(.phishingAttemptDetected)
+        XCTAssertEqual(enrollment.state, .deleted)
         enrollment.recordError(.resourceNotFound)
         XCTAssertEqual(enrollment.state, .active)
         enrollment.recordSuccess()
@@ -236,6 +238,10 @@ class AuthenticatorEnrollmentTests: XCTestCase {
         error = oktaError(for: .enrollmentDeleted)
         enrollment.recordServerResponse(error: error)
         XCTAssertEqual(enrollment.state, .reset)
+        
+        error = oktaError(for: .phishingAttemptDetected)
+        enrollment.recordServerResponse(error: error)
+        XCTAssertEqual(enrollment.state, .deleted)
 
         // No err should be recorded as success
         enrollment.recordServerResponse(error: nil)
