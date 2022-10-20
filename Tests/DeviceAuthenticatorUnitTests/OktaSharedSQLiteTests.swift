@@ -182,7 +182,7 @@ class OktaSharedSQLiteTests: XCTestCase {
             .suspended,
             .deleted,
             .deleted,
-            .deleted,
+            .active,
             .active,
             .reset,
             .reset,
