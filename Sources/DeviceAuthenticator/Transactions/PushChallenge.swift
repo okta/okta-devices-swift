@@ -59,9 +59,9 @@ class PushChallenge: PushChallengeProtocol, CIBAChallengeProtocol {
     /// Transaction type associated with this push challenge - Login or Transactional MFA (CIBA)
     lazy var transactionType: TransactionType = {
         guard let rawTransactionType = challengeContext["transactionType"] as? String else { return .login }
-        switch TransactionTypesModel(rawValue: rawTransactionType) {
-        case .login: return TransactionType.login
-        case .ciba: return TransactionType.ciba
+        switch MethodSettingsModel.TransactionType(rawValue: rawTransactionType) {
+        case .LOGIN: return TransactionType.login
+        case .CIBA: return TransactionType.ciba
         default: return TransactionType.login
         }
     }()

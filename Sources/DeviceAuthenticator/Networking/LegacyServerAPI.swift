@@ -208,9 +208,9 @@ class LegacyServerAPI: ServerAPIProtocol {
                                     enrollingFactors: [EnrollingFactor]) throws -> Data {
         let methods = enrollingFactors.compactMap { factor in
             if factor.keys != nil {
-                var transactionTypes: [TransactionTypesModel] = [.login]
+                var transactionTypes: [MethodSettingsModel.TransactionType] = [.LOGIN]
                 if factor.transactionTypes.supportsCIBA {
-                    transactionTypes.append(.ciba)
+                    transactionTypes.append(.CIBA)
                 }
                 let capabilities = Capabilities(transactionTypes: transactionTypes)
                 let methodModel = EnrollAuthenticatorRequestModel.AuthenticatorMethods(type: factor.methodType,
@@ -255,7 +255,8 @@ class LegacyServerAPI: ServerAPIProtocol {
         let factorMetadata = OktaFactorMetadataPush(id: enrolledModel.id,
                                                     proofOfPossessionKeyTag: proofOfPossessionKeyTag,
                                                     userVerificationKeyTag: factorModel.userVerificationKeyTag,
-                                                    links: OktaFactorMetadataPush.Links(pendingLink: links.pending?.href), transactionTypes: factorModel.transactionTypes)
+                                                    links: OktaFactorMetadataPush.Links(pendingLink: links.pending?.href),
+                                                    transactionTypes: factorModel.transactionTypes)
         let factor = OktaFactorPush(factorData: factorMetadata,
                                     cryptoManager: crypto,
                                     restAPIClient: self,

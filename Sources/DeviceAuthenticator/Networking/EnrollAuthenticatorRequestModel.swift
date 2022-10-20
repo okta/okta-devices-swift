@@ -49,7 +49,7 @@ struct SigningKeysModel: Encodable {
 }
 
 struct Capabilities: Encodable {
-    let transactionTypes: [TransactionTypesModel]
+    let transactionTypes: [MethodSettingsModel.TransactionType]
 }
 
 
@@ -72,7 +72,4 @@ struct EnrollAuthenticatorRequestModel: Encodable {
     }
 }
 
-enum TransactionTypesModel: String, Codable {
-    case login = "LOGIN"
-    case ciba = "CIBA"
-}
+
