@@ -55,6 +55,7 @@ class ServerErrorCodesTests: XCTestCase {
         verifyErrorCode("E0000155", expected: .userSuspended)
         verifyErrorCode("E0000156", expected: .userDeleted)
         verifyErrorCode("E0000180", expected: .enrollmentSuspended)
+        verifyErrorCode("E0000212", expected: .phishingAttemptDetected)
     }
 
     private func verifyErrorCode(_ code: String, expected: ServerErrorCode) {

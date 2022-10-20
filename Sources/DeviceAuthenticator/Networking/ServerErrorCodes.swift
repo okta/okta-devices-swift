@@ -14,6 +14,8 @@ import Foundation
 
 /// Errors that the Okta server returns
 public enum ServerErrorCode: Codable {
+    /// Operation blocked because the verification attempt might be trying to steal your information.
+    case phishingAttemptDetected
     /// Operation failed because enrollment no longer exists on server side
     case enrollmentDeleted
     /// Operation failed because user no longer exists on server side
@@ -40,6 +42,8 @@ public enum ServerErrorCode: Codable {
     // swiftlint:disable cyclomatic_complexity
     public init(raw: String) {
         switch raw {
+        case "E0000212":
+            self = .phishingAttemptDetected
         case "E0000154":
             self = .enrollmentDeleted
         case "E0000011":
@@ -89,6 +93,8 @@ public enum ServerErrorCode: Codable {
 
     public var rawValue: String {
         switch self {
+        case .phishingAttemptDetected:
+            return "E0000212"
         case .enrollmentDeleted:
             return "E0000154"
         case .deviceSuspended:
@@ -116,6 +122,8 @@ public enum ServerErrorCode: Codable {
 
     public func httpCode() -> Int {
         switch self {
+        case .phishingAttemptDetected:
+            return 403
         case .enrollmentDeleted:
             return 410
         case .deviceSuspended:

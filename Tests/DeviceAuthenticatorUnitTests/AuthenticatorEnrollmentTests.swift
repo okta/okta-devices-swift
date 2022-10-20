@@ -40,6 +40,8 @@ class AuthenticatorEnrollmentTests: XCTestCase {
     ///  Verify that recording various error states results in the expected state
     func testEnrollmentState_RecordErrorSuccess() {
         XCTAssertEqual(enrollment.state, .active)
+        enrollment.recordError(.phishingAttemptDetected)
+        XCTAssertEqual(enrollment.state, .active)
         enrollment.recordError(.userSuspended)
         XCTAssertEqual(enrollment.state, .suspended)
         enrollment.recordError(.deviceSuspended)
@@ -236,6 +238,10 @@ class AuthenticatorEnrollmentTests: XCTestCase {
         error = oktaError(for: .enrollmentDeleted)
         enrollment.recordServerResponse(error: error)
         XCTAssertEqual(enrollment.state, .reset)
+        
+        error = oktaError(for: .phishingAttemptDetected)
+        enrollment.recordServerResponse(error: error)
+        XCTAssertEqual(enrollment.state, .active)
 
         // No err should be recorded as success
         enrollment.recordServerResponse(error: nil)

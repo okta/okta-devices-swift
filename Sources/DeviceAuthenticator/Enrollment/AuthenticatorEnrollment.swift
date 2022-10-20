@@ -253,6 +253,8 @@ class AuthenticatorEnrollment: AuthenticatorEnrollmentProtocol {
             return .reset
         case .unknown, .invalidToken:
             return .active
+        case .phishingAttemptDetected:
+            return .active
         }
     }
 }
