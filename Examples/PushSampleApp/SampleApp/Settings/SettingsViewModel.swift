@@ -92,10 +92,10 @@ class SettingsViewModel: SettingsViewModelProtocol {
             self?.toggleUserVerification(enable: isOn)
         })
     }
-    
+
     private var enableCIBACellModel: CIBACellModel? {
         guard let enrollment = deviceEnrollment else { return nil }
-        
+
         return CIBACellModel(isEnabled: enrollment.isCIBAEnabled) { [weak self] isOn in
             self?.toggleCIBATransactions(enable: isOn)
         }
@@ -258,7 +258,7 @@ class SettingsViewModel: SettingsViewModelProtocol {
             }
         }
     }
-    
+
     private func toggleCIBATransactions(enable: Bool) {
         guard let enrollment = deviceEnrollment else { return }
         view?.updateView(shouldShowSpinner: true)
