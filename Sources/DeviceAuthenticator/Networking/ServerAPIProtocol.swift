@@ -28,6 +28,7 @@ struct EnrollingFactor {
     let supportUserVerification: Bool?
     let isFipsCompliant: Bool?
     let keys: SigningKeysModel?
+    let transactionTypes: TransactionType
 }
 
 struct EnrollmentSummary {

@@ -36,6 +36,10 @@ class OktaFactorPush: OktaFactor {
         return factorData.userVerificationKeyTag
     }
 
+    var enrolledWithCIBASupport: Bool {
+        return factorData.transactionTypes?.supportsCIBA ?? false
+    }
+
     override var description: String {
         let info: [String: Any] =  ["type": "Push",
                                     "id": factorData.id,

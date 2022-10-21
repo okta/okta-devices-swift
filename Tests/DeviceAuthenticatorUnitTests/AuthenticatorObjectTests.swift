@@ -34,6 +34,7 @@ class AuthenticatorObjectTests: XCTestCase {
                 XCTAssertEqual(authenticatorType.settings?.encoding, MethodSettingsModel.TOTPSecretEncoding.Base32)
             } else if authenticatorType.type == .push {
                 XCTAssertEqual(authenticatorType.status, "ACTIVE")
+                XCTAssertEqual(authenticatorType.settings?.transactionTypes, [MethodSettingsModel.TransactionType.LOGIN, MethodSettingsModel.TransactionType.CIBA])
             } else if authenticatorType.type == .signedNonce {
                 XCTAssertEqual(authenticatorType.status, "INACTIVE")
                 XCTAssertEqual(authenticatorType.settings?.keyProtection, .ANY)

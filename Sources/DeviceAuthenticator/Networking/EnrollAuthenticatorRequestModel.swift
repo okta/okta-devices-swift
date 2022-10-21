@@ -48,6 +48,11 @@ struct SigningKeysModel: Encodable {
     }
 }
 
+struct Capabilities: Encodable {
+    let transactionTypes: [MethodSettingsModel.TransactionType]
+}
+
+
 struct EnrollAuthenticatorRequestModel: Encodable {
 
     let authenticatorId: String
@@ -63,5 +68,8 @@ struct EnrollAuthenticatorRequestModel: Encodable {
         let supportUserVerification: Bool? // For TOTP factor
         let isFipsCompliant: Bool? // For TOTP
         let keys: SigningKeysModel?
+        let capabilities: Capabilities?
     }
 }
+
+

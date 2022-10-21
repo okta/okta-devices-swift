@@ -12,7 +12,7 @@
 import XCTest
 @testable import DeviceAuthenticator
 
-class FactorChallengeTests: XCTestCase {
+class PushChallengeTests: XCTestCase {
 
     var storageMock: StorageMock!
 
@@ -47,7 +47,6 @@ class FactorChallengeTests: XCTestCase {
         XCTAssertNotNil(pushChallenge)
         XCTAssertTrue(pushChallenge.showClientLocation)
         XCTAssertEqual(pushChallenge.clientLocation, "Unknown location")
-        XCTAssertEqual(pushChallenge.transactionType, "LOGIN")
         XCTAssertEqual(pushChallenge.clientOS, "UNKNOWN")
         XCTAssertEqual(pushChallenge.appInstanceName, "TestApp")
         let dateFormatter = DateFormatter()
@@ -84,5 +83,49 @@ class FactorChallengeTests: XCTestCase {
                                                      validateJWT: false,
                                                      accessGroupId: "",
                                                      logger: OktaLoggerMock()))
+    }
+
+    func testPushChallenge_LoginType() {
+        let pushBindJWT = try? OktaBindJWT(string: OktaJWTTestData.pushChallengeJWT(),
+                                           validatePayload: false,
+                                           jwtType: "okta-pushbind+jwt",
+                                           logger: OktaLoggerMock())
+        XCTAssertNotNil(pushBindJWT)
+
+        let context = pushBindJWT!.jwt.payload["challengeContext"] as! [AnyHashable: Any]
+        let pushChallenge = PushChallenge(pushBindJWT: pushBindJWT!,
+                                          challengeContext: context,
+                                          storageManager: storageMock,
+                                          applicationConfig: ApplicationConfig(applicationName: "", applicationVersion: "", applicationGroupId: ""),
+                                          cryptoManager: CryptoManagerMock(accessGroupId: "", logger: OktaLoggerMock()),
+                                          signalsManager: SignalsManager(logger: OktaLoggerMock()),
+                                          restAPI: RestAPIMock(client: HTTPClient(logger: OktaLoggerMock(),
+                                                                                  userAgent: ""),
+                                                               logger: OktaLoggerMock()),
+                                          logger: OktaLoggerMock())
+        XCTAssertNotNil(pushChallenge)
+        XCTAssertNil(pushChallenge.cibaBindingMessage)
+    }
+    
+    func testPushChallenge_CibaType() {
+        let pushBindJWT = try? OktaBindJWT(string: OktaJWTTestData.pushChallengeCIBAJWT(),
+                                           validatePayload: false,
+                                           jwtType: "okta-pushbind+jwt",
+                                           logger: OktaLoggerMock())
+        XCTAssertNotNil(pushBindJWT)
+
+        let context = pushBindJWT!.jwt.payload["challengeContext"] as! [AnyHashable: Any]
+        let pushChallenge = PushChallenge(pushBindJWT: pushBindJWT!,
+                                          challengeContext: context,
+                                          storageManager: storageMock,
+                                          applicationConfig: ApplicationConfig(applicationName: "", applicationVersion: "", applicationGroupId: ""),
+                                          cryptoManager: CryptoManagerMock(accessGroupId: "", logger: OktaLoggerMock()),
+                                          signalsManager: SignalsManager(logger: OktaLoggerMock()),
+                                          restAPI: RestAPIMock(client: HTTPClient(logger: OktaLoggerMock(),
+                                                                                  userAgent: ""),
+                                                               logger: OktaLoggerMock()),
+                                          logger: OktaLoggerMock())
+        XCTAssertNotNil(pushChallenge)
+        XCTAssertEqual(pushChallenge.cibaBindingMessage, "Did you make a $300 purchase?")
     }
 }

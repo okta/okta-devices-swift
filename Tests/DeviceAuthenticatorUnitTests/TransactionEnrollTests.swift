@@ -49,7 +49,7 @@ class TransactionEnrollTests: XCTestCase {
         metaData = metaDataArray[0]
         jwkGeneratorMock = OktaJWKGeneratorMock(logger: OktaLoggerMock())
         jwtGeneratorMock = OktaJWTGeneratorMock(logger: OktaLoggerMock())
-        enrollmentContext = createEnrollmentContext(enrollBiometricKey: true, pushToken: "push_token")
+        enrollmentContext = createEnrollmentContext(enrollBiometricKey: true, pushToken: "push_token", supportsCIBA: true)
         transaction = createTransaction(enrollmentContext: enrollmentContext, enrollment: nil, jwtGenerator: OktaJWTGenerator(logger: OktaLoggerMock()))
         transaction.metaData = metaData
         transaction.orgId = ""
@@ -601,7 +601,7 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
     }
 
     func testDoUpdate_SuccessWithUserVerificationKey() {
-        enrollmentContext = createEnrollmentContext(accessToken: nil, deviceSignals: nil, applicationSignals: nil, enrollBiometricKey: nil, pushToken: nil)
+        enrollmentContext = createEnrollmentContext(accessToken: nil, deviceSignals: nil, applicationSignals: nil, enrollBiometricKey: nil, pushToken: nil, supportsCIBA: false)
         transaction = createTransaction(enrollmentContext: enrollmentContext, enrollment: nil)
         transaction.metaData = metaData
         let enrollment = TestUtils.createAuthenticatorEnrollment(orgHost: URL(string: "tenant.okta.com")!,
@@ -641,7 +641,7 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
     }
 
     func testDoUpdate_Success() {
-        enrollmentContext = createEnrollmentContext(accessToken: nil, deviceSignals: nil, applicationSignals: nil, enrollBiometricKey: nil, pushToken: nil)
+        enrollmentContext = createEnrollmentContext(accessToken: nil, deviceSignals: nil, applicationSignals: nil, enrollBiometricKey: nil, pushToken: nil, supportsCIBA: false)
         transaction = createTransaction(enrollmentContext: enrollmentContext, enrollment: nil)
         transaction.metaData = metaData
         let enrollment = TestUtils.createAuthenticatorEnrollment(orgHost: URL(string: "tenant.okta.com")!,
@@ -673,7 +673,7 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
     }
 
     func testDoUpdate_NoPoPKeyError() {
-        enrollmentContext = createEnrollmentContext(accessToken: nil, deviceSignals: nil, applicationSignals: nil, enrollBiometricKey: nil, pushToken: nil)
+        enrollmentContext = createEnrollmentContext(accessToken: nil, deviceSignals: nil, applicationSignals: nil, enrollBiometricKey: nil, pushToken: nil, supportsCIBA: false)
         transaction = createTransaction(enrollmentContext: enrollmentContext, enrollment: nil)
         transaction.metaData = metaData
         let enrollment = TestUtils.createAuthenticatorEnrollment(orgHost: URL(string: "tenant.okta.com")!,
@@ -698,7 +698,7 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
     }
 
     func testDoUpdate_CantReadPoPKey() {
-        enrollmentContext = createEnrollmentContext(accessToken: nil, deviceSignals: nil, applicationSignals: nil, enrollBiometricKey: nil, pushToken: nil)
+        enrollmentContext = createEnrollmentContext(accessToken: nil, deviceSignals: nil, applicationSignals: nil, enrollBiometricKey: nil, pushToken: nil, supportsCIBA: false)
         transaction = createTransaction(enrollmentContext: enrollmentContext, enrollment: nil)
         transaction.metaData = metaData
         cryptoManager.getHook = { type, tag, context in
@@ -729,7 +729,7 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
     }
 
     func testDoUpdate_FailedToGenerateRequestJWT() {
-        enrollmentContext = createEnrollmentContext(accessToken: nil, deviceSignals: nil, applicationSignals: nil, enrollBiometricKey: nil, pushToken: nil)
+        enrollmentContext = createEnrollmentContext(accessToken: nil, deviceSignals: nil, applicationSignals: nil, enrollBiometricKey: nil, pushToken: nil, supportsCIBA: false)
         transaction = createTransaction(enrollmentContext: enrollmentContext, enrollment: nil)
         transaction.metaData = metaData
         jwtGeneratorMock.generateHook = { key, type, algo, kid, additionalParams in
@@ -806,7 +806,7 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
                                                                  orgId: "orgId",
                                                                  enrollmentId: "enrollmentId",
                                                                  cryptoManager: cryptoManager)
-        enrollmentContext = createEnrollmentContext(deviceSignals: nil, applicationSignals: nil, enrollBiometricKey: false, pushToken: nil)
+        enrollmentContext = createEnrollmentContext(deviceSignals: nil, applicationSignals: nil, enrollBiometricKey: false, pushToken: nil, supportsCIBA: false)
         transactionPartialMock = OktaTransactionEnrollPartialMock(storageManager: mockStorageManager,
                                                                   cryptoManager: cryptoManager,
                                                                   restAPI: restAPIMock,
@@ -1294,12 +1294,14 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
                                  deviceSignals: DeviceSignals? = nil,
                                  applicationSignals: [String: _OktaCodableArbitaryType]? = nil,
                                  enrollBiometricKey: Bool? = nil,
-                                 pushToken: String? = nil) -> EnrollmentContext {
+                                 pushToken: String? = nil,
+                                 supportsCIBA: Bool) -> EnrollmentContext {
         var deviceToken = DeviceToken.empty
         if let pushToken = pushToken,
            let pushTokenData = pushToken.data(using: .utf8) {
             deviceToken = .tokenData(pushTokenData)
         }
+        let transactionTypes: TransactionType = supportsCIBA ? [.login, .ciba] : .login
         return EnrollmentContext(accessToken: accessToken,
                                  activationToken: nil,
                                  orgHost: URL(string: "tenant.okta.com")!,
@@ -1309,7 +1311,8 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
                                  enrollBiometricKey: enrollBiometricKey,
                                  deviceSignals: deviceSignals,
                                  biometricSettings: nil,
-                                 applicationSignals: applicationSignals)
+                                 applicationSignals: applicationSignals,
+                                 transactionTypes: transactionTypes)
     }
 }
 

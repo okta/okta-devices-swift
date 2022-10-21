@@ -22,19 +22,22 @@ class EnrollAuthenticatorRequestModelTests: XCTestCase {
                                                                               apsEnvironment: .production,
                                                                               supportUserVerification: false,
                                                                               isFipsCompliant: nil,
-                                                                              keys: nil)
+                                                                              keys: nil,
+                                                                              capabilities: nil)
         let signedNonceMethod = EnrollAuthenticatorRequestModel.AuthenticatorMethods(type: .signedNonce,
                                                                                      pushToken: nil,
                                                                                      apsEnvironment: nil,
                                                                                      supportUserVerification: false,
                                                                                      isFipsCompliant: nil,
-                                                                                     keys: nil)
+                                                                                     keys: nil,
+                                                                                    capabilities: nil)
         let totpMethod = EnrollAuthenticatorRequestModel.AuthenticatorMethods(type: .totp,
                                                                               pushToken: nil,
                                                                               apsEnvironment: nil,
                                                                               supportUserVerification: false,
                                                                               isFipsCompliant: true,
-                                                                              keys: nil)
+                                                                              keys: nil,
+                                                                              capabilities: nil)
 
         let requestModel = EnrollAuthenticatorRequestModel(authenticatorId: "autuowpr5VjVjQPU30g3",
                                                            key: "okta_verify",

@@ -34,10 +34,11 @@ class OktaStorageEntitiesGenerator {
         return AuthenticatorPolicy(metadata: metadata)
     }
 
-    func createPushFactor(userVerification: Bool = true) -> OktaFactorMetadataPush {
+    func createPushFactor(userVerification: Bool = true, transactionTypes: TransactionType = .login) -> OktaFactorMetadataPush {
         return OktaFactorMetadataPush(id: UUID().uuidString,
                                       proofOfPossessionKeyTag: UUID().uuidString,
-                                      userVerificationKeyTag: userVerification ? UUID().uuidString : nil)
+                                      userVerificationKeyTag: userVerification ? UUID().uuidString : nil,
+                                      transactionTypes: transactionTypes)
     }
 
     func createAuthenticator(orgHost: String = "test.host",
@@ -49,7 +50,8 @@ class OktaStorageEntitiesGenerator {
                              enrolledFactors: [OktaFactor] = [],
                              methodTypes: [AuthenticatorMethod] = [],
                              cryptoManager: OktaSharedCryptoProtocol = CryptoManagerMock(accessGroupId: ExampleAppConstants.appGroupId, logger: OktaLoggerMock()),
-                             storageManager: PersistentStorageProtocol? = nil) -> AuthenticatorEnrollment {
+                             storageManager: PersistentStorageProtocol? = nil,
+                             transactionTypes: TransactionType? = nil) -> AuthenticatorEnrollment {
         let mockHTTPClient = MockMultipleRequestsHTTPClient(responseArray: [],
                                                             dataArray: [])
         let restAPIMock = RestAPIMock(client: mockHTTPClient, logger: OktaLoggerMock())
@@ -62,7 +64,8 @@ class OktaStorageEntitiesGenerator {
             let pushMetadata = OktaFactorMetadataPush(id: "push_id",
                                                       proofOfPossessionKeyTag: "proofOfPossessionKeyTag",
                                                       userVerificationKeyTag: nil,
-                                                      links: OktaFactorMetadataPush.Links(pendingLink: "pendingLink"))
+                                                      links: OktaFactorMetadataPush.Links(pendingLink: "pendingLink"),
+                                                      transactionTypes: transactionTypes)
             let pushFactor = OktaFactorPush(factorData: pushMetadata,
                                             cryptoManager: cryptoManager,
                                             restAPIClient: restAPIMock,

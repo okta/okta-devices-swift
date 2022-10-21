@@ -15,7 +15,7 @@ import OktaJWT
 import OktaLogger
 
 /// Represents push challenge details
-class PushChallenge: PushChallengeProtocol {
+class PushChallenge: PushChallengeProtocol, CIBAChallengeProtocol {
 
     ///  User's response to the transaction, populated by application
     var userResponse: PushChallengeUserResponse = .userNotResponded
@@ -51,9 +51,19 @@ class PushChallenge: PushChallengeProtocol {
         return transactionDateTime
     }()
 
-    /// Transaction type associated with this push challenge, usually - LOGIN
-    lazy var transactionType: String? = {
-        return challengeContext["transactionType"] as? String
+    /// Required if transactionType = CIBA
+    lazy var cibaBindingMessage: String? = {
+        return challengeContext["bindingMessage"] as? String
+    }()
+
+    /// Transaction type associated with this push challenge - Login or Transactional MFA (CIBA)
+    lazy var transactionType: TransactionType = {
+        guard let rawTransactionType = challengeContext["transactionType"] as? String else { return .login }
+        switch MethodSettingsModel.TransactionType(rawValue: rawTransactionType) {
+        case .LOGIN: return TransactionType.login
+        case .CIBA: return TransactionType.ciba
+        default: return TransactionType.login
+        }
     }()
 
     /// Application name

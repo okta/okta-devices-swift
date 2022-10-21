@@ -119,7 +119,8 @@ class AuthenticatorEnrollment: AuthenticatorEnrollmentProtocol {
                                                   enrollBiometricKey: nil,
                                                   deviceSignals: nil,
                                                   biometricSettings: nil,
-                                                  applicationSignals: nil)
+                                                  applicationSignals: nil,
+                                                  transactionTypes: nil)
         let updateTransaction = OktaTransactionPushTokenUpdate(storageManager: self.storageManager,
                                                                cryptoManager: self.cryptoManager,
                                                                restAPI: self.restAPIClient,
@@ -194,7 +195,62 @@ class AuthenticatorEnrollment: AuthenticatorEnrollmentProtocol {
                                                   enrollBiometricKey: enable,
                                                   deviceSignals: nil,
                                                   biometricSettings: .default,
-                                                  applicationSignals: nil)
+                                                  applicationSignals: nil,
+                                                  transactionTypes: nil)
+        let enrollTransaction = OktaTransactionEnroll(storageManager: self.storageManager,
+                                                      cryptoManager: self.cryptoManager,
+                                                      restAPI: restAPIClient,
+                                                      enrollmentContext: enrollmentContext,
+                                                      enrollmentToUpdate: self,
+                                                      jwkGenerator: OktaJWKGenerator(logger: logger),
+                                                      jwtGenerator: OktaJWTGenerator(logger: logger),
+                                                      applicationConfig: applicationConfig,
+                                                      logger: self.logger,
+                                                      authenticatorPolicy: policy)
+        enrollTransaction.enroll(onMetadataReceived: nil) { [weak self] result in
+            switch result {
+            case .success(let updatedEnrollment):
+                enrollTransaction.cleanupOnSuccess()
+                if let enrollment = updatedEnrollment as? AuthenticatorEnrollment {
+                    self?.enrolledFactors = enrollment.enrolledFactors
+                }
+                self?.recordServerResponse()
+                completion(nil)
+            case .failure(let error):
+                enrollTransaction.rollback()
+                self?.recordServerResponse(error: error)
+                completion(error)
+            }
+        }
+    }
+
+    var isCIBAEnabled: Bool {
+        return enrolledFactors.first(where: {
+            ($0 as? OktaFactorPush)?.enrolledWithCIBASupport ?? false
+        }) != nil
+    }
+
+    func enableCIBATransactions(authenticationToken: AuthToken, enable: Bool, completion: @escaping (DeviceAuthenticatorError?) -> Void) {
+        guard let policy = try? storageManager.authenticatorPolicyForOrgId(orgId) as? AuthenticatorPolicy else {
+            completion(DeviceAuthenticatorError.genericError("Failed to fetch authenticator policy"))
+            return
+        }
+
+        var deviceToken: DeviceToken = .empty
+        if let deviceTokenData = readDeviceToken() {
+            deviceToken = .tokenData(deviceTokenData)
+        }
+        let enrollmentContext = EnrollmentContext(accessToken: authenticationToken.tokenValue(),
+                                                  activationToken: nil,
+                                                  orgHost: orgHost,
+                                                  authenticatorKey: policy.metadata.id,
+                                                  oidcClientId: policy.metadata.settings?.oauthClientId,
+                                                  pushToken: deviceToken,
+                                                  enrollBiometricKey: nil,
+                                                  deviceSignals: nil,
+                                                  biometricSettings: .default,
+                                                  applicationSignals: nil,
+                                                  transactionTypes: enable ? [.login, .ciba] : .login)
         let enrollTransaction = OktaTransactionEnroll(storageManager: self.storageManager,
                                                       cryptoManager: self.cryptoManager,
                                                       restAPI: restAPIClient,

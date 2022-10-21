@@ -32,7 +32,8 @@ class OktaFactorPushTests: XCTestCase {
                                         logger: OktaLoggerMock())
         factorData = OktaFactorMetadataPush(id: "id",
                                             proofOfPossessionKeyTag: "proofOfPossessionKeyTag",
-                                            userVerificationKeyTag: "userVerificationKeyTag")
+                                            userVerificationKeyTag: "userVerificationKeyTag",
+                                            transactionTypes: .login)
         factor = OktaFactorPush(factorData: factorData,
                                 cryptoManager: cryptoManager,
                                 restAPIClient: restAPIClient,
@@ -57,5 +58,15 @@ class OktaFactorPushTests: XCTestCase {
     func testRemoveUserVerificationKey() {
         factor.removeUserVerificationKey()
         XCTAssertEqual(secKeyHelper.deleteCallCount, 1)
+    }
+    
+    func testEnrolledWithLoginTransactionTypes() {
+        XCTAssertFalse(factor.enrolledWithCIBASupport)
+    }
+    
+    func testEnrolledWithCibaAndLoginTransactionTypes() {
+        factor.cleanup()
+        factor.factorData.transactionTypes = [.login, .ciba]
+        XCTAssertTrue(factor.enrolledWithCIBASupport)
     }
 }

@@ -212,12 +212,18 @@ class LegacyServerAPI: ServerAPIProtocol {
                                     enrollingFactors: [EnrollingFactor]) throws -> Data {
         let methods: [EnrollAuthenticatorRequestModel.AuthenticatorMethods] = enrollingFactors.compactMap { factor in
             if factor.keys != nil {
+                var transactionTypes: [MethodSettingsModel.TransactionType] = [.LOGIN]
+                if factor.transactionTypes.supportsCIBA {
+                    transactionTypes.append(.CIBA)
+                }
+                let capabilities = Capabilities(transactionTypes: transactionTypes)
                 let methodModel = EnrollAuthenticatorRequestModel.AuthenticatorMethods(type: factor.methodType,
                                                                                        pushToken: factor.methodType == .push ? factor.pushToken : nil,
                                                                                        apsEnvironment: factor.methodType == .push ? factor.apsEnvironment : nil,
                                                                                        supportUserVerification: factor.supportUserVerification,
                                                                                        isFipsCompliant: factor.isFipsCompliant,
-                                                                                       keys: factor.keys)
+                                                                                       keys: factor.keys,
+                                                                                       capabilities: capabilities)
 
                 return methodModel
             } else {
@@ -257,7 +263,8 @@ class LegacyServerAPI: ServerAPIProtocol {
         let factorMetadata = OktaFactorMetadataPush(id: enrolledModel.id,
                                                     proofOfPossessionKeyTag: proofOfPossessionKeyTag,
                                                     userVerificationKeyTag: factorModel.userVerificationKeyTag,
-                                                    links: OktaFactorMetadataPush.Links(pendingLink: links.pending?.href))
+                                                    links: OktaFactorMetadataPush.Links(pendingLink: links.pending?.href),
+                                                    transactionTypes: factorModel.transactionTypes)
         let factor = OktaFactorPush(factorData: factorMetadata,
                                     cryptoManager: crypto,
                                     restAPIClient: self,

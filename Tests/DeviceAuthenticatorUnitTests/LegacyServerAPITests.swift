@@ -82,7 +82,8 @@ final class LegacyServerAPITests: XCTestCase {
                                               pushToken: "pushToken",
                                               supportUserVerification: true,
                                               isFipsCompliant: nil,
-                                              keys: signingKeys)
+                                              keys: signingKeys,
+                                              transactionTypes: .login)
         legacyAPI.enrollAuthenticatorRequest(orgHost: mockURL,
                                              metadata: metadata,
                                              deviceModel: deviceSignals,
@@ -126,7 +127,8 @@ final class LegacyServerAPITests: XCTestCase {
                                               pushToken: "pushToken",
                                               supportUserVerification: true,
                                               isFipsCompliant: nil,
-                                              keys: signingKeys)
+                                              keys: signingKeys,
+                                              transactionTypes: .login)
         legacyAPI.updateAuthenticatorRequest(orgHost: mockURL,
                                              enrollmentId: "enrollmentId",
                                              metadata: metadata,
@@ -160,7 +162,8 @@ final class LegacyServerAPITests: XCTestCase {
                                               pushToken: "pushToken",
                                               supportUserVerification: true,
                                               isFipsCompliant: nil,
-                                              keys: signingKeys)
+                                              keys: signingKeys,
+                                              transactionTypes: .login)
         let enrollmentData = try? legacyAPI.buildEnrollmentRequestData(metadata: metadata,
                                                                        deviceModel: deviceSignals,
                                                                        appSignals: nil,
@@ -263,7 +266,8 @@ final class LegacyServerAPITests: XCTestCase {
                                               pushToken: "pushToken",
                                               supportUserVerification: true,
                                               isFipsCompliant: nil,
-                                              keys: signingKeys)
+                                              keys: signingKeys,
+                                              transactionTypes: .login)
         legacyAPI.enrollAuthenticatorRequest(orgHost: mockURL,
                                              metadata: metadata,
                                              deviceModel: deviceSignals,
@@ -346,7 +350,8 @@ final class LegacyServerAPITests: XCTestCase {
                                               pushToken: "pushToken",
                                               supportUserVerification: true,
                                               isFipsCompliant: nil,
-                                              keys: signingKeys)
+                                              keys: signingKeys,
+                                              transactionTypes: .login)
         legacyAPI.updateAuthenticatorRequest(orgHost: mockURL,
                                              enrollmentId: "enrollmentId",
                                              metadata: metadata,

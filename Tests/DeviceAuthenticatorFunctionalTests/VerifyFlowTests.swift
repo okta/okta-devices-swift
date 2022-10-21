@@ -137,6 +137,8 @@ class VerifyFlowTests: XCTestCase {
             var userResponse: PushChallengeUserResponse = .userNotResponded
             var originURL: URL? = nil
             var transactionTime: Date = Date()
+            var transactionType: TransactionType = .login
+            var bindingMessage: String? = nil
 
             func resolve(onRemediation: @escaping (RemediationStep) -> Void,
                          onCompletion: @escaping (DeviceAuthenticatorError?) -> Void) {}

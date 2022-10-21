@@ -24,7 +24,8 @@ class TestUtils {
                                              userVerificationKeyTag: String? = "userVerificationKeyTag",
                                              enrollPush: Bool = true,
                                              createdDate: String = "2020-09-08T19:03:30.166Z",
-                                             storageManager: PersistentStorageProtocol? = nil) -> AuthenticatorEnrollmentMock {
+                                             storageManager: PersistentStorageProtocol? = nil,
+                                             transactionTypes: TransactionType? = .login) -> AuthenticatorEnrollmentMock {
         let mockHTTPClient = MockMultipleRequestsHTTPClient(responseArray: [],
                                                             dataArray: [])
         let restAPIMock = RestAPIMock(client: mockHTTPClient, logger: OktaLoggerMock())
@@ -40,7 +41,8 @@ class TestUtils {
         if enrollPush {
             let pushFactorMetadata = OktaFactorMetadataPush(id: "push_id",
                                                     proofOfPossessionKeyTag: "proofOfPossessionKeyTag",
-                                                    userVerificationKeyTag: userVerificationKeyTag)
+                                                            userVerificationKeyTag: userVerificationKeyTag,
+                                                            transactionTypes: transactionTypes)
             let pushFactor = VerificationMethodFactory.pushFactorFromMetadata(pushFactorMetadata,
                                                                               cryptoManager: cryptoManager,
                                                                               restAPIClient: restAPIMock,

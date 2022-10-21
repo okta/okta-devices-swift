@@ -33,6 +33,13 @@ public protocol AuthenticatorEnrollmentProtocol {
     ///   - completion: Closure called when the process has completed
     func setUserVerification(authenticationToken: AuthToken, enable: Bool, completion: @escaping (DeviceAuthenticatorError?) -> Void)
 
+    /// Returns true if enrollment has support for CIBA Transactions. If false, this authenticator won't receive CIBA challenges from server.
+    var isCIBAEnabled: Bool { get }
+
+    /// Enables or disables support for CIBA Transactions for the enrollment. By disabling it, the authenticator won't receive CIBA challenges from server.
+    func enableCIBATransactions(authenticationToken: AuthToken, enable: Bool, completion: @escaping (DeviceAuthenticatorError?) -> Void)
+
+
     ///  Update the push token associated with all enrollments on this device
     /// - Parameters:
     ///   - token: APNS token to be updated, will be performed for all enrollments on this device

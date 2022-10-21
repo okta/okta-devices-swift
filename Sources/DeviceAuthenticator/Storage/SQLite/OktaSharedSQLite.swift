@@ -548,6 +548,11 @@ class OktaSharedSQLite: OktaSharedSQLiteProtocol {
             } else {
                 args = args &+ [Column.links: nil]
             }
+            if let transactionTypes = push.transactionTypes {
+                args = args &+ [Column.transactionTypes: transactionTypes.rawValue]
+            } else {
+                args = args &+ [Column.transactionTypes: TransactionType.login.rawValue]
+            }
         }
 
         return args
@@ -567,10 +572,17 @@ class OktaSharedSQLite: OktaSharedSQLiteProtocol {
             if let linksData = row.links {
                 links = try? JSONDecoder().decode(OktaFactorMetadataPush.Links.self, from: linksData)
             }
+            var transactionType: TransactionType
+            if let transactionTypes = row.transactionTypes {
+                transactionType = TransactionType(rawValue: transactionTypes)
+            } else {
+                transactionType = .login
+            }
             let pushFactorMetadata = OktaFactorMetadataPush(id: id,
                                                             proofOfPossessionKeyTag: proofOfPossessionKeyTag,
                                                             userVerificationKeyTag: row.userVerificationKeyTag,
-                                                            links: links)
+                                                            links: links,
+                                                            transactionTypes: transactionType)
             return VerificationMethodFactory.pushFactorFromMetadata(pushFactorMetadata,
                                                                     cryptoManager: cryptoManager,
                                                                     restAPIClient: restAPIClient,

@@ -44,7 +44,8 @@ class GoldenData {
                         "status": "ACTIVE",
                         "settings": {
                             "algorithms": ["RS256", "ES256"],
-                            "keyProtection": "ANY"
+                            "keyProtection": "ANY",
+                            "transactionTypes": ["LOGIN", "CIBA"]
                         }
                     }
                 ]

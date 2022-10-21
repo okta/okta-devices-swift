@@ -25,7 +25,8 @@ extension OktaTransactionEnroll {
         let factor = OktaFactorMetadataPush(id: enrolledModel.id,
                                             proofOfPossessionKeyTag: proofOfPossessionKeyTag,
                                             userVerificationKeyTag: factorModel.userVerificationKeyTag,
-                                            links: OktaFactorMetadataPush.Links(pendingLink: links.pending?.href))
+                                            links: OktaFactorMetadataPush.Links(pendingLink: links.pending?.href),
+                                            transactionTypes: factorModel.transactionTypes)
         return factor
     }
 
@@ -84,6 +85,7 @@ extension OktaTransactionEnroll {
         }
 
         let apsEnvironment = applicationConfig.pushSettings.apsEnvironment == .production ? APSEnvironment.production : APSEnvironment.development
+        let transactionTypes: TransactionType = enrollmentContext.isCIBASupported ? [.login, .ciba] : .login
         let enrollingFactor = EnrollingFactor(proofOfPossessionKeyTag: proofOfPossessionKeyTag,
                                               userVerificationKeyTag: userVerificationKeyTag,
                                               methodType: methodType,
@@ -91,7 +93,8 @@ extension OktaTransactionEnroll {
                                               pushToken: pushToken,
                                               supportUserVerification: nil,
                                               isFipsCompliant: nil,
-                                              keys: signingKeys)
+                                              keys: signingKeys,
+                                              transactionTypes: transactionTypes)
 
         return enrollingFactor
     }
