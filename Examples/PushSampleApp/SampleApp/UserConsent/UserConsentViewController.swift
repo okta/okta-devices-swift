@@ -24,6 +24,8 @@ class UserConsentViewController: UIViewController, StoryboardController {
 
     @IBOutlet weak var timeLabel: UILabel!
 
+    @IBOutlet weak var transactionMessage: UILabel!
+
     var viewModel: UserConsentViewModel!
 
     override func viewDidLoad() {
@@ -46,5 +48,8 @@ class UserConsentViewController: UIViewController, StoryboardController {
         urlLabel.text = viewModel.urlString
         dateLabel.text = viewModel.dateString
         timeLabel.text = viewModel.timeString
+
+        // Binding message for CIBA transactions
+        transactionMessage.text = viewModel.cibaTransactionMessage ?? ""
     }
 }

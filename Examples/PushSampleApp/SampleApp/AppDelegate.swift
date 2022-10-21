@@ -28,7 +28,7 @@ enum LoggingConstant {
 }
 
 enum LoggerEvent: String {
-    case appInit, pushService, webSignIn, enrollment, enrollmentDelete, userVerification, account
+    case appInit, pushService, webSignIn, enrollment, enrollmentDelete, userVerification, ciba, account
 }
 
 @main
