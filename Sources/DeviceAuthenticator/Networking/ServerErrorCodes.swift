@@ -13,7 +13,7 @@
 import Foundation
 
 /// Errors that the Okta server returns
-public enum ServerErrorCode: Codable {
+public enum ServerErrorCode: Codable, Equatable {
     /// Operation blocked because the verification attempt might be trying to steal your information.
     case phishingAttemptDetected
     /// Operation failed because enrollment no longer exists on server side
