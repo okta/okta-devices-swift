@@ -140,6 +140,20 @@ enrollments.forEach { enrollment in
 }
 ```
 
+### Enable Transactional MFA (CIBA) capabilities into existing enrollment
+Enables or disables support for CIBA Transactions for the enrollment. By disabling it, your app won't receive CIBA challenges from the Okta backend.
+```swift
+let accessToken = "eySBDC...." // https://developer.okta.com/docs/reference/api/oidc/#access-token
+let enrollments = authenticator.allEnrollments()
+enrollments.forEach { enrollment in
+    enrollment.enableCIBATransactions(authenticationToken: AuthToken.bearer(accessToken, enable: true) { error in
+        if let error = error {
+            print("Error enabling support for CIBA transactions: \(error)")
+        }
+    } 
+}
+```
+
 #### Delete enrollment
 Use the `enrollment.delete()` method to unenroll push verification. This will result in the SDK deleting enrollment from a device when a successful response is received from the Okta server.
 
