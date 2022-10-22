@@ -211,11 +211,14 @@ class LegacyServerAPI: ServerAPIProtocol {
                                     appSignals: [String: _OktaCodableArbitaryType]?,
                                     enrollingFactors: [EnrollingFactor]) throws -> Data {
         let methods: [EnrollAuthenticatorRequestModel.AuthenticatorMethods] = enrollingFactors.compactMap { factor in
-            var transactionTypes: [MethodSettingsModel.TransactionType] = [.LOGIN]
-            if factor.transactionTypes.supportsCIBA {
-                transactionTypes.append(.CIBA)
+            var capabilities: Capabilities?
+            if factor.methodType == .push {
+                var transactionTypes: [MethodSettingsModel.TransactionType] = [.LOGIN]
+                if factor.transactionTypes.supportsCIBA {
+                    transactionTypes.append(.CIBA)
+                }
+                capabilities = Capabilities(transactionTypes: transactionTypes)
             }
-            let capabilities = Capabilities(transactionTypes: transactionTypes)
             let methodModel = EnrollAuthenticatorRequestModel.AuthenticatorMethods(type: factor.methodType,
                                                                                    pushToken: factor.methodType == .push ? factor.pushToken : nil,
                                                                                    apsEnvironment: factor.methodType == .push ? factor.apsEnvironment : nil,
