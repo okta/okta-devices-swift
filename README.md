@@ -156,6 +156,7 @@ enrollments.forEach { enrollment in
 ```
 
 #### Delete enrollment from device
+
 Use the `enrollment.deleteFromDevice()` method to delete enrollment from a device without notifying the Okta server.
 The difference between calling deleteFromDevice and delete is that deleteFromDevice does not make a server call to unenroll push verification, therefore it does not require any authorization.
 
