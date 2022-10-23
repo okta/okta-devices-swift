@@ -255,7 +255,7 @@ final class LegacyServerAPITests: XCTestCase {
         // Validate response with 401 code
         var httpResult = HTTPURLResult(request: URLRequest(url: mockURL),
                                        response: HTTPURLResponse(url: mockURL, statusCode: 401, httpVersion: nil, headerFields: nil)!,
-                                       data: GoldenData.authenticatorData())
+                                       data: GoldenData.resourceNotFoundError())
         var httpClient = MockHTTPClient(result: httpResult)
         var legacyAPI = LegacyServerAPI(client: httpClient, crypto: crypto, logger: OktaLoggerMock())
         var closureCalled = false
@@ -339,7 +339,7 @@ final class LegacyServerAPITests: XCTestCase {
         // Validate response with 401 code
         var httpResult = HTTPURLResult(request: URLRequest(url: mockURL),
                                        response: HTTPURLResponse(url: mockURL, statusCode: 401, httpVersion: nil, headerFields: nil)!,
-                                       data: GoldenData.authenticatorData())
+                                       data: GoldenData.resourceNotFoundError())
         var httpClient = MockHTTPClient(result: httpResult)
         var legacyAPI = LegacyServerAPI(client: httpClient, crypto: crypto, logger: OktaLoggerMock())
         var closureCalled = false

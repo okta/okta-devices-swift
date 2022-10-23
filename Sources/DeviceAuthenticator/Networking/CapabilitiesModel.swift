@@ -12,22 +12,6 @@
 
 import Foundation
 
-/// HTTP methods enumeration
-enum HTTPMethod: Int {
-    case get, post, put, delete, patch
-
-    func toString() -> String {
-        switch self {
-        case .get:
-            return "GET"
-        case .post:
-            return "POST"
-        case .put:
-            return "PUT"
-        case .delete:
-            return "DELETE"
-        case .patch:
-            return "PATCH"
-        }
-    }
+struct CapabilitiesModel: Codable {
+    let transactionTypes: [MethodSettingsModel.TransactionType]
 }

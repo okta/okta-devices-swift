@@ -434,7 +434,7 @@ class GoldenData {
 class MyAccountTestData {
     class func policyResponse() -> Data {
         let authenticatorJson: String = """
-        {
+        [{
           "authenticatorId": "aut6nfu6soyk3GD2U0g4",
           "key": "custom_app",
           "type": "app",
@@ -462,7 +462,7 @@ class MyAccountTestData {
             }
           ],
           "app_authenticator_enroll_endpoint": "https://your-org.okta.com/idp/myaccount/app-authenticator"
-        }
+        }]
         """
         let jsonArray = try! JSONSerialization.jsonObject(with: authenticatorJson.data(using: .utf8)!, options: [])
         let jsonData = try! JSONSerialization.data(withJSONObject: jsonArray, options: .prettyPrinted)
@@ -484,6 +484,119 @@ class MyAccountTestData {
                   "supportedMethods" : [],
                   "app_authenticator_enroll_endpoint": "https://your-org.okta.com/idp/myaccount/app-authenticator"
                 }
+        """
+        let dict = try! JSONSerialization.jsonObject(with: authenticatorJson.data(using: .utf8)!, options: []) as! [String: Any]
+        let jsonData = try! JSONSerialization.data(withJSONObject: dict, options: .prettyPrinted)
+        return jsonData
+    }
+
+    class func enrollmentResponse() -> Data {
+        let authenticatorJson: String = """
+        {
+            "id": "aen1jisLwwTG7qRrH0g4",
+            "authenticatorId": "autuowpr5VjVjQPU30g3",
+            "key": "okta_verify",
+            "status": "ACTIVE",
+            "type": "APP",
+            "createdDate": "Tue Dec 03 18:39:46 UTC 2019",
+            "lastUpdated": "Tue Dec 03 18:39:46 UTC 2019",
+            "device": {
+                "id": "guotmkiKzYBTnhnC40g4",
+                "status": "ACTIVE",
+                "created": "2019-12-03T18:39:46.000Z",
+                "lastUpdated": "2019-12-03T19:59:43.000Z",
+                "profile": {
+                    "displayName": "Test Device",
+                    "platform": "IOS",
+                    "manufacturer": "APPLE",
+                    "model": "iPhone X",
+                    "osVersion": "10",
+                    "serialNumber": "2fc4b5912826ad1",
+                    "imei": null,
+                    "meid": null,
+                    "udid": "2b6f0cc904d137be2e1730235f5664094b831186",
+                    "sid": null
+                },
+                "clientInstanceId": "cli1zEPrHHW0w4i0ALF0",
+            },
+            "user": {
+                "id": "00utmecoNjNd0lrWp0g4",
+                "username": "test@okta.com"
+            },
+            "methods": {
+                "push": {
+                    "id": "opftmklWEf1vDZvr10g4",
+                    "createdDate": "Tue Dec 03 18:39:46 UTC 2019",
+                    "lastUpdated": "Tue Dec 03 18:39:46 UTC 2019",
+                    "links": {
+                        "update": {
+                            "href": "https://qa-dt-platform.hioktane.com/api/v1/factors/guotmkiKzYBTnhnC40g4/lifecycle/update",
+                            "hints": {
+                                "allow": [
+                                    "PUT"
+                                ]
+                            }
+                        },
+                        "pending": {
+                            "href": "https://qa-dt-platform.hioktane.com/api/v1/factors/guotmkiKzYBTnhnC40g4/lifecycle/pending",
+                            "hints": {
+                                "allow": [
+                                    "PUT"
+                                ]
+                            }
+                        },
+                        "activate": {
+                            "href": "https://qa-dt-platform.hioktane.com/api/v1/devices/guotmkiKzYBTnhnC40g4/lifecycle/activate",
+                            "hints": {
+                                "allow": [
+                                    "POST"
+                                ]
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        """
+        let dict = try! JSONSerialization.jsonObject(with: authenticatorJson.data(using: .utf8)!, options: []) as! [String: Any]
+        let jsonData = try! JSONSerialization.data(withJSONObject: dict, options: .prettyPrinted)
+        return jsonData
+    }
+
+    class func authenticatorDataNoMethods() -> Data {
+        let authenticatorJson: String = """
+        {
+            "id": "aen1jisLwwTG7qRrH0g4",
+            "authenticatorId": "autuowpr5VjVjQPU30g3",
+            "key": "okta_verify",
+            "status": "ACTIVE",
+            "type": "APP",
+            "createdDate": "Tue Dec 03 18:39:46 UTC 2019",
+            "lastUpdated": "Tue Dec 03 18:39:46 UTC 2019",
+            "device": {
+                "id": "guotmkiKzYBTnhnC40g4",
+                "status": "ACTIVE",
+                "created": "2019-12-03T18:39:46.000Z",
+                "lastUpdated": "2019-12-03T19:59:43.000Z",
+                "profile": {
+                    "displayName": "Test Device",
+                    "platform": "IOS",
+                    "manufacturer": "APPLE",
+                    "model": "iPhone X",
+                    "osVersion": "10",
+                    "serialNumber": "2fc4b5912826ad1",
+                    "imei": null,
+                    "meid": null,
+                    "udid": "2b6f0cc904d137be2e1730235f5664094b831186",
+                    "sid": null
+                },
+                "clientInstanceId": "cli1zEPrHHW0w4i0ALF0",
+            },
+            "user": {
+                "id": "00utmecoNjNd0lrWp0g4",
+                "username": "test@okta.com"
+            }
+        }
         """
         let dict = try! JSONSerialization.jsonObject(with: authenticatorJson.data(using: .utf8)!, options: []) as! [String: Any]
         let jsonData = try! JSONSerialization.data(withJSONObject: dict, options: .prettyPrinted)

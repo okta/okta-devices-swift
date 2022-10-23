@@ -16,6 +16,9 @@ class OktaTransactionPushTokenUpdate: OktaTransactionEnroll {
     override func createEnrollmentAndSaveToStorage(enrollmentSummary: EnrollmentSummary,
                                                    onCompletion: @escaping (Result<AuthenticatorEnrollmentProtocol, DeviceAuthenticatorError>) -> Void) {
         if let enrollmentToUpdate = enrollmentToUpdate {
+            if case DeviceToken.tokenData(let tokenData) = self.enrollmentContext.pushToken {
+                self.saveDeviceToken(tokenData, enrollmentId: enrollmentToUpdate.enrollmentId)
+            }
             onCompletion(Result.success(enrollmentToUpdate))
         } else {
             onCompletion(Result.failure(DeviceAuthenticatorError.internalError("No reference to enrollment object")))
