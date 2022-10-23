@@ -211,24 +211,23 @@ class LegacyServerAPI: ServerAPIProtocol {
                                     appSignals: [String: _OktaCodableArbitaryType]?,
                                     enrollingFactors: [EnrollingFactor]) throws -> Data {
         let methods: [EnrollAuthenticatorRequestModel.AuthenticatorMethods] = enrollingFactors.compactMap { factor in
-            if factor.keys != nil {
+            var capabilities: Capabilities?
+            if factor.methodType == .push {
                 var transactionTypes: [MethodSettingsModel.TransactionType] = [.LOGIN]
                 if factor.transactionTypes.supportsCIBA {
                     transactionTypes.append(.CIBA)
                 }
-                let capabilities = Capabilities(transactionTypes: transactionTypes)
-                let methodModel = EnrollAuthenticatorRequestModel.AuthenticatorMethods(type: factor.methodType,
-                                                                                       pushToken: factor.methodType == .push ? factor.pushToken : nil,
-                                                                                       apsEnvironment: factor.methodType == .push ? factor.apsEnvironment : nil,
-                                                                                       supportUserVerification: factor.supportUserVerification,
-                                                                                       isFipsCompliant: factor.isFipsCompliant,
-                                                                                       keys: factor.keys,
-                                                                                       capabilities: capabilities)
-
-                return methodModel
-            } else {
-                return nil
+                capabilities = Capabilities(transactionTypes: transactionTypes)
             }
+            let methodModel = EnrollAuthenticatorRequestModel.AuthenticatorMethods(type: factor.methodType,
+                                                                                   pushToken: factor.methodType == .push ? factor.pushToken : nil,
+                                                                                   apsEnvironment: factor.methodType == .push ? factor.apsEnvironment : nil,
+                                                                                   supportUserVerification: factor.supportUserVerification,
+                                                                                   isFipsCompliant: factor.isFipsCompliant,
+                                                                                   keys: factor.keys,
+                                                                                   capabilities: capabilities)
+
+            return methodModel
         }
         let enrollRequestModel = EnrollAuthenticatorRequestModel(authenticatorId: metadata.id,
                                                                  key: metadata.key,
