@@ -140,8 +140,8 @@ enrollments.forEach { enrollment in
 }
 ```
 
-### Enable Transactional MFA (CIBA) capabilities into existing enrollment
-Enables or disables support for CIBA Transactions for the enrollment. By disabling it, your app won't receive CIBA challenges from the Okta backend.
+### Enable using your app for Client Initiated Backchannel Authentication (CIBA)
+Enable your app to respond to CIBA authorization challenges sent by the Okta backend server. CIBA challenges are disabled by default. The following code shows how to enable challenges for each of the enrolled custom authenticators of your app.
 ```swift
 let accessToken = "eySBDC...." // https://developer.okta.com/docs/reference/api/oidc/#access-token
 let enrollments = authenticator.allEnrollments()
