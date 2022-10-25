@@ -140,6 +140,20 @@ enrollments.forEach { enrollment in
 }
 ```
 
+### Enable using your app for Client Initiated Backchannel Authentication (CIBA)
+Enable your app to respond to CIBA authorization challenges sent by the Okta backend server. CIBA challenges are disabled by default. The following code shows how to enable challenges for each of the enrolled custom authenticators of your app.
+```swift
+let accessToken = "eySBDC...." // https://developer.okta.com/docs/reference/api/oidc/#access-token
+let enrollments = authenticator.allEnrollments()
+enrollments.forEach { enrollment in
+    enrollment.enableCIBATransactions(authenticationToken: AuthToken.bearer(accessToken, enable: true) { error in
+        if let error = error {
+            print("Error enabling support for CIBA transactions: \(error)")
+        }
+    } 
+}
+```
+
 #### Delete enrollment
 Use the `enrollment.delete()` method to unenroll push verification. This will result in the SDK deleting enrollment from a device when a successful response is received from the Okta server.
 
