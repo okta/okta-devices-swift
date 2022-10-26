@@ -156,6 +156,11 @@ class LegacyServerAPI: ServerAPIProtocol {
                                     enrollingFactors: [EnrollingFactor],
                                     token: OktaRestAPIToken,
                                     completion: @escaping (_ result: Result<EnrollmentSummary, DeviceAuthenticatorError>) -> Void) {
+        if case .none = token {
+            completion(.failure(DeviceAuthenticatorError.internalError("No token provided for update enrollment request")))
+            return
+        }
+
         let enrollRequestJson: Data
         do {
             logger.info(eventName: "Update request", message: "Building enrollment request")
@@ -172,11 +177,6 @@ class LegacyServerAPI: ServerAPIProtocol {
 
         let finalURL: URL = orgHost.appendingPathComponent("/idp/authenticators/" + enrollmentId)
         logger.info(eventName: "Updating Authenticator", message: "URL: \(finalURL)")
-        if case .none = token {
-            completion(.failure(DeviceAuthenticatorError.internalError("No token provided for update enrollment request")))
-            return
-        }
-
         self.client
             .request(finalURL, method: .put, httpBody: enrollRequestJson, headers: [HTTPHeaderConstants.contentTypeHeader: "application/json"])
             .addHeader(name: HTTPHeaderConstants.authorizationHeader, value: authorizationHeaderValue(forAuthType: token.type, withToken: token.token))
@@ -211,13 +211,13 @@ class LegacyServerAPI: ServerAPIProtocol {
                                     appSignals: [String: _OktaCodableArbitaryType]?,
                                     enrollingFactors: [EnrollingFactor]) throws -> Data {
         let methods: [EnrollAuthenticatorRequestModel.AuthenticatorMethods] = enrollingFactors.compactMap { factor in
-            var capabilities: Capabilities?
+            var capabilities: CapabilitiesModel?
             if factor.methodType == .push {
                 var transactionTypes: [MethodSettingsModel.TransactionType] = [.LOGIN]
-                if factor.transactionTypes.supportsCIBA {
+                if factor.transactionTypes?.supportsCIBA == true {
                     transactionTypes.append(.CIBA)
                 }
-                capabilities = Capabilities(transactionTypes: transactionTypes)
+                capabilities = CapabilitiesModel(transactionTypes: transactionTypes)
             }
             let methodModel = EnrollAuthenticatorRequestModel.AuthenticatorMethods(type: factor.methodType,
                                                                                    pushToken: factor.methodType == .push ? factor.pushToken : nil,

@@ -440,7 +440,7 @@ class OktaTransactionEnroll: OktaTransaction {
             try self.storageManager.storeEnrollment(enrollment)
             if case DeviceToken.tokenData(let deviceToken) = enrollmentContext.pushToken {
                 // TODO: Remove below logic when server will implement PATCH request
-                enrollment.saveDeviceToken(deviceToken)
+                self.saveDeviceToken(deviceToken, enrollmentId: enrollmentSummary.enrollmentId)
             }
             if newDeviceEnrollment.id != self.deviceEnrollment?.id {
                 if let oldDeviceEnrollment = try? self.storageManager.deviceEnrollmentByOrgId(orgId),
@@ -462,6 +462,16 @@ class OktaTransactionEnroll: OktaTransaction {
             onCompletion(Result.failure(resultError))
             return
         }
+    }
+
+    // TODO: Remove saveDeviceToken function when server will implement PATCH request
+    func saveDeviceToken(_ token: Data, enrollmentId: String) {
+        UserDefaults().set(token, forKey: "device_token_" + enrollmentId)
+    }
+
+    // TODO: Remove readDeviceToken function when server will implement PATCH request
+    func readDeviceToken(enrollmentId: String) -> Data? {
+        UserDefaults().data(forKey: "device_token_" + enrollmentId)
     }
 
     let logEventName = "EnrollTransaction"

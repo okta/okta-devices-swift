@@ -65,7 +65,6 @@ class AuthenticatorEnrollment: AuthenticatorEnrollmentProtocol {
     let restAPIClient: ServerAPIProtocol
     let storageManager: PersistentStorageProtocol
     let applicationConfig: ApplicationConfig
-    let userDefaultsStorage: UserDefaults
     private let logEventName = "AuthenticatorEnrollment"
 
     init(organization: Organization,
@@ -92,7 +91,6 @@ class AuthenticatorEnrollment: AuthenticatorEnrollmentProtocol {
         self.applicationConfig = applicationConfig
         self.enrolledFactors = enrolledFactors
         self.logger = logger
-        self.userDefaultsStorage = UserDefaults()
     }
 
     func recordError(_ error: ServerErrorCode) {
@@ -135,7 +133,6 @@ class AuthenticatorEnrollment: AuthenticatorEnrollmentProtocol {
             switch result {
             case .success(_):
                 updateTransaction.cleanupOnSuccess()
-                self?.saveDeviceToken(token)
                 self?.recordServerResponse(error: nil)
                 completion(nil)
             case .failure(let error):
@@ -182,16 +179,12 @@ class AuthenticatorEnrollment: AuthenticatorEnrollmentProtocol {
             return
         }
 
-        var deviceToken: DeviceToken = .empty
-        if let deviceTokenData = readDeviceToken() {
-            deviceToken = .tokenData(deviceTokenData)
-        }
         let enrollmentContext = EnrollmentContext(accessToken: authenticationToken.tokenValue(),
                                                   activationToken: nil,
                                                   orgHost: orgHost,
                                                   authenticatorKey: policy.metadata.id,
                                                   oidcClientId: policy.metadata.settings?.oauthClientId,
-                                                  pushToken: deviceToken,
+                                                  pushToken: .empty,
                                                   enrollBiometricKey: enable,
                                                   deviceSignals: nil,
                                                   biometricSettings: .default,
@@ -236,16 +229,12 @@ class AuthenticatorEnrollment: AuthenticatorEnrollmentProtocol {
             return
         }
 
-        var deviceToken: DeviceToken = .empty
-        if let deviceTokenData = readDeviceToken() {
-            deviceToken = .tokenData(deviceTokenData)
-        }
         let enrollmentContext = EnrollmentContext(accessToken: authenticationToken.tokenValue(),
                                                   activationToken: nil,
                                                   orgHost: orgHost,
                                                   authenticatorKey: policy.metadata.id,
                                                   oidcClientId: policy.metadata.settings?.oauthClientId,
-                                                  pushToken: deviceToken,
+                                                  pushToken: .empty,
                                                   enrollBiometricKey: nil,
                                                   deviceSignals: nil,
                                                   biometricSettings: .default,
@@ -276,16 +265,6 @@ class AuthenticatorEnrollment: AuthenticatorEnrollmentProtocol {
                 completion(error)
             }
         }
-    }
-
-    // TODO: Remove saveDeviceToken function when server will implement PATCH request
-    func saveDeviceToken(_ token: Data) {
-        userDefaultsStorage.set(token, forKey: "device_token_" + self.enrollmentId)
-    }
-
-    // TODO: Remove readDeviceToken function when server will implement PATCH request
-    func readDeviceToken() -> Data? {
-        userDefaultsStorage.data(forKey: "device_token_" + self.enrollmentId)
     }
 
     func cleanup() {

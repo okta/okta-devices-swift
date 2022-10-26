@@ -133,4 +133,155 @@ final class MyAccountServerAPITests: XCTestCase {
 
         XCTAssertTrue(closureCalled)
     }
+
+    func testUpdateAuthenticatorRequest_Success() throws {
+        let httpResult = HTTPURLResult(request: URLRequest(url: mockURL),
+                                       response: HTTPURLResponse(url: mockURL, statusCode: 200, httpVersion: nil, headerFields: nil)!,
+                                       data: MyAccountTestData.enrollmentResponse())
+        let httpClient = MockHTTPClient(result: httpResult)
+        var numberOfHTTPHeaders = 0
+        httpClient.requestHook = { url, httpMethod, urlParameters, data, httpHeaders, timeInterval in
+            XCTAssertEqual(url.absoluteString, (self.metadata._links.enroll?.href ?? "") + "/enrollmentId")
+            XCTAssertTrue(httpMethod == .patch)
+            //let decodedRequest: MethodUpdateRequestModel? = try? JSONDecoder().decode(MethodUpdateRequestModel.self, from: data!)
+            let decodedRequest = try? JSONSerialization.jsonObject(with: data!, options: []) as? [String: Any]
+            let decodedMehtods = decodedRequest?["methods"] as? [String: Any]
+            let decodedPushMethod = decodedMehtods?["push"] as? [String: Any]
+            let decodedKeys = decodedPushMethod?["keys"] as? [String: Any]
+            let decodedCapabilites = decodedPushMethod?["capabilities"] as? [String: Any]
+            let decodedTransactionTypes = decodedCapabilites?["transactionTypes"] as? [String]
+            XCTAssertEqual(decodedPushMethod?["pushToken"] as! String, "pushToken")
+            XCTAssertNotNil(decodedTransactionTypes?.contains("LOGIN"))
+            XCTAssertNotNil(decodedTransactionTypes?.contains("CIBA"))
+            XCTAssertNotNil(decodedKeys?["userVerification"])
+            XCTAssertNil(decodedKeys?["proofOfPossession"])
+            let mockURLRequest = MockURLRequest(result: httpResult, headers: httpHeaders)
+            mockURLRequest.requestHeadersHook = { key, value in
+                if key == "Authorization" {
+                    XCTAssertEqual(value, "Bearer accessToken")
+                    numberOfHTTPHeaders += 1
+                } else if key == "Accept" {
+                    XCTAssertEqual(value, "application/merge-patch+json; okta-version=1.0.0")
+                    numberOfHTTPHeaders += 1
+                }
+            }
+
+            return mockURLRequest
+        }
+        let myAccountAPI = MyAccountServerAPI(client: httpClient, crypto: crypto, logger: OktaLoggerMock())
+        var closureCalled = false
+        let signingKeys = SigningKeysModel(proofOfPossession: nil, userVerification: SigningKeysModel.UserVerificationKey.null)
+        let enrollingFactor = EnrollingFactor(proofOfPossessionKeyTag: "proofOfPossessionKeyTag",
+                                              userVerificationKeyTag: "userVerificationKeyTag",
+                                              methodType: .push, apsEnvironment: .development,
+                                              pushToken: "pushToken",
+                                              supportUserVerification: true,
+                                              isFipsCompliant: nil,
+                                              keys: signingKeys,
+                                              transactionTypes: TransactionType(rawValue: 3))
+        myAccountAPI.updateAuthenticatorRequest(orgHost: mockURL,
+                                                enrollmentId: "enrollmentId",
+                                                metadata: metadata,
+                                                deviceModel: deviceSignals,
+                                                appSignals: nil,
+                                                enrollingFactors: [enrollingFactor],
+                                                token: .accessToken("accessToken")) { result in
+            switch result {
+            case .failure(_):
+                XCTFail("Unexpected failure")
+            case .success(let enrollmentSummary):
+                XCTAssertNotNil(enrollmentSummary.factors.first(where: {$0 is OktaFactorPush}))
+            }
+            closureCalled = true
+        }
+
+        XCTAssertTrue(closureCalled)
+    }
+
+    func testUpdateAuthenticatorRequest_Failure() throws {
+        // Validate response with 401 code
+        var httpResult = HTTPURLResult(request: URLRequest(url: mockURL),
+                                       response: HTTPURLResponse(url: mockURL, statusCode: 401, httpVersion: nil, headerFields: nil)!,
+                                       data: GoldenData.resourceNotFoundError())
+        var httpClient = MockHTTPClient(result: httpResult)
+        var myAccountAPI = MyAccountServerAPI(client: httpClient, crypto: crypto, logger: OktaLoggerMock())
+        var closureCalled = false
+        let signingKeys = SigningKeysModel(proofOfPossession: nil, userVerification: nil)
+        let enrollingFactor = EnrollingFactor(proofOfPossessionKeyTag: "proofOfPossessionKeyTag",
+                                              userVerificationKeyTag: "userVerificationKeyTag",
+                                              methodType: .push, apsEnvironment: .development,
+                                              pushToken: "pushToken",
+                                              supportUserVerification: true,
+                                              isFipsCompliant: nil,
+                                              keys: signingKeys,
+                                              transactionTypes: .login)
+        myAccountAPI.updateAuthenticatorRequest(orgHost: mockURL,
+                                                enrollmentId: "enrollmentId",
+                                                metadata: metadata,
+                                                deviceModel: deviceSignals,
+                                                appSignals: nil,
+                                                enrollingFactors: [enrollingFactor],
+                                                token: .accessToken("accessToken")) { result in
+            switch result {
+            case .failure(let error):
+                XCTAssertEqual(error.errorCode, -1)
+            case .success(_):
+                XCTFail("Unexpected success")
+            }
+            closureCalled = true
+        }
+
+        XCTAssertTrue(closureCalled)
+
+        // Validate response with 200 code and empty data
+        httpResult = HTTPURLResult(request: URLRequest(url: mockURL),
+                                       response: HTTPURLResponse(url: mockURL, statusCode: 200, httpVersion: nil, headerFields: nil)!,
+                                       data: nil)
+        httpClient = MockHTTPClient(result: httpResult)
+        myAccountAPI = MyAccountServerAPI(client: httpClient, crypto: crypto, logger: OktaLoggerMock())
+        closureCalled = false
+        myAccountAPI.updateAuthenticatorRequest(orgHost: mockURL,
+                                                enrollmentId: "enrollmentId",
+                                                metadata: metadata,
+                                                deviceModel: deviceSignals,
+                                                appSignals: nil,
+                                                enrollingFactors: [enrollingFactor],
+                                                token: .accessToken("accessToken")) { result in
+            switch result {
+            case .failure(let error):
+                XCTAssertEqual(error.errorCode, -6)
+            case .success(_):
+                XCTFail("Unexpected success")
+            }
+            closureCalled = true
+        }
+
+        XCTAssertTrue(closureCalled)
+
+        // Validate response with unexpected data
+        httpResult = HTTPURLResult(request: URLRequest(url: mockURL),
+                                       response: HTTPURLResponse(url: mockURL, statusCode: 200, httpVersion: nil, headerFields: nil)!,
+                                       data: MyAccountTestData.authenticatorDataNoMethods())
+        httpClient = MockHTTPClient(result: httpResult)
+        myAccountAPI = MyAccountServerAPI(client: httpClient, crypto: crypto, logger: OktaLoggerMock())
+        closureCalled = false
+        myAccountAPI.updateAuthenticatorRequest(orgHost: mockURL,
+                                                enrollmentId: "enrollmentId",
+                                                metadata: metadata,
+                                                deviceModel: deviceSignals,
+                                                appSignals: nil,
+                                                enrollingFactors: [enrollingFactor],
+                                                token: .accessToken("accessToken")) { result in
+            switch result {
+            case .failure(let error):
+                XCTAssertEqual(error.errorCode, -6)
+                XCTAssertEqual(error.errorDescription, "The data couldn’t be read because it is missing.")
+            case .success(_):
+                XCTFail("Unexpected success")
+            }
+            closureCalled = true
+        }
+
+        XCTAssertTrue(closureCalled)
+    }
 }
