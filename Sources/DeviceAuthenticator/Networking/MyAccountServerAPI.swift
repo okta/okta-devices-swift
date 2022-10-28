@@ -17,7 +17,6 @@ class MyAccountServerAPI: ServerAPIProtocol {
     let client: HTTPClientProtocol
     let crypto: OktaSharedCryptoProtocol
     let logger: OktaLoggerProtocol
-    let currentProtocolVersion = "1.0.0"
     let acceptHeaderValue: String
     let jsonPatchHeaderValue: String
 
@@ -27,8 +26,8 @@ class MyAccountServerAPI: ServerAPIProtocol {
         self.client = client
         self.crypto = crypto
         self.logger = logger
-        acceptHeaderValue = "application/json" + "; okta-version=\(currentProtocolVersion)"
-        jsonPatchHeaderValue = "application/merge-patch+json" + "; okta-version=\(currentProtocolVersion)"
+        acceptHeaderValue = "application/json" + "; okta-version=\(MyAccountAPI.protocolVersion)"
+        jsonPatchHeaderValue = "application/merge-patch+json" + "; okta-version=\(MyAccountAPI.protocolVersion)"
     }
 
     func downloadAuthenticatorMetadata(orgHost: URL,
@@ -74,7 +73,7 @@ class MyAccountServerAPI: ServerAPIProtocol {
                 }
 
                 do {
-                    let policiesModel = try JSONDecoder().decode([PolicyAPIResponseModel].self, from: metaDataJson)
+                    let policiesModel = try JSONDecoder().decode([MyAccountAPI.PolicyAPIResponseModel].self, from: metaDataJson)
                     guard let policyModel = policiesModel.first else {
                         completion(Result.failure(DeviceAuthenticatorError.internalError("Unexpected response from server")))
                         return
@@ -103,8 +102,63 @@ class MyAccountServerAPI: ServerAPIProtocol {
             }
     }
 
-    func enrollAuthenticatorRequest(orgHost: URL, metadata: AuthenticatorMetaDataModel, deviceModel: DeviceSignalsModel, appSignals: [String: _OktaCodableArbitaryType]?, enrollingFactors: [EnrollingFactor], token: OktaRestAPIToken, completion: @escaping (Result<EnrollmentSummary, DeviceAuthenticatorError>) -> Void) {
-        // Implement
+    func enrollAuthenticatorRequest(orgHost: URL,
+                                    metadata: AuthenticatorMetaDataModel,
+                                    deviceModel: DeviceSignalsModel,
+                                    appSignals: [String: _OktaCodableArbitaryType]?,
+                                    enrollingFactors: [EnrollingFactor],
+                                    token: OktaRestAPIToken,
+                                    completion: @escaping (Result<EnrollmentSummary, DeviceAuthenticatorError>) -> Void) {
+        let enrollRequestJson: Data
+        do {
+            logger.info(eventName: "Enroll request", message: "Building request json object")
+            enrollRequestJson = try buildEnrollmentRequestData(metadata: metadata,
+                                                               deviceModel: deviceModel,
+                                                               appSignals: appSignals,
+                                                               enrollingFactors: enrollingFactors)
+        } catch {
+            let resultError = DeviceAuthenticatorError.internalError(error.localizedDescription)
+            logger.error(eventName: "Enroll request", message: "Error: \(resultError)")
+            completion(.failure(resultError))
+            return
+        }
+
+        let finalURL: URL
+        if let enrollLink = metadata._links.enroll?.href,
+            let enrollURL = URL(string: enrollLink) {
+            finalURL = enrollURL
+        } else {
+            finalURL = orgHost.appendingPathComponent("/idp/myaccount/app-authenticator")
+        }
+        logger.info(eventName: "Enrolling Authenticator", message: "URL: \(finalURL)")
+        self.client
+            .request(finalURL, method: .post, httpBody: enrollRequestJson, headers: [HTTPHeaderConstants.contentTypeHeader: "application/json"])
+            .addHeader(name: HTTPHeaderConstants.authorizationHeader, value: authorizationHeaderValue(forAuthType: token.type, withToken: token.token))
+            .addHeader(name: HTTPHeaderConstants.acceptHeader, value: acceptHeaderValue)
+            .response { result in
+                if let error = result.error {
+                    let resultError = DeviceAuthenticatorError.networkError(error)
+                    self.logger.error(eventName: "API error", message: "error: \(resultError) for request at URL: \(finalURL)")
+                    completion(.failure(resultError))
+                    return
+                }
+
+                do {
+                    try self.validateResult(result, for: finalURL)
+                    let enrollmentSummary = try self.createEnrollmentSummary(from: result,
+                                                                             metadata: metadata,
+                                                                             enrollingFactorsData: enrollingFactors)
+                    completion(.success(enrollmentSummary))
+                } catch let oktaError as DeviceAuthenticatorError {
+                    completion(Result.failure(oktaError))
+                    return
+                } catch {
+                    let resultError = DeviceAuthenticatorError.internalError(error.localizedDescription)
+                    self.logger.error(eventName: "API error", message: "error: \(resultError) for request at URL: \(finalURL)")
+                    completion(Result.failure(resultError))
+                    return
+                }
+            }
     }
 
     func updateAuthenticatorRequest(orgHost: URL,
@@ -141,11 +195,11 @@ class MyAccountServerAPI: ServerAPIProtocol {
             }
             capabilitiesModel = CapabilitiesModel(transactionTypes: transactionTypesRequestModel)
         }
-        let pushUpdateModel = MethodUpdateRequestModel.MethodsModel.PushMethodModel(pushToken: pushMethod.pushToken,
+        let pushUpdateModel = MyAccountAPI.MethodUpdateRequestModel.MethodsModel.PushMethodModel(pushToken: pushMethod.pushToken,
                                                                                     keys: SigningKeysModel(proofOfPossession: nil,
                                                                                                            userVerification: pushMethod.keys?.userVerification),
                                                                                     capabilities: capabilitiesModel)
-        let updateRequestModel = MethodUpdateRequestModel(methods: MethodUpdateRequestModel.MethodsModel(push: pushUpdateModel))
+        let updateRequestModel = MyAccountAPI.MethodUpdateRequestModel(methods: MyAccountAPI.MethodUpdateRequestModel.MethodsModel(push: pushUpdateModel))
         let updateRequestJson: Data
         do {
             logger.info(eventName: "Update request", message: "Building update request")
@@ -187,7 +241,39 @@ class MyAccountServerAPI: ServerAPIProtocol {
             }
     }
 
-    func createFactorMetadataBasedOnServerResponse(method: AuthenticatorResponseModel.AuthenticatorMethods.PushMethod,
+    func buildEnrollmentRequestData(metadata: AuthenticatorMetaDataModel,
+                                    deviceModel: DeviceSignalsModel,
+                                    appSignals: [String: _OktaCodableArbitaryType]?,
+                                    enrollingFactors: [EnrollingFactor]) throws -> Data {
+        var methods = MyAccountAPI.AuthenticatorRequestModel.AuthenticatorMethods(push: nil)
+        enrollingFactors.forEach { factor in
+            if factor.methodType == .push {
+                guard let keys = factor.keys,
+                      let pushToken = factor.pushToken else {
+                    self.logger.error(eventName: "Building push factor model", message: "Keys or push token are missing")
+                    return
+                }
+                var transactionTypes: [MethodSettingsModel.TransactionType] = [.LOGIN]
+                if factor.transactionTypes?.supportsCIBA == true {
+                    transactionTypes.append(.CIBA)
+                }
+                let capabilities = CapabilitiesModel(transactionTypes: transactionTypes)
+                let pushMethod = MyAccountAPI.AuthenticatorRequestModel.AuthenticatorMethods.PushMethod(pushToken: pushToken,
+                                                                                                        apsEnvironment: factor.apsEnvironment ?? .production,
+                                                                                                        capabilities: capabilities,
+                                                                                                        keys: keys)
+                methods.push = pushMethod
+            }
+        }
+
+        let enrollRequestModel = MyAccountAPI.AuthenticatorRequestModel(authenticatorId: metadata.id,
+                                                                        device: deviceModel,
+                                                                        appSignals: appSignals,
+                                                                        methods: methods)
+        return try JSONEncoder().encode(enrollRequestModel)
+    }
+
+    func createFactorMetadataBasedOnServerResponse(method: MyAccountAPI.AuthenticatorResponseModel.AuthenticatorMethods.PushMethod,
                                                    metadata: AuthenticatorMetaDataModel,
                                                    enrollingFactorsData: [EnrollingFactor]) -> OktaFactor? {
         let pushFactor = self.createEnrolledPushFactor(from: enrollingFactorsData,
@@ -198,13 +284,13 @@ class MyAccountServerAPI: ServerAPIProtocol {
 
     func createEnrolledPushFactor(from factorModels: [EnrollingFactor],
                                   metadata: AuthenticatorMetaDataModel,
-                                  and enrolledModel: AuthenticatorResponseModel.AuthenticatorMethods.PushMethod) -> OktaFactor? {
+                                  and enrolledModel: MyAccountAPI.AuthenticatorResponseModel.AuthenticatorMethods.PushMethod) -> OktaFactor? {
         guard let factorModel = factorModels.first(where: { $0.methodType == .push }),
               let proofOfPossessionKeyTag = factorModel.proofOfPossessionKeyTag else {
             return nil
         }
 
-        let links = enrolledModel._links ?? AuthenticatorResponseModel.AuthenticatorMethods.PushMethod.Links(pending: nil)
+        let links = enrolledModel._links ?? MyAccountAPI.AuthenticatorResponseModel.AuthenticatorMethods.PushMethod.Links(pending: nil)
         let factorMetadata = OktaFactorMetadataPush(id: enrolledModel.id,
                                                     proofOfPossessionKeyTag: proofOfPossessionKeyTag,
                                                     userVerificationKeyTag: factorModel.userVerificationKeyTag,
@@ -229,7 +315,7 @@ class MyAccountServerAPI: ServerAPIProtocol {
         }
 
         var enrolledFactors: [OktaFactor] = []
-        let enrolledAuthenticatorModel = try JSONDecoder().decode(AuthenticatorResponseModel.self, from: resultJsonData)
+        let enrolledAuthenticatorModel = try JSONDecoder().decode(MyAccountAPI.AuthenticatorResponseModel.self, from: resultJsonData)
         if let pushMethod = enrolledAuthenticatorModel.methods.push {
             let factor = self.createFactorMetadataBasedOnServerResponse(method: pushMethod,
                                                                         metadata: metadata,

@@ -432,6 +432,50 @@ class GoldenData {
 }
 
 class MyAccountTestData {
+
+    class func authenticatorMetaData() -> Data {
+        let authenticatorJson: String = """
+        [{
+            "id": "autuowpr5VjVjQPU30g3",
+            "key": "okta_verify",
+            "type": "APP",
+            "status": "ACTIVE",
+            "name": "Okta Device Authenticator",
+            "created": "2017-01-24T19:52:34.000Z",
+            "lastUpdated": "2017-01-24T19:52:34.000Z",
+            "settings": {
+                "appInstanceId": "oidcAppId1234",
+                "userVerification": "preferred",
+                "oauthClientId": "someOAuth2ClientId"
+            },
+            "_links": {
+                "enroll": {
+                    "href": "https://your-org.okta.com/idp/myaccount/app-authenticator",
+                    "hints": {
+                        "allow": ["POST"]
+                    }
+                }
+            },
+            "_embedded": {
+                "methods": [
+                    {
+                        "type": "push",
+                        "status": "ACTIVE",
+                        "settings": {
+                            "algorithms": ["RS256", "ES256"],
+                            "keyProtection": "ANY",
+                            "transactionTypes": ["LOGIN", "CIBA"]
+                        }
+                    }
+                ]
+            }
+        }]
+        """
+        let jsonArray = try! JSONSerialization.jsonObject(with: authenticatorJson.data(using: .utf8)!, options: []) as! [Any]
+        let jsonData = try! JSONSerialization.data(withJSONObject: jsonArray, options: .prettyPrinted)
+        return jsonData
+    }
+
     class func policyResponse() -> Data {
         let authenticatorJson: String = """
         [{

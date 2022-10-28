@@ -158,13 +158,11 @@
 		9F7EFF14287E0E12001E2C4E /* RestAPIMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9602412878A5690012C74C /* RestAPIMock.swift */; };
 		9F93122528FF205400DD06DF /* MyAccountServerAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F93122428FF205400DD06DF /* MyAccountServerAPI.swift */; };
 		9F93122A28FF230400DD06DF /* MyAccountServerAPITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F93122828FF22E000DD06DF /* MyAccountServerAPITests.swift */; };
-		9F93122C28FF2A7400DD06DF /* PolicyAPIResponseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F93122B28FF2A7400DD06DF /* PolicyAPIResponseModel.swift */; };
+		9F93122C28FF2A7400DD06DF /* MyAccountAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F93122B28FF2A7400DD06DF /* MyAccountAPI.swift */; };
 		9F93122E28FF2E8400DD06DF /* MethodSettingsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F93122D28FF2E8400DD06DF /* MethodSettingsModel.swift */; };
 		9F93123028FF314A00DD06DF /* AuthenticatorSettingsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F93122F28FF314A00DD06DF /* AuthenticatorSettingsModel.swift */; };
-		9F93125A29034AA800DD06DF /* MethodUpdateRequestModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F93125929034AA800DD06DF /* MethodUpdateRequestModel.swift */; };
 		9F93125C29034E9C00DD06DF /* SigningKeysModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F93125B29034E9C00DD06DF /* SigningKeysModel.swift */; };
 		9F93125E29034EF100DD06DF /* CapabilitiesModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F93125D29034EF100DD06DF /* CapabilitiesModel.swift */; };
-		9F9312692907348E00DD06DF /* AuthenticatorResponseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9312682907348E00DD06DF /* AuthenticatorResponseModel.swift */; };
 		9F96024A2878A5690012C74C /* GoldenData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9602362878A5690012C74C /* GoldenData.swift */; };
 		9F96024B2878A5690012C74C /* MockAPIResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9602372878A5690012C74C /* MockAPIResponse.swift */; };
 		9F96024C2878A5690012C74C /* UserMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9602382878A5690012C74C /* UserMock.swift */; };
@@ -404,13 +402,11 @@
 		9F7EFF06287E0D8A001E2C4E /* DeleteEnrollmentFlowTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeleteEnrollmentFlowTests.swift; sourceTree = "<group>"; };
 		9F93122428FF205400DD06DF /* MyAccountServerAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAccountServerAPI.swift; sourceTree = "<group>"; };
 		9F93122828FF22E000DD06DF /* MyAccountServerAPITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAccountServerAPITests.swift; sourceTree = "<group>"; };
-		9F93122B28FF2A7400DD06DF /* PolicyAPIResponseModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolicyAPIResponseModel.swift; sourceTree = "<group>"; };
+		9F93122B28FF2A7400DD06DF /* MyAccountAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAccountAPI.swift; sourceTree = "<group>"; };
 		9F93122D28FF2E8400DD06DF /* MethodSettingsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MethodSettingsModel.swift; sourceTree = "<group>"; };
 		9F93122F28FF314A00DD06DF /* AuthenticatorSettingsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticatorSettingsModel.swift; sourceTree = "<group>"; };
-		9F93125929034AA800DD06DF /* MethodUpdateRequestModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MethodUpdateRequestModel.swift; sourceTree = "<group>"; };
 		9F93125B29034E9C00DD06DF /* SigningKeysModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SigningKeysModel.swift; sourceTree = "<group>"; };
 		9F93125D29034EF100DD06DF /* CapabilitiesModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CapabilitiesModel.swift; sourceTree = "<group>"; };
-		9F9312682907348E00DD06DF /* AuthenticatorResponseModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticatorResponseModel.swift; sourceTree = "<group>"; };
 		9F9602362878A5690012C74C /* GoldenData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GoldenData.swift; sourceTree = "<group>"; };
 		9F9602372878A5690012C74C /* MockAPIResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockAPIResponse.swift; sourceTree = "<group>"; };
 		9F9602382878A5690012C74C /* UserMock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserMock.swift; sourceTree = "<group>"; };
@@ -970,9 +966,7 @@
 		9F93122728FF209300DD06DF /* 1.0.0 */ = {
 			isa = PBXGroup;
 			children = (
-				9F93122B28FF2A7400DD06DF /* PolicyAPIResponseModel.swift */,
-				9F93125929034AA800DD06DF /* MethodUpdateRequestModel.swift */,
-				9F9312682907348E00DD06DF /* AuthenticatorResponseModel.swift */,
+				9F93122B28FF2A7400DD06DF /* MyAccountAPI.swift */,
 			);
 			name = 1.0.0;
 			sourceTree = "<group>";
@@ -1325,7 +1319,6 @@
 				7F8833B02874FB820034CA5E /* OktaDeviceBindJWTPayload.swift in Sources */,
 				7F8833BD2874FB820034CA5E /* OktaSharedSQLite.swift in Sources */,
 				9F98950B2874ECC80056AC6E /* DeviceAuthenticatorConstants.swift in Sources */,
-				9F93125A29034AA800DD06DF /* MethodUpdateRequestModel.swift in Sources */,
 				7F8833CF2874FB820034CA5E /* OktaTransaction.swift in Sources */,
 				7F8833F32874FB820034CA5E /* AuthToken.swift in Sources */,
 				7F88337F2874FB820034CA5E /* OktaFactor.swift in Sources */,
@@ -1350,7 +1343,6 @@
 				7F8833AB2874FB820034CA5E /* OktaAuthenticationTokenBuilder.swift in Sources */,
 				7F8833992874FB820034CA5E /* OktaStringExtension.swift in Sources */,
 				9F93123028FF314A00DD06DF /* AuthenticatorSettingsModel.swift in Sources */,
-				9F9312692907348E00DD06DF /* AuthenticatorResponseModel.swift in Sources */,
 				7F8833E42874FB820034CA5E /* _SignalPluginConfig.swift in Sources */,
 				7F8833842874FB820034CA5E /* AuthenticatorPolicy.swift in Sources */,
 				7F8833AD2874FB820034CA5E /* OktaCryptoConstants.swift in Sources */,
@@ -1385,7 +1377,7 @@
 				7F8833862874FB820034CA5E /* DeviceAuthenticator.swift in Sources */,
 				7F8833A42874FB820034CA5E /* OktaJWTGenerator.swift in Sources */,
 				7F8833942874FB820034CA5E /* _OktaCodableArbitaryType.swift in Sources */,
-				9F93122C28FF2A7400DD06DF /* PolicyAPIResponseModel.swift in Sources */,
+				9F93122C28FF2A7400DD06DF /* MyAccountAPI.swift in Sources */,
 				7F8833812874FB820034CA5E /* User.swift in Sources */,
 				7F8833962874FB820034CA5E /* AuthenticatorMetaDataModel.swift in Sources */,
 				7F8833D12874FB820034CA5E /* OktaTransactionPullChallenge.swift in Sources */,
