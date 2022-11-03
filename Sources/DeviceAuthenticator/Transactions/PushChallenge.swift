@@ -53,7 +53,7 @@ class PushChallenge: PushChallengeProtocol, CIBAChallengeProtocol {
 
     /// Required if transactionType = CIBA
     lazy var cibaBindingMessage: String? = {
-        return challengeContext["bindingMessage"] as? String
+        return sanitizedBindingMessage
     }()
 
     /// Transaction type associated with this push challenge - Login or Transactional MFA (CIBA)
@@ -157,5 +157,10 @@ class PushChallenge: PushChallengeProtocol, CIBAChallengeProtocol {
                                jwtType: InternalConstants.PushJWTConstants.pushJWTType,
                                allowedClockSkewInSeconds: allowedClockSkewInSeconds,
                                logger: logger)
+    }
+
+    private var sanitizedBindingMessage: String? {
+        guard let rawMessage = challengeContext["bindingMessage"] as? String else { return nil }
+        return rawMessage.removingPercentEncoding
     }
 }
