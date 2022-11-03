@@ -241,6 +241,51 @@ class MyAccountServerAPI: ServerAPIProtocol {
             }
     }
 
+    func pendingChallenge(with orgURL: URL,
+                          authenticationToken: OktaRestAPIToken,
+                          completion: @escaping (_ result: HTTPURLResult?, _ error: DeviceAuthenticatorError?) -> Void) {
+        self.client
+        .request(orgURL)
+        .addHeader(name: HTTPHeaderConstants.authorizationHeader, value: authorizationHeaderValue(forAuthType: authenticationToken.type,
+                                                                                                  withToken: authenticationToken.token))
+            .addHeader(name: HTTPHeaderConstants.acceptHeader, value: acceptHeaderValue)
+        .response { (result) in
+            if let error = result.error {
+                let resultError = DeviceAuthenticatorError.networkError(error)
+                self.logger.error(eventName: "API error", message: "error: \(resultError) for request at URL: \(orgURL)")
+                completion(result, resultError)
+                return
+            }
+
+            self.validateResult(result, for: orgURL, andCall: completion)
+        }
+    }
+
+    func deleteAuthenticatorRequest(url: URL,
+                                    token: OktaRestAPIToken,
+                                    completion: @escaping (_ result: HTTPURLResult?, _ error: DeviceAuthenticatorError?) -> Void) {
+        logger.info(eventName: "Deleting Authenticator", message: "URL: \(url)")
+        if case .none = token {
+            completion(nil, DeviceAuthenticatorError.internalError("No token provided for update enrollment request"))
+            return
+        }
+
+        self.client
+            .request(url, method: .delete, httpBody: nil)
+            .addHeader(name: HTTPHeaderConstants.authorizationHeader, value: authorizationHeaderValue(forAuthType: token.type, withToken: token.token))
+            .addHeader(name: HTTPHeaderConstants.acceptHeader, value: acceptHeaderValue)
+            .response { (result) in
+                if let error = result.error {
+                    let resultError = DeviceAuthenticatorError.networkError(error)
+                    self.logger.error(eventName: "API error", message: "\(resultError), for request at URL: \(url)")
+                    completion(result, resultError)
+                    return
+                }
+
+                self.validateResult(result, for: url, andCall: completion)
+            }
+    }
+
     func buildEnrollmentRequestData(metadata: AuthenticatorMetaDataModel,
                                     deviceModel: DeviceSignalsModel,
                                     appSignals: [String: _OktaCodableArbitaryType]?,

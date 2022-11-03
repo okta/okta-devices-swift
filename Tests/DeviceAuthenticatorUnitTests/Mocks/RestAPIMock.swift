@@ -20,7 +20,7 @@ class RestAPIMock: ServerAPIProtocol {
     typealias updateAuthenticatorRequestType = (URL, String, AuthenticatorMetaDataModel, DeviceSignalsModel, [String : _OktaCodableArbitaryType]?, [EnrollingFactor], OktaRestAPIToken, @escaping (_ result: Result<EnrollmentSummary, DeviceAuthenticatorError>) -> Void) -> Void
     typealias downloadAuthenticatorMetadataType = (URL, String, OktaRestAPIToken, (Result<AuthenticatorMetaDataModel, DeviceAuthenticatorError>) -> Void) -> Void
     typealias deleteAuthenticatorRequestType = (URL, OktaRestAPIToken, (_ result: HTTPURLResult?, _ error: DeviceAuthenticatorError?) -> Void) -> Void
-    typealias pendingChallengeRequestType = (URL, AuthToken, (HTTPURLResult?, DeviceAuthenticatorError?) -> Void) -> Void
+    typealias pendingChallengeRequestType = (URL, OktaRestAPIToken, (HTTPURLResult?, DeviceAuthenticatorError?) -> Void) -> Void
 
     var enrollAuthenticatorRequestHook: enrollAuthenticatorRequestType?
     var downloadOrgIdTypeHook: downloadOrgIdType?
@@ -129,7 +129,7 @@ class RestAPIMock: ServerAPIProtocol {
         }
     }
 
-    public func pendingChallenge(with orgURL: URL, authenticationToken: AuthToken, completion: @escaping (HTTPURLResult?, DeviceAuthenticatorError?) -> Void) {
+    public func pendingChallenge(with orgURL: URL, authenticationToken: OktaRestAPIToken, completion: @escaping (HTTPURLResult?, DeviceAuthenticatorError?) -> Void) {
         if let pendingChallengeRequestHook = pendingChallengeRequestHook {
             pendingChallengeRequestHook(orgURL, authenticationToken, completion)
         } else {
