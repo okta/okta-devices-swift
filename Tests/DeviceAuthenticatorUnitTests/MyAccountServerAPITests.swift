@@ -248,6 +248,74 @@ final class MyAccountServerAPITests: XCTestCase {
         XCTAssertTrue(closureCalled)
     }
 
+    func testPendingChallenge_Success() throws {
+        let httpResult = HTTPURLResult(request: URLRequest(url: mockURL),
+                                       response: HTTPURLResponse(url: mockURL, statusCode: 200, httpVersion: nil, headerFields: nil)!,
+                                       data: GoldenData.pendingChallengeData_NoChallengeContextInBindJWT())
+        let httpClient = MockHTTPClient(result: httpResult)
+        var numberOfHTTPHeaders = 0
+        httpClient.requestHook = { url, httpMethod, urlParameters, data, httpHeaders, timeInterval in
+            XCTAssertEqual(url.absoluteString, "https://example.okta.com/push/pending")
+            XCTAssertTrue(httpMethod == .get)
+            let mockURLRequest = MockURLRequest(result: httpResult, headers: httpHeaders)
+            mockURLRequest.requestHeadersHook = { key, value in
+                if key == "Authorization" {
+                    XCTAssertEqual(value, "Bearer accessToken")
+                    numberOfHTTPHeaders += 1
+                } else if key == "Accept" {
+                    XCTAssertEqual(value, "application/json; okta-version=1.0.0")
+                    numberOfHTTPHeaders += 1
+                }
+            }
+
+            return mockURLRequest
+        }
+        let myAccountAPI = MyAccountServerAPI(client: httpClient, crypto: crypto, logger: OktaLoggerMock())
+        var closureCalled = false
+        myAccountAPI.pendingChallenge(with: URL(string: "https://example.okta.com/push/pending")!,
+                                      authenticationToken: .accessToken("accessToken")) { result, error in
+            XCTAssertNil(error)
+            XCTAssertNotNil(result)
+            closureCalled = true
+        }
+
+        XCTAssertTrue(closureCalled)
+    }
+
+    func testDelete_Success() throws {
+        let httpResult = HTTPURLResult(request: URLRequest(url: mockURL),
+                                       response: HTTPURLResponse(url: mockURL, statusCode: 204, httpVersion: nil, headerFields: nil)!,
+                                       data: nil)
+        let httpClient = MockHTTPClient(result: httpResult)
+        var numberOfHTTPHeaders = 0
+        httpClient.requestHook = { url, httpMethod, urlParameters, data, httpHeaders, timeInterval in
+            XCTAssertEqual(url.absoluteString, "https://example.okta.com/push/pending")
+            XCTAssertTrue(httpMethod == .delete)
+            let mockURLRequest = MockURLRequest(result: httpResult, headers: httpHeaders)
+            mockURLRequest.requestHeadersHook = { key, value in
+                if key == "Authorization" {
+                    XCTAssertEqual(value, "Bearer accessToken")
+                    numberOfHTTPHeaders += 1
+                } else if key == "Accept" {
+                    XCTAssertEqual(value, "application/json; okta-version=1.0.0")
+                    numberOfHTTPHeaders += 1
+                }
+            }
+
+            return mockURLRequest
+        }
+        let myAccountAPI = MyAccountServerAPI(client: httpClient, crypto: crypto, logger: OktaLoggerMock())
+        var closureCalled = false
+        myAccountAPI.deleteAuthenticatorRequest(url: URL(string: "https://example.okta.com/push/pending")!,
+                                                token: .accessToken("accessToken")) { result, error in
+            XCTAssertNil(error)
+            XCTAssertNotNil(result)
+            closureCalled = true
+        }
+
+        XCTAssertTrue(closureCalled)
+    }
+
     func testEnrollAuthenticatorRequest_Failure() throws {
         // Validate response with 401 code
         var httpResult = HTTPURLResult(request: URLRequest(url: mockURL),
@@ -413,6 +481,76 @@ final class MyAccountServerAPITests: XCTestCase {
             case .success(_):
                 XCTFail("Unexpected success")
             }
+            closureCalled = true
+        }
+
+        XCTAssertTrue(closureCalled)
+    }
+
+    func testPendingChallenge_Failure() throws {
+        let httpResult = HTTPURLResult(request: URLRequest(url: mockURL),
+                                       response: HTTPURLResponse(url: mockURL, statusCode: 401, httpVersion: nil, headerFields: nil)!,
+                                       data: GoldenData.authenticatorMetaData())
+        let httpClient = MockHTTPClient(result: httpResult)
+        var numberOfHTTPHeaders = 0
+        httpClient.requestHook = { url, httpMethod, urlParameters, data, httpHeaders, timeInterval in
+            XCTAssertEqual(url.absoluteString, "https://example.okta.com/push/pending")
+            XCTAssertTrue(httpMethod == .get)
+            let mockURLRequest = MockURLRequest(result: httpResult, headers: httpHeaders)
+            mockURLRequest.requestHeadersHook = { key, value in
+                if key == "Authorization" {
+                    XCTAssertEqual(value, "Bearer accessToken")
+                    numberOfHTTPHeaders += 1
+                } else if key == "Accept" {
+                    XCTAssertEqual(value, "application/json; okta-version=1.0.0")
+                    numberOfHTTPHeaders += 1
+                }
+            }
+
+            return mockURLRequest
+        }
+        let myAccountAPI = MyAccountServerAPI(client: httpClient, crypto: crypto, logger: OktaLoggerMock())
+        var closureCalled = false
+        myAccountAPI.pendingChallenge(with: URL(string: "https://example.okta.com/push/pending")!,
+                                      authenticationToken: .accessToken("accessToken")) { result, error in
+            XCTAssertNotNil(error)
+            XCTAssertEqual(error?.errorCode, -1)
+            XCTAssertNotNil(result)
+            closureCalled = true
+        }
+
+        XCTAssertTrue(closureCalled)
+    }
+
+    func testDelete_Failure() throws {
+        let httpResult = HTTPURLResult(request: URLRequest(url: mockURL),
+                                       response: HTTPURLResponse(url: mockURL, statusCode: 404, httpVersion: nil, headerFields: nil)!,
+                                       data: GoldenData.authenticatorMetaData())
+        let httpClient = MockHTTPClient(result: httpResult)
+        var numberOfHTTPHeaders = 0
+        httpClient.requestHook = { url, httpMethod, urlParameters, data, httpHeaders, timeInterval in
+            XCTAssertEqual(url.absoluteString, "https://example.okta.com/push/pending")
+            XCTAssertTrue(httpMethod == .delete)
+            let mockURLRequest = MockURLRequest(result: httpResult, headers: httpHeaders)
+            mockURLRequest.requestHeadersHook = { key, value in
+                if key == "Authorization" {
+                    XCTAssertEqual(value, "Bearer accessToken")
+                    numberOfHTTPHeaders += 1
+                } else if key == "Accept" {
+                    XCTAssertEqual(value, "application/json; okta-version=1.0.0")
+                    numberOfHTTPHeaders += 1
+                }
+            }
+
+            return mockURLRequest
+        }
+        let myAccountAPI = MyAccountServerAPI(client: httpClient, crypto: crypto, logger: OktaLoggerMock())
+        var closureCalled = false
+        myAccountAPI.deleteAuthenticatorRequest(url: URL(string: "https://example.okta.com/push/pending")!,
+                                                token: .accessToken("accessToken")) { result, error in
+            XCTAssertNotNil(error)
+            XCTAssertEqual(error?.errorCode, -1)
+            XCTAssertNotNil(result)
             closureCalled = true
         }
 

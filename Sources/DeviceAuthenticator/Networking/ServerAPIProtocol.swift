@@ -81,40 +81,11 @@ protocol ServerAPIProtocol {
                        completion: @escaping (_ result: HTTPURLResult?, _ error: DeviceAuthenticatorError?) -> Void)
 
     func pendingChallenge(with orgURL: URL,
-                          authenticationToken: AuthToken,
+                          authenticationToken: OktaRestAPIToken,
                           completion: @escaping (_ result: HTTPURLResult?, _ error: DeviceAuthenticatorError?) -> Void)
 }
 
 extension ServerAPIProtocol {
-
-    /// - Description: Deletes Authenticator
-    /// - Parameters:
-    ///   - url:         Organization host url
-    ///   - token:       Authentication token(access token, one time token or signed jwt)
-    ///   - completion:  Handler to execute after the async call completes
-    func deleteAuthenticatorRequest(url: URL,
-                                    token: OktaRestAPIToken,
-                                    completion: @escaping (_ result: HTTPURLResult?, _ error: DeviceAuthenticatorError?) -> Void) {
-        logger.info(eventName: "Deleting Authenticator", message: "URL: \(url)")
-        if case .none = token {
-            completion(nil, DeviceAuthenticatorError.internalError("No token provided for update enrollment request"))
-            return
-        }
-
-        self.client
-            .request(url, method: .delete, httpBody: nil)
-            .addHeader(name: HTTPHeaderConstants.authorizationHeader, value: authorizationHeaderValue(forAuthType: token.type, withToken: token.token))
-            .response { (result) in
-                if let error = result.error {
-                    let resultError = DeviceAuthenticatorError.networkError(error)
-                    self.logger.error(eventName: "API error", message: "\(resultError), for request at URL: \(url)")
-                    completion(result, resultError)
-                    return
-                }
-
-                self.validateResult(result, for: url, andCall: completion)
-            }
-    }
 
     /// - Description: Sends a verify device challenge request.
     /// - Parameters:
@@ -170,29 +141,6 @@ extension ServerAPIProtocol {
             }
 
             self.validateResult(result, for: orgMetaDataURL, andCall: completion)
-        }
-    }
-
-    /// - Description: Requests pending challenge from the server
-    /// - Parameters:
-    ///   - orgURL: Org host url
-    ///   - authenticationToken: Authentication token,
-    func pendingChallenge(with orgURL: URL,
-                          authenticationToken: AuthToken,
-                          completion: @escaping (_ result: HTTPURLResult?, _ error: DeviceAuthenticatorError?) -> Void) {
-        self.client
-        .request(orgURL)
-            .addHeader(name: HTTPHeaderConstants.authorizationHeader, value: authorizationHeaderValue(forAuthType: OktaAuthType.fromAuthToken(authenticationToken),
-                                                                                                      withToken: authenticationToken.tokenValue()))
-        .response { (result) in
-            if let error = result.error {
-                let resultError = DeviceAuthenticatorError.networkError(error)
-                self.logger.error(eventName: "API error", message: "error: \(resultError) for request at URL: \(orgURL)")
-                completion(result, resultError)
-                return
-            }
-
-            self.validateResult(result, for: orgURL, andCall: completion)
         }
     }
 

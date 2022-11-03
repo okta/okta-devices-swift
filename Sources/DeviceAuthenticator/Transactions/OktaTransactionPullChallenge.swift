@@ -43,7 +43,8 @@ class OktaTransactionPullChallenge: OktaTransaction {
             return
         }
 
-        restAPI.pendingChallenge(with: url, authenticationToken: authenticationToken) { result, error in
+        restAPI.pendingChallenge(with: url,
+                                 authenticationToken: OktaRestAPIToken.accessToken(authenticationToken.tokenValue())) { result, error in
             DispatchQueue.global().async {
                 if let error = error {
                     self.logger.error(eventName: "Pull challenge failed", message: "Error: \(error)")
