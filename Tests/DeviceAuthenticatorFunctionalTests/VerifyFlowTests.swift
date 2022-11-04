@@ -473,13 +473,13 @@ class VerifyFlowTests: XCTestCase {
         }
     }
 
-    func testResolveRetrivePushChallenge_Success() {
+    func testResolveRetrievePushChallenge_Success() {
 
-        let retrivePushChallengeResolveSuccessExpectation = expectation(description: "Retrive push challenge should resolve")
-        // retrive push challenge
-        let retriveJWT = FakePushChallenge.mockIDXJWT(enrollmentId: "aen1jisLwwTG7qRrH0g4")
-        let retriveChallengeInfo = [["payloadVersion": "IDXv1", "challenge": retriveJWT]]
-        let data = try! JSONSerialization.data(withJSONObject: retriveChallengeInfo, options: [])
+        let retrievePushChallengeResolveSuccessExpectation = expectation(description: "Retrieve push challenge should resolve")
+        // retrieve push challenge
+        let retrieveJWT = FakePushChallenge.mockIDXJWT(enrollmentId: "aen1jisLwwTG7qRrH0g4")
+        let retrieveChallengeInfo = [["payloadVersion": "IDXv1", "challenge": retrieveJWT]]
+        let data = try! JSONSerialization.data(withJSONObject: retrieveChallengeInfo, options: [])
         httpResponses.append(HTTPURLResponse(url: mockURL, statusCode: 200, httpVersion: nil, headerFields: nil)!)
         dataResponses.append(data)
         // Success approved push challenge
@@ -509,7 +509,7 @@ class VerifyFlowTests: XCTestCase {
                                 XCTAssertNil(error)
                                 XCTAssertTrue(isUserConsentStepCall)
                                 XCTAssertEqual(pushChallenge.userResponse, .userApproved)
-                                retrivePushChallengeResolveSuccessExpectation.fulfill()
+                                retrievePushChallengeResolveSuccessExpectation.fulfill()
                             }
                         case .failure(let error):
                             XCTFail(error.errorDescription ?? error.localizedDescription)
@@ -519,7 +519,61 @@ class VerifyFlowTests: XCTestCase {
                     XCTFail(error.errorDescription ?? error.localizedDescription)
                 }
             }
-            wait(for: [retrivePushChallengeResolveSuccessExpectation], timeout: expectationTimeout)
+            wait(for: [retrievePushChallengeResolveSuccessExpectation], timeout: expectationTimeout)
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+    }
+
+    func testResolveRetrievePushChallenge_CIBA_Success() {
+
+        let retrievePushChallengeResolveSuccessExpectation = expectation(description: "Retrieve push challenge should resolve")
+        // retrieve push challenge
+        let retrieveJWT = FakePushChallenge.mockIDXJWT(enrollmentId: "aen1jisLwwTG7qRrH0g4", transactionType: "CIBA", bindingMessage: "Did you approve this transaction?")
+        let retrieveChallengeInfo = [["payloadVersion": "IDXv1", "challenge": retrieveJWT]]
+        let data = try! JSONSerialization.data(withJSONObject: retrieveChallengeInfo, options: [])
+        httpResponses.append(HTTPURLResponse(url: mockURL, statusCode: 200, httpVersion: nil, headerFields: nil)!)
+        dataResponses.append(data)
+        // Success approved push challenge
+        httpResponses.append(HTTPURLResponse(url: mockURL, statusCode: 200, httpVersion: nil, headerFields: nil)!)
+        dataResponses.append("Approved".data(using: .utf8)!)
+        let mockHTTPClient = MockMultipleRequestsHTTPClient(responseArray: httpResponses, dataArray: dataResponses)
+        do {
+            try enrollmentHelper.enroll(mockHTTPClient: mockHTTPClient) { result in
+                switch result {
+                case .success(let enrollment):
+                    enrollment.retrievePushChallenges(authenticationToken: self.authToken) { pushChallengesResult in
+                        switch pushChallengesResult {
+                        case .success(let pushChallenges):
+                            XCTAssertTrue(pushChallenges.count == 1)
+                            let pushChallenge = pushChallenges.first!
+                            XCTAssertTrue(pushChallenge is CIBAChallengeProtocol)
+                            XCTAssertEqual(pushChallenge.userResponse, .userNotResponded)
+                            XCTAssertEqual((pushChallenge as! CIBAChallengeProtocol).cibaBindingMessage, "Did you approve this transaction?")
+                            var isUserConsentStepCall = false
+                            pushChallenge.resolve { remediationStep in
+                                switch remediationStep {
+                                case let userConsentStep as RemediationStepUserConsent:
+                                    userConsentStep.provide(.approved)
+                                    isUserConsentStepCall = true
+                                default:
+                                    XCTFail()
+                                }
+                            } onCompletion: { error in
+                                XCTAssertNil(error)
+                                XCTAssertTrue(isUserConsentStepCall)
+                                XCTAssertEqual(pushChallenge.userResponse, .userApproved)
+                                retrievePushChallengeResolveSuccessExpectation.fulfill()
+                            }
+                        case .failure(let error):
+                            XCTFail(error.errorDescription ?? error.localizedDescription)
+                        }
+                    }
+                case .failure(let error):
+                    XCTFail(error.errorDescription ?? error.localizedDescription)
+                }
+            }
+            wait(for: [retrievePushChallengeResolveSuccessExpectation], timeout: expectationTimeout)
         } catch {
             XCTFail(error.localizedDescription)
         }
@@ -574,6 +628,56 @@ class VerifyFlowTests: XCTestCase {
 
         let notificationPushChallengeResolveFailExpectation = expectation(description: "Notification push challenge should not resolve for user verification required")
         let pushJWT = FakePushChallenge.mockIDXJWT(enrollmentId: "aen1jisLwwTG7qRrH0g4", userVerification: .required)
+        let pushChallengeInfo = ["payloadVersion": "IDXv1", "challenge": pushJWT]
+        let notification = UNNotificationResponse.testNotificationResponse(with: pushChallengeInfo, testIdentifier: "test").notification
+        // Success approved push challenge
+        httpResponses.append(HTTPURLResponse(url: mockURL, statusCode: 200, httpVersion: nil, headerFields: nil)!)
+        dataResponses.append("Approved".data(using: .utf8)!)
+        let mockHTTPClient = MockMultipleRequestsHTTPClient(responseArray: httpResponses, dataArray: dataResponses)
+        do {
+            try enrollmentHelper.enroll(userVerification: false, mockHTTPClient: mockHTTPClient) { result in
+                switch result {
+                case .success(_):
+                    do {
+                        let pushChallenge = try self.enrollmentHelper.deviceAuthenticator.parsePushNotification(notification)
+                        XCTAssertEqual(pushChallenge.userResponse, .userNotResponded)
+                        var isUserConsentStepCall = false
+                        var isMessageStepCall = false
+                        pushChallenge.resolve { remediationStep in
+                            switch remediationStep {
+                            case let userConsentStep as RemediationStepUserConsent:
+                                userConsentStep.provide(.approved)
+                                isUserConsentStepCall = true
+                            case let messageStep as RemediationStepMessage:
+                                XCTAssertEqual(messageStep.reasonType, .userVerificationKeyCorruptedOrMissing)
+                                isMessageStepCall = true
+                            default:
+                                XCTFail()
+                            }
+                        } onCompletion: { error in
+                            XCTAssertNil(error)
+                            XCTAssertTrue(isUserConsentStepCall)
+                            XCTAssertTrue(isMessageStepCall)
+                            XCTAssertEqual(pushChallenge.userResponse, .userApproved)
+                            notificationPushChallengeResolveFailExpectation.fulfill()
+                        }
+                    } catch {
+                        XCTFail(error.localizedDescription)
+                    }
+                case .failure(let error):
+                    XCTFail(error.errorDescription ?? error.localizedDescription)
+                }
+            }
+            wait(for: [notificationPushChallengeResolveFailExpectation], timeout: expectationTimeout)
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+    }
+
+    func testResolvePushChallenge_CIBA_EnrollmentUVDisabled_UVRequired_Fail() {
+
+        let notificationPushChallengeResolveFailExpectation = expectation(description: "Notification push challenge should not resolve for user verification required")
+        let pushJWT = FakePushChallenge.mockIDXJWT(enrollmentId: "aen1jisLwwTG7qRrH0g4", userVerification: .required, transactionType: "CIBA", bindingMessage: "Did you approve this transaction?")
         let pushChallengeInfo = ["payloadVersion": "IDXv1", "challenge": pushJWT]
         let notification = UNNotificationResponse.testNotificationResponse(with: pushChallengeInfo, testIdentifier: "test").notification
         // Success approved push challenge

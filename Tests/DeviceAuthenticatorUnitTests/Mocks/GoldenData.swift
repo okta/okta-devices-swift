@@ -57,6 +57,48 @@ class GoldenData {
         return jsonData
     }
 
+    class func authenticatorMetaDataLoginType() -> Data {
+        let authenticatorJson: String = """
+        [{
+            "id": "autuowpr5VjVjQPU30g3",
+            "key": "okta_verify",
+            "type": "APP",
+            "status": "ACTIVE",
+            "name": "Okta Device Authenticator",
+            "created": "2017-01-24T19:52:34.000Z",
+            "lastUpdated": "2017-01-24T19:52:34.000Z",
+            "settings": {
+                "appInstanceId": "oidcAppId1234",
+                "userVerification": "preferred",
+                "oauthClientId": "someOAuth2ClientId"
+            },
+            "_links": {
+                "enroll": {
+                    "href": "https://atko.oktapreview.com/idp/authenticators",
+                    "hints": {
+                        "allow": ["POST"]
+                    }
+                }
+            },
+            "_embedded": {
+                "methods": [
+                    {
+                        "type": "push",
+                        "status": "ACTIVE",
+                        "settings": {
+                            "algorithms": ["RS256", "ES256"],
+                            "keyProtection": "ANY",
+                            "transactionTypes": ["LOGIN"]
+                        }
+                    }
+                ]
+            }
+        }]
+        """
+        let jsonArray = try! JSONSerialization.jsonObject(with: authenticatorJson.data(using: .utf8)!, options: []) as! [Any]
+        let jsonData = try! JSONSerialization.data(withJSONObject: jsonArray, options: .prettyPrinted)
+        return jsonData
+    }
     class func authenticatorMetaDataInactive() -> Data {
         let authenticatorJson: String = """
         [{
@@ -343,6 +385,21 @@ class GoldenData {
                     "payloadVersion": "IDXv1",
                     "challenge": "eyJhbGciOiJIUzI1NiIsInR5cCI6Im9rdGEtcHVzaGJpbmQrand0In0.eyJpc3MiOiJodHRwczovL2lkeC5va3RhMS5jb20iLCJhdWQiOiJva3RhLjYzYzA4MWRiLTFmMTMtNTA4NC04ODJmLWU3OWUxZTVlMmRhNyIsImV4cCI6MTU5MTg0OTYwMywiaWF0IjoxNTkxODQ5MzAzLCJqdGkiOiJmdDhqVVZRUnVabGZSam5sOU1xako1ekVyX01NQUR1OXc5Iiwibm9uY2UiOiJOR0hQZGpVdExac0ZIT1o5dzJfalM1cThiWVhRQXdKYSIsInRyYW5zYWN0aW9uSWQiOiJmdDhqVVZRUnVabGZSam5sOU1xako1ekVyX01NQUR1OXc5Iiwic2lnbmFscyI6bnVsbCwidmVyaWZpY2F0aW9uVXJpIjoiaHR0cHM6Ly9pZHgub2t0YTEuY29tL3YxL2F1dGhuL2ZhY3RvcnMvMTIzNC90cmFuc2FjdGlvbnMvNDMyMS92ZXJpZnkiLCJrZXlUeXBlIjoicHJvb2ZPZlBvc3Nlc3Npb24iLCJtZXRob2QiOiJwdXNoIiwib3JnSWQiOiIwMG85Mmd4b3BlaTcydTRtZTB3NCIsImtpZCI6Ijk5MjBhOTIzLTVhZTMtNGQ5ZC1iZTBiLWNiMmYyZDUwODkyMCIsImNoYWxsZW5nZUNvbnRleHQiOnsic2hvd1VzZXJMb2NhdGlvbkluTm90aWZpY2F0aW9uIjp0cnVlLCJjbGllbnRPUyI6Ik1BQ19PU19YIiwiY2xpZW50TG9jYXRpb24iOiJLeWl2LCBLeWl2IENpdHksIFVrcmFpbmUiLCJ0cmFuc2FjdGlvblRpbWUiOiIyMDE1LTAyLTE3VDIyOjE3OjQ0LjAwMFoiLCJ0cmFuc2FjdGlvblR5cGUiOiJMT0dJTiJ9LCJhdXRoZW50aWNhdG9yRW5yb2xsbWVudElkIjoiYWVuMWppc0x3d1RHN3FSckgwZzQifQ.y_8uiWUJQC9qY8fg9eymuJMfnuSPUdDXn0nlx0E5HwA"
                 }
+        ]
+        """
+        let dict = try! JSONSerialization.jsonObject(with: pendingChallengeJson.data(using: .utf8)!, options: []) as! [[String: Any]]
+        let jsonData = try! JSONSerialization.data(withJSONObject: dict, options: .prettyPrinted)
+        return jsonData
+    }
+
+    class func pendingChallengeCIBAData() -> Data {
+        let pendingChallengeJson: String = """
+        [
+            {
+                "payloadVersion": "IDXv1",
+                "challenge":
+                    "eyJhbGciOiJIUzI1NiIsInR5cCI6Im9rdGEtcHVzaGJpbmQrand0In0.eyJpc3MiOiJodHRwczovL2lkeC5va3RhMS5jb20iLCJhdWQiOiJva3RhLjYzYzA4MWRiLTFmMTMtNTA4NC04ODJmLWU3OWUxZTVlMmRhNyIsImV4cCI6MTU5MTg0OTYwMywiaWF0IjoxNTkxODQ5MzAzLCJqdGkiOiJmdDhqVVZRUnVabGZSam5sOU1xako1ekVyX01NQUR1OXc5Iiwibm9uY2UiOiJOR0hQZGpVdExac0ZIT1o5dzJfalM1cThiWVhRQXdKYSIsInRyYW5zYWN0aW9uSWQiOiJmdDhqVVZRUnVabGZSam5sOU1xako1ekVyX01NQUR1OXc5Iiwic2lnbmFscyI6bnVsbCwidmVyaWZpY2F0aW9uVXJpIjoiaHR0cHM6Ly9pZHgub2t0YTEuY29tL3YxL2F1dGhuL2ZhY3RvcnMvMTIzNC90cmFuc2FjdGlvbnMvNDMyMS92ZXJpZnkiLCJrZXlUeXBlIjoicHJvb2ZPZlBvc3Nlc3Npb24iLCJtZXRob2QiOiJwdXNoIiwib3JnSWQiOiIwMG85Mmd4b3BlaTcydTRtZTB3NCIsImtpZCI6Ijk5MjBhOTIzLTVhZTMtNGQ5ZC1iZTBiLWNiMmYyZDUwODkyMCIsImNoYWxsZW5nZUNvbnRleHQiOnsic2hvd1VzZXJMb2NhdGlvbkluTm90aWZpY2F0aW9uIjp0cnVlLCJjbGllbnRPUyI6Ik1BQ19PU19YIiwiY2xpZW50TG9jYXRpb24iOiJLeWl2LCBLeWl2IENpdHksIFVrcmFpbmUiLCJ0cmFuc2FjdGlvblRpbWUiOiIyMDE1LTAyLTE3VDIyOjE3OjQ0LjAwMFoiLCJ0cmFuc2FjdGlvblR5cGUiOiJDSUJBIiwiYmluZGluZ01lc3NhZ2UiOiJEaWQgeW91IGF1dGhvcml6ZSB0aGlzICQzMDAgdHJhbnNhY3Rpb24_In0sImF1dGhlbnRpY2F0b3JFbnJvbGxtZW50SWQiOiJhZW4xamlzTHd3VEc3cVJySDBnNCJ9.LS77OrIjlkxLCwSo9Sat-H-t3Zq-uqXs04S1LoUjWDc"
+            }
         ]
         """
         let dict = try! JSONSerialization.jsonObject(with: pendingChallengeJson.data(using: .utf8)!, options: []) as! [[String: Any]]

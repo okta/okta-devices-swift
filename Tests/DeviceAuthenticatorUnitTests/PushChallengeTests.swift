@@ -128,4 +128,27 @@ class PushChallengeTests: XCTestCase {
         XCTAssertNotNil(pushChallenge)
         XCTAssertEqual(pushChallenge.cibaBindingMessage, "Did you make a $300 purchase?")
     }
+
+    func testPushChallenge_CibaType_SpecialChars_Escaped() {
+        let pushBindJWT = try? OktaBindJWT(string: OktaJWTTestData.pushChallengeCIBAJWTSpecialChars(),
+                                           validatePayload: false,
+                                           jwtType: "okta-pushbind+jwt",
+                                           logger: OktaLoggerMock())
+        XCTAssertNotNil(pushBindJWT)
+
+        let context = pushBindJWT!.jwt.payload["challengeContext"] as! [AnyHashable: Any]
+        let pushChallenge = PushChallenge(pushBindJWT: pushBindJWT!,
+                                          challengeContext: context,
+                                          storageManager: storageMock,
+                                          applicationConfig: ApplicationConfig(applicationName: "", applicationVersion: "", applicationGroupId: ""),
+                                          cryptoManager: CryptoManagerMock(accessGroupId: "", logger: OktaLoggerMock()),
+                                          signalsManager: SignalsManager(logger: OktaLoggerMock()),
+                                          restAPI: RestAPIMock(client: HTTPClient(logger: OktaLoggerMock(),
+                                                                                  userAgent: ""),
+                                                               logger: OktaLoggerMock()),
+                                          logger: OktaLoggerMock())
+        XCTAssertNotNil(pushChallenge)
+        // encodedBindingMessage = Did you make a $300 purchase%2E?
+        XCTAssertEqual(pushChallenge.cibaBindingMessage, "Did you make a $300 purchase.?")
+    }
 }

@@ -22,9 +22,16 @@ class FakePushChallenge {
                           unusualActivities: [String]? = nil,
                           keyTypes: [String]? = nil,
                           challengeContext: [String: String] = ["clientOS": "iOS", "clientLocation": "San Francisco, USA", "transactionTime": "2090-09-08T19:03:30.166Z"],
-                          verificationURI: String = "verificationUri") -> String {
+                          verificationURI: String = "verificationUri",
+                          transactionType: String = "LOGIN",
+                          bindingMessage: String? = nil) -> String {
         var jwtPayload = JSONWebToken.Payload()
-        jwtPayload["challengeContext"] = challengeContext
+        var context = challengeContext
+        context["transactionType"] = transactionType
+        if let bindingMessage = bindingMessage {
+            context["bindingMessage"] = bindingMessage
+        }
+        jwtPayload["challengeContext"] = context
         if let challengeTextItems = challengeTextItems,
            var challengeContext = jwtPayload["challengeContext"] as? [String: Any] {
             challengeContext["challengeTextItems"] = challengeTextItems

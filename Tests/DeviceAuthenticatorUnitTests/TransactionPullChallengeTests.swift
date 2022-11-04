@@ -112,6 +112,44 @@ class TransactionPullChallengeTests: XCTestCase {
         wait(for: [completionExpectation], timeout: 1)
     }
 
+    func testPendingChallenge_CIBA_Success() {
+        _ = try? cryptoManager.generate(keyPairWith: .ES256,
+                                        with: "proofOfPossessionKeyTag",
+                                        useSecureEnclave: false,
+                                        useBiometrics: false,
+                                        biometricSettings: nil)
+        let mockHTTPClient = MockMultipleRequestsHTTPClient(responseArray: [HTTPURLResponse(url: URL(string: "tenant.okta.com")!,
+                                                                                            statusCode: 200,
+                                                                                            httpVersion: nil,
+                                                                                            headerFields: nil)!],
+                                                            dataArray: [GoldenData.pendingChallengeCIBAData()])
+        let restAPIClient = LegacyServerAPI(client: mockHTTPClient,
+                                            crypto: cryptoManager,
+                                            logger: OktaLoggerMock())
+        let authenticator = entitiesGenerator.createAuthenticator(orgHost: "okta.okta.com",
+                                                                  orgId: "testOrgId1",
+                                                                  userId: "email@okta.com",
+                                                                  methodTypes: [.push])
+        let pullChallengeTransaction = OktaTransactionPullChallengePartialMock(enrollment: authenticator,
+                                                                               authenticationToken: AuthToken.bearer("access_token"),
+                                                                               storageManager: storageMock,
+                                                                               cryptoManager: cryptoManager,
+                                                                               restAPI: restAPIClient,
+                                                                               logger: OktaLoggerMock())
+        let completionExpectation = expectation(description: "callback should be called")
+        pullChallengeTransaction.pullChallenge(allowedClockSkewInSeconds: 300) { result in
+            switch result {
+            case .success(let pushChallenges):
+                XCTAssertEqual(pullChallengeTransaction.allowedClockSkewInSeconds, 300)
+                XCTAssertEqual(pushChallenges.count, 1)
+            case .failure(let error):
+                XCTFail("Unexpected error - \(error.errorDescription ?? "")")
+            }
+            completionExpectation.fulfill()
+        }
+        wait(for: [completionExpectation], timeout: 1)
+    }
+
     func testPendingChallenge_NoLink() {
         _ = try? cryptoManager.generate(keyPairWith: .ES256,
                                         with: "proofOfPossessionKeyTag",
