@@ -128,7 +128,7 @@ class MyAccountServerAPI: ServerAPIProtocol {
             let enrollURL = URL(string: enrollLink) {
             finalURL = enrollURL
         } else {
-            finalURL = orgHost.appendingPathComponent("/idp/myaccount/app-authenticator")
+            finalURL = orgHost.appendingPathComponent("/idp/myaccount/app-authenticators")
         }
         logger.info(eventName: "Enrolling Authenticator", message: "URL: \(finalURL)")
         self.client
@@ -177,9 +177,9 @@ class MyAccountServerAPI: ServerAPIProtocol {
         let finalURL: URL
         if let enrollLink = metadata._links.enroll?.href,
             let enrollURL = URL(string: enrollLink) {
-            finalURL = enrollURL.appendingPathComponent("/enrollmentId")
+            finalURL = enrollURL.appendingPathComponent("/\(enrollmentId)")
         } else {
-            finalURL = orgHost.appendingPathComponent("/idp/myaccount/app-authenticator/\(enrollmentId)")
+            finalURL = orgHost.appendingPathComponent("/idp/myaccount/app-authenticators/\(enrollmentId)")
         }
         logger.info(eventName: "Updating Authenticator", message: "URL: \(finalURL)")
         guard let pushMethod = enrollingFactors.first(where: { $0.methodType == .push }) else {
@@ -195,7 +195,15 @@ class MyAccountServerAPI: ServerAPIProtocol {
             }
             capabilitiesModel = CapabilitiesModel(transactionTypes: transactionTypesRequestModel)
         }
-        let pushUpdateModel = MyAccountAPI.MethodUpdateRequestModel.MethodsModel.PushMethodModel(pushToken: pushMethod.pushToken,
+
+        let pushTokenValue: String?
+        if pushMethod.pushToken == nil || pushMethod.pushToken?.isEmpty == true {
+            pushTokenValue = nil
+        } else {
+            pushTokenValue = pushMethod.pushToken
+        }
+
+        let pushUpdateModel = MyAccountAPI.MethodUpdateRequestModel.MethodsModel.PushMethodModel(pushToken: pushTokenValue,
                                                                                     keys: SigningKeysModel(proofOfPossession: nil,
                                                                                                            userVerification: pushMethod.keys?.userVerification),
                                                                                     capabilities: capabilitiesModel)
@@ -212,7 +220,7 @@ class MyAccountServerAPI: ServerAPIProtocol {
         }
 
         self.client
-            .request(finalURL, method: .patch, httpBody: updateRequestJson, headers: [HTTPHeaderConstants.contentTypeHeader: "application/json"])
+            .request(finalURL, method: .patch, httpBody: updateRequestJson, headers: [HTTPHeaderConstants.contentTypeHeader: jsonPatchHeaderValue])
             .addHeader(name: HTTPHeaderConstants.authorizationHeader, value: authorizationHeaderValue(forAuthType: token.type, withToken: token.token))
             .addHeader(name: HTTPHeaderConstants.acceptHeader, value: jsonPatchHeaderValue)
             .response { (result) in
@@ -261,9 +269,10 @@ class MyAccountServerAPI: ServerAPIProtocol {
         }
     }
 
-    func deleteAuthenticatorRequest(url: URL,
+    func deleteAuthenticatorRequest(enrollment: AuthenticatorEnrollment,
                                     token: OktaRestAPIToken,
                                     completion: @escaping (_ result: HTTPURLResult?, _ error: DeviceAuthenticatorError?) -> Void) {
+        let url = enrollment.organization.url.appendingPathComponent("/idp/myaccount/app-authenticators/" + enrollment.enrollmentId)
         logger.info(eventName: "Deleting Authenticator", message: "URL: \(url)")
         if case .none = token {
             completion(nil, DeviceAuthenticatorError.internalError("No token provided for update enrollment request"))
@@ -335,7 +344,7 @@ class MyAccountServerAPI: ServerAPIProtocol {
             return nil
         }
 
-        let links = enrolledModel._links ?? MyAccountAPI.AuthenticatorResponseModel.AuthenticatorMethods.PushMethod.Links(pending: nil)
+        let links = enrolledModel.links ?? MyAccountAPI.AuthenticatorResponseModel.AuthenticatorMethods.PushMethod.Links(pending: nil)
         let factorMetadata = OktaFactorMetadataPush(id: enrolledModel.id,
                                                     proofOfPossessionKeyTag: proofOfPossessionKeyTag,
                                                     userVerificationKeyTag: factorModel.userVerificationKeyTag,

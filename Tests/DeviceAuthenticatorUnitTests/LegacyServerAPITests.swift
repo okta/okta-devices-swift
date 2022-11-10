@@ -182,7 +182,7 @@ final class LegacyServerAPITests: XCTestCase {
                                        data: nil)
         let httpClient = MockHTTPClient(result: httpResult)
         httpClient.requestHook = { url, httpMethod, urlParameters, data, httpHeaders, timeInterval in
-            XCTAssertEqual(url.absoluteString, "https://example.okta.com/push/pending")
+            XCTAssertEqual(url.absoluteString, "https://example.okta.com/idp/authenticators/enrollmentId")
             XCTAssertTrue(httpMethod == .delete)
             let mockURLRequest = MockURLRequest(result: httpResult, headers: httpHeaders)
             mockURLRequest.requestHeadersHook = { key, value in
@@ -194,7 +194,11 @@ final class LegacyServerAPITests: XCTestCase {
         }
         let legacyAPI = LegacyServerAPI(client: httpClient, crypto: crypto, logger: OktaLoggerMock())
         var closureCalled = false
-        legacyAPI.deleteAuthenticatorRequest(url: URL(string: "https://example.okta.com/push/pending")!,
+        let enrollment = TestUtils.createAuthenticatorEnrollment(orgHost:  URL(string: "https://example.okta.com")!,
+                                                                 orgId: "orgId",
+                                                                 enrollmentId: "enrollmentId",
+                                                                 cryptoManager: crypto)
+        legacyAPI.deleteAuthenticatorRequest(enrollment: enrollment,
                                              token: .accessToken("accessToken")) { result, error in
             XCTAssertNil(error)
             XCTAssertNotNil(result)
@@ -513,7 +517,7 @@ final class LegacyServerAPITests: XCTestCase {
                                        data: GoldenData.authenticatorMetaData())
         let httpClient = MockHTTPClient(result: httpResult)
         httpClient.requestHook = { url, httpMethod, urlParameters, data, httpHeaders, timeInterval in
-            XCTAssertEqual(url.absoluteString, "https://example.okta.com/push/pending")
+            XCTAssertEqual(url.absoluteString, "https://example.okta.com/idp/authenticators/enrollmentId")
             XCTAssertTrue(httpMethod == .delete)
             let mockURLRequest = MockURLRequest(result: httpResult, headers: httpHeaders)
             mockURLRequest.requestHeadersHook = { key, value in
@@ -523,9 +527,13 @@ final class LegacyServerAPITests: XCTestCase {
 
             return mockURLRequest
         }
+        let enrollment = TestUtils.createAuthenticatorEnrollment(orgHost:  URL(string: "https://example.okta.com")!,
+                                                                 orgId: "orgId",
+                                                                 enrollmentId: "enrollmentId",
+                                                                 cryptoManager: crypto)
         let legacyAPI = LegacyServerAPI(client: httpClient, crypto: crypto, logger: OktaLoggerMock())
         var closureCalled = false
-        legacyAPI.deleteAuthenticatorRequest(url: URL(string: "https://example.okta.com/push/pending")!,
+        legacyAPI.deleteAuthenticatorRequest(enrollment: enrollment,
                                              token: .accessToken("accessToken")) { result, error in
             XCTAssertNotNil(error)
             XCTAssertEqual(error?.errorCode, -1)

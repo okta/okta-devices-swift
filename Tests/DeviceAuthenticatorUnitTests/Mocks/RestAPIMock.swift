@@ -19,7 +19,7 @@ class RestAPIMock: ServerAPIProtocol {
     typealias downloadOrgIdType = (URL, (HTTPURLResult?, DeviceAuthenticatorError?) -> Void) -> Void
     typealias updateAuthenticatorRequestType = (URL, String, AuthenticatorMetaDataModel, DeviceSignalsModel, [String : _OktaCodableArbitaryType]?, [EnrollingFactor], OktaRestAPIToken, @escaping (_ result: Result<EnrollmentSummary, DeviceAuthenticatorError>) -> Void) -> Void
     typealias downloadAuthenticatorMetadataType = (URL, String, OktaRestAPIToken, (Result<AuthenticatorMetaDataModel, DeviceAuthenticatorError>) -> Void) -> Void
-    typealias deleteAuthenticatorRequestType = (URL, OktaRestAPIToken, (_ result: HTTPURLResult?, _ error: DeviceAuthenticatorError?) -> Void) -> Void
+    typealias deleteAuthenticatorRequestType = (AuthenticatorEnrollment, OktaRestAPIToken, (_ result: HTTPURLResult?, _ error: DeviceAuthenticatorError?) -> Void) -> Void
     typealias pendingChallengeRequestType = (URL, OktaRestAPIToken, (HTTPURLResult?, DeviceAuthenticatorError?) -> Void) -> Void
 
     var enrollAuthenticatorRequestHook: enrollAuthenticatorRequestType?
@@ -45,11 +45,11 @@ class RestAPIMock: ServerAPIProtocol {
                                                      logger: logger)
     }
 
-    func deleteAuthenticatorRequest(url: URL, token: OktaRestAPIToken, completion: @escaping (HTTPURLResult?, DeviceAuthenticatorError?) -> Void) {
+    func deleteAuthenticatorRequest(enrollment: AuthenticatorEnrollment, token: OktaRestAPIToken, completion: @escaping (HTTPURLResult?, DeviceAuthenticatorError?) -> Void) {
         if let deleteAuthenticatorRequestHook = deleteAuthenticatorRequestHook {
-            deleteAuthenticatorRequestHook(url, token, completion)
+            deleteAuthenticatorRequestHook(enrollment, token, completion)
         } else {
-            restAPI.deleteAuthenticatorRequest(url: url, token: token, completion: completion)
+            restAPI.deleteAuthenticatorRequest(enrollment: enrollment, token: token, completion: completion)
         }
     }
 

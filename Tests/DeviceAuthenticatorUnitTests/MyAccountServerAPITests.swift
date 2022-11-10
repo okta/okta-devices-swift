@@ -289,7 +289,7 @@ final class MyAccountServerAPITests: XCTestCase {
         let httpClient = MockHTTPClient(result: httpResult)
         var numberOfHTTPHeaders = 0
         httpClient.requestHook = { url, httpMethod, urlParameters, data, httpHeaders, timeInterval in
-            XCTAssertEqual(url.absoluteString, "https://example.okta.com/push/pending")
+            XCTAssertEqual(url.absoluteString, "https://example.okta.com/idp/myaccount/app-authenticators/enrollmentId")
             XCTAssertTrue(httpMethod == .delete)
             let mockURLRequest = MockURLRequest(result: httpResult, headers: httpHeaders)
             mockURLRequest.requestHeadersHook = { key, value in
@@ -304,9 +304,13 @@ final class MyAccountServerAPITests: XCTestCase {
 
             return mockURLRequest
         }
+        let enrollment = TestUtils.createAuthenticatorEnrollment(orgHost:  URL(string: "https://example.okta.com")!,
+                                                                 orgId: "orgId",
+                                                                 enrollmentId: "enrollmentId",
+                                                                 cryptoManager: crypto)
         let myAccountAPI = MyAccountServerAPI(client: httpClient, crypto: crypto, logger: OktaLoggerMock())
         var closureCalled = false
-        myAccountAPI.deleteAuthenticatorRequest(url: URL(string: "https://example.okta.com/push/pending")!,
+        myAccountAPI.deleteAuthenticatorRequest(enrollment: enrollment,
                                                 token: .accessToken("accessToken")) { result, error in
             XCTAssertNil(error)
             XCTAssertNotNil(result)
@@ -529,7 +533,7 @@ final class MyAccountServerAPITests: XCTestCase {
         let httpClient = MockHTTPClient(result: httpResult)
         var numberOfHTTPHeaders = 0
         httpClient.requestHook = { url, httpMethod, urlParameters, data, httpHeaders, timeInterval in
-            XCTAssertEqual(url.absoluteString, "https://example.okta.com/push/pending")
+            XCTAssertEqual(url.absoluteString, "https://example.okta.com/idp/myaccount/app-authenticators/enrollmentId")
             XCTAssertTrue(httpMethod == .delete)
             let mockURLRequest = MockURLRequest(result: httpResult, headers: httpHeaders)
             mockURLRequest.requestHeadersHook = { key, value in
@@ -544,9 +548,13 @@ final class MyAccountServerAPITests: XCTestCase {
 
             return mockURLRequest
         }
+        let enrollment = TestUtils.createAuthenticatorEnrollment(orgHost:  URL(string: "https://example.okta.com")!,
+                                                                 orgId: "orgId",
+                                                                 enrollmentId: "enrollmentId",
+                                                                 cryptoManager: crypto)
         let myAccountAPI = MyAccountServerAPI(client: httpClient, crypto: crypto, logger: OktaLoggerMock())
         var closureCalled = false
-        myAccountAPI.deleteAuthenticatorRequest(url: URL(string: "https://example.okta.com/push/pending")!,
+        myAccountAPI.deleteAuthenticatorRequest(enrollment: enrollment,
                                                 token: .accessToken("accessToken")) { result, error in
             XCTAssertNotNil(error)
             XCTAssertEqual(error?.errorCode, -1)

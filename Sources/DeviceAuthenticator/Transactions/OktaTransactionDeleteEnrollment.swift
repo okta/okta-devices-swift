@@ -34,11 +34,11 @@ class OktaTransactionDeleteEnrollment: OktaTransaction {
 
     func delete(onCompletion: @escaping (DeviceAuthenticatorError?) -> Void) {
         logger.info(eventName: self.logEventName, message: "Running enrollment delete flow")
-        let finalURL: URL = enrollmentToDelete.organization.url.appendingPathComponent("/idp/authenticators/" + enrollmentToDelete.enrollmentId)
 
         let runDeleteRequestWithToken: (String?) -> Void = { authenticationToken in
             let token = OktaRestAPIToken(authenticationToken: authenticationToken, accessToken: self.accessToken)
-            self.restAPI.deleteAuthenticatorRequest(url: finalURL, token: token) { result, error in
+            self.restAPI.deleteAuthenticatorRequest(enrollment: self.enrollmentToDelete,
+                                                    token: token) { result, error in
                 if let error = error {
                     self.logger.error(eventName: self.logEventName, message: error.errorDescription)
                     onCompletion(error)

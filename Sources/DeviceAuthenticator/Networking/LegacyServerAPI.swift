@@ -225,9 +225,10 @@ class LegacyServerAPI: ServerAPIProtocol {
         }
     }
 
-    func deleteAuthenticatorRequest(url: URL,
+    func deleteAuthenticatorRequest(enrollment: AuthenticatorEnrollment,
                                     token: OktaRestAPIToken,
                                     completion: @escaping (_ result: HTTPURLResult?, _ error: DeviceAuthenticatorError?) -> Void) {
+        let url = enrollment.organization.url.appendingPathComponent("/idp/authenticators/" + enrollment.enrollmentId)
         logger.info(eventName: "Deleting Authenticator", message: "URL: \(url)")
         if case .none = token {
             completion(nil, DeviceAuthenticatorError.internalError("No token provided for update enrollment request"))
