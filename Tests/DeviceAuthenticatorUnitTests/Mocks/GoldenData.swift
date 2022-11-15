@@ -494,7 +494,7 @@ class MyAccountTestData {
         let authenticatorJson: String = """
         [{
             "id": "autuowpr5VjVjQPU30g3",
-            "key": "okta_verify",
+            "key": "custom_app",
             "type": "APP",
             "status": "ACTIVE",
             "name": "Okta Device Authenticator",
@@ -537,8 +537,8 @@ class MyAccountTestData {
         let authenticatorJson: String = """
         [{
           "authenticatorId": "aut6nfu6soyk3GD2U0g4",
+          "orgId": "00o1n81xonY9z2Heh0g4",
           "key": "custom_app",
-          "type": "app",
           "name": "My Custom Authenticator",
           "created": "2019-06-08T23:54:48.000Z",
           "lastUpdated": "2021-03-03T00:13:33.000Z",
@@ -574,6 +574,7 @@ class MyAccountTestData {
         let authenticatorJson: String = """
                 {
                   "authenticatorId": "aut6nfu6soyk3GD2U0g4",
+                  "orgId": "00o1n81xonY9z2Heh0g4",
                   "key": "custom_app",
                   "type": "app",
                   "name": "My Custom Authenticator",
@@ -596,9 +597,6 @@ class MyAccountTestData {
         {
             "id": "aen1jisLwwTG7qRrH0g4",
             "authenticatorId": "autuowpr5VjVjQPU30g3",
-            "key": "okta_verify",
-            "status": "ACTIVE",
-            "type": "APP",
             "createdDate": "Tue Dec 03 18:39:46 UTC 2019",
             "lastUpdated": "Tue Dec 03 18:39:46 UTC 2019",
             "device": {

@@ -68,7 +68,7 @@ protocol ServerAPIProtocol {
                                     token: OktaRestAPIToken,
                                     completion: @escaping (_ result: Result<EnrollmentSummary, DeviceAuthenticatorError>) -> Void)
 
-    func deleteAuthenticatorRequest(url: URL,
+    func deleteAuthenticatorRequest(enrollment: AuthenticatorEnrollment,
                                     token: OktaRestAPIToken,
                                     completion: @escaping (_ result: HTTPURLResult?, _ error: DeviceAuthenticatorError?) -> Void)
 

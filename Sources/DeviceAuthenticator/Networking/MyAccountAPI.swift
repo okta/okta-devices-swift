@@ -17,6 +17,7 @@ struct MyAccountAPI {
 
     struct PolicyAPIResponseModel: Codable {
         let authenticatorId: String
+        let orgId: String
         let key: String
         let name: String?
         let settings: AuthenticatorSettingsModel?
@@ -59,9 +60,6 @@ struct MyAccountAPI {
     struct AuthenticatorResponseModel: Codable {
         let id: String
         let authenticatorId: String
-        let key: String
-        let status: String
-        let type: String?
         var user: User
         let createdDate: String?
         let lastUpdated: String?
@@ -89,7 +87,7 @@ struct MyAccountAPI {
                 let id: String
                 let createdDate: String?
                 let lastUpdated: String?
-                let _links: Links?
+                let links: Links?
 
                 struct Links: Codable {
                     let pending: ActualLink?
