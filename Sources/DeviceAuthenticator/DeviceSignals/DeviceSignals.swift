@@ -21,7 +21,14 @@ struct DeviceSignals {
     /// Dictionary with additional application/device signals
     var deviceAttestation: [String: _OktaCodableArbitaryType]?
 
+    var platformSSO: PlatformSSOData?
+
     init(displayName: String) {
         self.displayName = displayName
     }
+}
+
+struct PlatformSSOData {
+    let deviceSigningKey: Data
+    let deviceEncryptionKey: Data
 }

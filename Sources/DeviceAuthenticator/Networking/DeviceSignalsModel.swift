@@ -54,6 +54,27 @@ struct DeviceSignalsResponseModel: Codable {
     let clientInstanceId: String
 }
 
+/*
+ "platformSSO": {
+         "keys": {
+           "deviceSigningKey": {
+             "x": "hFr-xcGSMHbWKq2_SUAOMkif1ARYAU-X_8ZGprOhxfw",
+             "y": "HVqAxDCiGcV7H0QAQas6CMbh2wyG-cPU_cwXv3kPqcI",
+             "kty": "EC",
+             "crv": "P-256",
+             "kid": "2078892D-BC96-4C8C-A3FA-34045C002C4A"
+           },
+           "encryptionKey": {
+             "x": "V0p-5JFpcen4Iep94ihs00Kjezw9sblfMSUW-cJxTRk",
+             "y": "wgJ9SFT3iaT6cqS08TBIBg_K-20r_4FMGFUlN2BXFJc",
+             "kty": "EC",
+             "crv": "P-256",
+             "kid": "80D6AC7B-B640-4899-A32C-CA7B98BE0AE6"
+           }
+         }
+     }
+ */
+
 class DeviceSignalsModel: Codable {
     var platform: PlatformValue?
     var osVersion: String?
@@ -75,6 +96,16 @@ class DeviceSignalsModel: Codable {
     var clientInstanceBundleId: String?
     var clientInstanceVersion: String?
     var clientInstanceDeviceSdkVersion: String?
+    var platformSSO: PlatformSSOPayload?
+
+    struct PlatformSSOPayload: Codable {
+        let keys: KeysPayload
+
+        struct KeysPayload: Codable {
+            let deviceSigningKey: [String: _OktaCodableArbitaryType]
+            let encryptionKey: [String: _OktaCodableArbitaryType]
+        }
+    }
 
     init(platform: PlatformValue?, osVersion: String?, displayName: String?) {
         self.platform = platform

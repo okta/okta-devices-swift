@@ -12,6 +12,7 @@
 
 import Foundation
 import LocalAuthentication
+import CryptoKit
 import OktaLogger
 
 class OktaDeviceModelBuilder {
@@ -65,6 +66,9 @@ class OktaDeviceModelBuilder {
         logger.info(eventName: logEventName, message: "Building device model for new enrollment")
         var deviceModel = buildBaseDeviceModel(with: Self.enrollmentSignals)
         addJWKPart(to: &deviceModel, clientIntanceKeyTag: clientIntanceKeyTag)
+        if let platformSSOData = customSignals?.platformSSO {
+            addPlatformSSOPayload(to: &deviceModel, platformSSOData: platformSSOData)
+        }
 
         return deviceModel
     }
@@ -73,6 +77,9 @@ class OktaDeviceModelBuilder {
         logger.info(eventName: logEventName, message: "Building device model for update enrollment")
         var deviceModel = buildBaseDeviceModel(with: Self.enrollmentSignals)
         addJWTPart(to: &deviceModel, deviceEnrollment: deviceEnrollment)
+        if let platformSSOData = customSignals?.platformSSO {
+            addPlatformSSOPayload(to: &deviceModel, platformSSOData: platformSSOData)
+        }
 
         return deviceModel
     }
@@ -158,6 +165,34 @@ class OktaDeviceModelBuilder {
         } else {
             logger.error(eventName: logEventName, message: "Failed to build client instance key JWK")
         }
+    }
+
+    private func addPlatformSSOPayload(to deviceModel: inout DeviceSignalsModel,
+                                       platformSSOData: PlatformSSOData) {
+        // Calculate kid for keys
+        var hashBytes = Array(SHA256.hash(data: platformSSOData.deviceSigningKey).makeIterator())
+        let deviceSigningKeyKID = Data(hashBytes).base64EncodedString()
+        hashBytes = Array(SHA256.hash(data: platformSSOData.deviceEncryptionKey).makeIterator())
+        let deviceEncryptionKeyKID = Data(hashBytes).base64EncodedString()
+
+        let deviceSigningJWK = try? jwkGenerator.generate(for: platformSSOData.deviceSigningKey,
+                                                          type: .publicKey,
+                                                          algorithm: .ES256,
+                                                          kid: deviceSigningKeyKID,
+                                                          additionalParameters: [:])
+        let deviceEncryptionJWK = try? jwkGenerator.generate(for: platformSSOData.deviceEncryptionKey,
+                                                             type: .publicKey,
+                                                             algorithm: .ES256,
+                                                             kid: deviceEncryptionKeyKID,
+                                                             additionalParameters: [:])
+        guard let deviceSigningJWK = deviceSigningJWK,
+              let deviceEncryptionJWK = deviceEncryptionJWK else {
+            logger.error(eventName: logEventName, message: "Failed to build platform SSO payload")
+            return
+        }
+
+        let keysPayload = DeviceSignalsModel.PlatformSSOPayload.KeysPayload(deviceSigningKey: deviceSigningJWK, encryptionKey: deviceEncryptionJWK)
+        deviceModel.platformSSO = DeviceSignalsModel.PlatformSSOPayload(keys: keysPayload)
     }
 
     private func retrieveDeviceSignals(customDeviceSignals: DeviceSignals?, requestedSignals: Set<RequestableSignal>) -> DeviceSignalsModel {

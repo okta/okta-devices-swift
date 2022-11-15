@@ -65,6 +65,36 @@ class OktaJWKGenerator {
         return parameters
     }
 
+    func generate(for publicKeyData: Data,
+                  type: KeyType,
+                  algorithm: Algorithm,
+                  kid: String = NSUUID().uuidString,
+                  additionalParameters: [String: _OktaCodableArbitaryType] = [: ]) throws -> [String: _OktaCodableArbitaryType]? {
+        logger.info(eventName: "Starting JWK generation", message: nil)
+        guard algorithm == Algorithm.ES256 else {
+            let resultError = SecurityError.generalEncryptionError(-1, nil, "Only ES256 algorithm supported for JWK")
+            logger.error(eventName: "JWK string error", message: "Error: \(resultError)")
+            throw resultError
+        }
+
+        let data = publicKeyData as Data
+        var publicKeyBytes = [UInt8](data)
+        publicKeyBytes.removeFirst()
+        let pointSize = publicKeyBytes.count / 2
+        let xBytes = publicKeyBytes[0..<pointSize]
+        let yBytes = publicKeyBytes[pointSize..<pointSize * 2]
+
+        var parameters = additionalParameters
+        parameters["kty"] = .string("EC")
+        parameters["crv"] = .string("P-256")
+        parameters["kid"] = .string(kid)
+        parameters["x"] = .string(urlEncode(data: Data(xBytes)))
+        parameters["y"] = .string(urlEncode(data: Data(yBytes)))
+
+        logger.info(eventName: "JWK generation done", message: nil)
+        return parameters
+    }
+
     private func urlEncode(data: Data) -> String {
         return data.base64EncodedString().replacingOccurrences(of: "+", with: "-")
         .replacingOccurrences(of: "/", with: "_")
