@@ -75,7 +75,7 @@ class MyAccountServerAPI: ServerAPIProtocol {
                 do {
                     let policiesModel = try JSONDecoder().decode([MyAccountAPI.PolicyAPIResponseModel].self, from: metaDataJson)
                     guard let policyModel = policiesModel.first else {
-                        completion(Result.failure(DeviceAuthenticatorError.internalError("Unexpected response from server")))
+                        completion(Result.failure(DeviceAuthenticatorError.genericError("Authenticator policy not found")))
                         return
                     }
                     let enrollLink = AuthenticatorMetaDataModel.Links.EnrollLink(href: policyModel.app_authenticator_enroll_endpoint)

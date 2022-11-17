@@ -36,8 +36,8 @@ class VerifyFlowTests: XCTestCase {
                          HTTPURLResponse(url: mockURL, statusCode: 200, httpVersion: nil, headerFields: nil)!,
                          HTTPURLResponse(url: mockURL, statusCode: 200, httpVersion: nil, headerFields: nil)!]
         dataResponses = [GoldenData.orgData(),
-                         GoldenData.authenticatorMetaData(),
-                         GoldenData.authenticatorData()]
+                         MyAccountTestData.policyResponse(),
+                         MyAccountTestData.enrollmentResponse()]
     }
 
     func testParsePushNotification_Success() {
