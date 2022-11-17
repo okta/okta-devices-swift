@@ -289,7 +289,7 @@ func handle(_ remediationStep: RemediationStep) {
 See the [Push Sample App] for a complete implementation on resolving a push challenge.
 
 ## Known issues
-
+As of iOS 16, Apple requires an entitlement to read the user's UIDevice.current.name. Without this, the Okta end user dashboard and the admin's Devices page will show 'iPhone' or 'iPad' instead of the user's input name. Your host app will need to [request the entitlement when the process becomes available](https://developer.apple.com/forums/thread/708275).
 
 ## Contributing
  
