@@ -579,6 +579,60 @@ class VerifyFlowTests: XCTestCase {
         }
     }
 
+    func testResolveRetrievePushChallenge_CIBA_Deny() {
+
+        let retrievePushChallengeResolveSuccessExpectation = expectation(description: "Retrieve push challenge should resolve")
+        // retrieve push challenge
+        let retrieveJWT = FakePushChallenge.mockIDXJWT(enrollmentId: "aen1jisLwwTG7qRrH0g4", transactionType: "CIBA", bindingMessage: "Did you approve this transaction?")
+        let retrieveChallengeInfo = [["payloadVersion": "IDXv1", "challenge": retrieveJWT]]
+        let data = try! JSONSerialization.data(withJSONObject: retrieveChallengeInfo, options: [])
+        httpResponses.append(HTTPURLResponse(url: mockURL, statusCode: 200, httpVersion: nil, headerFields: nil)!)
+        dataResponses.append(data)
+        // Success denied push challenge
+        httpResponses.append(HTTPURLResponse(url: mockURL, statusCode: 200, httpVersion: nil, headerFields: nil)!)
+        dataResponses.append("Denied".data(using: .utf8)!)
+        let mockHTTPClient = MockMultipleRequestsHTTPClient(responseArray: httpResponses, dataArray: dataResponses)
+        do {
+            try enrollmentHelper.enroll(mockHTTPClient: mockHTTPClient) { result in
+                switch result {
+                case .success(let enrollment):
+                    enrollment.retrievePushChallenges(authenticationToken: self.authToken) { pushChallengesResult in
+                        switch pushChallengesResult {
+                        case .success(let pushChallenges):
+                            XCTAssertTrue(pushChallenges.count == 1)
+                            let pushChallenge = pushChallenges.first!
+                            XCTAssertTrue(pushChallenge is CIBAChallengeProtocol)
+                            XCTAssertEqual(pushChallenge.userResponse, .userNotResponded)
+                            XCTAssertEqual((pushChallenge as! CIBAChallengeProtocol).cibaBindingMessage, "Did you approve this transaction?")
+                            var isUserConsentStepCall = false
+                            pushChallenge.resolve { remediationStep in
+                                switch remediationStep {
+                                case let userConsentStep as RemediationStepUserConsent:
+                                    userConsentStep.provide(.denied)
+                                    isUserConsentStepCall = true
+                                default:
+                                    XCTFail()
+                                }
+                            } onCompletion: { error in
+                                XCTAssertNil(error)
+                                XCTAssertTrue(isUserConsentStepCall)
+                                XCTAssertEqual(pushChallenge.userResponse, .userDenied)
+                                retrievePushChallengeResolveSuccessExpectation.fulfill()
+                            }
+                        case .failure(let error):
+                            XCTFail(error.errorDescription ?? error.localizedDescription)
+                        }
+                    }
+                case .failure(let error):
+                    XCTFail(error.errorDescription ?? error.localizedDescription)
+                }
+            }
+            wait(for: [retrievePushChallengeResolveSuccessExpectation], timeout: expectationTimeout)
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+    }
+
     func testResolvePushChallenge_EnrollmentUVEnabled_UVRequired_Success() {
 
         let notificationPushChallengeResolveSuccessExpectation = expectation(description: "Notification push challenge should resolve for user verification required")
