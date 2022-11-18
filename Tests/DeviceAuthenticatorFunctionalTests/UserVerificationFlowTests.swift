@@ -36,8 +36,8 @@ class UserVerificationFlowTests: XCTestCase {
                          HTTPURLResponse(url: mockURL, statusCode: 200, httpVersion: nil, headerFields: nil)!,
                          HTTPURLResponse(url: mockURL, statusCode: 200, httpVersion: nil, headerFields: nil)!]
         dataResponses = [GoldenData.orgData(),
-                         GoldenData.authenticatorMetaData(),
-                         GoldenData.authenticatorData()]
+                         MyAccountTestData.policyResponse(),
+                         MyAccountTestData.enrollmentResponse()]
     }
 
     override func tearDownWithError() throws {
@@ -50,7 +50,7 @@ class UserVerificationFlowTests: XCTestCase {
 
         let enableSuccessExpectation = expectation(description: "Enable user verification should complete")
         httpResponses.append(HTTPURLResponse(url: mockURL, statusCode: 200, httpVersion: nil, headerFields: nil)!)
-        dataResponses.append(GoldenData.authenticatorData())
+        dataResponses.append(MyAccountTestData.enrollmentResponse())
         let mockHTTPClient = MockMultipleRequestsHTTPClient(responseArray: httpResponses, dataArray: dataResponses)
         do {
             try enrollmentHelper.enroll(userVerification: false, mockHTTPClient: mockHTTPClient) { result in
@@ -76,7 +76,7 @@ class UserVerificationFlowTests: XCTestCase {
 
         let disableSuccessExpectation = expectation(description: "Disable user verification should complete")
         httpResponses.append(HTTPURLResponse(url: mockURL, statusCode: 200, httpVersion: nil, headerFields: nil)!)
-        dataResponses.append(GoldenData.authenticatorData())
+        dataResponses.append(MyAccountTestData.enrollmentResponse())
         let mockHTTPClient = MockMultipleRequestsHTTPClient(responseArray: httpResponses, dataArray: dataResponses)
         do {
             try enrollmentHelper.enroll(userVerification: true, mockHTTPClient: mockHTTPClient) { result in

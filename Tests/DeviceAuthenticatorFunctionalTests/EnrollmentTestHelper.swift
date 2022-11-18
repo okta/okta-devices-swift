@@ -47,10 +47,10 @@ class EnrollmentTestHelper {
                 completion: @escaping (Result<AuthenticatorEnrollmentProtocol, DeviceAuthenticatorError>) -> Void) throws {
 
         enrollmentParams.enableUserVerification(enable: userVerification)
-        let oktaRestAPI = LegacyServerAPI(client: mockHTTPClient,
-                                          crypto: OktaCryptoManager(accessGroupId: appConfig.applicationInfo.applicationGroupId,
-                                                                    logger: OktaLoggerMock()),
-                                          logger: OktaLoggerMock())
+        let oktaRestAPI = MyAccountServerAPI(client: mockHTTPClient,
+                                             crypto: OktaCryptoManager(accessGroupId: appConfig.applicationInfo.applicationGroupId,
+                                                                       logger: OktaLoggerMock()),
+                                             logger: OktaLoggerMock())
         do {
             deviceAuthenticator = try DeviceAuthenticatorBuilder(applicationConfig: appConfig).create()
             (deviceAuthenticator as? DeviceAuthenticator)?.impl.restAPI = oktaRestAPI
