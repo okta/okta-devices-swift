@@ -37,8 +37,8 @@ class UpdateCIBAFlowTests: XCTestCase {
                          HTTPURLResponse(url: mockURL, statusCode: 200, httpVersion: nil, headerFields: nil)!,
                          HTTPURLResponse(url: mockURL, statusCode: 200, httpVersion: nil, headerFields: nil)!]
         dataResponses = [GoldenData.orgData(),
-                         MyAccountTestData.policyResponse(),
-                         MyAccountTestData.enrollmentResponse()]
+                         GoldenData.authenticatorMetaDataLoginType(),
+                         GoldenData.authenticatorData()]
     }
 
     override func tearDownWithError() throws {
@@ -52,8 +52,8 @@ class UpdateCIBAFlowTests: XCTestCase {
         let enableSuccessExpectation = expectation(description: "Enable CIBA should complete")
         httpResponses.append(HTTPURLResponse(url: mockURL, statusCode: 200, httpVersion: nil, headerFields: nil)!)
         httpResponses.append(HTTPURLResponse(url: mockURL, statusCode: 200, httpVersion: nil, headerFields: nil)!)
-        dataResponses.append(MyAccountTestData.enrollmentResponse())
-        dataResponses.append(MyAccountTestData.enrollmentResponse())
+        dataResponses.append(GoldenData.authenticatorData())
+        dataResponses.append(GoldenData.authenticatorData())
         let mockHTTPClient = MockMultipleRequestsHTTPClient(responseArray: httpResponses, dataArray: dataResponses)
         do {
             try enrollmentHelper.enroll(userVerification: false, mockHTTPClient: mockHTTPClient) { result in
@@ -90,6 +90,7 @@ class UpdateCIBAFlowTests: XCTestCase {
             try enrollmentHelper.enroll(mockHTTPClient: mockHTTPClient) { result in
                 switch result {
                 case .success(let enrollment):
+                    let newDeviceTokenData = "12345abcde".data(using: .utf8)!
                     enrollment.enableCIBATransactions(authenticationToken: self.authToken, enable: true) { error in
                         if case .serverAPIError(let result, _) = error {
                             XCTAssertEqual(result.response?.statusCode, 401)

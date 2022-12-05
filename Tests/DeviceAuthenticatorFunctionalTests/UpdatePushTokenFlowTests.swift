@@ -37,8 +37,8 @@ class UpdatePushTokenFlowTests: XCTestCase {
                          HTTPURLResponse(url: mockURL, statusCode: 200, httpVersion: nil, headerFields: nil)!,
                          HTTPURLResponse(url: mockURL, statusCode: 200, httpVersion: nil, headerFields: nil)!]
         dataResponses = [GoldenData.orgData(),
-                         MyAccountTestData.policyResponse(),
-                         MyAccountTestData.enrollmentResponse()]
+                         GoldenData.authenticatorMetaData(),
+                         GoldenData.authenticatorData()]
     }
 
     override func tearDownWithError() throws {
@@ -51,7 +51,7 @@ class UpdatePushTokenFlowTests: XCTestCase {
 
         let updateTokenSuccessExpectation = expectation(description: "Update push token should complete")
         httpResponses.append(HTTPURLResponse(url: mockURL, statusCode: 200, httpVersion: nil, headerFields: nil)!)
-        dataResponses.append(MyAccountTestData.enrollmentResponse())
+        dataResponses.append(GoldenData.authenticatorData())
         let mockHTTPClient = MockMultipleRequestsHTTPClient(responseArray: httpResponses, dataArray: dataResponses)
         do {
             try enrollmentHelper.enroll(mockHTTPClient: mockHTTPClient) { result in
