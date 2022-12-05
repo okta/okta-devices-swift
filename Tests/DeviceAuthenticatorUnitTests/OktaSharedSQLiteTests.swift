@@ -34,10 +34,10 @@ class OktaSharedSQLiteTests: XCTestCase {
     }
 
     func testCreatesEmptySQLiteOnFirstLaunch() throws {
-        try createsEmptySQLiteOnFirstLaunch(fullDatabaseEncryption: false, prefersSecureEnclaveUsage: false)
+        try createsEmptySQLiteOnFirstLaunch(prefersSecureEnclaveUsage: false)
     }
 
-    private func createsEmptySQLiteOnFirstLaunch(fullDatabaseEncryption: Bool, prefersSecureEnclaveUsage: Bool) throws {
+    private func createsEmptySQLiteOnFirstLaunch(prefersSecureEnclaveUsage: Bool) throws {
         // GIVEN:
         // No SQLite stored at shared group directory
         let urlToCheck = sqlDirectoryURL?.appendingPathComponent(sqliteFileBasename)
@@ -46,7 +46,7 @@ class OktaSharedSQLiteTests: XCTestCase {
 
         // WHEN:
         // OktaSQLitePersistentStorage gets created
-        let sqliteStorage = try createStorage(fullDatabaseEncryption: fullDatabaseEncryption, prefersSecureEnclaveUsage: prefersSecureEnclaveUsage)
+        let sqliteStorage = try createStorage(prefersSecureEnclaveUsage: prefersSecureEnclaveUsage)
 
         // THEN:
         // 1. SQLite connection is established
@@ -78,7 +78,7 @@ class OktaSharedSQLiteTests: XCTestCase {
 
         // WHEN:
         // OktaSQLitePersistentStorage gets created no existing files are overriten
-        let sqliteStorage = try createStorage(fullDatabaseEncryption: fullDatabaseEncryption, prefersSecureEnclaveUsage: false)
+        let sqliteStorage = try createStorage(prefersSecureEnclaveUsage: false)
 
         // THEN:
         // 1.
@@ -572,15 +572,7 @@ class OktaSharedSQLiteTests: XCTestCase {
 
     // MARK: Private Helpers
 
-    private func createStorage(fullDatabaseEncryption: Bool, prefersSecureEnclaveUsage: Bool) throws -> OktaSQLitePersistentStorage {
-        let fileEncryptionKey: Data?
-        if fullDatabaseEncryption {
-            let logger = OktaLogger()
-            let crypto = OktaCryptoManager(accessGroupId: testGroupId, logger: logger)
-            fileEncryptionKey = OktaSQLiteEncryptionManager(cryptoManager: crypto, prefersSecureEnclaveUsage: prefersSecureEnclaveUsage).fileEncryptionKey
-        } else {
-            fileEncryptionKey = nil
-        }
+    private func createStorage(prefersSecureEnclaveUsage: Bool) throws -> OktaSQLitePersistentStorage {
         guard let url = fileManager.containerURL(forSecurityApplicationGroupIdentifier: testGroupId)?.appendingPathComponent("\(relativeSQLitePath)/\(sqliteFileBasename)") else {
             throw NSError(domain: "TestError", code: -1, userInfo: nil)
         }
@@ -588,13 +580,13 @@ class OktaSharedSQLiteTests: XCTestCase {
         return OktaSQLitePersistentStorage(at: url,
                                            schemaVersion: DeviceSDKStorageVersion.v2,
                                            fileManager: fileManager,
-                                           sqliteFileEncryptionKey: fileEncryptionKey,
+                                           sqliteFileEncryptionKey: nil,
                                            logger: OktaLogger())
     }
 
     private func createSqlite(fullDatabaseEncryption: Bool, prefersSecureEnclaveUsage: Bool) throws -> OktaSharedSQLite {
         let logger = OktaLogger()
-        let storage = try createStorage(fullDatabaseEncryption: fullDatabaseEncryption, prefersSecureEnclaveUsage: prefersSecureEnclaveUsage)
+        let storage = try createStorage(prefersSecureEnclaveUsage: prefersSecureEnclaveUsage)
         #if os(iOS)
         let crypto = OktaCryptoManager(accessGroupId: testGroupId, logger: logger)
         #else
@@ -607,7 +599,7 @@ class OktaSharedSQLiteTests: XCTestCase {
         return OktaSharedSQLite(sqlitePersistentStorage: storage,
                                 cryptoManager: crypto,
                                 restAPIClient: restAPI,
-                                sqliteColumnEncryptionManager: OktaSQLiteEncryptionManager(cryptoManager: crypto, prefersSecureEnclaveUsage: prefersSecureEnclaveUsage),
+                                sqliteColumnEncryptionManager: OktaSQLiteEncryptionManager(cryptoManager: crypto, accessGroupId: crypto.accessGroupId),
                                 applicationConfig: config,
                                 logger: logger)
     }

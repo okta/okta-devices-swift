@@ -18,10 +18,6 @@ import CryptoTokenKit
 public enum SecurityError: Error {
     /// Thrown when SDK fails to sign payload with private key
     case failedToSignPayload(String)
-    /// Thrown when SDK fails to read or construct public or private key
-    case invalidSecKey(String)
-    /// Thrown when SDK tries to use crypto key with algorithms that don't support that key type. For example use RSA key with EC algorithms
-    case secKeyTypeAndAlgorithmMismatch(String)
     /// Thrown when SDK fails to generate public or private crypto key
     case keyGenFailed(OSStatus, String)
     /// Thrown when SDK detect that crypto key has been invalidated by iOS (e.g. biometry changed)
@@ -34,6 +30,8 @@ public enum SecurityError: Error {
     case jwkError(String)
     /// Thrown when SDK fails to build JWT payload
     case jwtError(String)
+    /// Thrown when SDK fails to encrypt/decrypt data
+    case dataEncryptionDecryptionError(Error?)
 }
 
 public extension SecurityError {
@@ -74,10 +72,6 @@ extension SecurityError: Equatable {
         switch (lhs, rhs) {
             case (.failedToSignPayload, .failedToSignPayload):
                 return true
-            case (.invalidSecKey, .invalidSecKey):
-                return true
-            case (.secKeyTypeAndAlgorithmMismatch, .secKeyTypeAndAlgorithmMismatch):
-                return true
             case (let .keyGenFailed(code1, description1), let .keyGenFailed(code2, description2)):
                 return code1 == code2 && description1 == description2
             case (let .generalEncryptionError(code1, _, description1), let .generalEncryptionError(code2, _, description2)):
@@ -86,6 +80,16 @@ extension SecurityError: Equatable {
                 return description1 == description2
             case (let .jwtError(description1), let .jwtError(description2)):
                 return description1 == description2
+        case (let .dataEncryptionDecryptionError(error1), let .dataEncryptionDecryptionError(error2)):
+            if error1 == nil && error2 == nil {
+                return true
+            } else if let nsError1 = error1 as? NSError,
+                      let nsError2 = error2 as? NSError,
+                      nsError1.code == nsError2.code {
+                return true
+            } else {
+                return false
+            }
             default:
                 return false
         }

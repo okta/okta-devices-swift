@@ -101,6 +101,37 @@ class OktaCryptoManager: OktaSharedCryptoProtocol {
         return publicKey
     }
 
+    func generateSymmetricKey() throws -> SymmetricKey {
+        return SymmetricKey(size: .bits256)
+    }
+
+    func encrypt(data: Data, with symmetricKey: SymmetricKey) throws -> Data {
+        let sealedBox: AES.GCM.SealedBox
+
+        do {
+            sealedBox = try AES.GCM.seal(data, using: symmetricKey)
+        } catch {
+            throw DeviceAuthenticatorError.securityError(.dataEncryptionDecryptionError(error))
+        }
+
+        guard let encryptedData = sealedBox.combined else {
+            throw DeviceAuthenticatorError.securityError(.dataEncryptionDecryptionError(nil))
+        }
+
+        return encryptedData
+    }
+
+    func decrypt(data: Data, with symmetricKey: SymmetricKey) throws -> Data {
+        do {
+            let sealedBox = try AES.GCM.SealedBox(combined: data)
+            let decryptedData = try AES.GCM.open(sealedBox, using: symmetricKey)
+
+            return decryptedData
+        } catch {
+            throw DeviceAuthenticatorError.securityError(.dataEncryptionDecryptionError(error))
+        }
+    }
+
     func delete(keyPairWith tag: String) -> Bool {
         var keyQuery = baseQuery(with: tag)
         if !accessGroupId.isEmpty {
