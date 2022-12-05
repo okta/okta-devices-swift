@@ -11,6 +11,7 @@
 */
 import Foundation
 import LocalAuthentication
+import CryptoKit
 import OktaLogger
 
 protocol OktaSQLiteColumnEncryptionManagerProtocol {
@@ -41,25 +42,18 @@ protocol OktaSQLiteColumnEncryptionManagerProtocol {
     func decryptedColumnData(from data: Data) throws -> Data
 }
 
-protocol OktaSQLiteFileEncryptionManagerProtocol {
-    /// Generates/retreives encryption key for SQLite full encryption (file-level encryption)
-    /// Column-level encryption and file-level encryption do not interfer each other,
-    /// so that they can be used together. That is, an encrypted SQLite file can hold
-    /// some individual columns encrypted as well by `OktaSQLiteColumnEncryptionManagerProtocol`
-    var fileEncryptionKey: Data? { get }
-}
-
-class OktaSQLiteEncryptionManager: OktaSQLiteColumnEncryptionManagerProtocol, OktaSQLiteFileEncryptionManagerProtocol {
+class OktaSQLiteEncryptionManager: OktaSQLiteColumnEncryptionManagerProtocol {
     let cryptoManager: OktaSharedCryptoProtocol
-    let useSecureEnclaveIfNeeded: Bool
+    let keychainStorage: OktaSecureStorage
+    let accessGroupId: String
+    var cryptoKey: SymmetricKey?
 
-    lazy var fileEncryptionKey: Data? = {
-        return try? getFileEncryptionKey()
-    }()
-
-    init(cryptoManager: OktaSharedCryptoProtocol, prefersSecureEnclaveUsage: Bool) {
+    init(cryptoManager: OktaSharedCryptoProtocol,
+         accessGroupId: String,
+         keychainStorage: OktaSecureStorage = OktaSecureStorage(applicationPassword: nil)) {
         self.cryptoManager = cryptoManager
-        self.useSecureEnclaveIfNeeded = prefersSecureEnclaveUsage && OktaEnvironment.canUseSecureEnclave()
+        self.accessGroupId = accessGroupId
+        self.keychainStorage = keychainStorage
     }
 
     func encryptedColumnUTF8Data(from string: String) throws -> Data {
@@ -79,118 +73,59 @@ class OktaSQLiteEncryptionManager: OktaSQLiteColumnEncryptionManagerProtocol, Ok
     }
 
     func encryptedColumnData(from data: Data) throws -> Data {
-        guard let publicKey = columnPublicKey else {
-            throw DeviceAuthenticatorError.securityError(SecurityError.invalidSecKey("Can't proceed with Decrypion because of No Public Key stored for existing Key Pair"))
-        }
+        let cryptoKey = try getCryptoKey()
+        let encryptedData = try cryptoManager.encrypt(data: data, with: cryptoKey)
 
-        guard SecKeyIsAlgorithmSupported(publicKey, .encrypt, Constants.encryptionAlgorithm) else {
-            throw DeviceAuthenticatorError.securityError(SecurityError.secKeyTypeAndAlgorithmMismatch("Mismatch of key and \(Constants.encryptionAlgorithm) algorithm"))
-        }
-
-        var error: Unmanaged<CFError>?
-        let encryptedData = SecKeyCreateEncryptedData(publicKey, Constants.encryptionAlgorithm, data as CFData, &error)
-        let encryptionError: Error? = error?.takeRetainedValue()
-        guard encryptionError == nil, let result = encryptedData else {
-            var osStatus: OSStatus = -1
-            if let encryptionError = encryptionError {
-                let nsError = encryptionError as Error as NSError
-                osStatus = OSStatus(nsError.code)
-            }
-            throw DeviceAuthenticatorError.securityError(SecurityError.generalEncryptionError(osStatus, encryptionError, "Failed to encrypt data"))
-        }
-
-        return result as Data
+        return encryptedData
     }
 
     func decryptedColumnData(from data: Data) throws -> Data {
-        guard let columnPrivateKey = columnPrivateKey else {
-            throw DeviceAuthenticatorError.securityError(.invalidSecKey("Can't proceed with Decrypion because of No Private Key stored for existing Key Pair"))
+        let cryptoKey = try getCryptoKey()
+        return try cryptoManager.decrypt(data: data, with: cryptoKey)
+    }
+
+    private func getCryptoKey() throws -> SymmetricKey {
+        if let cryptoKey = self.cryptoKey {
+            return cryptoKey
         }
 
-        guard SecKeyIsAlgorithmSupported(columnPrivateKey, .decrypt, Constants.encryptionAlgorithm) else {
-            throw DeviceAuthenticatorError.securityError(SecurityError.secKeyTypeAndAlgorithmMismatch("Mismatch of key and \(Constants.encryptionAlgorithm) algorithm"))
-        }
+        let keyTag = EncryptionTag.columnEncryptionKeyTag
+        do {
+            let storedPublicKey = try keychainStorage.getData(key: keyTag.rawValue, accessGroup: accessGroupId)
+            let symmetricKey = SymmetricKey(data: storedPublicKey)
+            self.cryptoKey = symmetricKey
 
-        var error: Unmanaged<CFError>?
-        let decryptedData = SecKeyCreateDecryptedData(columnPrivateKey, Constants.encryptionAlgorithm, data as CFData, &error)
-        let decryptionError: Error? = error?.takeRetainedValue()
-        guard decryptionError == nil, let result = decryptedData else {
-            var osStatus: OSStatus = -1
-            if let decryptionError = decryptionError {
-                let nsError = decryptionError as Error as NSError
-                osStatus = OSStatus(nsError.code)
+            return symmetricKey
+        } catch let error as NSError {
+            if error.code == errSecItemNotFound {
+                let cryptoKey = try generateCryptoKey()
+                let rawKey = cryptoKey.withUnsafeBytes { rawBufferPointer in
+                    return Data(rawBufferPointer)
+                }
+                do {
+                    try keychainStorage.set(data: rawKey,
+                                            forKey: keyTag.rawValue,
+                                            behindBiometrics: false,
+                                            accessGroup: accessGroupId,
+                                            accessibility: kSecAttrAccessibleWhenUnlocked)
+
+                    return cryptoKey
+                } catch {
+                    throw DeviceAuthenticatorError.securityError(.dataEncryptionDecryptionError(error))
+                }
+            } else {
+                throw DeviceAuthenticatorError.securityError(.dataEncryptionDecryptionError(error))
             }
-            throw DeviceAuthenticatorError.securityError(SecurityError.generalEncryptionError(osStatus, decryptionError, "Failed to decrypt data"))
+        } catch {
+            throw DeviceAuthenticatorError.securityError(.dataEncryptionDecryptionError(error))
         }
-
-        return result as Data
     }
 
-    private lazy var columnPublicKey: SecKey? = {
-        return try? getColumnPublicKey()
-    }()
-
-    private lazy var columnPrivateKey: SecKey? = {
-        return try? getColumnPrivateKey()
-    }()
-
-    private func getColumnPublicKey() throws -> SecKey? {
-        let keyTag = EncryptionTag.columnEncryptionKeyTag
-        var storedPublicKey = cryptoManager.get(keyOf: .publicKey, with: keyTag.rawValue)
-        if storedPublicKey == nil || !cryptoManager.isPrivateKeyAvailable(keyTag.rawValue) {
-            try generateNewKeyPair(keyTag: keyTag, useSecureEnclave: useSecureEnclaveIfNeeded)
-            storedPublicKey = cryptoManager.get(keyOf: .publicKey, with: keyTag.rawValue)
-        }
-        return storedPublicKey
-    }
-
-    private func getColumnPrivateKey() throws -> SecKey {
-        let keyTag = EncryptionTag.columnEncryptionKeyTag
-        guard cryptoManager.isPrivateKeyAvailable(keyTag.rawValue),
-              let key = cryptoManager.get(keyOf: .privateKey, with: keyTag.rawValue) else {
-            throw DeviceAuthenticatorError.securityError(.invalidSecKey("No Private Key stored for existing Key Pair for tag \(keyTag)"))
-        }
-        return key
-    }
-
-    private func getFileEncryptionKey() throws -> Data {
-        let keyTag = EncryptionTag.fileEncryptionKeyTag
-        var storedPrivateKey = cryptoManager.get(keyOf: .privateKey, with: keyTag.rawValue)
-        if storedPrivateKey == nil || !cryptoManager.isPrivateKeyAvailable(keyTag.rawValue) {
-            try generateNewKeyPair(keyTag: keyTag, useSecureEnclave: false)
-            storedPrivateKey = cryptoManager.get(keyOf: .privateKey, with: keyTag.rawValue)
-        }
-
-        guard let key = storedPrivateKey else {
-            throw DeviceAuthenticatorError.securityError(SecurityError.invalidSecKey("No Private Key stored for existing Key Pair for tag \(keyTag)"))
-        }
-
-        var error: Unmanaged<CFError>?
-        guard let keyData = SecKeyCopyExternalRepresentation(key, &error) as Data? else {
-            throw DeviceAuthenticatorError.securityError(.invalidSecKey("Failed to get Data representation of stored Private Key for existing Key Pair for tag \(keyTag)"))
-        }
-        return keyData
-    }
-
-    private func generateNewKeyPair(keyTag: EncryptionTag, useSecureEnclave: Bool) throws {
-        let _ = try cryptoManager.generate(keyPairWith: .ES256,
-                                           with: keyTag.rawValue,
-                                           useSecureEnclave: useSecureEnclave,
-                                           useBiometrics: false,
-                                           isAccessibleOnOtherDevice: !useSecureEnclave,
-                                           biometricSettings: nil)
-        guard cryptoManager.isPrivateKeyAvailable(keyTag.rawValue) else {
-            throw DeviceAuthenticatorError.securityError(.invalidSecKey("No Private Key stored for newly generated Key Pair for \(keyTag.rawValue) tag"))
-        }
+    private func generateCryptoKey() throws -> SymmetricKey {
+        return try cryptoManager.generateSymmetricKey()
     }
 
     enum EncryptionTag: String {
-        case columnEncryptionKeyTag = "SQLiteColumnEncryptionKeyTag"
-        case fileEncryptionKeyTag = "SQLiteFileEncryptionKeyTag"
+        case columnEncryptionKeyTag = "com.okta.SQLiteColumnEncryptionKeyTag"
     }
-
-    struct Constants {
-        static let encryptionAlgorithm = SecKeyAlgorithm.eciesEncryptionCofactorVariableIVX963SHA512AESGCM
-    }
-
 }

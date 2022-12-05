@@ -12,6 +12,7 @@
 
 import Foundation
 import LocalAuthentication
+import CryptoKit
 
 enum SignatureFormat: Int {
     case BER_ASN
@@ -52,6 +53,10 @@ protocol OktaCryptoProtocol {
                   isAccessibleOnOtherDevice: Bool,
                   biometricSettings: BiometricEnrollmentSettings?) throws -> SecKey
 
+    /// Generate symmetric key
+    /// - Returns: symmetric key
+    func generateSymmetricKey() throws -> SymmetricKey
+
     ///  Delete both public and private key pair
     /// - Parameter tag: unique identifier that was used to create the keys
     /// - Returns: true if key exists and key deletion was successful
@@ -85,6 +90,19 @@ protocol OktaCryptoProtocol {
     ///               As a result, we assume that if the error is 'user interaction required' then the key is available.
     ///               All other errors are interpreted as an unavailable key.
     func checkPrivateKeyAvailability(_ keyTag: String) -> (keyState: PrivateKeyState, error: DeviceAuthenticatorError?)
+
+    /// Ecnrypt data with provided symmetric key
+    ///  - Parameters:
+    ///   - data: Sequence of bytes to be encrypted
+    ///   - symmetricKey: Symmetric key
+    func encrypt(data: Data, with symmetricKey: SymmetricKey) throws -> Data
+
+    /// Decrypt data with provided symmetric key
+    ///  - Parameters:
+    ///   - data: Previously encrypted data
+    ///   - symmetricKey: Symmetric key
+    ///  - Returns: Decoded sequence of bytes
+    func decrypt(data: Data, with symmetricKey: SymmetricKey) throws -> Data
 }
 
 extension OktaCryptoProtocol {

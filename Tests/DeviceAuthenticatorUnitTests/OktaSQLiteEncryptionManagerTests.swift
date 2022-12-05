@@ -26,7 +26,8 @@ class OktaSQLiteEncryptionManagerTests: XCTestCase {
 
     func encryptDecrypt(prefersSecureEnclaveUsage: Bool) {
         let cryptoManager = OktaCryptoManager(accessGroupId: ExampleAppConstants.appGroupId, logger: OktaLoggerMock())
-        let manager = OktaSQLiteEncryptionManager(cryptoManager: cryptoManager, prefersSecureEnclaveUsage: prefersSecureEnclaveUsage)
+        let manager = OktaSQLiteEncryptionManager(cryptoManager: cryptoManager,
+                                                  accessGroupId: cryptoManager.accessGroupId)
 
         let originalString = "Hello there"
         let originalStringData = originalString.data(using: .utf8)!
