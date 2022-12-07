@@ -22,7 +22,7 @@ struct MyAccountAPI {
         let name: String?
         let settings: AuthenticatorSettingsModel?
         let supportedMethods: [MethodResponseModel]
-        let app_authenticator_enroll_endpoint: String
+        let appAuthenticatorEnrollEndpoint: String
     }
 
     struct MethodUpdateRequestModel: Codable {
@@ -65,6 +65,7 @@ struct MyAccountAPI {
         let lastUpdated: String?
         let device: Device
         var methods: AuthenticatorMethods
+        let links: Links?
 
         struct Device: Codable {
             let id: String
@@ -96,6 +97,14 @@ struct MyAccountAPI {
                         let href: String
                     }
                 }
+            }
+        }
+
+        struct Links: Codable {
+            let `self`: ActualLink
+
+            struct ActualLink: Codable {
+                let href: String
             }
         }
 

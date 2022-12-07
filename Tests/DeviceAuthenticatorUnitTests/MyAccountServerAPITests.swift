@@ -190,9 +190,10 @@ final class MyAccountServerAPITests: XCTestCase {
                                        response: HTTPURLResponse(url: mockURL, statusCode: 200, httpVersion: nil, headerFields: nil)!,
                                        data: MyAccountTestData.enrollmentResponse())
         let httpClient = MockHTTPClient(result: httpResult)
+        let enrollmentId = "enrollmentId"
         var numberOfHTTPHeaders = 0
         httpClient.requestHook = { url, httpMethod, urlParameters, data, httpHeaders, timeInterval in
-            XCTAssertEqual(url.absoluteString, (self.metadata._links.enroll?.href ?? "") + "/enrollmentId")
+            XCTAssertEqual(url.absoluteString, self.mockURL.absoluteString + "/idp/myaccount/app-authenticators/" + enrollmentId)
             XCTAssertTrue(httpMethod == .patch)
             let decodedRequest = try? JSONSerialization.jsonObject(with: data!, options: []) as? [String: Any]
             let decodedMehtods = decodedRequest?["methods"] as? [String: Any]
@@ -230,7 +231,7 @@ final class MyAccountServerAPITests: XCTestCase {
                                               keys: signingKeys,
                                               transactionTypes: TransactionType(rawValue: 3))
         myAccountAPI.updateAuthenticatorRequest(orgHost: mockURL,
-                                                enrollmentId: "enrollmentId",
+                                                enrollmentId: enrollmentId,
                                                 metadata: metadata,
                                                 deviceModel: deviceSignals,
                                                 appSignals: nil,
