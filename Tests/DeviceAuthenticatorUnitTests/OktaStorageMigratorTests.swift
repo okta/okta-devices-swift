@@ -11,7 +11,11 @@
 */
 
 import XCTest
+#if SWIFT_PACKAGE
+import LoggerCore
+#else
 import OktaLogger
+#endif
 @testable import DeviceAuthenticator
 
 class OktaStorageMigratorTests: XCTestCase {

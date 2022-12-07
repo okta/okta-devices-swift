@@ -11,7 +11,7 @@
 */
 
 import Foundation
-
+#if os(macOS)
 class FileTypeSignalPlugin: _SignalPluginProtocol {
 
     let config: _SignalPluginConfig
@@ -55,3 +55,4 @@ class FileTypeSignalPlugin: _SignalPluginProtocol {
         }
     }
 }
+#endif

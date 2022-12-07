@@ -11,8 +11,11 @@
 */
 
 import Foundation
+#if SWIFT_PACKAGE
+import LoggerCore
+#else
 import OktaLogger
-
+#endif
 class OktaLoggerDestinationMock: OktaLoggerDestinationProtocol {
     var identifier: String = ""
 

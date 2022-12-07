@@ -12,7 +12,11 @@
 
 import Foundation
 import GRDB
+#if SWIFT_PACKAGE
+import LoggerCore
+#else
 import OktaLogger
+#endif
 
 /// Represents physical .sqlite persistent storage file on disk
 protocol OktaSQLitePersistentStorageProtocol {

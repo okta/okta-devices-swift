@@ -12,7 +12,11 @@
 
 import Foundation
 import UserNotifications
+#if SWIFT_PACKAGE
+import LoggerCore
+#else
 import OktaLogger
+#endif
 
 public class _OktaAuthenticatorsManager {
 

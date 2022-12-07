@@ -11,7 +11,11 @@
 */
 
 import Foundation
+#if SWIFT_PACKAGE
+import LoggerCore
+#else
 import OktaLogger
+#endif
 
 /// Internal concrete representation of authenticator enrollment (account) object
 class AuthenticatorEnrollment: AuthenticatorEnrollmentProtocol {

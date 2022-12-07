@@ -12,7 +12,11 @@
 
 import Foundation
 import LocalAuthentication
+#if SWIFT_PACKAGE
+import LoggerCore
+#else
 import OktaLogger
+#endif
 
 /// Builds client-originated JWT for authentication with the server
 class OktaAuthenticationJWTGenerator {

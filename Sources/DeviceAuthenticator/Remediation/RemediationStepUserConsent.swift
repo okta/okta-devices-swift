@@ -11,7 +11,11 @@
 */
 
 import Foundation
+#if SWIFT_PACKAGE
+import LoggerCore
+#else
 import OktaLogger
+#endif
 
 ///  Record of the user's response that will be passed to Okta's service
 public enum UserConsentResponse: Int {

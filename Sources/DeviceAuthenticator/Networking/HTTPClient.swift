@@ -11,7 +11,11 @@
 */
 
 import Foundation
+#if SWIFT_PACKAGE
+import LoggerCore
+#else
 import OktaLogger
+#endif
 
 /// HTTP client implementation for sending HTTP requests
 class HTTPClient: HTTPClientProtocol {

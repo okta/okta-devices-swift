@@ -11,7 +11,11 @@
 */
 
 import Foundation
-@testable import OktaLogger
+#if SWIFT_PACKAGE
+import LoggerCore
+#else
+import OktaLogger
+#endif
 @testable import DeviceAuthenticator
 
 class RestAPIMock: ServerAPIProtocol {

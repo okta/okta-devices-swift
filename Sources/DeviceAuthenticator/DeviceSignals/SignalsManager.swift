@@ -11,7 +11,11 @@
 */
 
 import Foundation
+#if SWIFT_PACKAGE
+import LoggerCore
+#else
 import OktaLogger
+#endif
 
 /// handles creation of plugin configs and collection of plugin signals
 class SignalsManager {

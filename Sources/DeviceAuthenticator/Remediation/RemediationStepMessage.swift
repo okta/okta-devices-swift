@@ -11,7 +11,11 @@
 */
 
 import Foundation
+#if SWIFT_PACKAGE
+import LoggerCore
+#else
 import OktaLogger
+#endif
 
 ///  Type of message surfaced by the SDK to step handler
 public enum RemediationStepMessageType: Int {

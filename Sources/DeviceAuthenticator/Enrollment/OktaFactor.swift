@@ -11,7 +11,11 @@
 */
 
 import Foundation
+#if SWIFT_PACKAGE
+import LoggerCore
+#else
 import OktaLogger
+#endif
 
 /// Factor base class. SignedNonce, Push, TOTP factor inherit from this class
 class OktaFactor: CustomStringConvertible {

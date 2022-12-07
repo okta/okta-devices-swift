@@ -12,7 +12,11 @@
 
 import Foundation
 import OktaJWT
+#if SWIFT_PACKAGE
+import LoggerCore
+#else
 import OktaLogger
+#endif
 
 protocol PersistentStorageProtocol: OktaEnrollmentStorageProtocol, OktaDeviceEnrollmentStorageProtocol, AuthenticatorPolicyStorageProtocol { }
 

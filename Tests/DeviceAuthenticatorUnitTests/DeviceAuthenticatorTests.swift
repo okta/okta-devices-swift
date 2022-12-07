@@ -13,6 +13,7 @@
 import XCTest
 import LocalAuthentication
 @testable import DeviceAuthenticator
+import UserNotifications
 
 class DeviceAuthenticatorTests: XCTestCase {
     var secureStorageMock: OktaSecureStorageMock!

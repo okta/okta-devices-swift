@@ -118,3 +118,4 @@ excluded:
 - Tests
 - Examples/PushSampleApp/Pods
 - DerivedData
+- Package.swift
