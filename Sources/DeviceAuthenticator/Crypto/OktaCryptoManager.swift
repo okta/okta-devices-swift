@@ -16,14 +16,14 @@ import OktaLogger
 import CryptoKit
 
 class OktaCryptoManager: OktaSharedCryptoProtocol {
-    var accessGroupId: String
+    var keychainGroupId: String
     var secKeyHelper: SecKeyHelper
     var logger: OktaLoggerProtocol
 
-    init(accessGroupId: String,
+    init(keychainGroupId: String,
          secKeyHelper: SecKeyHelper = SecKeyHelper(),
          logger: OktaLoggerProtocol) {
-        self.accessGroupId = accessGroupId
+        self.keychainGroupId = keychainGroupId
         self.secKeyHelper = secKeyHelper
         self.logger = logger
     }
@@ -64,8 +64,8 @@ class OktaCryptoManager: OktaSharedCryptoProtocol {
         }
 
         var keyAttr = baseQuery(with: tag)
-        if !accessGroupId.isEmpty {
-            keyAttr[kSecAttrAccessGroup] = accessGroupId as NSObject
+        if !keychainGroupId.isEmpty {
+            keyAttr[kSecAttrAccessGroup] = keychainGroupId as NSObject
         }
         if useSecureEnclave {
             keyAttr[kSecAttrTokenID] =  kSecAttrTokenIDSecureEnclave as NSObject
@@ -134,8 +134,8 @@ class OktaCryptoManager: OktaSharedCryptoProtocol {
 
     func delete(keyPairWith tag: String) -> Bool {
         var keyQuery = baseQuery(with: tag)
-        if !accessGroupId.isEmpty {
-            keyQuery[kSecAttrAccessGroup] = accessGroupId
+        if !keychainGroupId.isEmpty {
+            keyQuery[kSecAttrAccessGroup] = keychainGroupId
         }
         let statusCode = self.secKeyHelper.deleteKey(keyQuery as CFDictionary)
 
@@ -145,8 +145,8 @@ class OktaCryptoManager: OktaSharedCryptoProtocol {
     func get(keyOf type: KeyType, with tag: String, context: LAContext) -> SecKey? {
         var keyQuery = baseQuery(with: tag)
         keyQuery[kSecReturnRef] = true
-        if !accessGroupId.isEmpty {
-            keyQuery[kSecAttrAccessGroup] = accessGroupId
+        if !keychainGroupId.isEmpty {
+            keyQuery[kSecAttrAccessGroup] = keychainGroupId
         }
         #if !targetEnvironment(simulator)
         keyQuery[kSecUseAuthenticationContext] = context

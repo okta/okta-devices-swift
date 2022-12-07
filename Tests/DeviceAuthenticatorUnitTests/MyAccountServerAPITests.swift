@@ -20,7 +20,7 @@ final class MyAccountServerAPITests: XCTestCase {
     let metadata = try! JSONDecoder().decode([AuthenticatorMetaDataModel].self, from: MyAccountTestData.authenticatorMetaData()).first!
     
     override func setUpWithError() throws {
-        crypto = OktaCryptoManager(accessGroupId: ExampleAppConstants.appGroupId, logger: OktaLoggerMock())
+        crypto = OktaCryptoManager(keychainGroupId: ExampleAppConstants.appGroupId, logger: OktaLoggerMock())
     }
     
     func testDownloadAuthenticatorMetadata_Success() throws {

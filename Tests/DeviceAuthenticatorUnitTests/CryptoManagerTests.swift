@@ -34,7 +34,7 @@ class CryptoManagerTests: XCTestCase {
     override func setUp() {
         super.setUp()
         secKeyHelperMock = SecKeyHelperMock()
-        mut = OktaCryptoManager(accessGroupId: "", secKeyHelper: secKeyHelperMock, logger: OktaLoggerMock())
+        mut = OktaCryptoManager(keychainGroupId: "", secKeyHelper: secKeyHelperMock, logger: OktaLoggerMock())
         var expectedPrivateKeyDeleteAttr = [kSecAttrLabel: privateKeyInternalTag as Any,
                                             kSecAttrKeyClass: kSecAttrKeyClassPrivate,
                                             kSecClass: kSecClassKey]
@@ -46,7 +46,7 @@ class CryptoManagerTests: XCTestCase {
 
 #if os(iOS)
     func testEncryptionManager_BasicOperations() {
-        let encryptionManager = OktaCryptoManager(accessGroupId: ExampleAppConstants.appGroupId, logger: OktaLoggerMock())
+        let encryptionManager = OktaCryptoManager(keychainGroupId: ExampleAppConstants.appGroupId, logger: OktaLoggerMock())
         do {
             let key = try encryptionManager.generate(keyPairWith: .ES256, with: "tag", useSecureEnclave: false, useBiometrics: false)
             XCTAssertNotNil(key)

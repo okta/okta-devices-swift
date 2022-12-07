@@ -151,6 +151,7 @@ class AuthenticatorEnrollment: AuthenticatorEnrollmentProtocol {
                                                                     storageManager: storageManager,
                                                                     cryptoManager: cryptoManager,
                                                                     restAPI: restAPIClient,
+                                                                    applicationConfig: applicationConfig,
                                                                     logger: logger)
         pullChallengeTransaction.pullChallenge(allowedClockSkewInSeconds: allowedClockSkewInSeconds, completion: completion)
     }

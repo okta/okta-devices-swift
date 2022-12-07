@@ -34,7 +34,7 @@ class OktaStorageManager: PersistentStorageProtocol {
             // Use keychain API for checking validity of application group id
             _ = try OktaSecureStorage().getData(key: "dummy_key",
                                                 biometricPrompt: nil,
-                                                accessGroup: applicationConfig.applicationInfo.applicationGroupId)
+                                                accessGroup: applicationConfig.applicationInfo.keychainGroupId)
         } catch {
             let nsError = error as NSError
             if nsError.code == errSecMissingEntitlement {
@@ -43,8 +43,7 @@ class OktaStorageManager: PersistentStorageProtocol {
             }
         }
 
-        self.storage = try Self.storage(applicationGroupId: applicationConfig.applicationInfo.applicationGroupId,
-                                        restAPIClient: restApiClient,
+        self.storage = try Self.storage(restAPIClient: restApiClient,
                                         applicationConfig: applicationConfig,
                                         logger: logger)
 
@@ -68,18 +67,17 @@ class OktaStorageManager: PersistentStorageProtocol {
         }
     }
 
-    static func storage(applicationGroupId: String,
-                        restAPIClient: ServerAPIProtocol,
+    static func storage(restAPIClient: ServerAPIProtocol,
                         applicationConfig: ApplicationConfig,
                         logger: OktaLoggerProtocol) throws -> PersistentStorageProtocol {
-        let cryptoManager = OktaCryptoManager(accessGroupId: applicationGroupId, logger: logger)
+        let cryptoManager = OktaCryptoManager(keychainGroupId: applicationConfig.applicationInfo.keychainGroupId, logger: logger)
         let path = DeviceAuthenticatorConstants.defaultStorageRelativeDirectoryPath
         let fileName = DeviceAuthenticatorConstants.defaultStorageName
         let sqliteEncryptionManager = OktaSQLiteEncryptionManager(cryptoManager: cryptoManager,
-                                                                  accessGroupId: applicationConfig.applicationInfo.applicationGroupId)
+                                                                  keychainGroupId: applicationConfig.applicationInfo.keychainGroupId)
         let sqliteStorage = try OktaSQLitePersistentStorage.sqlitePersistentStorage(schemaVersion: Self.targetVersion,
                                                                                     storageRelativePath: "\(path)/\(fileName)",
-                                                                                    applicationGroupId: applicationGroupId,
+                                                                                    applicationGroupId: applicationConfig.applicationInfo.applicationGroupId,
                                                                                     sqliteFileEncryptionKey: nil,
                                                                                     logger: logger)
         let sqliteStorageManager = OktaSharedSQLite(sqlitePersistentStorage: sqliteStorage,

@@ -24,7 +24,7 @@ class OktaTransactionPushChallengeTests: XCTestCase {
     let ec256ValidPrivateKeyBase64 = "BIBwuQyPfBPU+fyXiU+i0FOqEAHtm3U5aER8gIWVnyJvw9YfSa7ylqLNpdeyTie4zUFP9UU4FXLByqcaGFR1q05at441RDVAq1aewlvnE9pKcZmCiiayoO37AxpdRYcTmA=="
 
     override func setUpWithError() throws {
-        cryptoManager = CryptoManagerMock(accessGroupId: ExampleAppConstants.appGroupId, logger: OktaLoggerMock())
+        cryptoManager = CryptoManagerMock(keychainGroupId: ExampleAppConstants.appGroupId, logger: OktaLoggerMock())
         storageMock = StorageMock()
         let mockHTTPClient = MockMultipleRequestsHTTPClient(responseArray: [],
                                                             dataArray: [])
@@ -44,14 +44,14 @@ class OktaTransactionPushChallengeTests: XCTestCase {
             return TestUtils.createAuthenticatorEnrollment(orgHost: URL(string: "tenant.okta.com")!,
                                                            orgId: "orgId",
                                                            enrollmentId: "enrollmentId",
-                                                           cryptoManager: CryptoManagerMock(accessGroupId: "accessGroupId", logger: OktaLoggerMock()))
+                                                           cryptoManager: CryptoManagerMock(keychainGroupId: "accessGroupId", logger: OktaLoggerMock()))
         }
         let context = pushBindJWT!.jwt.payload["challengeContext"] as! [AnyHashable: Any]
         pushChallenge = PushChallenge(pushBindJWT: pushBindJWT!,
                                       challengeContext: context,
                                       storageManager: storageMock,
                                       applicationConfig: ApplicationConfig(applicationName: "", applicationVersion: "", applicationGroupId: ""),
-                                      cryptoManager: CryptoManagerMock(accessGroupId: "", logger: OktaLoggerMock()),
+                                      cryptoManager: CryptoManagerMock(keychainGroupId: "", logger: OktaLoggerMock()),
                                       signalsManager: SignalsManager(logger: OktaLoggerMock()),
                                       restAPI: RestAPIMock(client: HTTPClient(logger: OktaLoggerMock(), userAgent: ""), logger: OktaLoggerMock()),
                                       logger: OktaLoggerMock())

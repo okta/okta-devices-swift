@@ -21,14 +21,14 @@ class OktaSharedKeychainStorage {
     }
 
     let underlyingStorageDescription: String = OktaSharedKeychainStorage.Constants.storageDescription
-    var sharedAccessId: String?
+    var keychainGroupId: String?
 
     func save(data: Data, with key: String) throws {
         do {
             try secureStorage.set(data: data,
                                   forKey: key,
                                   behindBiometrics: false,
-                                  accessGroup: sharedAccessId,
+                                  accessGroup: keychainGroupId,
                                   accessibility: OktaEnvironment.Constants.keychainAccessibilityFlag)
         } catch let error as NSError {
             let resultError = convertFromSecureStorageError(error)
@@ -39,7 +39,7 @@ class OktaSharedKeychainStorage {
 
     func data(with key: String) throws -> Data {
         do {
-            return try secureStorage.getData(key: key, accessGroup: sharedAccessId)
+            return try secureStorage.getData(key: key, accessGroup: keychainGroupId)
         } catch let error as NSError {
             let resultError = convertFromSecureStorageError(error)
             logger.error(eventName: "Keychain storage error", message: "Keychain storage can't retrieve data for key: \(key), error: \(resultError)")
@@ -56,7 +56,7 @@ class OktaSharedKeychainStorage {
     func fetchKeys(with prefix: String) throws -> [String] {
         do {
             let keys = try secureStorage
-                .getStoredKeys(accessGroup: sharedAccessId)
+                .getStoredKeys(accessGroup: keychainGroupId)
                 .filter {
                     $0.hasPrefix(prefix)
                 }
@@ -70,7 +70,7 @@ class OktaSharedKeychainStorage {
 
     func delete(with key: String) throws {
         do {
-            try secureStorage.delete(key: key, accessGroup: sharedAccessId)
+            try secureStorage.delete(key: key, accessGroup: keychainGroupId)
         } catch let error as NSError {
             let resultError = convertFromSecureStorageError(error)
             logger.error(eventName: "Keychain storage error", message: "Keychain storage can't delete data for key: \(key), error: \(resultError)")
@@ -81,15 +81,15 @@ class OktaSharedKeychainStorage {
     var logger: OktaLoggerProtocol
     let secureStorage: OktaSecureStorage
 
-    init(with appGroupId: String?,
+    init(with keychainGroupId: String?,
          secureStorage: OktaSecureStorage = OktaSecureStorage(),
          logger: OktaLoggerProtocol) throws {
-        self.sharedAccessId = appGroupId
+        self.keychainGroupId = keychainGroupId
         self.secureStorage = secureStorage
         self.logger = logger
         // Check for invalid app group id error
         do {
-            _ = try secureStorage.getData(key: "dummy_key", biometricPrompt: nil, accessGroup: appGroupId)
+            _ = try secureStorage.getData(key: "dummy_key", biometricPrompt: nil, accessGroup: keychainGroupId)
         } catch {
             let nsError = error as NSError
             if nsError.code == errSecMissingEntitlement {

@@ -48,7 +48,7 @@ class EnrollmentTestHelper {
 
         enrollmentParams.enableUserVerification(enable: userVerification)
         let oktaRestAPI = MyAccountServerAPI(client: mockHTTPClient,
-                                             crypto: OktaCryptoManager(accessGroupId: appConfig.applicationInfo.applicationGroupId,
+                                             crypto: OktaCryptoManager(keychainGroupId: appConfig.applicationInfo.applicationGroupId,
                                                                        logger: OktaLoggerMock()),
                                              logger: OktaLoggerMock())
         do {

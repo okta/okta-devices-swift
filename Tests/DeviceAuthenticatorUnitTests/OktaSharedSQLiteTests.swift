@@ -588,9 +588,9 @@ class OktaSharedSQLiteTests: XCTestCase {
         let logger = OktaLogger()
         let storage = try createStorage(prefersSecureEnclaveUsage: prefersSecureEnclaveUsage)
         #if os(iOS)
-        let crypto = OktaCryptoManager(accessGroupId: testGroupId, logger: logger)
+        let crypto = OktaCryptoManager(keychainGroupId: testGroupId, logger: logger)
         #else
-        let crypto = CryptoManagerMock(accessGroupId: testGroupId, logger: logger)
+        let crypto = CryptoManagerMock(keychainGroupId: testGroupId, logger: logger)
         #endif
         let restAPI = RestAPIMock(client: MockHTTPClient(), logger: logger)
         let config = ApplicationConfig(applicationName: "Test App",
@@ -599,7 +599,7 @@ class OktaSharedSQLiteTests: XCTestCase {
         return OktaSharedSQLite(sqlitePersistentStorage: storage,
                                 cryptoManager: crypto,
                                 restAPIClient: restAPI,
-                                sqliteColumnEncryptionManager: OktaSQLiteEncryptionManager(cryptoManager: crypto, accessGroupId: crypto.accessGroupId),
+                                sqliteColumnEncryptionManager: OktaSQLiteEncryptionManager(cryptoManager: crypto, keychainGroupId: crypto.keychainGroupId),
                                 applicationConfig: config,
                                 logger: logger)
     }

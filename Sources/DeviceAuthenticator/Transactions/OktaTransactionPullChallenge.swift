@@ -17,16 +17,19 @@ class OktaTransactionPullChallenge: OktaTransaction {
     let restAPI: ServerAPIProtocol
     let enrollment: AuthenticatorEnrollment
     let authenticationToken: AuthToken
+    let applicationConfig: ApplicationConfig
 
     init(enrollment: AuthenticatorEnrollment,
          authenticationToken: AuthToken,
          storageManager: PersistentStorageProtocol,
          cryptoManager: OktaSharedCryptoProtocol,
          restAPI: ServerAPIProtocol,
+         applicationConfig: ApplicationConfig,
          logger: OktaLoggerProtocol) {
         self.restAPI = restAPI
         self.enrollment = enrollment
         self.authenticationToken = authenticationToken
+        self.applicationConfig = applicationConfig
         super.init(loginHint: nil,
                    storageManager: storageManager,
                    cryptoManager: cryptoManager,
@@ -102,7 +105,7 @@ class OktaTransactionPullChallenge: OktaTransaction {
         return try? PushChallenge.parse(info: info,
                                         allowedClockSkewInSeconds: allowedClockSkewInSeconds,
                                         validateJWT: validateJWT,
-                                        accessGroupId: cryptoManager.accessGroupId,
+                                        applicationGroupId: applicationConfig.applicationInfo.applicationGroupId,
                                         logger: logger)
     }
 }

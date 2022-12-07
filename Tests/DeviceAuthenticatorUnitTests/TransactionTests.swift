@@ -22,7 +22,7 @@ class TransactionTests: XCTestCase {
     var deviceAuthenticator: DeviceAuthenticator!
 
     override func setUp() {
-        cryptoManager = CryptoManagerMock(accessGroupId: ExampleAppConstants.appGroupId, logger: OktaLoggerMock())
+        cryptoManager = CryptoManagerMock(keychainGroupId: ExampleAppConstants.appGroupId, logger: OktaLoggerMock())
         jwtGeneratorMock = OktaJWTGeneratorMock(logger: OktaLoggerMock())
         storageMock = StorageMock()
         deviceAuthenticator = try! DeviceAuthenticatorBuilder(applicationConfig: ApplicationConfig(applicationName: "",
@@ -47,7 +47,7 @@ class TransactionTests: XCTestCase {
     }
 
     func testGenerateAuthenticationJWTString_CantGetKey() {
-        let mut = OktaTransaction(loginHint: nil, storageManager: storageMock, cryptoManager: OktaCryptoManager(accessGroupId: "", logger: OktaLoggerMock()), jwtGenerator: nil, logger: OktaLoggerMock())
+        let mut = OktaTransaction(loginHint: nil, storageManager: storageMock, cryptoManager: OktaCryptoManager(keychainGroupId: "", logger: OktaLoggerMock()), jwtGenerator: nil, logger: OktaLoggerMock())
         let authenticator = TestUtils.createAuthenticatorEnrollment(orgHost: URL(string: "okta.okta.com")!,
                                                                     orgId: "orgId",
                                                                     enrollmentId: "enrollment_id",

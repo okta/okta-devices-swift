@@ -16,7 +16,7 @@ import XCTest
 class OktaFactorTests: XCTestCase {
 
     func testCreation() {
-        let cryptoManager = CryptoManagerMock(accessGroupId: "", secKeyHelper: SecKeyHelperMock(), logger: OktaLoggerMock())
+        let cryptoManager = CryptoManagerMock(keychainGroupId: "", secKeyHelper: SecKeyHelperMock(), logger: OktaLoggerMock())
         let mockHTTPClient = MockMultipleRequestsHTTPClient(responseArray: [], dataArray: [])
         let restAPIClient = LegacyServerAPI(client: mockHTTPClient,
                                             crypto: cryptoManager,
