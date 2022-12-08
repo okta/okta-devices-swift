@@ -134,7 +134,7 @@ class PushChallenge: PushChallengeProtocol, CIBAChallengeProtocol {
     static func parse(info: [String: Any],
                       allowedClockSkewInSeconds: Int,
                       validateJWT: Bool = true,
-                      accessGroupId: String,
+                      applicationGroupId: String,
                       logger: OktaLoggerProtocol) throws -> OktaBindJWT {
         var versionKey = info[InternalConstants.PushJWTConstants.payloadVersionKey] as? String
         versionKey = versionKey ?? info[InternalConstants.PushJWTConstants.oktaPayloadVersionKey] as? String
@@ -152,7 +152,7 @@ class PushChallenge: PushChallengeProtocol, CIBAChallengeProtocol {
         }
 
         return try OktaBindJWT(string: challengeJWT,
-                               accessGroupId: accessGroupId,
+                               applicationGroupId: applicationGroupId,
                                validatePayload: validateJWT,
                                jwtType: InternalConstants.PushJWTConstants.pushJWTType,
                                allowedClockSkewInSeconds: allowedClockSkewInSeconds,

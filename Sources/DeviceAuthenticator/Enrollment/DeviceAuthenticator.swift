@@ -75,7 +75,7 @@ class DeviceAuthenticator: DeviceAuthenticatorProtocol {
             logger = Self.createLogger()
         }
         logger.info(eventName: "Initializing DeviceAuthenticator", message: nil)
-        let cryptoManager = OktaCryptoManager(accessGroupId: applicationConfig.applicationInfo.applicationGroupId, logger: logger)
+        let cryptoManager = OktaCryptoManager(keychainGroupId: applicationConfig.applicationInfo.keychainGroupId, logger: logger)
         let httpClientLocal = httpClient ?? HTTPClient(urlSession: nil, logger: logger, userAgent: UserAgent.standardUserAgent())
         let restAPIClient = MyAccountServerAPI(client: httpClientLocal,
                                                crypto: cryptoManager,

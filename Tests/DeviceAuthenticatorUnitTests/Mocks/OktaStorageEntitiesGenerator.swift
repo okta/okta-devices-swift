@@ -49,7 +49,7 @@ class OktaStorageEntitiesGenerator {
                              createdDate: String? = nil,
                              enrolledFactors: [OktaFactor] = [],
                              methodTypes: [AuthenticatorMethod] = [],
-                             cryptoManager: OktaSharedCryptoProtocol = CryptoManagerMock(accessGroupId: ExampleAppConstants.appGroupId, logger: OktaLoggerMock()),
+                             cryptoManager: OktaSharedCryptoProtocol = CryptoManagerMock(keychainGroupId: ExampleAppConstants.appGroupId, logger: OktaLoggerMock()),
                              storageManager: PersistentStorageProtocol? = nil,
                              transactionTypes: TransactionType? = nil) -> AuthenticatorEnrollment {
         let mockHTTPClient = MockMultipleRequestsHTTPClient(responseArray: [],

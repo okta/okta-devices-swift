@@ -30,7 +30,7 @@ class PushChallengeTests: XCTestCase {
             return TestUtils.createAuthenticatorEnrollment(orgHost: URL(string: "tenant.okta.com")!,
                                                            orgId: "orgId",
                                                            enrollmentId: "enrollmentId",
-                                                           cryptoManager: CryptoManagerMock(accessGroupId: "accessGroupId", logger: OktaLoggerMock()))
+                                                           cryptoManager: CryptoManagerMock(keychainGroupId: "accessGroupId", logger: OktaLoggerMock()))
 
         }
         let context = pushBindJWT!.jwt.payload["challengeContext"] as! [AnyHashable: Any]
@@ -38,7 +38,7 @@ class PushChallengeTests: XCTestCase {
                                           challengeContext: context,
                                           storageManager: storageMock,
                                           applicationConfig: ApplicationConfig(applicationName: "", applicationVersion: "", applicationGroupId: ""),
-                                          cryptoManager: CryptoManagerMock(accessGroupId: "", logger: OktaLoggerMock()),
+                                          cryptoManager: CryptoManagerMock(keychainGroupId: "", logger: OktaLoggerMock()),
                                           signalsManager: SignalsManager(logger: OktaLoggerMock()),
                                           restAPI: RestAPIMock(client: HTTPClient(logger: OktaLoggerMock(),
                                                                                   userAgent: ""),
@@ -62,7 +62,7 @@ class PushChallengeTests: XCTestCase {
         XCTAssertNoThrow(try PushChallenge.parse(info: pushInfo,
                                                  allowedClockSkewInSeconds: 300,
                                                  validateJWT: false,
-                                                 accessGroupId: "",
+                                                 applicationGroupId: "",
                                                  logger: OktaLoggerMock()))
     }
 
@@ -72,7 +72,7 @@ class PushChallengeTests: XCTestCase {
         XCTAssertThrowsError(try PushChallenge.parse(info: pushInfo,
                                                      allowedClockSkewInSeconds: 300,
                                                      validateJWT: false,
-                                                     accessGroupId: "",
+                                                     applicationGroupId: "",
                                                      logger: OktaLoggerMock()))
     }
 
@@ -81,7 +81,7 @@ class PushChallengeTests: XCTestCase {
         XCTAssertThrowsError(try PushChallenge.parse(info: pushInfo,
                                                      allowedClockSkewInSeconds: 300,
                                                      validateJWT: false,
-                                                     accessGroupId: "",
+                                                     applicationGroupId: "",
                                                      logger: OktaLoggerMock()))
     }
 
@@ -97,7 +97,7 @@ class PushChallengeTests: XCTestCase {
                                           challengeContext: context,
                                           storageManager: storageMock,
                                           applicationConfig: ApplicationConfig(applicationName: "", applicationVersion: "", applicationGroupId: ""),
-                                          cryptoManager: CryptoManagerMock(accessGroupId: "", logger: OktaLoggerMock()),
+                                          cryptoManager: CryptoManagerMock(keychainGroupId: "", logger: OktaLoggerMock()),
                                           signalsManager: SignalsManager(logger: OktaLoggerMock()),
                                           restAPI: RestAPIMock(client: HTTPClient(logger: OktaLoggerMock(),
                                                                                   userAgent: ""),
@@ -119,7 +119,7 @@ class PushChallengeTests: XCTestCase {
                                           challengeContext: context,
                                           storageManager: storageMock,
                                           applicationConfig: ApplicationConfig(applicationName: "", applicationVersion: "", applicationGroupId: ""),
-                                          cryptoManager: CryptoManagerMock(accessGroupId: "", logger: OktaLoggerMock()),
+                                          cryptoManager: CryptoManagerMock(keychainGroupId: "", logger: OktaLoggerMock()),
                                           signalsManager: SignalsManager(logger: OktaLoggerMock()),
                                           restAPI: RestAPIMock(client: HTTPClient(logger: OktaLoggerMock(),
                                                                                   userAgent: ""),
@@ -141,7 +141,7 @@ class PushChallengeTests: XCTestCase {
                                           challengeContext: context,
                                           storageManager: storageMock,
                                           applicationConfig: ApplicationConfig(applicationName: "", applicationVersion: "", applicationGroupId: ""),
-                                          cryptoManager: CryptoManagerMock(accessGroupId: "", logger: OktaLoggerMock()),
+                                          cryptoManager: CryptoManagerMock(keychainGroupId: "", logger: OktaLoggerMock()),
                                           signalsManager: SignalsManager(logger: OktaLoggerMock()),
                                           restAPI: RestAPIMock(client: HTTPClient(logger: OktaLoggerMock(),
                                                                                   userAgent: ""),

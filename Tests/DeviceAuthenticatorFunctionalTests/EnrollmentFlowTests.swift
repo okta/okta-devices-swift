@@ -45,7 +45,7 @@ class EnrollmentFlowTests: XCTestCase {
                                                                         MyAccountTestData.policyResponse(),
                                                                         MyAccountTestData.enrollmentResponse()])
         let oktaRestAPI = MyAccountServerAPI(client: mockHTTPClient,
-                                             crypto: OktaCryptoManager(accessGroupId: ExampleAppConstants.appGroupId,
+                                             crypto: OktaCryptoManager(keychainGroupId: ExampleAppConstants.appGroupId,
                                                                        logger: OktaLoggerMock()),
                                              logger: OktaLoggerMock())
 
@@ -83,7 +83,7 @@ class EnrollmentFlowTests: XCTestCase {
                                                                         MyAccountTestData.policyResponse(),
                                                                         MyAccountTestData.enrollmentResponse()])
         let oktaRestAPI = MyAccountServerAPI(client: mockHTTPClient,
-                                             crypto: OktaCryptoManager(accessGroupId: ExampleAppConstants.appGroupId,
+                                             crypto: OktaCryptoManager(keychainGroupId: ExampleAppConstants.appGroupId,
                                                                        logger: OktaLoggerMock()),
                                              logger: OktaLoggerMock())
 
@@ -116,7 +116,7 @@ class EnrollmentFlowTests: XCTestCase {
                                                                  MyAccountTestData.emptyPolicyArrayResponse(),
                                                                  MyAccountTestData.enrollmentResponse()])
         let oktaRestAPI = MyAccountServerAPI(client: mockHTTPClient,
-                                             crypto: OktaCryptoManager(accessGroupId: ExampleAppConstants.appGroupId,
+                                             crypto: OktaCryptoManager(keychainGroupId: ExampleAppConstants.appGroupId,
                                                                        logger: OktaLoggerMock()),
                                              logger: OktaLoggerMock())
 

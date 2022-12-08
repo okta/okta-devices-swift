@@ -33,7 +33,7 @@ class TransactionEnrollTests: XCTestCase {
 
     override func setUp() {
         secKeyHelperMock = SecKeyHelperMock()
-        cryptoManager = OktaCryptoManagerMock(accessGroupId: "", secKeyHelper: secKeyHelperMock, logger: OktaLoggerMock())
+        cryptoManager = OktaCryptoManagerMock(keychainGroupId: "", secKeyHelper: secKeyHelperMock, logger: OktaLoggerMock())
 
         let mockURL = URL(string: "https://example.okta.com")!
         let mockHTTPClient = MockMultipleRequestsHTTPClient(responseArray: [HTTPURLResponse(url: mockURL, statusCode: 200, httpVersion: nil, headerFields: nil)!,

@@ -45,14 +45,14 @@ protocol OktaSQLiteColumnEncryptionManagerProtocol {
 class OktaSQLiteEncryptionManager: OktaSQLiteColumnEncryptionManagerProtocol {
     let cryptoManager: OktaSharedCryptoProtocol
     let keychainStorage: OktaSecureStorage
-    let accessGroupId: String
+    let keychainGroupId: String
     var cryptoKey: SymmetricKey?
 
     init(cryptoManager: OktaSharedCryptoProtocol,
-         accessGroupId: String,
+         keychainGroupId: String,
          keychainStorage: OktaSecureStorage = OktaSecureStorage(applicationPassword: nil)) {
         self.cryptoManager = cryptoManager
-        self.accessGroupId = accessGroupId
+        self.keychainGroupId = keychainGroupId
         self.keychainStorage = keychainStorage
     }
 
@@ -91,7 +91,7 @@ class OktaSQLiteEncryptionManager: OktaSQLiteColumnEncryptionManagerProtocol {
 
         let keyTag = EncryptionTag.columnEncryptionKeyTag
         do {
-            let storedPublicKey = try keychainStorage.getData(key: keyTag.rawValue, accessGroup: accessGroupId)
+            let storedPublicKey = try keychainStorage.getData(key: keyTag.rawValue, accessGroup: keychainGroupId)
             let symmetricKey = SymmetricKey(data: storedPublicKey)
             self.cryptoKey = symmetricKey
 
@@ -106,7 +106,7 @@ class OktaSQLiteEncryptionManager: OktaSQLiteColumnEncryptionManagerProtocol {
                     try keychainStorage.set(data: rawKey,
                                             forKey: keyTag.rawValue,
                                             behindBiometrics: false,
-                                            accessGroup: accessGroupId,
+                                            accessGroup: keychainGroupId,
                                             accessibility: kSecAttrAccessibleWhenUnlocked)
 
                     return cryptoKey

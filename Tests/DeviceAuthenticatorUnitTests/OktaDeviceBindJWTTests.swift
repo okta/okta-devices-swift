@@ -157,7 +157,7 @@ class OktaDeviceBindJWTTests: XCTestCase {
     }
 
     func testDeviceChallengeResponseJWTGeneration() {
-        let cryptoManager = CryptoManagerMock(accessGroupId: ExampleAppConstants.appGroupId, logger: OktaLoggerMock())
+        let cryptoManager = CryptoManagerMock(keychainGroupId: ExampleAppConstants.appGroupId, logger: OktaLoggerMock())
         _ = try? cryptoManager.generate(keyPairWith: .ES256, with: "kid", useSecureEnclave: false, useBiometrics: false)
         let key = cryptoManager.get(keyOf: .privateKey, with: "kid")
         let mut = try? OktaBindJWT(string: OktaJWTTestData.validDeviceChallengeRequestJWT(), validatePayload: false, logger: OktaLoggerMock())
@@ -388,7 +388,7 @@ class OktaDeviceBindJWTPartialMock: OktaBindJWT {
         self.ignoreExpValidation = ignoreExpValidation
         self.ignoreIatValidation = ignoreIatValidation
         try super.init(string: input,
-                       accessGroupId: accessGroupId,
+                       applicationGroupId: accessGroupId,
                        validatePayload: validatePayload,
                        customizableHeaders: customizableHeaders,
                        allowedClockSkewInSeconds: allowedClockSkewInSeconds,

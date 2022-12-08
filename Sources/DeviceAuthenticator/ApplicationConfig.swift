@@ -39,16 +39,17 @@ public class ApplicationConfig {
     /// - Parameters:
     ///   - applicationName: Host application name, can be application bundle id
     ///   - applicationVersion: Host application version
-    ///   - applicationGroupId: AppGroupId or KeychainSharing entitlement identifier
+    ///   - applicationGroupId: AppGroupId entitlement identifier for sharing files and keychain items between applications and extensions
+    ///   - keychainGroupId: Optional KeychainSharing entitlement identifier for sharing keychain data. If not provided by your application then sdk falls back to applicationGroupId entitlement for keychain operations
     public init(applicationName: String,
                 applicationVersion: String,
-                applicationGroupId: String
-    ) {
-        self.applicationInfo = .init(
+                applicationGroupId: String,
+                keychainGroupId: String? = nil) {
+        self.applicationInfo = OktaApplicationInfo(
             applicationName: applicationName,
             applicationVersion: applicationVersion,
-            applicationGroupId: applicationGroupId
-        )
+            applicationGroupId: applicationGroupId,
+            keychainGroupId: keychainGroupId)
     }
 
     /// Returns a config value for the specified raw key.

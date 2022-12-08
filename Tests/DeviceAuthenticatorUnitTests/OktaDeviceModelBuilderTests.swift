@@ -32,7 +32,7 @@ class OktaDeviceModelBuilderTests: XCTestCase {
         super.setUp()
 
         let secKeyHelperMock = SecKeyHelperMock()
-        cryptoManager = CryptoManagerMock(accessGroupId: "", secKeyHelper: secKeyHelperMock, logger: OktaLoggerMock())
+        cryptoManager = CryptoManagerMock(keychainGroupId: "", secKeyHelper: secKeyHelperMock, logger: OktaLoggerMock())
         jwkGenerator = OktaJWKGeneratorMock(logger: OktaLoggerMock())
         jwtGenerator = OktaJWTGeneratorMock(logger: OktaLoggerMock())
         applicationConfig = ApplicationConfig(applicationName: "Test App",

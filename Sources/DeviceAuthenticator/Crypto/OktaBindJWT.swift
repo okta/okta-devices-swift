@@ -63,7 +63,7 @@ class OktaBindJWT {
     let exp: Int
     let transactionId: String
     let jwtType: String
-    let accessGroupId: String?
+    let applicationGroupId: String?
     let rawChallenge: String
     let validatePayload: Bool
     let allowedClockSkewInSeconds: Int
@@ -151,7 +151,7 @@ class OktaBindJWT {
     }()
 
     init(string input: String,
-         accessGroupId: String? = nil,
+         applicationGroupId: String? = nil,
          validatePayload: Bool = true,
          customizableHeaders: [String: String] = [: ],
          jwtType: String = "okta-devicebind+jwt",
@@ -168,7 +168,7 @@ class OktaBindJWT {
 
         self.rawChallenge = input
         self.jwtType = jwtType
-        self.accessGroupId = accessGroupId
+        self.applicationGroupId = applicationGroupId
         self.logger = logger
         self.orgId = try Self.get(claim: OktaJWTClaims.orgId,
                                   from: jwt,
@@ -266,7 +266,7 @@ class OktaBindJWT {
         var validationOptions = OktaJWTValidator.ValidationOptions.allOptions
         validationOptions.remove(.issuer)
         validator.validationOptionsSet = validationOptions
-        validator.keyStorageManager = try? KeyStore(with: self.accessGroupId, logger: logger)
+        validator.keyStorageManager = try? KeyStore(with: self.applicationGroupId, logger: logger)
         do {
             _ = try validator.isValid(jwtString)
         } catch let error as OktaJWTVerificationError {

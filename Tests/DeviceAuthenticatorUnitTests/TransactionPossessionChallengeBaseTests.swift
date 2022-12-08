@@ -23,7 +23,7 @@ class TransactionPossessionChallengeBaseTests: XCTestCase {
     var deviceAuthenticator: DeviceAuthenticator!
 
     override func setUp() {
-        cryptoManager = CryptoManagerMock(accessGroupId: ExampleAppConstants.appGroupId, logger: OktaLoggerMock())
+        cryptoManager = CryptoManagerMock(keychainGroupId: ExampleAppConstants.appGroupId, logger: OktaLoggerMock())
         restAPIMock = RestAPIMock(client: HTTPClient(logger: OktaLoggerMock(), userAgent: ""), logger: OktaLoggerMock())
         storageMock = StorageMock()
         storageMock.deviceEnrollmentByOrgIdHook = { orgId in

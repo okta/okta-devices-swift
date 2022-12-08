@@ -40,7 +40,7 @@ class RestAPIMock: ServerAPIProtocol {
         self.client = client
         self.logger = logger
         self.restAPI = defaultAPI ?? LegacyServerAPI(client: client,
-                                                     crypto: OktaCryptoManager(accessGroupId: ExampleAppConstants.appGroupId,
+                                                     crypto: OktaCryptoManager(keychainGroupId: ExampleAppConstants.appGroupId,
                                                                                logger: logger),
                                                      logger: logger)
     }

@@ -186,7 +186,7 @@ class OktaTransactionPossessionChallengeBase: OktaTransaction {
 
     func parseJWT(string: String) throws -> OktaBindJWT {
         return try OktaBindJWT(string: string,
-                               accessGroupId: cryptoManager.accessGroupId,
+                               applicationGroupId: applicationConfig.applicationInfo.applicationGroupId,
                                logger: logger)
     }
 

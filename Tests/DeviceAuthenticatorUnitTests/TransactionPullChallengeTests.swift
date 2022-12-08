@@ -35,15 +35,20 @@ class TransactionPullChallengeTests: XCTestCase {
     var restAPIClient: LegacyServerAPI!
     let entitiesGenerator = OktaStorageEntitiesGenerator()
     var storageMock: StorageMock!
+    var applicationConfig: ApplicationConfig!
 
     override func setUp() {
         secKeyHelper = SecKeyHelperMock()
-        cryptoManager = CryptoManagerMock(accessGroupId: "", secKeyHelper: secKeyHelper, logger: OktaLoggerMock())
+        cryptoManager = CryptoManagerMock(keychainGroupId: "", secKeyHelper: secKeyHelper, logger: OktaLoggerMock())
         storageMock = StorageMock()
         let mockHTTPClient = MockMultipleRequestsHTTPClient(responseArray: [], dataArray: [])
         restAPIClient = LegacyServerAPI(client: mockHTTPClient,
                                         crypto: cryptoManager,
                                         logger: OktaLoggerMock())
+        applicationConfig = ApplicationConfig(applicationName: "AppName",
+                                              applicationVersion: "1.0.0",
+                                              applicationGroupId: "")
+        
     }
 
     func testPendingChallenge_Success() {
@@ -69,6 +74,7 @@ class TransactionPullChallengeTests: XCTestCase {
                                                                                storageManager: storageMock,
                                                                                cryptoManager: cryptoManager,
                                                                                restAPI: restAPIClient,
+                                                                               applicationConfig: applicationConfig,
                                                                                logger: OktaLoggerMock())
         var completionExpectation = expectation(description: "callback should be called")
         pullChallengeTransaction.pullChallenge(allowedClockSkewInSeconds: 300) { result in
@@ -96,6 +102,7 @@ class TransactionPullChallengeTests: XCTestCase {
                                                                            storageManager: storageMock,
                                                                            cryptoManager: cryptoManager,
                                                                            restAPI: restAPIClient,
+                                                                           applicationConfig: applicationConfig,
                                                                            logger: OktaLoggerMock())
         completionExpectation = expectation(description: "callback should be called")
         pullChallengeTransaction.pullChallenge(allowedClockSkewInSeconds: 300) { result in
@@ -135,6 +142,7 @@ class TransactionPullChallengeTests: XCTestCase {
                                                                                storageManager: storageMock,
                                                                                cryptoManager: cryptoManager,
                                                                                restAPI: restAPIClient,
+                                                                               applicationConfig: applicationConfig,
                                                                                logger: OktaLoggerMock())
         let completionExpectation = expectation(description: "callback should be called")
         pullChallengeTransaction.pullChallenge(allowedClockSkewInSeconds: 300) { result in
@@ -183,6 +191,7 @@ class TransactionPullChallengeTests: XCTestCase {
                                                                                storageManager: storageMock,
                                                                                cryptoManager: cryptoManager,
                                                                                restAPI: restAPIClient,
+                                                                               applicationConfig: applicationConfig,
                                                                                logger: OktaLoggerMock())
         pullChallengeTransaction.pullChallenge(allowedClockSkewInSeconds: 300) { result in
             switch result {
@@ -217,6 +226,7 @@ class TransactionPullChallengeTests: XCTestCase {
                                                                                storageManager: storageMock,
                                                                                cryptoManager: cryptoManager,
                                                                                restAPI: restAPIClient,
+                                                                               applicationConfig: applicationConfig,
                                                                                logger: OktaLoggerMock())
         pullChallengeTransaction.pullChallenge(allowedClockSkewInSeconds: 300) { result in
             switch result {
@@ -251,6 +261,7 @@ class TransactionPullChallengeTests: XCTestCase {
                                                                                storageManager: storageMock,
                                                                                cryptoManager: cryptoManager,
                                                                                restAPI: restAPIClient,
+                                                                               applicationConfig: applicationConfig,
                                                                                logger: OktaLoggerMock())
         pullChallengeTransaction.pullChallenge(allowedClockSkewInSeconds: 300) { result in
             switch result {
@@ -285,6 +296,7 @@ class TransactionPullChallengeTests: XCTestCase {
                                                                                storageManager: storageMock,
                                                                                cryptoManager: cryptoManager,
                                                                                restAPI: restAPIClient,
+                                                                               applicationConfig: applicationConfig,
                                                                                logger: OktaLoggerMock())
         pullChallengeTransaction.pullChallenge(allowedClockSkewInSeconds: 300) { result in
             switch result {
@@ -319,6 +331,7 @@ class TransactionPullChallengeTests: XCTestCase {
                                                                                storageManager: storageMock,
                                                                                cryptoManager: cryptoManager,
                                                                                restAPI: restAPIClient,
+                                                                               applicationConfig: applicationConfig,
                                                                                logger: OktaLoggerMock())
         pullChallengeTransaction.pullChallenge(allowedClockSkewInSeconds: 300) { result in
             switch result {

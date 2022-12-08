@@ -32,7 +32,7 @@ enum PrivateKeyState {
 }
 
 protocol OktaSharedCryptoProtocol: OktaCryptoProtocol {
-    var accessGroupId: String { get }
+    var keychainGroupId: String { get }
 }
 
 /// Protocol for managing public and private keys

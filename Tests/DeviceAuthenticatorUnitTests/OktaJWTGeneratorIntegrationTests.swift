@@ -14,7 +14,7 @@ import XCTest
 @testable import DeviceAuthenticator
 
 class OktaJWTGeneratorIntegrationTests: XCTestCase {
-    private let cryptoManager = OktaCryptoManager(accessGroupId: "", logger: OktaLoggerMock())
+    private let cryptoManager = OktaCryptoManager(keychainGroupId: "", logger: OktaLoggerMock())
     private var mut: OktaJWTGenerator!
     private let ec256ValidPrivateKeyBase64 = "BIBwuQyPfBPU+fyXiU+i0FOqEAHtm3U5aER8gIWVnyJvw9YfSa7ylqLNpdeyTie4zUFP9UU4FXLByqcaGFR1q05at441RDVAq1aewlvnE9pKcZmCiiayoO37AxpdRYcTmA=="
 

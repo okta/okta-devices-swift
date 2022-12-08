@@ -27,7 +27,7 @@ class AuthenticatorEnrollmentTests: XCTestCase {
                                                    applicationGroupId: ExampleAppConstants.appGroupId)
 
     override func setUp() {
-        cryptoManager = CryptoManagerMock(accessGroupId: ExampleAppConstants.appGroupId, logger: OktaLoggerMock())
+        cryptoManager = CryptoManagerMock(keychainGroupId: ExampleAppConstants.appGroupId, logger: OktaLoggerMock())
         mockStorageManager = StorageMock()
         enrollment = TestUtils.createAuthenticatorEnrollment(orgHost: mockURL,
                                                              orgId: "orgId",
@@ -91,7 +91,7 @@ class AuthenticatorEnrollmentTests: XCTestCase {
 
     #if os(iOS)
     func testUpdatePushTokenSuccess() {
-        cryptoManager.accessGroupId = ""
+        cryptoManager.keychainGroupId = ""
         let pushFactor = OktaFactorPush(factorData: OktaFactorMetadataPush(id: "id",
                                                                            proofOfPossessionKeyTag: "proofOfPossessionKeyTag",
                                                                            transactionTypes: .login),
@@ -134,7 +134,7 @@ class AuthenticatorEnrollmentTests: XCTestCase {
     #endif
 
     func testUpdatePushTokenError() {
-        cryptoManager.accessGroupId = ""
+        cryptoManager.keychainGroupId = ""
         let enrollment = TestUtils.createAuthenticatorEnrollment(orgHost: mockURL,
                                                                  orgId: "orgId",
                                                                  enrollmentId: "enrollmentId",
@@ -152,7 +152,7 @@ class AuthenticatorEnrollmentTests: XCTestCase {
     }
 
     func testRetrievePushChallenges() {
-        cryptoManager.accessGroupId = ""
+        cryptoManager.keychainGroupId = ""
         let pushFactor = OktaFactorPush(factorData: OktaFactorMetadataPush(id: "id",
                                                                            proofOfPossessionKeyTag: "proofOfPossessionKeyTag",
                                                                            links: OktaFactorMetadataPush.Links(pendingLink: "https://test.okta.com/pending_challenge"), transactionTypes: .login),

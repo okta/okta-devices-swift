@@ -29,7 +29,7 @@ class OktaAuthenticatorsManagerTests: XCTestCase {
         super.setUp()
 
         secHelperMock = SecKeyHelperMock()
-        cryptoManager = OktaCryptoManager(accessGroupId: ExampleAppConstants.appGroupId, secKeyHelper: secHelperMock, logger: OktaLoggerMock())
+        cryptoManager = OktaCryptoManager(keychainGroupId: ExampleAppConstants.appGroupId, secKeyHelper: secHelperMock, logger: OktaLoggerMock())
 
         let mockHTTPClient = MockMultipleRequestsHTTPClient(responseArray: [HTTPURLResponse(url: mockURL, statusCode: 200, httpVersion: nil, headerFields: nil)!, HTTPURLResponse(url: mockURL, statusCode: 200, httpVersion: nil, headerFields: nil)!, HTTPURLResponse(url: mockURL, statusCode: 200, httpVersion: nil, headerFields: nil)!], dataArray: [GoldenData.orgData(), GoldenData.authenticatorMetaData(), GoldenData.authenticatorData()])
         restAPI = RestAPIMock(client: mockHTTPClient, logger: OktaLoggerMock())
@@ -238,7 +238,7 @@ class OktaAuthenticatorsManagerTests: XCTestCase {
         // suspended
         var mockHTTPClient = MockAPIResponse.response(for: .deviceSuspended)
         authenticatorManager.restAPI = LegacyServerAPI(client: mockHTTPClient,
-                                                       crypto: OktaCryptoManager(accessGroupId: ExampleAppConstants.appGroupId,
+                                                       crypto: OktaCryptoManager(keychainGroupId: ExampleAppConstants.appGroupId,
                                                                                  logger: OktaLoggerMock()),
                                                        logger: OktaLoggerMock())
         var ex = expectation(description: "Completion callback expected!")
@@ -256,7 +256,7 @@ class OktaAuthenticatorsManagerTests: XCTestCase {
         // deleted
         mockHTTPClient = MockAPIResponse.response(for: .userDeleted)
         authenticatorManager.restAPI = LegacyServerAPI(client: mockHTTPClient,
-                                                       crypto: OktaCryptoManager(accessGroupId: ExampleAppConstants.appGroupId,
+                                                       crypto: OktaCryptoManager(keychainGroupId: ExampleAppConstants.appGroupId,
                                                                                  logger: OktaLoggerMock()),
                                                        logger: OktaLoggerMock())
         ex = expectation(description: "Completion callback expected!")
@@ -281,7 +281,7 @@ class OktaAuthenticatorsManagerTests: XCTestCase {
                                                                  cryptoManager: cryptoManager)
         var mockHTTPClient = MockAPIResponse.response(for: .enrollmentDeleted)
         authenticatorManager.restAPI = LegacyServerAPI(client: mockHTTPClient,
-                                                       crypto: OktaCryptoManager(accessGroupId: ExampleAppConstants.appGroupId,
+                                                       crypto: OktaCryptoManager(keychainGroupId: ExampleAppConstants.appGroupId,
                                                                                  logger: OktaLoggerMock()),
                                                        logger: OktaLoggerMock())
         var ex = expectation(description: "Completion callback expected!")
@@ -294,7 +294,7 @@ class OktaAuthenticatorsManagerTests: XCTestCase {
         // suspended state
         mockHTTPClient = MockAPIResponse.response(for: .userSuspended)
         authenticatorManager.restAPI = LegacyServerAPI(client: mockHTTPClient,
-                                                       crypto: OktaCryptoManager(accessGroupId: ExampleAppConstants.appGroupId,
+                                                       crypto: OktaCryptoManager(keychainGroupId: ExampleAppConstants.appGroupId,
                                                                                  logger: OktaLoggerMock()),
                                                        logger: OktaLoggerMock())
         ex = expectation(description: "Completion callback expected!")
@@ -307,7 +307,7 @@ class OktaAuthenticatorsManagerTests: XCTestCase {
         // deleted state
         mockHTTPClient = MockAPIResponse.response(for: .userDeleted)
         authenticatorManager.restAPI = LegacyServerAPI(client: mockHTTPClient,
-                                                       crypto: OktaCryptoManager(accessGroupId: ExampleAppConstants.appGroupId,
+                                                       crypto: OktaCryptoManager(keychainGroupId: ExampleAppConstants.appGroupId,
                                                                                  logger: OktaLoggerMock()),
                                                        logger: OktaLoggerMock())
         ex = expectation(description: "Completion callback expected!")
@@ -323,7 +323,7 @@ class OktaAuthenticatorsManagerTests: XCTestCase {
             response: HTTPURLResponse(url: mockURL, statusCode: 200, httpVersion: nil, headerFields: nil),
             data: GoldenData.authenticatorMetaData())
         authenticatorManager.restAPI = LegacyServerAPI(client: mockHTTPClient,
-                                                       crypto: OktaCryptoManager(accessGroupId: ExampleAppConstants.appGroupId,
+                                                       crypto: OktaCryptoManager(keychainGroupId: ExampleAppConstants.appGroupId,
                                                                                  logger: OktaLoggerMock()),
                                                        logger: OktaLoggerMock())
 

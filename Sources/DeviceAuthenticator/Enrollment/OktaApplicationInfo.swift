@@ -17,14 +17,15 @@ struct OktaApplicationInfo {
     let applicationName: String
     let applicationVersion: String
     let applicationGroupId: String
+    let keychainGroupId: String
 
-    init(
-        applicationName: String,
-        applicationVersion: String,
-        applicationGroupId: String
-    ) {
+    init(applicationName: String,
+         applicationVersion: String,
+         applicationGroupId: String,
+         keychainGroupId: String? = nil) {
         self.applicationName = applicationName
         self.applicationVersion = applicationVersion
         self.applicationGroupId = applicationGroupId
+        self.keychainGroupId = keychainGroupId ?? applicationGroupId
     }
 }

@@ -230,7 +230,7 @@ public class _OktaAuthenticatorsManager {
         let bindJWT = try PushChallenge.parse(info: userInfo,
                                               allowedClockSkewInSeconds: allowedClockSkewInSeconds,
                                               validateJWT: validateJWT,
-                                              accessGroupId: cryptoManager.accessGroupId,
+                                              applicationGroupId: applicationConfig.applicationInfo.applicationGroupId,
                                               logger: logger)
 
         guard let context = bindJWT.jwt.payload["challengeContext"] as? [AnyHashable: Any],

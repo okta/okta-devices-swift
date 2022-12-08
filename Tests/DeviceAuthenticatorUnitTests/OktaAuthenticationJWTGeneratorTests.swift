@@ -21,7 +21,7 @@ class OktaAuthenticationJWTGeneratorTests: XCTestCase {
         _ = secHelper.generateKeyPair([:] as CFDictionary, &publicKey, &privateKey)
         XCTAssertNotNil(privateKey)
         let loggerMock = OktaLoggerMock()
-        let cryptoManager = CryptoManagerMock(accessGroupId: "", secKeyHelper: secHelper, logger: loggerMock)
+        let cryptoManager = CryptoManagerMock(keychainGroupId: "", secKeyHelper: secHelper, logger: loggerMock)
         let jwtGeneratorMock = OktaJWTGeneratorMock(logger: loggerMock)
         var hookCalled = false
         jwtGeneratorMock.generateHook = { jwtType, kid, jwt, key, algo in
