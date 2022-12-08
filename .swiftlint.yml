@@ -119,4 +119,3 @@ excluded:
 - Examples/PushSampleApp/Pods
 - DerivedData
 - Package.swift
-- Examples/SPM_Example
