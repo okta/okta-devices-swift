@@ -24,7 +24,6 @@ enum OktaJWTClaims {
     case expires
     case verificationURI
     case mdmAttestationIssuers
-    case keyTypes // deprecated, use userVerification and userPresence to determine set of required keys.
     case transactionId
     case signals
     case integrations
@@ -95,15 +94,6 @@ class OktaBindJWT {
         } else {
             return []
         }
-    }()
-
-    lazy var keyTypes: [KeyType] = {
-        guard let typesArray = self.jwt.payload[OktaJWTClaims.keyTypes.rawValue] as? [String] else {
-            return []
-        }
-
-        let keyTypes = typesArray.compactMap({ KeyType(rawValue: $0) ?? nil })
-        return keyTypes
     }()
 
     lazy var methodType: MethodType = {
@@ -318,8 +308,6 @@ extension OktaJWTClaims {
             return "iat"
         case .expires:
             return "exp"
-        case .keyTypes:
-            return "keyTypes"
         case .transactionId:
             return "transactionId"
         case .signals:
