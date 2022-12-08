@@ -15,7 +15,7 @@ let package = Package(
             targets: ["DeviceAuthenticator"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/groue/GRDB.swift.git", .upToNextMajor(from: "5.0.0")),
+        .package(url: "https://github.com/groue/GRDB.swift.git", .upToNextMajor(from: "6.0.0")),
         .package(url: "https://github.com/okta/okta-ios-jwt.git", .upToNextMajor(from: "2.3.0")),
         .package(url: "https://github.com/okta/okta-logger-swift.git", .upToNextMajor(from: "1.0.0"))
     ],
