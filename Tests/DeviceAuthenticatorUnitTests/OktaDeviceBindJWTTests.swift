@@ -45,13 +45,10 @@ class OktaDeviceBindJWTTests: XCTestCase {
         }
     }
 
-    func testInitDeviceBindJWTSuccess_TwoKeys() {
+    func testInitDeviceBindJWTSuccess_PreferredUserVerification() {
         do {
             let mut = try OktaBindJWT(string: OktaJWTTestData.validDeviceChallengeRequestJWTWithUserVerificationPreferred(), validatePayload: false, logger: OktaLoggerMock())
             XCTAssertEqual(mut.userVerification, .preferred)
-            XCTAssertEqual(mut.keyTypes.count, 2)
-            XCTAssertEqual(mut.keyTypes.first?.rawValue, "userVerification")
-            XCTAssertEqual(mut.keyTypes.last?.rawValue, "proofOfPossession")
         } catch {
             XCTFail("Unexpected error: \(error)")
         }

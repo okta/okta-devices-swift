@@ -173,12 +173,8 @@ class OktaTransactionPossessionChallengeBase: OktaTransaction {
                 keyTypes = [.userVerification, .proofOfPossession]
             }
         } else {
-            var challengeKeyTypes: [OktaBindJWT.KeyType] = challenge.keyTypes.isEmpty ? [.proofOfPossession] : challenge.keyTypes
-            if challengeKeyTypes.count == 1 && challengeKeyTypes.first == OktaBindJWT.KeyType.userVerification {
-                // Add PoP key as a fallback key
-                challengeKeyTypes.append(.proofOfPossession)
-            }
-            keyTypes = challengeKeyTypes
+            // Add PoP key as a fallback key
+            keyTypes = [.proofOfPossession]
         }
         self.signJWTAndSendRequest(transactionContext: transactionContext,
                                    keysRequirements: keyTypes)
