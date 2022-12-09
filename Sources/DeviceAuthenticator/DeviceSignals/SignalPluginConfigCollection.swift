@@ -11,7 +11,11 @@
 */
 
 import Foundation
+#if SWIFT_PACKAGE
+import LoggerCore
+#else
 import OktaLogger
+#endif
 
 /// Represents a collection of all plugin configs that have been read in from manifest file
 class SignalPluginConfigCollection {

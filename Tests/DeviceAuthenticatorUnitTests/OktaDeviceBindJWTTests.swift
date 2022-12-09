@@ -11,7 +11,11 @@
 */
 import XCTest
 import OktaJWT
+#if SWIFT_PACKAGE
+import LoggerCore
+#else
 import OktaLogger
+#endif
 @testable import DeviceAuthenticator
 
 class OktaDeviceBindJWTTests: XCTestCase {

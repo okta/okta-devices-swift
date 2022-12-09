@@ -11,7 +11,11 @@
 */
 
 import Foundation
+#if SWIFT_PACKAGE
+import LoggerCore
+#else
 import OktaLogger
+#endif
 
 class MyAccountServerAPI: ServerAPIProtocol {
     let client: HTTPClientProtocol

@@ -12,7 +12,11 @@
 
 import Foundation
 import LocalAuthentication
+#if SWIFT_PACKAGE
+import LoggerCore
+#else
 import OktaLogger
+#endif
 
 /// Represents Push factor
 class OktaFactorPush: OktaFactor {

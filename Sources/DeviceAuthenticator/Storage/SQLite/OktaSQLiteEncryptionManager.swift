@@ -12,7 +12,11 @@
 import Foundation
 import LocalAuthentication
 import CryptoKit
+#if SWIFT_PACKAGE
+import LoggerCore
+#else
 import OktaLogger
+#endif
 
 protocol OktaSQLiteColumnEncryptionManagerProtocol {
     /// Returns Data, which represents an encrypted Data UTF8 encoded string

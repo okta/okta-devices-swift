@@ -89,4 +89,10 @@ jobs:
         cp -r ./UTLogs/* ./DerivedData/Logs/Test
         cp -r ./FTLogs/* ./DerivedData/Logs/Test
         xcov -s DeviceAuthenticatorFramework -j DerivedData
+  SPM:
+    runs-on: macos-12
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build Swift Package
+      run:  swift build
   

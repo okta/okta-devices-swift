@@ -11,9 +11,13 @@
 */
 import Foundation
 import LocalAuthentication
-import UIKit
+#if SWIFT_PACKAGE
+import LoggerCore
+#else
 import OktaLogger
-
+#endif
+#if os(iOS)
+import UIKit
 class OktaUnmanagedDeviceSignals {
     class func retrieveDeviceSignals(requestedSignals: Set<RequestableSignal>,
                                      customDeviceSignals: DeviceSignals?,
@@ -93,3 +97,4 @@ class OktaUnmanagedDeviceSignals {
         }
     }
 }
+#endif

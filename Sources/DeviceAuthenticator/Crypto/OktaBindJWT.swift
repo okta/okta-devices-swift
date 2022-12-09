@@ -12,7 +12,11 @@
 
 import Foundation
 import OktaJWT
+#if SWIFT_PACKAGE
+import LoggerCore
+#else
 import OktaLogger
+#endif
 
 enum OktaJWTClaims {
     case typ

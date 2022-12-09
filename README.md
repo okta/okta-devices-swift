@@ -47,6 +47,7 @@ If you run into problems using the SDK, you can:
 
 ### Including Okta Devices SDK
 
+#### Cocoapods
 Okta Devices SDK is available from [CocoaPods](http://cocoapods.org). To add it to your project, add the following lines to your Podfile:
 
 ```ruby
@@ -54,6 +55,13 @@ target 'MyApplicationTarget' do
   pod 'DeviceAuthenticator'
 end
 ```
+#### Swift Package Manager
+
+This SDK is available through Swift Package Manager. To install it, import it from the following url:
+```
+https://github.com/okta/okta-devices-swift.git
+```
+Note: This SDK is only available for iOS platforms. MacOS and WatchOS is not supported.
 
 ## Usage
 

@@ -14,8 +14,12 @@
 import Foundation
 import LocalAuthentication
 import SystemConfiguration
+#if SWIFT_PACKAGE
+import LoggerCore
+#else
 import OktaLogger
-
+#endif
+#if os(macOS)
 class OktaUnmanagedDeviceSignals {
     static let logEventName = "OktaUnmanagedDeviceSignals"
 
@@ -312,3 +316,4 @@ class OktaUnmanagedDeviceSignals {
         return serialNumber
     }
 }
+#endif

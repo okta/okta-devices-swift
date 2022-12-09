@@ -12,7 +12,11 @@
 
 import Foundation
 import GRDB
+#if SWIFT_PACKAGE
+import LoggerCore
+#else
 import OktaLogger
+#endif
 
 class OktaSQLitePersistentStorage: OktaSQLitePersistentStorageProtocol {
     let schemaVersion: DeviceSDKStorageVersion
