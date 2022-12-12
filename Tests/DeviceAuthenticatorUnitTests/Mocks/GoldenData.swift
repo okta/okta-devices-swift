@@ -572,7 +572,7 @@ class MyAccountTestData {
 
     class func policyResponseWithEmptyMethods() -> Data {
         let authenticatorJson: String = """
-                [{
+                {
                   "authenticatorId": "aut6nfu6soyk3GD2U0g4",
                   "orgId": "00o1n81xonY9z2Heh0g4",
                   "key": "custom_app",
@@ -585,18 +585,9 @@ class MyAccountTestData {
                   },
                   "supportedMethods" : [],
                   "app_authenticator_enroll_endpoint": "https://your-org.okta.com/idp/myaccount/app-authenticator"
-                }]
+                }
         """
-        let dict = try! JSONSerialization.jsonObject(with: authenticatorJson.data(using: .utf8)!, options: []) as! [[String: Any]]
-        let jsonData = try! JSONSerialization.data(withJSONObject: dict, options: .prettyPrinted)
-        return jsonData
-    }
-
-    class func emptyPolicyArrayResponse() -> Data {
-        let authenticatorJson: String = """
-                []
-        """
-        let dict = try! JSONSerialization.jsonObject(with: authenticatorJson.data(using: .utf8)!, options: []) as! [Any]
+        let dict = try! JSONSerialization.jsonObject(with: authenticatorJson.data(using: .utf8)!, options: []) as! [String: Any]
         let jsonData = try! JSONSerialization.data(withJSONObject: dict, options: .prettyPrinted)
         return jsonData
     }

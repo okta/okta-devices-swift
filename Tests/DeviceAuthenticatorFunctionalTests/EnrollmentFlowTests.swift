@@ -40,14 +40,14 @@ class EnrollmentFlowTests: XCTestCase {
 
         let enrollmentExpectation = expectation(description: "Enrollment should complete")
 
-        let mockHTTPClient = MockMultipleRequestsHTTPClient(responseArray: httpResponses,
-                                                            dataArray: [GoldenData.orgData(),
-                                                                        MyAccountTestData.policyResponse(),
-                                                                        MyAccountTestData.enrollmentResponse()])
-        let oktaRestAPI = MyAccountServerAPI(client: mockHTTPClient,
-                                             crypto: OktaCryptoManager(keychainGroupId: ExampleAppConstants.appGroupId,
-                                                                       logger: OktaLoggerMock()),
-                                             logger: OktaLoggerMock())
+        let mockHTTPClient = MockMultipleRequestsHTTPClient(responseArray: httpResponses, dataArray:
+                                                                [GoldenData.orgData(),
+                                                                 GoldenData.authenticatorMetaData(),
+                                                                 GoldenData.authenticatorData()])
+        let oktaRestAPI = LegacyServerAPI(client: mockHTTPClient,
+                                          crypto: OktaCryptoManager(keychainGroupId: ExampleAppConstants.appGroupId,
+                                                                    logger: OktaLoggerMock()),
+                                          logger: OktaLoggerMock())
 
         let deviceAuthenticator: DeviceAuthenticatorProtocol
         do {
@@ -78,14 +78,14 @@ class EnrollmentFlowTests: XCTestCase {
 
         let enrollmentExpectation = expectation(description: "Enrollment should complete")
 
-        let mockHTTPClient = MockMultipleRequestsHTTPClient(responseArray: httpResponses,
-                                                            dataArray: [GoldenData.orgDataIncomplete(),
-                                                                        MyAccountTestData.policyResponse(),
-                                                                        MyAccountTestData.enrollmentResponse()])
-        let oktaRestAPI = MyAccountServerAPI(client: mockHTTPClient,
-                                             crypto: OktaCryptoManager(keychainGroupId: ExampleAppConstants.appGroupId,
-                                                                       logger: OktaLoggerMock()),
-                                             logger: OktaLoggerMock())
+        let mockHTTPClient = MockMultipleRequestsHTTPClient(responseArray: httpResponses, dataArray:
+                                                                [GoldenData.orgDataIncomplete(),
+                                                                 GoldenData.authenticatorMetaData(),
+                                                                 GoldenData.authenticatorData()])
+        let oktaRestAPI = LegacyServerAPI(client: mockHTTPClient,
+                                          crypto: OktaCryptoManager(keychainGroupId: ExampleAppConstants.appGroupId,
+                                                                    logger: OktaLoggerMock()),
+                                          logger: OktaLoggerMock())
 
         let deviceAuthenticator: DeviceAuthenticatorProtocol
         do {
@@ -113,12 +113,12 @@ class EnrollmentFlowTests: XCTestCase {
 
         let mockHTTPClient = MockMultipleRequestsHTTPClient(responseArray: httpResponses, dataArray:
                                                                 [GoldenData.orgData(),
-                                                                 MyAccountTestData.emptyPolicyArrayResponse(),
-                                                                 MyAccountTestData.enrollmentResponse()])
-        let oktaRestAPI = MyAccountServerAPI(client: mockHTTPClient,
-                                             crypto: OktaCryptoManager(keychainGroupId: ExampleAppConstants.appGroupId,
-                                                                       logger: OktaLoggerMock()),
-                                             logger: OktaLoggerMock())
+                                                                 GoldenData.authenticatorMetaDataInactive(),
+                                                                 GoldenData.authenticatorData()])
+        let oktaRestAPI = LegacyServerAPI(client: mockHTTPClient,
+                                          crypto: OktaCryptoManager(keychainGroupId: ExampleAppConstants.appGroupId,
+                                                                    logger: OktaLoggerMock()),
+                                          logger: OktaLoggerMock())
 
         let deviceAuthenticator: DeviceAuthenticatorProtocol
         do {
@@ -130,7 +130,7 @@ class EnrollmentFlowTests: XCTestCase {
                 case .success(_):
                     XCTFail("Unexpected result")
                 case .failure(let error):
-                    XCTAssertEqual("Authenticator policy not found", error.localizedDescription)
+                    XCTAssertEqual("Server replied with empty active authenticators array", error.localizedDescription)
                 }
                 enrollmentExpectation.fulfill()
             }
