@@ -90,7 +90,6 @@ class UpdateCIBAFlowTests: XCTestCase {
             try enrollmentHelper.enroll(mockHTTPClient: mockHTTPClient) { result in
                 switch result {
                 case .success(let enrollment):
-                    let newDeviceTokenData = "12345abcde".data(using: .utf8)!
                     enrollment.enableCIBATransactions(authenticationToken: self.authToken, enable: true) { error in
                         if case .serverAPIError(let result, _) = error {
                             XCTAssertEqual(result.response?.statusCode, 401)

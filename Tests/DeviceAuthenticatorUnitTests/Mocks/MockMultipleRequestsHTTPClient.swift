@@ -23,6 +23,11 @@ class MockMultipleRequestsHTTPClient: HTTPClient {
     let mockRequest = URLRequest(url: URL(string: "com.okta.example")!)
     var counter = -1
 
+    typealias RequestWithDictionaryBodyHookType = (URL, HTTPMethod, [String: String], [String: Any], [String: String], TimeInterval) -> URLRequestProtocol
+    var requestWithDictionaryBodyHook: RequestWithDictionaryBodyHookType?
+    typealias RequestWithDataBodyHookType = (URL, HTTPMethod, [String: String], Data?, [String: String], TimeInterval) -> URLRequestProtocol
+    var requestWithDataBodyHook: RequestWithDataBodyHookType?
+
     required init(urlSession: URLSession?, logger: OktaLoggerProtocol, userAgent: String) {
         super.init(urlSession: urlSession, logger: logger, userAgent: userAgent)
     }
@@ -58,7 +63,12 @@ class MockMultipleRequestsHTTPClient: HTTPClient {
         timeout: TimeInterval = 0
     ) -> URLRequestProtocol {
         counter += 1
-        return MockURLRequest(result: resultArray![counter], headers: headers)
+
+        if let requestWithDictionaryBodyHook = requestWithDictionaryBodyHook {
+            return requestWithDictionaryBodyHook(url, method, urlParameters, bodyParameters, headers, timeout)
+        } else {
+            return MockURLRequest(result: resultArray![counter], headers: headers)
+        }
     }
 
     override func request(
@@ -69,7 +79,12 @@ class MockMultipleRequestsHTTPClient: HTTPClient {
         headers: [String: String] = [:],
         timeout: TimeInterval = 0
     ) -> URLRequestProtocol {
-        counter += 1
-        return MockURLRequest(result: resultArray![counter], headers: headers)
+
+        if let requestWithDataBodyHook = requestWithDataBodyHook {
+            return requestWithDataBodyHook(url, method, urlParameters, httpBody, headers, timeout)
+        } else {
+            counter += 1
+            return MockURLRequest(result: resultArray![counter], headers: headers)
+        }
     }
 }
