@@ -102,7 +102,8 @@ extension ServerAPIProtocol {
                                data: Data? = nil,
                                completion: @escaping (_ result: HTTPURLResult?, _ error: DeviceAuthenticatorError?) -> Void
     ) {
-        let allHTTPHeaders = httpHeaders ?? [HTTPHeaderConstants.contentTypeHeader: "application/json"]
+        var allHTTPHeaders = httpHeaders ?? [HTTPHeaderConstants.contentTypeHeader: "application/json"]
+        allHTTPHeaders[HTTPHeaderConstants.acceptHeader] = "application/json" + "; okta-version=\(MyAccountAPI.protocolVersion)"
         logger.info(eventName: "Verifying Device Challenge", message: "URL: \(verifyURL)")
         let requestType: HTTPMethod = data == nil ? .get : .post
         let request = self.client.request(

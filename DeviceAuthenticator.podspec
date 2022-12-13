@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'DeviceAuthenticator'
-  s.version          = '0.0.1'
+  s.version          = '0.0.2'
   s.summary          = 'Okta Authenticator SDK'
   s.description      = <<-DESC
 SDK for iOS devices for communicating with Okta's device APIs
