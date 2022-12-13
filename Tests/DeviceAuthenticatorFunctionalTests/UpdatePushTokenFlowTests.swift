@@ -53,11 +53,56 @@ class UpdatePushTokenFlowTests: XCTestCase {
         httpResponses.append(HTTPURLResponse(url: mockURL, statusCode: 200, httpVersion: nil, headerFields: nil)!)
         dataResponses.append(GoldenData.authenticatorData())
         let mockHTTPClient = MockMultipleRequestsHTTPClient(responseArray: httpResponses, dataArray: dataResponses)
+
+        // Validate push token transformation
+        var requestWithDataBodyHookCalled = false
+        mockHTTPClient.requestWithDataBodyHook = { url, method, parameters, data, headers, timeout  in
+            mockHTTPClient.requestWithDataBodyHook = nil
+            if let data = data {
+                let dictionary: [String: Any]? = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
+                let methods: [[String: Any]]? = dictionary?["methods"] as? [[String: Any]]
+                XCTAssertEqual(methods?.count, 1)
+                let pushMethod = methods?.first
+                let pushToken = pushMethod?["pushToken"] as? String
+                XCTAssertEqual(pushToken, self.enrollmentHelper.enrollmentParams.deviceToken.rawValue)
+            } else {
+                XCTFail("Data is expected")
+            }
+            
+            requestWithDataBodyHookCalled = true
+            return mockHTTPClient.request(url, method: method,
+                                          urlParameters: parameters,
+                                          httpBody: data,
+                                          headers: headers,
+                                          timeout: timeout)
+        }
+
         do {
             try enrollmentHelper.enroll(mockHTTPClient: mockHTTPClient) { result in
                 switch result {
                 case .success(let enrollment):
                     let newDeviceTokenData = "12345abcde".data(using: .utf8)!
+                    // Validate push token transformation
+                    mockHTTPClient.requestWithDataBodyHook = { url, method, parameters, data, headers, timeout  in
+                        mockHTTPClient.requestWithDataBodyHook = nil
+                        if let data = data {
+                            let dictionary: [String: Any]? = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
+                            let methods: [[String: Any]]? = dictionary?["methods"] as? [[String: Any]]
+                            XCTAssertEqual(methods?.count, 1)
+                            let pushMethod = methods?.first
+                            let pushToken = pushMethod?["pushToken"] as? String
+                            XCTAssertEqual(pushToken, DeviceToken.tokenData(newDeviceTokenData).rawValue)
+                        } else {
+                            XCTFail("Data is expected")
+                        }
+                        
+                        return mockHTTPClient.request(url, method: method,
+                                                      urlParameters: parameters,
+                                                      httpBody: data,
+                                                      headers: headers,
+                                                      timeout: timeout)
+                    }
+
                     enrollment.updateDeviceToken(newDeviceTokenData, authenticationToken: self.authToken) { error in
                         XCTAssertNil(error)
                         updateTokenSuccessExpectation.fulfill()
@@ -66,10 +111,12 @@ class UpdatePushTokenFlowTests: XCTestCase {
                     XCTFail("Unexpected error - \(error.errorDescription ?? "")")
                 }
             }
-            wait(for: [updateTokenSuccessExpectation], timeout: expectationTimeout)
         } catch {
             XCTFail(error.localizedDescription)
         }
+
+        wait(for: [updateTokenSuccessExpectation], timeout: expectationTimeout)
+        XCTAssertTrue(requestWithDataBodyHookCalled)
     }
 
     func testUpdatePushTokenFlow_ServerReturns401() throws {
@@ -78,6 +125,30 @@ class UpdatePushTokenFlowTests: XCTestCase {
         httpResponses.append(HTTPURLResponse(url: mockURL, statusCode: 401, httpVersion: nil, headerFields: nil)!)
         dataResponses.append(Data())
         let mockHTTPClient = MockMultipleRequestsHTTPClient(responseArray: httpResponses, dataArray: dataResponses)
+
+        enrollmentHelper.enrollmentParams = EnrollmentParameters(deviceToken: DeviceToken.tokenData("abcde12345".data(using: .utf8)!))
+        var requestWithDataBodyHookCalled = false
+        mockHTTPClient.requestWithDataBodyHook = { url, method, parameters, data, headers, timeout  in
+            requestWithDataBodyHookCalled = true
+            mockHTTPClient.requestWithDataBodyHook = nil
+            if let data = data {
+                let dictionary: [String: Any]? = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
+                let methods: [[String: Any]]? = dictionary?["methods"] as? [[String: Any]]
+                XCTAssertEqual(methods?.count, 1)
+                let pushMethod = methods?.first
+                let pushToken = pushMethod?["pushToken"] as? String
+                XCTAssertEqual(pushToken, self.enrollmentHelper.enrollmentParams.deviceToken.rawValue)
+            } else {
+                XCTFail("Data is expected")
+            }
+
+            return mockHTTPClient.request(url, method: method,
+                                          urlParameters: parameters,
+                                          httpBody: data,
+                                          headers: headers,
+                                          timeout: timeout)
+        }
+
         do {
             try enrollmentHelper.enroll(mockHTTPClient: mockHTTPClient) { result in
                 switch result {
@@ -95,9 +166,11 @@ class UpdatePushTokenFlowTests: XCTestCase {
                     XCTFail("Unexpected error - \(error.errorDescription ?? "")")
                 }
             }
-            wait(for: [updateTokenServer401Expectation], timeout: expectationTimeout)
         } catch {
             XCTFail(error.localizedDescription)
         }
+
+        wait(for: [updateTokenServer401Expectation], timeout: expectationTimeout)
+        XCTAssertTrue(requestWithDataBodyHookCalled)
     }
 }

@@ -18,7 +18,7 @@ class EnrollmentTestHelper {
     private let authToken: AuthToken
     private var appConfig: ApplicationConfig!
     private var deviceAuthenticatorConfig: DeviceAuthenticatorConfig!
-    private var enrollmentParams: EnrollmentParameters!
+    var enrollmentParams: EnrollmentParameters!
     private(set) var deviceAuthenticator: DeviceAuthenticatorProtocol!
 
     init(applicationName: String,
