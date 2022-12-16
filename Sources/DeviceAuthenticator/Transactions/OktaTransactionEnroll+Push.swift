@@ -25,10 +25,13 @@ extension OktaTransactionEnroll {
                 deviceToken = .tokenData(deviceTokenData)
             }
         }
+
+        let transactionTypes = enrollmentContext.transactionTypes ?? enrollmentToUpdate?.pushFactor?.factorData.transactionTypes ?? .login
         let enrollingFactor = try createEnrollingFactorModel(with: proofOfPossessionKeyTag,
                                                              uvKeyTag: userVerificationKeyTag,
                                                              methodType: .push,
-                                                             pushToken: deviceToken.rawValue)
+                                                             pushToken: deviceToken.rawValue,
+                                                             transactionTypes: transactionTypes)
         return enrollingFactor
     }
 }

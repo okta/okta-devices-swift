@@ -33,7 +33,8 @@ extension OktaTransactionEnroll {
     func createEnrollingFactorModel(with popKeyTag: String?,
                                     uvKeyTag: String?,
                                     methodType: AuthenticatorMethod,
-                                    pushToken: String?) throws -> EnrollingFactor {
+                                    pushToken: String?,
+                                    transactionTypes: TransactionType) throws -> EnrollingFactor {
         // Note: for update operation we need to rebuild the whole Factor object
         var proofOfPossessionJWK: [String: _OktaCodableArbitaryType]? = nil
         let proofOfPossessionKeyTag: String
@@ -85,7 +86,6 @@ extension OktaTransactionEnroll {
         }
 
         let apsEnvironment = applicationConfig.pushSettings.apsEnvironment == .production ? APSEnvironment.production : APSEnvironment.development
-        let transactionTypes: TransactionType = enrollmentContext.isCIBASupported ? [.login, .ciba] : .login
         let enrollingFactor = EnrollingFactor(proofOfPossessionKeyTag: proofOfPossessionKeyTag,
                                               userVerificationKeyTag: userVerificationKeyTag,
                                               methodType: methodType,

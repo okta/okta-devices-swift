@@ -52,6 +52,7 @@ class UserVerificationFlowTests: XCTestCase {
         httpResponses.append(HTTPURLResponse(url: mockURL, statusCode: 200, httpVersion: nil, headerFields: nil)!)
         dataResponses.append(GoldenData.authenticatorData())
         let mockHTTPClient = MockMultipleRequestsHTTPClient(responseArray: httpResponses, dataArray: dataResponses)
+        enrollmentHelper.enrollmentParams.enableCIBATransactions(enable: true)
         do {
             try enrollmentHelper.enroll(userVerification: false, mockHTTPClient: mockHTTPClient) { result in
                 switch result {
@@ -60,6 +61,7 @@ class UserVerificationFlowTests: XCTestCase {
                         XCTAssertNil(error)
                         XCTAssertNotNil(enrollment)
                         XCTAssertTrue(enrollment.userVerificationEnabled)
+                        XCTAssertTrue(enrollment.isCIBAEnabled)
                         enableSuccessExpectation.fulfill()
                     })
                 case .failure(let error):

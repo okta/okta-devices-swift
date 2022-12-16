@@ -1,4 +1,4 @@
-#  Okta Devices SDK 
+﻿#  Okta Devices SDK 
 
 Enable your app to validate the identity of a user for an Okta authenticator that uses Apple Push Notification service (APNs).
 
@@ -30,7 +30,7 @@ This library uses semantic versioning and follows Okta's [Library Version Policy
 
 | Version | Status                             |
 | ------- | ---------------------------------- |
-| 0.0.1   | ⚠ Beta                                   |
+| 0.0.2   | ⚠ Beta                                   |
 
 ⚠ Beta version is currently in development and isn't ready for production use
 
@@ -44,6 +44,9 @@ If you run into problems using the SDK, you can:
 * Post [issues][github-issues] here on GitHub (for code errors)
 
 ## Getting started
+To use this SDK you will need to create a custom authenticator on your Okta service and provide your push notification credentials.  
+See [Custom authenticator integration guide] for more details.
+
 
 ### Including Okta Devices SDK
 
@@ -303,6 +306,7 @@ As of iOS 16, Apple requires an entitlement to read the user's UIDevice.current.
  
 We are happy to accept contributions and PRs! Please see the [contribution guide](CONTRIBUTING.md) to understand how to structure a contribution.
 
+
 [devforum]: https://devforum.okta.com/
 [lang-landing]: https://developer.okta.com/code/swift/
 [github-releases]: https://github.com/okta/okta-devices-swift/releases
@@ -310,3 +314,4 @@ We are happy to accept contributions and PRs! Please see the [contribution guide
 [Rate Limiting at Okta]: https://developer.okta.com/docs/api/getting_started/rate-limits
 [okta-library-versioning]: https://developer.okta.com/code/library-versions
 [Push Sample App]: https://github.com/okta/okta-devices-swift/tree/master/Examples/PushSampleApp
+[Custom authenticator integration guide]: https://developer.okta.com/docs/guides/authenticators-custom-authenticator/ios/main/
