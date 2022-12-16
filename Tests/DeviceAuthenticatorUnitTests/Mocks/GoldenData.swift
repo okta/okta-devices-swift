@@ -262,6 +262,7 @@ class GoldenData {
                     "status": "ACTIVE",
                     "createdDate": "Tue Dec 03 18:39:46 UTC 2019",
                     "lastUpdated": "Tue Dec 03 18:39:46 UTC 2019",
+                    "transactionTypes": ["LOGIN", "CIBA"],
                     "links": {
                         "update": {
                             "href": "https://qa-dt-platform.hioktane.com/api/v1/factors/guotmkiKzYBTnhnC40g4/lifecycle/update",
