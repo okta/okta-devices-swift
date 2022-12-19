@@ -56,7 +56,9 @@ class OktaTransactionPushChallenge: OktaTransactionPossessionChallengeBase {
         }
 
         var keysRequirements = keysRequirements
-        transactionContext.userConsentResponseValue = pushChallenge.userResponse == .userApproved ? .approved : .denied
+        if pushChallenge.userResponse != .userApproved {
+            transactionContext.userConsentResponseValue = .denied
+        }
         if keyType == .userVerification && pushChallenge.userResponse == .userApproved {
             transactionContext.userConsentResponseValue = .approvedUserVerification
         } else {

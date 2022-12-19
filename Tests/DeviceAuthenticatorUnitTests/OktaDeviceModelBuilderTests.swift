@@ -227,7 +227,7 @@ class OktaDeviceModelBuilderTests: XCTestCase {
         XCTAssertEqual(deviceSignalsModel.manufacturer, "APPLE")
         XCTAssertEqual(deviceSignalsModel.clientInstanceBundleId, "Test App")
         XCTAssertEqual(deviceSignalsModel.clientInstanceVersion, "1.0.0")
-        XCTAssertEqual(deviceSignalsModel.clientInstanceDeviceSdkVersion, "DeviceAuthenticator 0.0.1")
+        XCTAssertEqual(deviceSignalsModel.clientInstanceDeviceSdkVersion, "DeviceAuthenticator " + DeviceAuthenticatorConstants.version)
         XCTAssertNil(deviceSignalsModel.meid)
         XCTAssertNil(deviceSignalsModel.imei)
         XCTAssertNil(deviceSignalsModel.sid)
