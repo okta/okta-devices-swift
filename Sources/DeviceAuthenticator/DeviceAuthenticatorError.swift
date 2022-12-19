@@ -141,6 +141,15 @@ extension DeviceAuthenticatorError {
         return false
     }
 
+    func userVerificationFailed() -> Bool {
+        if case .securityError(let encryptionErr) = self {
+            if case .localAuthenticationFailed(_) = encryptionErr {
+                return true
+            }
+        }
+        return false
+    }
+
     var serverErrorCode: ServerErrorCode? {
         if case .serverAPIError(_, let model) = self {
             return model?.errorCode

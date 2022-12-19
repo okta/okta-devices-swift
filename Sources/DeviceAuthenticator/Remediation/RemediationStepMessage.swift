@@ -33,6 +33,9 @@ public enum RemediationStepMessageReasonType: Int {
 
     /// SDK can't retrieve user verification key. Key might be missing or corrupted
     case userVerificationKeyCorruptedOrMissing
+
+    /// User failed local authentication process
+    case userVerificationFailed
 }
 
 ///  Step during verify flow to surface informational messages which don't require remediation

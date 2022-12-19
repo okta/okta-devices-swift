@@ -24,6 +24,8 @@ public enum SecurityError: Error {
     case keyCorrupted(Error)
     /// Thrown when user cancels local authentication process via local authentication dialog
     case localAuthenticationCancelled(Error)
+    /// Thrown when user fails to authenticate via local authentication process
+    case localAuthenticationFailed(Error)
     /// Thrown for cases that can't be mapped to specific error domains. For example SDK failed to parse web token information
     case generalEncryptionError(OSStatus, Error?, String)
     /// Thrown when SDK fails to build JWK payload
@@ -41,6 +43,11 @@ public extension SecurityError {
         }
 
         let nsError: NSError = signingError as Error as NSError
+        let authFailedErrorCode = LAError.Code.authenticationFailed.rawValue // -1
+        if nsError.code == authFailedErrorCode && nsError.domain == LAErrorDomain {
+            return localAuthenticationFailed(nsError)
+        }
+
         let userCancelledErrorCode = LAError.Code.userCancel.rawValue // -2
         if nsError.code == userCancelledErrorCode && nsError.domain == LAErrorDomain {
             return localAuthenticationCancelled(nsError)
