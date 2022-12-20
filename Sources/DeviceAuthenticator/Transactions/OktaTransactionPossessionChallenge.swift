@@ -241,52 +241,20 @@ class OktaTransactionPossessionChallengeBase: OktaTransaction {
                                enrollment: transactionContext.enrollment,
                                userVerificationType: userVerificationType,
                                onIdentityStep: transactionContext.appIdentityStepClosure) { keyData, error in
-            let errorHandlingClosure: (DeviceAuthenticatorError) -> Void = { error in
-                if keysRequirements.count > 1 {
-                    // Fallback to next key in the array of key types
-                    var keyTypes = keysRequirements
-                    let skippedKey = keyTypes.removeFirst()
-                    let nextKey = keyTypes[0]
-
-                    var messageReason: RemediationStepMessageReasonType = .userVerificationKeyCorruptedOrMissing
-                    if case .securityError(let encErr) = error {
-                        if case .keyCorrupted(_) = encErr {
-                            messageReason = .userVerificationKeyCorruptedOrMissing
-                        } else if case .localAuthenticationCancelled(_) = encErr {
-                            messageReason = .userVerificationCancelledByUser
-                        }
-                    }
-                    // Surface the error via the non-blocking 'message' identity step
-                    self.postMessageToApplication(message: "Failed to sign with key \(skippedKey), falling back to \(nextKey)",
-                                                  reason: messageReason,
-                                                  error: error,
-                                                  transactionContext: transactionContext)
-
-                    // Update consent value for cases where appropriate for error
-                    if skippedKey == .userVerification {
-                        transactionContext.userConsentResponseValue = transactionContext.userConsentResponseValue.userVerificationFailed()
-                        if error.userVerificationCancelled() {
-                            transactionContext.userConsentResponseValue = .cancelledUserVerification
-                            // User cancelled biometric prompt and SDK fallbacks to PoP key. Set keyRequirements in transactionContext to avoid sending of unnecessary user consent screen event
-                            transactionContext.keyRequirements = [nextKey]
-                        }
-                    }
-                    self.signJWTAndSendRequest(transactionContext: transactionContext,
-                                               keysRequirements: keyTypes)
-                } else {
-                    transactionContext.appCompletionClosure(nil, error, transactionContext.enrollment)
-                }
-            }
 
             if let error = error {
                 self.logger.error(eventName: self.logEventName, message: "Error: \(error)")
-                errorHandlingClosure(error)
+                self.readSigningKeyErrorHandler(error: error,
+                                                transactionContext: transactionContext,
+                                                keysRequirements: keysRequirements)
                 return
             }
             guard let keyData = keyData else {
                 let error = DeviceAuthenticatorError.internalError("Can't find encryption keys")
                 self.logger.error(eventName: self.logEventName, message: "Error: \(error)")
-                errorHandlingClosure(error)
+                self.readSigningKeyErrorHandler(error: error,
+                                                transactionContext: transactionContext,
+                                                keysRequirements: keysRequirements)
                 return
             }
             DispatchQueue.global().async {
@@ -305,9 +273,57 @@ class OktaTransactionPossessionChallengeBase: OktaTransaction {
                 } catch {
                     let error = DeviceAuthenticatorError.oktaError(from: error)
                     self.logger.error(eventName: self.logEventName, message: "Error: \(error)")
-                    errorHandlingClosure(error)
+                    self.readSigningKeyErrorHandler(error: error,
+                                                    transactionContext: transactionContext,
+                                                    keysRequirements: keysRequirements)
                 }
             }
+        }
+    }
+
+    private func readSigningKeyErrorHandler(error: DeviceAuthenticatorError,
+                                            transactionContext: TransactionContext,
+                                            keysRequirements: [OktaBindJWT.KeyType]) {
+        if keysRequirements.count > 1 {
+            // Fallback to next key in the array of key types
+            var keyTypes = keysRequirements
+            let skippedKey = keyTypes.removeFirst()
+            let nextKey = keyTypes[0]
+
+            var messageReason: RemediationStepMessageReasonType = .userVerificationKeyCorruptedOrMissing
+            if case .securityError(let encErr) = error {
+                if case .keyCorrupted(_) = encErr {
+                    messageReason = .userVerificationKeyCorruptedOrMissing
+                } else if case .localAuthenticationCancelled(_) = encErr {
+                    messageReason = .userVerificationCancelledByUser
+                } else if case .localAuthenticationFailed(_) = encErr {
+                    messageReason = .userVerificationFailed
+                }
+            }
+            // Surface the error via the non-blocking 'message' identity step
+            self.postMessageToApplication(message: "Failed to sign with key \(skippedKey), falling back to \(nextKey)",
+                                          reason: messageReason,
+                                          error: error,
+                                          transactionContext: transactionContext)
+
+            // Update consent value for cases where appropriate for error
+            if skippedKey == .userVerification {
+                if error.userVerificationCancelled() {
+                    transactionContext.userConsentResponseValue = .cancelledUserVerification
+                    // User cancelled biometric prompt and SDK fallbacks to PoP key. Set keyRequirements in transactionContext to avoid sending of unnecessary user consent screen event
+                    transactionContext.keyRequirements = [nextKey]
+                } else if error.userVerificationFailed() {
+                    transactionContext.userConsentResponseValue = .userVerificationTemporarilyUnavailable
+                    // Local authentication failed and SDK falls back to PoP key. Set keyRequirements in transactionContext to avoid sending of unnecessary user consent screen event
+                    transactionContext.keyRequirements = [nextKey]
+                } else {
+                    transactionContext.userConsentResponseValue = transactionContext.userConsentResponseValue.userVerificationFailed()
+                }
+            }
+            self.signJWTAndSendRequest(transactionContext: transactionContext,
+                                       keysRequirements: keyTypes)
+        } else {
+            transactionContext.appCompletionClosure(nil, error, transactionContext.enrollment)
         }
     }
 
