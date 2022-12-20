@@ -315,8 +315,7 @@ class OktaTransactionPossessionChallengeBase: OktaTransaction {
                     transactionContext.keyRequirements = [nextKey]
                 } else if error.userVerificationFailed() {
                     transactionContext.userConsentResponseValue = .userVerificationTemporarilyUnavailable
-                    // User failed biometric prompt, SDK should not fallback
-                    // to PoP key.
+                    // Local authentication failed and SDK falls back to PoP key. Set keyRequirements in transactionContext to avoid sending of unnecessary user consent screen event
                     transactionContext.keyRequirements = [nextKey]
                 }
             }
