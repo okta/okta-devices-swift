@@ -308,7 +308,6 @@ class OktaTransactionPossessionChallengeBase: OktaTransaction {
 
             // Update consent value for cases where appropriate for error
             if skippedKey == .userVerification {
-                transactionContext.userConsentResponseValue = transactionContext.userConsentResponseValue.userVerificationFailed()
                 if error.userVerificationCancelled() {
                     transactionContext.userConsentResponseValue = .cancelledUserVerification
                     // User cancelled biometric prompt and SDK fallbacks to PoP key. Set keyRequirements in transactionContext to avoid sending of unnecessary user consent screen event
@@ -317,6 +316,8 @@ class OktaTransactionPossessionChallengeBase: OktaTransaction {
                     transactionContext.userConsentResponseValue = .userVerificationTemporarilyUnavailable
                     // Local authentication failed and SDK falls back to PoP key. Set keyRequirements in transactionContext to avoid sending of unnecessary user consent screen event
                     transactionContext.keyRequirements = [nextKey]
+                } else {
+                    transactionContext.userConsentResponseValue = transactionContext.userConsentResponseValue.userVerificationFailed()
                 }
             }
             self.signJWTAndSendRequest(transactionContext: transactionContext,
