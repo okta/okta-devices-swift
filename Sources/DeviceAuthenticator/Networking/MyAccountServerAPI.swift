@@ -82,7 +82,7 @@ class MyAccountServerAPI: ServerAPIProtocol {
                         completion(Result.failure(DeviceAuthenticatorError.internalError("Unexpected response from server")))
                         return
                     }
-                    let enrollLink = AuthenticatorMetaDataModel.Links.EnrollLink(href: policyModel.app_authenticator_enroll_endpoint)
+                    let enrollLink = AuthenticatorMetaDataModel.Links.EnrollLink(href: policyModel.appAuthenticatorEnrollEndpoint)
                     let links = AuthenticatorMetaDataModel.Links(enroll: enrollLink,
                                                                  logos: nil)
                     let authenticatorSettings = AuthenticatorSettingsModel(appInstanceId: nil,
@@ -178,13 +178,7 @@ class MyAccountServerAPI: ServerAPIProtocol {
             return
         }
 
-        let finalURL: URL
-        if let enrollLink = metadata._links.enroll?.href,
-            let enrollURL = URL(string: enrollLink) {
-            finalURL = enrollURL.appendingPathComponent("/\(enrollmentId)")
-        } else {
-            finalURL = orgHost.appendingPathComponent("/idp/myaccount/app-authenticators/\(enrollmentId)")
-        }
+        let finalURL = orgHost.appendingPathComponent("/idp/myaccount/app-authenticators/\(enrollmentId)")
         logger.info(eventName: "Updating Authenticator", message: "URL: \(finalURL)")
         guard let pushMethod = enrollingFactors.first(where: { $0.methodType == .push }) else {
             completion(.failure(.internalError("Push factor data not found in update request")))

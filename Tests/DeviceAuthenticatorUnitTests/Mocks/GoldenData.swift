@@ -563,7 +563,7 @@ class MyAccountTestData {
               }
             }
           ],
-          "app_authenticator_enroll_endpoint": "https://your-org.okta.com/idp/myaccount/app-authenticator"
+          "appAuthenticatorEnrollEndpoint": "https://your-org.okta.com/idp/myaccount/app-authenticator"
         }]
         """
         let jsonArray = try! JSONSerialization.jsonObject(with: authenticatorJson.data(using: .utf8)!, options: [])
@@ -573,7 +573,7 @@ class MyAccountTestData {
 
     class func policyResponseWithEmptyMethods() -> Data {
         let authenticatorJson: String = """
-                {
+                [{
                   "authenticatorId": "aut6nfu6soyk3GD2U0g4",
                   "orgId": "00o1n81xonY9z2Heh0g4",
                   "key": "custom_app",
@@ -585,8 +585,8 @@ class MyAccountTestData {
                       "userVerification": "PREFERRED"
                   },
                   "supportedMethods" : [],
-                  "app_authenticator_enroll_endpoint": "https://your-org.okta.com/idp/myaccount/app-authenticator"
-                }
+                  "appAuthenticatorEnrollEndpoint": "https://your-org.okta.com/idp/myaccount/app-authenticator"
+                }]
         """
         let dict = try! JSONSerialization.jsonObject(with: authenticatorJson.data(using: .utf8)!, options: []) as! [String: Any]
         let jsonData = try! JSONSerialization.data(withJSONObject: dict, options: .prettyPrinted)
@@ -617,7 +617,7 @@ class MyAccountTestData {
                     "udid": "2b6f0cc904d137be2e1730235f5664094b831186",
                     "sid": null
                 },
-                "clientInstanceId": "cli1zEPrHHW0w4i0ALF0",
+                "clientInstanceId": "cli1zEPrHHW0w4i0ALF0"
             },
             "user": {
                 "id": "00utmecoNjNd0lrWp0g4",
@@ -653,6 +653,17 @@ class MyAccountTestData {
                                 ]
                             }
                         }
+                    }
+                }
+            },
+            "links": {
+                "self": {
+                    "href": "https://your-org.okta.com/idp/myaccount/app-authenticators/pfd6rzcmvlhmE0Y1w0g4",
+                    "hints": {
+                        "allow": [
+                            "PATCH",
+                            "DELETE"
+                        ]
                     }
                 }
             }

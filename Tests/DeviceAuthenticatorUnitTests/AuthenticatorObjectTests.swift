@@ -135,4 +135,30 @@ class AuthenticatorObjectTests: XCTestCase {
             XCTFail("Unexpected error: \(error)")
         }
     }
+
+    func testMyAccountEnrolledAuthenticatorDecoding() {
+        let decoder = JSONDecoder()
+        let authenticator = try! decoder.decode(MyAccountAPI.AuthenticatorResponseModel.self, from: MyAccountTestData.enrollmentResponse())
+        XCTAssertEqual(authenticator.id, "aen1jisLwwTG7qRrH0g4")
+        XCTAssertEqual(authenticator.authenticatorId, "autuowpr5VjVjQPU30g3")
+        XCTAssertEqual(authenticator.createdDate, "Tue Dec 03 18:39:46 UTC 2019")
+        XCTAssertEqual(authenticator.lastUpdated, "Tue Dec 03 18:39:46 UTC 2019")
+        XCTAssertNotNil(authenticator.device)
+        XCTAssertEqual(authenticator.device.id, "guotmkiKzYBTnhnC40g4")
+        XCTAssertEqual(authenticator.device.profile?.displayName, "Test Device")
+        XCTAssertEqual(authenticator.device.profile?.platform, .iOS)
+        XCTAssertEqual(authenticator.device.profile?.manufacturer, "APPLE")
+        XCTAssertEqual(authenticator.device.profile?.model, "iPhone X")
+        XCTAssertEqual(authenticator.device.profile?.osVersion, "10")
+        XCTAssertEqual(authenticator.device.profile?.serialNumber, "2fc4b5912826ad1")
+        XCTAssertEqual(authenticator.device.profile?.udid, "2b6f0cc904d137be2e1730235f5664094b831186")
+        XCTAssertEqual(authenticator.device.clientInstanceId, "cli1zEPrHHW0w4i0ALF0")
+        XCTAssertEqual(authenticator.user.id, "00utmecoNjNd0lrWp0g4")
+        XCTAssertEqual(authenticator.user.username, "test@okta.com")
+        XCTAssertEqual(authenticator.methods.push?.id, "opftmklWEf1vDZvr10g4")
+        XCTAssertEqual(authenticator.methods.push?.createdDate, "Tue Dec 03 18:39:46 UTC 2019")
+        XCTAssertEqual(authenticator.methods.push?.lastUpdated, "Tue Dec 03 18:39:46 UTC 2019")
+        XCTAssertEqual(authenticator.methods.push?.links?.pending?.href, "https://qa-dt-platform.hioktane.com/api/v1/factors/guotmkiKzYBTnhnC40g4/lifecycle/pending")
+        XCTAssertEqual(authenticator.links?.`self`.href, "https://your-org.okta.com/idp/myaccount/app-authenticators/pfd6rzcmvlhmE0Y1w0g4")
+    }
 }
