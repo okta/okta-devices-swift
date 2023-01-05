@@ -414,21 +414,6 @@ class OktaTransactionEnroll: OktaTransaction {
     func createEnrollmentAndSaveToStorage(enrollmentSummary: EnrollmentSummary,
                                           onCompletion: @escaping (Result<AuthenticatorEnrollmentProtocol, DeviceAuthenticatorError>) -> Void) {
         do {
-            var newDeviceEnrollment: OktaDeviceEnrollment! = self.deviceEnrollment
-            if newDeviceEnrollment == nil {
-                if let clientInstanceKeyTag = self.clientInstanceKeyTag {
-                    newDeviceEnrollment = OktaDeviceEnrollment(id: enrollmentSummary.deviceId,
-                                                               orgId: self.orgId,
-                                                               clientInstanceId: enrollmentSummary.clientInstanceId,
-                                                               clientInstanceKeyTag: clientInstanceKeyTag)
-                } else {
-                    let resultError = DeviceAuthenticatorError.internalError("Failed to create device enrollment object")
-                    self.logger.error(eventName: self.logEventName, message: "\(resultError)")
-                    onCompletion(Result.failure(resultError))
-                    return
-                }
-            }
-
             let enrollment = AuthenticatorEnrollment(organization: Organization(id: self.orgId, url: enrollmentContext.orgHost),
                                                      user: User(id: enrollmentSummary.userId, name: enrollmentSummary.username),
                                                      enrollmentId: enrollmentSummary.enrollmentId,
@@ -446,15 +431,24 @@ class OktaTransactionEnroll: OktaTransaction {
                 // TODO: Remove below logic when server will implement PATCH request
                 self.saveDeviceToken(deviceToken, enrollmentId: enrollmentSummary.enrollmentId)
             }
-            if newDeviceEnrollment.id != self.deviceEnrollment?.id {
-                if let oldDeviceEnrollment = try? self.storageManager.deviceEnrollmentByOrgId(orgId),
-                   newDeviceEnrollment.clientInstanceKeyTag != oldDeviceEnrollment.clientInstanceKeyTag {
-                    // Update device record in db
-                    _ = cryptoManager.delete(keyPairWith: oldDeviceEnrollment.clientInstanceKeyTag)
-                    try? self.storageManager.deleteDeviceEnrollmentForOrgId(enrollment.organization.id)
+
+            var newDeviceEnrollment: OktaDeviceEnrollment! = self.deviceEnrollment
+            if newDeviceEnrollment == nil || newDeviceEnrollment.id != enrollmentSummary.deviceId {
+                if let clientInstanceKeyTag = self.clientInstanceKeyTag ?? self.deviceEnrollment?.clientInstanceKeyTag {
+                    newDeviceEnrollment = OktaDeviceEnrollment(id: enrollmentSummary.deviceId,
+                                                               orgId: self.orgId,
+                                                               clientInstanceId: enrollmentSummary.clientInstanceId,
+                                                               clientInstanceKeyTag: clientInstanceKeyTag)
+                } else {
+                    let resultError = DeviceAuthenticatorError.internalError("Failed to create device enrollment object")
+                    self.logger.error(eventName: self.logEventName, message: "\(resultError)")
+                    onCompletion(Result.failure(resultError))
+                    return
                 }
+
                 try? self.storageManager.storeDeviceEnrollment(newDeviceEnrollment, for: enrollment.organization.id)
             }
+
             onCompletion(Result.success(enrollment))
         } catch let error as DeviceAuthenticatorError {
             self.logger.error(eventName: self.logEventName, message: "Failed to store enrollment - \(error)")

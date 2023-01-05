@@ -361,7 +361,7 @@ class OktaSharedSQLite: OktaSharedSQLiteProtocol {
 
     func storeDeviceEnrollment(writeArguments: StatementArguments, db: Database) throws {
         do {
-            try db.execute(sql: "INSERT INTO DeviceEnrollment (deviceId, orgId, clientInstanceId, clientInstanceKeyTag, createdTimestamp, updatedTimestamp) VALUES (:deviceId, :orgId, :clientInstanceId, :clientInstanceKeyTag, :createdTimestamp, :updatedTimestamp) ON CONFLICT(deviceId,orgId) DO UPDATE SET deviceId = :deviceId, orgId = :orgId, clientInstanceId = :clientInstanceId, clientInstanceKeyTag = :clientInstanceKeyTag, updatedTimestamp = :updatedTimestamp ", arguments: writeArguments)
+            try db.execute(sql: "INSERT INTO DeviceEnrollment (deviceId, orgId, clientInstanceId, clientInstanceKeyTag, createdTimestamp, updatedTimestamp) VALUES (:deviceId, :orgId, :clientInstanceId, :clientInstanceKeyTag, :createdTimestamp, :updatedTimestamp) ON CONFLICT(orgId) DO UPDATE SET deviceId = :deviceId, orgId = :orgId, clientInstanceId = :clientInstanceId, clientInstanceKeyTag = :clientInstanceKeyTag, updatedTimestamp = :updatedTimestamp ", arguments: writeArguments)
         } catch {
             throw DeviceAuthenticatorError.storageError(StorageError.sqliteError(error.localizedDescription))
         }

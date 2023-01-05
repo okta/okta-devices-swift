@@ -166,6 +166,7 @@ class OktaCryptoManager: OktaSharedCryptoProtocol {
                 return privateKey
             }
         } else {
+            logger.error(eventName: "Get signing key", message: "Failed to get requested \(type.toString()) key, OSStatus:\(statusCode)")
             return nil
         }
     }

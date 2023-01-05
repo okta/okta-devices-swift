@@ -53,7 +53,6 @@
 		7F8833A52874FB820034CA5E /* OktaRequestJWTGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F8833212874FB810034CA5E /* OktaRequestJWTGenerator.swift */; };
 		7F8833A62874FB820034CA5E /* OktaJWTGeneratorProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F8833222874FB810034CA5E /* OktaJWTGeneratorProtocol.swift */; };
 		7F8833A72874FB820034CA5E /* OktaCryptoProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F8833232874FB810034CA5E /* OktaCryptoProtocol.swift */; };
-		7F8833A82874FB820034CA5E /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 7F8833242874FB810034CA5E /* README.md */; };
 		7F8833A92874FB820034CA5E /* OktaJWTHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F8833252874FB810034CA5E /* OktaJWTHelper.swift */; };
 		7F8833AA2874FB820034CA5E /* OktaJWKGeneratorProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F8833262874FB810034CA5E /* OktaJWKGeneratorProtocol.swift */; };
 		7F8833AB2874FB820034CA5E /* OktaAuthenticationTokenBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F8833272874FB810034CA5E /* OktaAuthenticationTokenBuilder.swift */; };
@@ -299,7 +298,6 @@
 		7F8833212874FB810034CA5E /* OktaRequestJWTGenerator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OktaRequestJWTGenerator.swift; sourceTree = "<group>"; };
 		7F8833222874FB810034CA5E /* OktaJWTGeneratorProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OktaJWTGeneratorProtocol.swift; sourceTree = "<group>"; };
 		7F8833232874FB810034CA5E /* OktaCryptoProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OktaCryptoProtocol.swift; sourceTree = "<group>"; };
-		7F8833242874FB810034CA5E /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		7F8833252874FB810034CA5E /* OktaJWTHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OktaJWTHelper.swift; sourceTree = "<group>"; };
 		7F8833262874FB810034CA5E /* OktaJWKGeneratorProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OktaJWKGeneratorProtocol.swift; sourceTree = "<group>"; };
 		7F8833272874FB810034CA5E /* OktaAuthenticationTokenBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OktaAuthenticationTokenBuilder.swift; sourceTree = "<group>"; };
@@ -582,7 +580,6 @@
 				7F8833212874FB810034CA5E /* OktaRequestJWTGenerator.swift */,
 				7F8833222874FB810034CA5E /* OktaJWTGeneratorProtocol.swift */,
 				7F8833232874FB810034CA5E /* OktaCryptoProtocol.swift */,
-				7F8833242874FB810034CA5E /* README.md */,
 				7F8833252874FB810034CA5E /* OktaJWTHelper.swift */,
 				7F8833262874FB810034CA5E /* OktaJWKGeneratorProtocol.swift */,
 				7F8833272874FB810034CA5E /* OktaAuthenticationTokenBuilder.swift */,
@@ -1170,7 +1167,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7F8833A82874FB820034CA5E /* README.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

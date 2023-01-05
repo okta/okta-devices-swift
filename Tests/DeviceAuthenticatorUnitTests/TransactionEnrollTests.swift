@@ -906,18 +906,24 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
         let enrollmentSummary = EnrollmentSummary(enrollmentId: "",
                                                   userId: "",
                                                   username: nil,
-                                                  deviceId: "",
-                                                  clientInstanceId: "",
+                                                  deviceId: "newDeviceId",
+                                                  clientInstanceId: "newClientInstanceId",
                                                   creationDate: Date(), factors: [])
+        var callbackCalled = false
         transaction.createEnrollmentAndSaveToStorage(enrollmentSummary: enrollmentSummary) { result in
+            callbackCalled = true
             if case Result.success(_) = result {
                 XCTAssertEqual(self.mockStorageManager.allEnrollments().count, 1)
                 let deviceEnrollment = try? self.mockStorageManager.deviceEnrollmentByOrgId(self.transaction.orgId)
                 XCTAssertEqual(deviceEnrollment?.clientInstanceKeyTag, "clientInstanceKeyTag")
+                XCTAssertEqual(deviceEnrollment?.id, enrollmentSummary.deviceId)
+                XCTAssertEqual(deviceEnrollment?.clientInstanceId, enrollmentSummary.clientInstanceId)
             } else {
                 XCTFail("Unexpected result")
             }
         }
+
+        XCTAssertTrue(callbackCalled)
     }
 
     func testCreateEnrollmentAndSaveToStorage_SuccessWithNewDeviceEnrollment_NoClientInstanceTag() {
