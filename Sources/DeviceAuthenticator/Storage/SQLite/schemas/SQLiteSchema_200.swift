@@ -71,6 +71,6 @@ class SQLiteSchema_200: SQLiteSchemaProtocol {
     'updatedTimestamp' TEXT DEFAULT NULL
     );
 
-    CREATE UNIQUE INDEX device_index ON DeviceEnrollment(deviceId, orgId);
+    CREATE UNIQUE INDEX device_index ON DeviceEnrollment(orgId);
     """
 }

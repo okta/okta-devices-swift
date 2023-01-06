@@ -76,16 +76,13 @@ class OktaDeviceModelBuilder {
     func buildForUpdateEnrollment(with deviceEnrollment: OktaDeviceEnrollment) -> DeviceSignalsModel {
         logger.info(eventName: logEventName, message: "Building device model for update enrollment")
         var deviceModel = buildBaseDeviceModel(with: Self.enrollmentSignals)
-        addJWTPart(to: &deviceModel, deviceEnrollment: deviceEnrollment)
-
-        return deviceModel
-    }
-
-    func buildForRotateClientInstanceKey(with deviceEnrollment: OktaDeviceEnrollment,
-                                         and clientIntanceKeyTag: String) -> DeviceSignalsModel {
-        logger.info(eventName: logEventName, message: "Building device model for rotating client instance key")
-        var deviceModel = buildForCreateEnrollment(with: clientIntanceKeyTag)
-        addJWTPart(to: &deviceModel, deviceEnrollment: deviceEnrollment)
+        do {
+            try addJWTPart(to: &deviceModel, deviceEnrollment: deviceEnrollment)
+        } catch {
+            // Failed to build device key attestation. Recreate the device object on server side and register new client instance key
+            _ = cryptoManager.delete(keyPairWith: deviceEnrollment.clientInstanceKeyTag)
+            deviceModel = buildForCreateEnrollment(with: deviceEnrollment.clientInstanceKeyTag)
+        }
 
         return deviceModel
     }
@@ -121,22 +118,24 @@ class OktaDeviceModelBuilder {
     }
 
     private func addJWTPart(to deviceModel: inout DeviceSignalsModel,
-                            deviceEnrollment: OktaDeviceEnrollment) {
-        deviceModel.id = deviceEnrollment.id
-        deviceModel.clientInstanceId = deviceEnrollment.clientInstanceId
-        deviceModel.deviceAttestation = deviceModel.deviceAttestation ?? [:]
+                            deviceEnrollment: OktaDeviceEnrollment) throws {
         let payload = OktaJWTPayload(iss: deviceEnrollment.clientInstanceId, aud: orgHost, sub: deviceEnrollment.id)
         if let clientInstanceKey = self.cryptoManager.get(keyOf: .privateKey,
                                                           with: deviceEnrollment.clientInstanceKeyTag,
-                                                          context: LAContext()),
-           let jwt = try? jwtGenerator.generate(with: "",
+                                                          context: LAContext()) {
+            let jwt = try jwtGenerator.generate(with: "",
                                                 kid: deviceEnrollment.clientInstanceKeyTag,
                                                 for: payload,
                                                 with: clientInstanceKey,
-                                                using: .ES256) {
+                                                using: .ES256)
+
+            deviceModel.id = deviceEnrollment.id
+            deviceModel.clientInstanceId = deviceEnrollment.clientInstanceId
+            deviceModel.deviceAttestation = deviceModel.deviceAttestation ?? [:]
             deviceModel.deviceAttestation?["clientInstanceKeyAttestation"] = _OktaCodableArbitaryType.string(jwt)
         } else {
             logger.error(eventName: logEventName, message: "Failed to build client instance key JWT")
+            throw DeviceAuthenticatorError.securityError(.jwtError("Failed to build client instance key attestation"))
         }
     }
 

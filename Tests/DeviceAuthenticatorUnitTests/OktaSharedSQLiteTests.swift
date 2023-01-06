@@ -453,6 +453,9 @@ class OktaSharedSQLiteTests: XCTestCase {
         XCTAssertEqual(retrieved?.orgId, secondEnrollment.orgId)
         XCTAssertEqual(retrieved?.clientInstanceId, secondEnrollment.clientInstanceId)
         XCTAssertEqual(retrieved?.clientInstanceKeyTag, secondEnrollment.clientInstanceKeyTag)
+        
+        let deviceEnrollments = try? sqlite.allDeviceEnrollmentsOrgIds()
+        XCTAssertEqual(deviceEnrollments?.count, 1)
     }
 
     ///  Store and delete a device enrollment successfully

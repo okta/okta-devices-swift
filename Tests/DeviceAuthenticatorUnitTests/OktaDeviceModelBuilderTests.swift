@@ -83,30 +83,19 @@ class OktaDeviceModelBuilderTests: XCTestCase {
                                         useSecureEnclave: false,
                                         useBiometrics: false,
                                         biometricSettings: nil)
-        let deviceSignalsModel = mut.buildForUpdateEnrollment(with: deviceEnrollment)
+        var deviceSignalsModel = mut.buildForUpdateEnrollment(with: deviceEnrollment)
         XCTAssertEqual(deviceSignalsModel.clientInstanceId, "clientInstanceId")
         XCTAssertEqual(deviceSignalsModel.id, "id")
         XCTAssertNotNil(deviceSignalsModel.deviceAttestation)
         XCTAssertEqual(deviceSignalsModel.deviceAttestation!["clientInstanceKeyAttestation"], _OktaCodableArbitaryType.string(jwtGenerator.stringToReturn))
         validateDeviceSignals(deviceSignalsModel)
-    }
 
-    func testBuildForRotateClientInstanceKey() {
-        let mut = OktaDeviceModelBuilder(orgHost: "https://tenant.okta.com",
-                                         applicationConfig: applicationConfig,
-                                         requestedSignals: [],
-                                         customSignals: nil,
-                                         cryptoManager: cryptoManager,
-                                         jwtGenerator: jwtGenerator,
-                                         jwkGenerator: jwkGenerator,
-                                         logger: OktaLoggerMock())
-        let deviceEnrollment = OktaDeviceEnrollment(id: "id", orgId: mockURL.absoluteString, clientInstanceId: "clientInstanceId", clientInstanceKeyTag: "clientInstanceKeyTag")
-        let deviceSignalsModel = mut.buildForRotateClientInstanceKey(with: deviceEnrollment, and: "keyTag")
-        XCTAssertFalse(deviceSignalsModel.clientInstanceKey!.isEmpty)
-        XCTAssertEqual(deviceSignalsModel.clientInstanceId, "clientInstanceId")
-        XCTAssertEqual(deviceSignalsModel.id, "id")
-        XCTAssertNotNil(deviceSignalsModel.deviceAttestation)
-        XCTAssertEqual(deviceSignalsModel.deviceAttestation!["clientInstanceKeyAttestation"], _OktaCodableArbitaryType.string(jwtGenerator.stringToReturn))
+        // Simulate loss of client instance key
+        cryptoManager.privateKey = nil
+        deviceSignalsModel = mut.buildForUpdateEnrollment(with: deviceEnrollment)
+        XCTAssertNil(deviceSignalsModel.clientInstanceId)
+        XCTAssertNil(deviceSignalsModel.id)
+        XCTAssertNil(deviceSignalsModel.deviceAttestation)
         validateDeviceSignals(deviceSignalsModel)
     }
 
