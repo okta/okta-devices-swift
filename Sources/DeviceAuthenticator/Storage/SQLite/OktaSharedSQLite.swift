@@ -46,7 +46,7 @@ class OktaSharedSQLite: OktaSharedSQLiteProtocol {
     }
 
     // MARK: Versioning and Migraiton
-    public static let targetVersion = DeviceSDKStorageVersion.v2
+    public static let targetVersion = SQLiteStorageVersion.v1
     public var lastKnownVersion: Version {
         if !sqlitePersistentStorage.sqliteFileExist() {
             // if there is no SQLite stored yet, return Self.targetVersion right away to avoid
@@ -61,7 +61,7 @@ class OktaSharedSQLite: OktaSharedSQLiteProtocol {
         } catch {
             logger.error(eventName: "Can't read SQLite db version", message: "Error: \(error)")
         }
-        if let versionNumber = sqlUserVersion, let version = DeviceSDKStorageVersion(rawValue: versionNumber) {
+        if let versionNumber = sqlUserVersion, let version = SQLiteStorageVersion(rawValue: versionNumber) {
             return version
         }
         return .unknown
@@ -599,7 +599,7 @@ class OktaSharedSQLite: OktaSharedSQLiteProtocol {
 }
 
 extension OktaSharedSQLite: OktaMigratableStorage {
-    typealias Version = DeviceSDKStorageVersion
+    typealias Version = SQLiteStorageVersion
 
     func willStartIncrementalStorageMigrationSequence(startVersion: Version, endVersion: Version) throws {
         logger.info(eventName: "Starting Storage Migration", message: "Start version: \(startVersion), end version: \(endVersion)")
@@ -612,8 +612,8 @@ extension OktaSharedSQLite: OktaMigratableStorage {
         //  try db.execute(literal: "PRAGMA user_version = \(nextVersion.rawValue)")
         // TODO: Do each version migration within a single SQLite Transaction to make it auto Rolled-back in case of error
         switch nextVersion {
-        case .v2:
-            // Do nothing since SQLite has been introduced at v2 only, so no v1
+        case .v1:
+            // Do nothing for initial schema version
             break
         default:
             break
