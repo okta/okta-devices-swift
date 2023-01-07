@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2021-Present, Okta, Inc. and/or its affiliates. All rights reserved.
+* Copyright (c) 2021, Okta, Inc. and/or its affiliates. All rights reserved.
 * The Okta software accompanied by this notice is provided pursuant to the Apache License, Version 2.0 (the "License.")
 *
 * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0.
@@ -12,10 +12,9 @@
 
 import Foundation
 
-protocol SQLiteSchemaProtocol {
-    ///  Constant for the version of a given schema
-    var version: SQLiteStorageVersion { get }
+enum SQLiteStorageVersion: Int, OktaVersionType {
+    case unknown = -1
+    case v1 = 1
 
-    ///  Get the sql schema statement for the relevant version
-    var schema: String { get }
+    static var unknownVersion: SQLiteStorageVersion { return .unknown }
 }

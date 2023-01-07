@@ -10,9 +10,9 @@
 * See the License for the specific language governing permissions and limitations under the License.
 */
 
-class SQLiteSchema_200: SQLiteSchemaProtocol {
+class SQLiteSchema: SQLiteSchemaProtocol {
 
-    let version: DeviceSDKStorageVersion = .v2
+    let version: SQLiteStorageVersion = .v1
 
     let schema =
     """

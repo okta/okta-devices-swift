@@ -19,7 +19,7 @@ import OktaLogger
 #endif
 
 class OktaSQLitePersistentStorage: OktaSQLitePersistentStorageProtocol {
-    let schemaVersion: DeviceSDKStorageVersion
+    let schemaVersion: SQLiteStorageVersion
     let fileManager: FileManager
     let logger: OktaLoggerProtocol
     let sqliteURL: URL
@@ -43,7 +43,7 @@ class OktaSQLitePersistentStorage: OktaSQLitePersistentStorageProtocol {
         return nil
     }()
 
-    static func sqlitePersistentStorage(schemaVersion: DeviceSDKStorageVersion,
+    static func sqlitePersistentStorage(schemaVersion: SQLiteStorageVersion,
                                         storageRelativePath: String,
                                         applicationGroupId: String,
                                         fileManager: FileManager = FileManager.default,
@@ -67,7 +67,7 @@ class OktaSQLitePersistentStorage: OktaSQLitePersistentStorageProtocol {
     static var urlToSQLitePersistentStorageCache = [URL: OktaSQLitePersistentStorage]()
 
     init(at sqliteURL: URL,
-         schemaVersion: DeviceSDKStorageVersion,
+         schemaVersion: SQLiteStorageVersion,
          fileManager: FileManager = FileManager.default,
          connectionBuilder: OktaSQLiteConnectionBuilderProtocol = OktaSQLiteConnectionBuilder(),
          sqliteFileEncryptionKey: Data?,
@@ -116,7 +116,7 @@ class OktaSQLitePersistentStorage: OktaSQLitePersistentStorageProtocol {
         }
 
         try sqlitePool.write { db in
-            try db.execute(sql: schemaVersion.sqliteSchema())
+            try db.execute(sql: SQLiteSchema().schema)
             try db.execute(sql: "PRAGMA user_version=\(schemaVersion.rawValue)")
         }
     }

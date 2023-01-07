@@ -95,7 +95,7 @@ class OktaStorageManager: PersistentStorageProtocol {
     }
 
     // MARK: Versioning and Migraiton
-    public static let targetVersion = DeviceSDKStorageVersion.v2
+    public static let targetVersion = SQLiteStorageVersion.v1
 }
 
 extension OktaStorageManager: OktaEnrollmentStorageProtocol {
