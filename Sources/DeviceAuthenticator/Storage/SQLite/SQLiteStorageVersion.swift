@@ -17,4 +17,9 @@ enum SQLiteStorageVersion: Int, OktaVersionType {
     case v1 = 1
 
     static var unknownVersion: SQLiteStorageVersion { return .unknown }
+
+    static var latestVersion: Self {
+        let allCases = Self.allCases.sorted()
+        return allCases.last ?? .unknown
+    }
 }

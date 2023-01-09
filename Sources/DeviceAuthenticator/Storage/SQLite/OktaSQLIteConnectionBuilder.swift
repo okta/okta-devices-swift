@@ -29,6 +29,7 @@ class OktaSQLiteConnectionBuilder: OktaSQLiteConnectionBuilderProtocol {
 
     private func databasePool(at databaseURL: URL, sqliteFileEncryptionKey: Data?) throws -> DatabasePool {
         var configuration = Configuration()
+        configuration.busyMode = .timeout(1) // retry in 1 second if write failed with SQLITE_BUSY error(other process locked db/table)
         configuration.prepareDatabase { db in
             // Activate the persistent WAL mode so that
             // readonly processes can access the database.
