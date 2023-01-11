@@ -22,4 +22,18 @@ enum SQLiteStorageVersion: Int, OktaVersionType {
         let allCases = Self.allCases.sorted()
         return allCases.last ?? .unknown
     }
+
+    func schema() -> String {
+        switch self {
+        case .unknown:
+            return ""
+        case .v1:
+            return sqliteBaseSchema
+        /*
+        Example of schema migration to v2
+        case .v2:
+            return SQLiteStorageVersion.v1.schema() + sqliteSchemaMigration_v2
+        */
+        }
+    }
 }

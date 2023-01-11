@@ -116,7 +116,7 @@ class OktaSQLitePersistentStorage: OktaSQLitePersistentStorageProtocol {
         }
 
         try sqlitePool.write { db in
-            try db.execute(sql: SQLiteSchema().schema)
+            try db.execute(sql: schemaVersion.schema())
             try db.execute(sql: "PRAGMA user_version=\(schemaVersion.rawValue)")
         }
     }

@@ -10,11 +10,7 @@
 * See the License for the specific language governing permissions and limitations under the License.
 */
 
-class SQLiteSchema: SQLiteSchemaProtocol {
-
-    let version: SQLiteStorageVersion = .v1
-
-    let schema =
+let sqliteBaseSchema =
     """
     CREATE TABLE 'Enrollment' (
     'enrollmentId' TEXT NOT NULL,
@@ -73,4 +69,3 @@ class SQLiteSchema: SQLiteSchemaProtocol {
 
     CREATE UNIQUE INDEX device_index ON DeviceEnrollment(orgId);
     """
-}

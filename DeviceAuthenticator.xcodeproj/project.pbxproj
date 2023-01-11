@@ -76,7 +76,7 @@
 		7F8833BD2874FB820034CA5E /* OktaSharedSQLite.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F88333C2874FB820034CA5E /* OktaSharedSQLite.swift */; };
 		7F8833BE2874FB820034CA5E /* OktaSQLiteEncryptionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F88333D2874FB820034CA5E /* OktaSQLiteEncryptionManager.swift */; };
 		7F8833BF2874FB820034CA5E /* SQLiteSchemaProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F88333F2874FB820034CA5E /* SQLiteSchemaProtocol.swift */; };
-		7F8833C02874FB820034CA5E /* SQLiteSchema.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F8833402874FB820034CA5E /* SQLiteSchema.swift */; };
+		7F8833C02874FB820034CA5E /* SQLiteSchemaBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F8833402874FB820034CA5E /* SQLiteSchemaBase.swift */; };
 		7F8833C12874FB820034CA5E /* SQLiteTables.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F8833412874FB820034CA5E /* SQLiteTables.swift */; };
 		7F8833C22874FB820034CA5E /* OktaSQLIteConnectionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F8833422874FB820034CA5E /* OktaSQLIteConnectionBuilder.swift */; };
 		7F8833C32874FB820034CA5E /* OktaSQLitePersistentStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F8833432874FB820034CA5E /* OktaSQLitePersistentStorage.swift */; };
@@ -227,6 +227,7 @@
 		9F9602BB2878B4120012C74C /* TransactionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9602B82878B4120012C74C /* TransactionTests.swift */; };
 		9F98950B2874ECC80056AC6E /* DeviceAuthenticatorConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F98950A2874ECC80056AC6E /* DeviceAuthenticatorConstants.swift */; };
 		9FF756632968C9FD0096E9B1 /* SQLiteStorageVersion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FF756622968C9FD0096E9B1 /* SQLiteStorageVersion.swift */; };
+		9FF7566E296F51490096E9B1 /* SQLiteSchemaMigration_v2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FF7566D296F51490096E9B1 /* SQLiteSchemaMigration_v2.swift */; };
 		BFD6BE98FF9921062C533D81 /* libPods-DeviceAuthenticator.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B53EEBADD32786AED0B3915D /* libPods-DeviceAuthenticator.a */; };
 /* End PBXBuildFile section */
 
@@ -321,7 +322,7 @@
 		7F88333C2874FB820034CA5E /* OktaSharedSQLite.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OktaSharedSQLite.swift; sourceTree = "<group>"; };
 		7F88333D2874FB820034CA5E /* OktaSQLiteEncryptionManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OktaSQLiteEncryptionManager.swift; sourceTree = "<group>"; };
 		7F88333F2874FB820034CA5E /* SQLiteSchemaProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SQLiteSchemaProtocol.swift; sourceTree = "<group>"; };
-		7F8833402874FB820034CA5E /* SQLiteSchema.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SQLiteSchema.swift; sourceTree = "<group>"; };
+		7F8833402874FB820034CA5E /* SQLiteSchemaBase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SQLiteSchemaBase.swift; sourceTree = "<group>"; };
 		7F8833412874FB820034CA5E /* SQLiteTables.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SQLiteTables.swift; sourceTree = "<group>"; };
 		7F8833422874FB820034CA5E /* OktaSQLIteConnectionBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OktaSQLIteConnectionBuilder.swift; sourceTree = "<group>"; };
 		7F8833432874FB820034CA5E /* OktaSQLitePersistentStorage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OktaSQLitePersistentStorage.swift; sourceTree = "<group>"; };
@@ -471,6 +472,7 @@
 		9F9602B82878B4120012C74C /* TransactionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransactionTests.swift; sourceTree = "<group>"; };
 		9F98950A2874ECC80056AC6E /* DeviceAuthenticatorConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceAuthenticatorConstants.swift; sourceTree = "<group>"; };
 		9FF756622968C9FD0096E9B1 /* SQLiteStorageVersion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SQLiteStorageVersion.swift; sourceTree = "<group>"; };
+		9FF7566D296F51490096E9B1 /* SQLiteSchemaMigration_v2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SQLiteSchemaMigration_v2.swift; sourceTree = "<group>"; };
 		B53EEBADD32786AED0B3915D /* libPods-DeviceAuthenticator.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-DeviceAuthenticator.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DD73FB7DC7E598DC865F395B /* libPods-DeviceAuthenticatorFunctionalTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-DeviceAuthenticatorFunctionalTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		EB271FBD2D22391CF51DB162 /* libPods-DeviceAuthenticatorUnitTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-DeviceAuthenticatorUnitTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -640,8 +642,9 @@
 			isa = PBXGroup;
 			children = (
 				7F88333F2874FB820034CA5E /* SQLiteSchemaProtocol.swift */,
-				7F8833402874FB820034CA5E /* SQLiteSchema.swift */,
+				7F8833402874FB820034CA5E /* SQLiteSchemaBase.swift */,
 				7F8833412874FB820034CA5E /* SQLiteTables.swift */,
+				9FF7566D296F51490096E9B1 /* SQLiteSchemaMigration_v2.swift */,
 			);
 			path = schemas;
 			sourceTree = "<group>";
@@ -1386,12 +1389,13 @@
 				7F8833D62874FB820034CA5E /* OktaTransactionEnroll+Push.swift in Sources */,
 				7F8833A32874FB820034CA5E /* ApplicationConfig.swift in Sources */,
 				7F8833CA2874FB820034CA5E /* OktaSharedKeychainStorage.swift in Sources */,
+				9FF7566E296F51490096E9B1 /* SQLiteSchemaMigration_v2.swift in Sources */,
 				7F8833F02874FB820034CA5E /* OktaRestAPIToken.swift in Sources */,
 				7F8833AC2874FB820034CA5E /* OktaJWKGenerator.swift in Sources */,
 				7F8833B22874FB820034CA5E /* OktaAuthenticationJWT.swift in Sources */,
 				7F8833912874FB820034CA5E /* EnrolledAuthenticatorModel.swift in Sources */,
 				7F88338C2874FB820034CA5E /* DeviceAuthenticatorProtocol.swift in Sources */,
-				7F8833C02874FB820034CA5E /* SQLiteSchema.swift in Sources */,
+				7F8833C02874FB820034CA5E /* SQLiteSchemaBase.swift in Sources */,
 				7F8833DE2874FB820034CA5E /* OktaTransactionPossessionChallenge.swift in Sources */,
 				7F8FF73D287F87DA000F17F2 /* DeviceAuthenticator.docc in Sources */,
 				7F88337E2874FB820034CA5E /* OktaFactorMetadata.swift in Sources */,
