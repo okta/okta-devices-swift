@@ -54,11 +54,15 @@ class OktaStorageMigrator {
     /// Ensures that `lastKnownVersion` and `targetVersion` are not `.unknown`, not equal and `targetVersion` > `lastKnownVersion`
     func migrateToTargetVersion<T>(migratableStorage: T, type: T.Type) throws where T: OktaMigratableStorage {
         let storageLastKnownVersion = migratableStorage.lastKnownVersion
+        guard storageLastKnownVersion != .unknownVersion else {
+            throw DeviceAuthenticatorError.storageError(.storageMigrationError("Current storage version can't be unknown"))
+        }
         let storageTargetVersion = type.targetVersion
         guard try isMigrationToTargetVersionNeeded(migratableStorage: migratableStorage, type: type) else {
             migratableStorage.didFinishStorageIncrementalMigrationSequence(startVersion: storageLastKnownVersion, endVersion: storageTargetVersion)
             return
         }
+
         // Perform migration from the last known version to the current version declared by versionable storage, one-by-one in "cascade" fashion
         do {
             try migratableStorage.willStartIncrementalStorageMigrationSequence(startVersion: storageLastKnownVersion, endVersion: storageTargetVersion)

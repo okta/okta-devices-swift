@@ -585,7 +585,7 @@ class OktaSharedSQLiteTests: XCTestCase {
         }
 
         return OktaSQLitePersistentStorage(at: url,
-                                           schemaVersion: SQLiteSchema().version,
+                                           schemaVersion: SQLiteStorageVersion.latestVersion,
                                            fileManager: fileManager,
                                            sqliteFileEncryptionKey: nil,
                                            logger: OktaLogger())
