@@ -30,7 +30,7 @@ This library uses semantic versioning and follows Okta's [Library Version Policy
 
 | Version | Status                             |
 | ------- | ---------------------------------- |
-| 0.0.2   | ⚠ Beta                                   |
+| 0.0.3   | ⚠ Beta                                   |
 
 ⚠ Beta version is currently in development and isn't ready for production use
 
