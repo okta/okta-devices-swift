@@ -246,6 +246,75 @@ class TransactionPossessionChallengeBaseTests: XCTestCase {
         }
     }
 
+    func testReadSigningKeyErrorHandler() throws {
+        let mut = try OktaTransactionPossessionChallengeBasePartialMock(applicationConfig: applicationConfig,
+                                                                        challengeRequest: OktaJWTTestData.validDeviceChallengeRequestJWTWithUserMediationRequired(),
+                                                                        stateHandle: "state_handle",
+                                                                        httpHeaders: nil,
+                                                                        loginHint: nil,
+                                                                        storageManager: storageMock,
+                                                                        cryptoManager: cryptoManager,
+                                                                        signalsManager: SignalsManager(logger: OktaLoggerMock()),
+                                                                        restAPI: restAPIMock,
+                                                                        logger: OktaLoggerMock())
+        let transactionContext = OktaTransactionPossessionChallengeBase.TransactionContext(challengeRequest: mut.challengeRequestJWT,
+                                                                                           appIdentityStepClosure: { step in
+        },
+                                                                                           appCompletionClosure: { jwt, error, enrollment in
+        })
+
+        var signJWTAndSendRequestHookCalled = false
+        var postMessageToApplicationHookCalled = false
+        mut.postMessageToApplicationHook = { message, reasonType, error, context in
+            XCTAssertEqual(message, "Failed to sign with key userVerification, falling back to proofOfPossession")
+            XCTAssertEqual(reasonType, .userVerificationKeyCorruptedOrMissing)
+            postMessageToApplicationHookCalled = true
+        }
+        mut.signJWTAndSendRequestHook = { context, keyTypes in
+            XCTAssertTrue(context.userConsentResponseValue == .userVerificationPermanentlyUnavailable)
+            signJWTAndSendRequestHookCalled = true
+        }
+        mut.readSigningKeyErrorHandler(error: .securityError(.keyCorrupted(NSError())),
+                                       transactionContext: transactionContext,
+                                       keysRequirements: [.userVerification, .proofOfPossession])
+        XCTAssertTrue(signJWTAndSendRequestHookCalled)
+        XCTAssertTrue(postMessageToApplicationHookCalled)
+
+        signJWTAndSendRequestHookCalled = false
+        postMessageToApplicationHookCalled = false
+        mut.postMessageToApplicationHook = { message, reasonType, error, context in
+            XCTAssertEqual(message, "Failed to sign with key userVerification, falling back to proofOfPossession")
+            XCTAssertEqual(reasonType, .userVerificationFailed)
+            postMessageToApplicationHookCalled = true
+        }
+        mut.signJWTAndSendRequestHook = { context, keyTypes in
+            XCTAssertTrue(context.userConsentResponseValue == .userVerificationTemporarilyUnavailable)
+            signJWTAndSendRequestHookCalled = true
+        }
+        mut.readSigningKeyErrorHandler(error: .securityError(.localAuthenticationFailed(NSError())),
+                                       transactionContext: transactionContext,
+                                       keysRequirements: [.userVerification, .proofOfPossession])
+        XCTAssertTrue(signJWTAndSendRequestHookCalled)
+        XCTAssertTrue(postMessageToApplicationHookCalled)
+
+        signJWTAndSendRequestHookCalled = false
+        postMessageToApplicationHookCalled = false
+        mut.postMessageToApplicationHook = { message, reasonType, error, context in
+            XCTAssertEqual(message, "Failed to sign with key userVerification, falling back to proofOfPossession")
+            XCTAssertEqual(reasonType, .userVerificationCancelledByUser)
+            postMessageToApplicationHookCalled = true
+        }
+        mut.signJWTAndSendRequestHook = { context, keyTypes in
+            XCTAssertTrue(context.userConsentResponseValue == .cancelledUserVerification)
+            signJWTAndSendRequestHookCalled = true
+        }
+        mut.readSigningKeyErrorHandler(error: .securityError(.localAuthenticationCancelled(NSError())),
+                                       transactionContext: transactionContext,
+                                       keysRequirements: [.userVerification, .proofOfPossession])
+        XCTAssertTrue(signJWTAndSendRequestHookCalled)
+        XCTAssertTrue(postMessageToApplicationHookCalled)
+    }
+
     func extractChallengeResponseJSON(verifyURL: String?) -> [String: Any]? {
         let challengeResponse = verifyURL?.slice(from: "=", to: "&")!
         let responseSections = challengeResponse!.split(separator: ".")
@@ -262,9 +331,11 @@ class TransactionPossessionChallengeBaseTests: XCTestCase {
 fileprivate class OktaTransactionPossessionChallengeBasePartialMock: OktaTransactionPossessionChallengeBase {
     typealias tryReadSigningKeyType = (OktaBindJWT.KeyType, OktaBindJWT.MethodType, AuthenticatorEnrollment, (RemediationStep) -> Void, (KeyData?, DeviceAuthenticatorError?) -> Void) -> Void
     typealias signJWTAndSendRequestType = (OktaTransaction.TransactionContext, [OktaBindJWT.KeyType]) -> Void
+    typealias postMessageToApplicationType = (String, RemediationStepMessageReasonType, DeviceAuthenticatorError, OktaTransaction.TransactionContext) -> Void
 
     var tryReadSigningKeyHook: tryReadSigningKeyType?
     var signJWTAndSendRequestHook: signJWTAndSendRequestType?
+    var postMessageToApplicationHook: postMessageToApplicationType?
     var factorIdToReturn = "12345"
 
     override func parseJWT(string: String) throws -> OktaBindJWT {
@@ -300,5 +371,21 @@ fileprivate class OktaTransactionPossessionChallengeBasePartialMock: OktaTransac
 
     override func getFactorIdFromEnrollment(_ enrollment: AuthenticatorEnrollment) -> String? {
         return factorIdToReturn
+    }
+
+    override func postMessageToApplication(message: String, reason: RemediationStepMessageReasonType, error: DeviceAuthenticatorError, transactionContext: OktaTransaction.TransactionContext) {
+        if let postMessageToApplicationHook = postMessageToApplicationHook {
+            postMessageToApplicationHook(message, reason, error, transactionContext)
+        } else {
+            super.postMessageToApplication(message: message, reason: reason, error: error, transactionContext: transactionContext)
+        }
+    }
+
+    override func signJWTAndSendRequest(transactionContext: OktaTransaction.TransactionContext, keysRequirements: [OktaBindJWT.KeyType]) {
+        if let signJWTAndSendRequestHook = signJWTAndSendRequestHook {
+            signJWTAndSendRequestHook(transactionContext, keysRequirements)
+        } else {
+            super.signJWTAndSendRequest(transactionContext: transactionContext, keysRequirements: keysRequirements)
+        }
     }
 }
