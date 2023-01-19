@@ -18,6 +18,7 @@ enum OktaUserConsentValue: String {
     case approvedUserVerification = "APPROVED_USER_VERIFICATION"
     case cancelledUserVerification = "CANCELLED_USER_VERIFICATION"
     case userVerificationTemporarilyUnavailable = "UV_TEMPORARILY_UNAVAILABLE"
+    case userVerificationPermanentlyUnavailable = "UV_PERMANENTLY_UNAVAILABLE"
     case none = "NONE"
 
     static func create(_ response: UserConsentResponse) -> OktaUserConsentValue {

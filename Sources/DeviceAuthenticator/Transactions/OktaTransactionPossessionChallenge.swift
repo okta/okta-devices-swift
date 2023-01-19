@@ -281,9 +281,9 @@ class OktaTransactionPossessionChallengeBase: OktaTransaction {
         }
     }
 
-    private func readSigningKeyErrorHandler(error: DeviceAuthenticatorError,
-                                            transactionContext: TransactionContext,
-                                            keysRequirements: [OktaBindJWT.KeyType]) {
+    func readSigningKeyErrorHandler(error: DeviceAuthenticatorError,
+                                    transactionContext: TransactionContext,
+                                    keysRequirements: [OktaBindJWT.KeyType]) {
         if keysRequirements.count > 1 {
             // Fallback to next key in the array of key types
             var keyTypes = keysRequirements
@@ -308,12 +308,16 @@ class OktaTransactionPossessionChallengeBase: OktaTransaction {
 
             // Update consent value for cases where appropriate for error
             if skippedKey == .userVerification {
-                if error.userVerificationCancelled() {
+                if messageReason == .userVerificationCancelledByUser {
                     transactionContext.userConsentResponseValue = .cancelledUserVerification
                     // User cancelled biometric prompt and SDK fallbacks to PoP key. Set keyRequirements in transactionContext to avoid sending of unnecessary user consent screen event
                     transactionContext.keyRequirements = [nextKey]
-                } else if error.userVerificationFailed() {
+                } else if messageReason == .userVerificationFailed {
                     transactionContext.userConsentResponseValue = .userVerificationTemporarilyUnavailable
+                    // Local authentication failed and SDK falls back to PoP key. Set keyRequirements in transactionContext to avoid sending of unnecessary user consent screen event
+                    transactionContext.keyRequirements = [nextKey]
+                } else if messageReason == .userVerificationKeyCorruptedOrMissing {
+                    transactionContext.userConsentResponseValue = .userVerificationPermanentlyUnavailable
                     // Local authentication failed and SDK falls back to PoP key. Set keyRequirements in transactionContext to avoid sending of unnecessary user consent screen event
                     transactionContext.keyRequirements = [nextKey]
                 } else {
