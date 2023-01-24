@@ -703,7 +703,7 @@ class VerifyFlowTests: XCTestCase {
                                 userConsentStep.provide(.approved)
                                 isUserConsentStepCall = true
                             case let messageStep as RemediationStepMessage:
-                                XCTAssertEqual(messageStep.reasonType, .userVerificationKeyCorruptedOrMissing)
+                                XCTAssertEqual(messageStep.reasonType, .userVerificationKeyNotEnrolled)
                                 isMessageStepCall = true
                             default:
                                 XCTFail()
@@ -753,7 +753,7 @@ class VerifyFlowTests: XCTestCase {
                                 userConsentStep.provide(.approved)
                                 isUserConsentStepCall = true
                             case let messageStep as RemediationStepMessage:
-                                XCTAssertEqual(messageStep.reasonType, .userVerificationKeyCorruptedOrMissing)
+                                XCTAssertEqual(messageStep.reasonType, .userVerificationKeyNotEnrolled)
                                 isMessageStepCall = true
                             default:
                                 XCTFail()

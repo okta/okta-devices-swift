@@ -290,7 +290,7 @@ class OktaTransactionPossessionChallengeBase: OktaTransaction {
             let skippedKey = keyTypes.removeFirst()
             let nextKey = keyTypes[0]
 
-            var messageReason: RemediationStepMessageReasonType = .userVerificationKeyCorruptedOrMissing
+            var messageReason: RemediationStepMessageReasonType = .userVerificationKeyNotEnrolled
             if case .securityError(let encErr) = error {
                 if case .keyCorrupted(_) = encErr {
                     messageReason = .userVerificationKeyCorruptedOrMissing

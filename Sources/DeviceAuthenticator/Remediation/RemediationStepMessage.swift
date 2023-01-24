@@ -28,6 +28,9 @@ public enum RemediationStepMessageType: Int {
 
 ///  Reason of why message was sent from SDK side
 public enum RemediationStepMessageReasonType: Int {
+    /// User verification key is not enrolled for account
+    case userVerificationKeyNotEnrolled
+
     /// User cancelled local authentication process
     case userVerificationCancelledByUser
 
