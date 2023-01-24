@@ -321,7 +321,12 @@ class OktaTransactionPossessionChallengeBase: OktaTransaction {
                     // Local authentication failed and SDK falls back to PoP key. Set keyRequirements in transactionContext to avoid sending of unnecessary user consent screen event
                     transactionContext.keyRequirements = [nextKey]
                 } else {
-                    transactionContext.userConsentResponseValue = transactionContext.userConsentResponseValue.userVerificationFailed()
+                    if transactionContext.challengeRequest.userVerification == .required {
+                        transactionContext.userConsentResponseValue = .userVerificationPermanentlyUnavailable
+                        transactionContext.keyRequirements = [nextKey]
+                    } else {
+                        transactionContext.userConsentResponseValue = transactionContext.userConsentResponseValue.userVerificationFailed()
+                    }
                 }
             }
             self.signJWTAndSendRequest(transactionContext: transactionContext,
