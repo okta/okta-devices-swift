@@ -76,11 +76,12 @@ class UserAgent: NSObject, UserAgentProtocol {
     }
 
     class func platformInfo() -> String {
-        #if os(iOS)
-                return "iOS/\(UIDevice.current.systemVersion)"
-        #elseif os(OSX)
-                return "macOS/\(ProcessInfo.processInfo.operatingSystemVersionString))"
-        #endif
+#if os(iOS)
+        return "iOS/\(UIDevice.current.systemVersion)"
+#elseif os(OSX)
+        let version = ProcessInfo.processInfo.operatingSystemVersion
+        return "macOS/\(version.majorVersion).\(version.minorVersion).\(version.patchVersion)"
+#endif
     }
 
     class func deviceInfo() -> String {

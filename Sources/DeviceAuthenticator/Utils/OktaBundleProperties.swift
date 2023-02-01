@@ -18,12 +18,16 @@ extension Bundle {
      Return the team identifier from the keychain entitlements (e.g. "B7F62B65BN")
      */
     static var teamIdentifier: String? = {
-        let queryLoad: [String: AnyObject] = [
+        var queryLoad: [String: AnyObject] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrAccount as String: "bundleSeedID" as AnyObject,
             kSecAttrService as String: "" as AnyObject,
             kSecReturnAttributes as String: kCFBooleanTrue
         ]
+
+        if #available(macOS 10.15, iOS 13.0, *) {
+            queryLoad[kSecUseDataProtectionKeychain as String] = kCFBooleanTrue
+        }
 
         var result: AnyObject?
         var status = withUnsafeMutablePointer(to: &result) {
