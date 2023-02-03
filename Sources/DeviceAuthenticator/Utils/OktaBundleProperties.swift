@@ -25,9 +25,11 @@ extension Bundle {
             kSecReturnAttributes as String: kCFBooleanTrue
         ]
 
-        if #available(macOS 10.15, iOS 13.0, *) {
+#if os(macOS)
+        if #available(macOS 10.15, *) {
             queryLoad[kSecUseDataProtectionKeychain as String] = kCFBooleanTrue
         }
+#endif
 
         var result: AnyObject?
         var status = withUnsafeMutablePointer(to: &result) {
