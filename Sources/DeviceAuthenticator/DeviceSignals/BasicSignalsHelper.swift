@@ -62,16 +62,20 @@ class BasicSignalsHelper: BasicSignalsHelperProtocol {
     }
 
     var deviceModel: String {
-        #if targetEnvironment(simulator)
+#if targetEnvironment(simulator)
         return ProcessInfo().environment["SIMULATOR_MODEL_IDENTIFIER"] ?? "Simulator"
-        #else
-        var system = utsname()
-        uname(&system)
-        let model = withUnsafePointer(to: &system.machine.0) { ptr in
-            return String(cString: ptr)
-        }
-        return model
-        #endif
+#else
+#if os(iOS)
+        let name = "hw.machine"
+#else
+        let name = "hw.model"
+#endif
+        var size = 0
+        sysctlbyname(name, nil, &size, nil, 0)
+        var model = [CChar](repeating: 0, count: size)
+        sysctlbyname(name, &model, &size, nil, 0)
+        return String(cString: model)
+#endif
     }
 
     var teamIdentifier: String? {
