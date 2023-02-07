@@ -18,44 +18,29 @@ import OktaLogger
 #endif
 
 /// Factor base class. SignedNonce, Push, TOTP factor inherit from this class
-class OktaFactor: CustomStringConvertible {
+protocol OktaFactor: CustomStringConvertible {
+    var logger: OktaLoggerProtocol { get }
+    var cryptoManager: OktaSharedCryptoProtocol { get }
+    var restAPIClient: ServerAPIProtocol { get }
 
-    init(cryptoManager: OktaSharedCryptoProtocol,
-         restAPIClient: ServerAPIProtocol,
-         logger: OktaLoggerProtocol) {
-        self.logger = logger
-        self.cryptoManager = cryptoManager
-        self.restAPIClient = restAPIClient
-    }
+    /// Server side id
+    var id: String { get }
 
     /// Unique id of proof of possession key. Used to read SecKey reference from the keychain
-    var proofOfPossessionKeyTag: String? {
-        return nil
-    }
+    var proofOfPossessionKeyTag: String? { get }
 
     /// Unique id of user verification key. Used to read SecKey reference from the keychain
-    var userVerificationKeyTag: String? {
-        return nil
-    }
+    var userVerificationKeyTag: String? { get }
 
-    var enrolledWithUserVerificationKey: Bool {
-        // override
-        return false
-    }
+    /// Returns true if factor owns user verification key
+    var enrolledWithUserVerificationKey: Bool { get }
 
-    var description: String {
-        return ""
-    }
+    /// Debug description
+    var description: String { get }
 
-    func cleanup() {
-        // no-op - override
-    }
+    /// Forces factor to do the cleanup: remove all keys for example
+    func cleanup()
 
-    func removeUserVerificationKey() {
-        // no-op - override
-    }
-
-    let logger: OktaLoggerProtocol
-    let cryptoManager: OktaSharedCryptoProtocol
-    let restAPIClient: ServerAPIProtocol
+    /// Removes user verification key
+    func removeUserVerificationKey()
 }

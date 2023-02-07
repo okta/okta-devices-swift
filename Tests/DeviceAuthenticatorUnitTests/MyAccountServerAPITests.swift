@@ -598,4 +598,64 @@ final class MyAccountServerAPITests: XCTestCase {
         XCTAssertEqual(popKeyJWK["key"] as! String, "value")
         XCTAssertEqual(uvKeyJWK["key"] as! String, "value")
     }
+
+    func testRetrieveMaintenanceToken_Success() throws {
+        let httpResult = HTTPURLResult(request: URLRequest(url: mockURL),
+                                       response: HTTPURLResponse(url: mockURL, statusCode: 200, httpVersion: nil, headerFields: nil)!,
+                                       data: MyAccountTestData.accessTokenResponse())
+        let httpClient = MockHTTPClient(result: httpResult)
+        let expectedCredential = try JSONDecoder().decode(Oauth2Credential.self, from: MyAccountTestData.accessTokenResponse())
+        httpClient.requestHook = { url, httpMethod, urlParameters, data, httpHeaders, timeInterval in
+            XCTAssertEqual(url.absoluteString, "https://example.okta.com/oauth2/v1/token")
+            XCTAssertTrue(httpMethod == .get)
+            XCTAssertEqual(httpHeaders["Content-Type"], "application/x-www-form-urlencoded")
+            XCTAssertEqual(httpHeaders["Accept"], "application/json")
+            XCTAssertNotNil(data)
+            let bodyString = String(data: data!, encoding: .utf8)
+            XCTAssertEqual(bodyString, "grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer&client_id=oidcClientId&scope=some.scope&assertion=assertion")
+            let mockURLRequest = MockURLRequest(result: httpResult, headers: httpHeaders)
+            return mockURLRequest
+        }
+        let myAccountAPI = MyAccountServerAPI(client: httpClient, crypto: crypto, logger: OktaLoggerMock())
+        var closureCalled = false
+        myAccountAPI.retrieveMaintenanceToken(with: mockURL, oidcClientId: "oidcClientId", scopes: ["some.scope"], assertion: "assertion") { result in
+            switch result {
+            case .failure(_):
+                XCTFail("Unexpected failure")
+            case .success(let result):
+                let actualCredential = try? JSONDecoder().decode(Oauth2Credential.self, from: result.data!)
+                XCTAssertEqual(actualCredential?.access_token, expectedCredential.access_token)
+                XCTAssertEqual(actualCredential?.refresh_token, expectedCredential.refresh_token)
+                XCTAssertEqual(actualCredential?.expires_in, expectedCredential.expires_in)
+                XCTAssertEqual(actualCredential?.scope, expectedCredential.scope)
+            }
+            closureCalled = true
+        }
+
+        XCTAssertTrue(closureCalled)
+    }
+
+    func testRetrieveMaintenanceToken_Failure() throws {
+        let httpResult = HTTPURLResult(request: URLRequest(url: mockURL),
+                                       response: HTTPURLResponse(url: mockURL, statusCode: 404, httpVersion: nil, headerFields: nil)!,
+                                       data: Data())
+        let httpClient = MockHTTPClient(result: httpResult)
+        httpClient.requestHook = { url, httpMethod, urlParameters, data, httpHeaders, timeInterval in
+            let mockURLRequest = MockURLRequest(result: httpResult, headers: httpHeaders)
+            return mockURLRequest
+        }
+        let myAccountAPI = MyAccountServerAPI(client: httpClient, crypto: crypto, logger: OktaLoggerMock())
+        var closureCalled = false
+        myAccountAPI.retrieveMaintenanceToken(with: mockURL, oidcClientId: "oidcClientId", scopes: ["some.scope"], assertion: "assertion") { result in
+            switch result {
+            case .failure(let error):
+                XCTAssertEqual(error.errorCode, -1)
+            case .success(_):
+                XCTFail("Unexpected success")
+            }
+            closureCalled = true
+        }
+
+        XCTAssertTrue(closureCalled)
+    }
 }

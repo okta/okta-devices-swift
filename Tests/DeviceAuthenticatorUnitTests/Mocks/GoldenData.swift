@@ -713,4 +713,19 @@ class MyAccountTestData {
         let jsonData = try! JSONSerialization.data(withJSONObject: dict, options: .prettyPrinted)
         return jsonData
     }
+
+    class func accessTokenResponse() -> Data {
+        let json: String = """
+        {
+          "access_token": "access.token",
+          "token_type": "token.type",
+          "expires_in": "expires.in",
+          "refresh_token": "refresh.token",
+          "scope": "some.scope"
+        }
+        """
+        let jsonArray = try! JSONSerialization.jsonObject(with: json.data(using: .utf8)!, options: [])
+        let jsonData = try! JSONSerialization.data(withJSONObject: jsonArray, options: .prettyPrinted)
+        return jsonData
+    }
 }

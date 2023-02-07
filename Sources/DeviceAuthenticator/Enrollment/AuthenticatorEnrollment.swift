@@ -11,6 +11,7 @@
 */
 
 import Foundation
+import LocalAuthentication
 #if SWIFT_PACKAGE
 import LoggerCore
 #else
@@ -69,6 +70,7 @@ class AuthenticatorEnrollment: AuthenticatorEnrollmentProtocol {
     let restAPIClient: ServerAPIProtocol
     let storageManager: PersistentStorageProtocol
     let applicationConfig: ApplicationConfig
+    let jwtGenerator: OktaJWTGeneratorProtocol
     private let logEventName = "AuthenticatorEnrollment"
 
     init(organization: Organization,
@@ -82,6 +84,7 @@ class AuthenticatorEnrollment: AuthenticatorEnrollmentProtocol {
          restAPIClient: ServerAPIProtocol,
          storageManager: PersistentStorageProtocol,
          applicationConfig: ApplicationConfig,
+         jwtGenerator: OktaJWTGeneratorProtocol? = nil,
          logger: OktaLoggerProtocol) {
         self.organization = organization
         self.user = user
@@ -94,6 +97,7 @@ class AuthenticatorEnrollment: AuthenticatorEnrollmentProtocol {
         self.storageManager = storageManager
         self.applicationConfig = applicationConfig
         self.enrolledFactors = enrolledFactors
+        self.jwtGenerator = jwtGenerator ?? OktaJWTGenerator(logger: logger)
         self.logger = logger
     }
 
@@ -268,6 +272,63 @@ class AuthenticatorEnrollment: AuthenticatorEnrollmentProtocol {
                 enrollTransaction.rollback()
                 self?.recordServerResponse(error: error)
                 completion(error)
+            }
+        }
+    }
+
+    func retrieveMaintenanceToken(scopes: [String],
+                                  completion: @escaping (Result<Oauth2Credential, DeviceAuthenticatorError>) -> Void) {
+        guard let policy = try? storageManager.authenticatorPolicyForOrgId(organization.id) as? AuthenticatorPolicy else {
+            completion(.failure(DeviceAuthenticatorError.genericError("Failed to fetch authenticator policy")))
+            return
+        }
+        guard let oidcClientId = policy.metadata.settings?.oauthClientId else {
+            completion(.failure(DeviceAuthenticatorError.genericError("Failed to find oauthClientId property in authenticator policy")))
+            return
+        }
+        guard let proofOfPossessionFactor = enrolledFactors.first(where: { $0.proofOfPossessionKeyTag != nil }),
+              let signingKeyTag = proofOfPossessionFactor.proofOfPossessionKeyTag else {
+            completion(.failure(DeviceAuthenticatorError.genericError("Failed to fetch signing key tag")))
+            return
+        }
+        guard let signingKey = cryptoManager.get(keyOf: .privateKey, with: signingKeyTag, context: LAContext()) else {
+            completion(.failure(DeviceAuthenticatorError.genericError("Failed to fetch signing key")))
+            return
+        }
+
+        let issuer = "urn:okta:devices:app:authenticator"
+        let bearerJWT = OktaBearerJWTAssertion(iss: issuer,
+                                               aud: orgHost.absoluteString,
+                                               sub: user.id,
+                                               methodEnrollmentId: proofOfPossessionFactor.id)
+        let assertion: String
+        do {
+            assertion = try jwtGenerator.generate(with: "JWT", kid: signingKeyTag, for: bearerJWT, with: signingKey, using: .ES256)
+        } catch {
+            completion(.failure(DeviceAuthenticatorError.oktaError(from: error)))
+            return
+        }
+
+        logger.info(eventName: logEventName, message: "Requesting maintenance token with client_id = \(oidcClientId)")
+        restAPIClient.retrieveMaintenanceToken(with: orgHost,
+                                               oidcClientId: oidcClientId,
+                                               scopes: scopes,
+                                               assertion: assertion) { result in
+            switch result {
+            case .failure(let error):
+                completion(.failure(error))
+            case .success(let httpResult):
+                guard let jsonData = httpResult.data else {
+                    completion(.failure(DeviceAuthenticatorError.genericError("Bad response from server. Payload is empty")))
+                    return
+                }
+
+                do {
+                    let credential = try JSONDecoder().decode(Oauth2Credential.self, from: jsonData)
+                    completion(.success(credential))
+                } catch {
+                    completion(.failure(DeviceAuthenticatorError.genericError("Failed to decode payload - \(error.localizedDescription)")))
+                }
             }
         }
     }

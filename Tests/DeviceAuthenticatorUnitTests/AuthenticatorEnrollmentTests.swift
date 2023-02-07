@@ -11,6 +11,7 @@
 */
 
 import XCTest
+import OktaJWT
 @testable import DeviceAuthenticator
 
 class AuthenticatorEnrollmentTests: XCTestCase {
@@ -316,6 +317,95 @@ class AuthenticatorEnrollmentTests: XCTestCase {
         }
 
         XCTAssertTrue(completionCalled)
+    }
+
+    func testRetrieveMaintenanceToken_Success() throws {
+        cryptoManager.keychainGroupId = ""
+        let pushFactor = OktaFactorPush(factorData: OktaFactorMetadataPush(id: "id",
+                                                                           proofOfPossessionKeyTag: "proofOfPossessionKeyTag",
+                                                                           links: OktaFactorMetadataPush.Links(pendingLink: "https://test.okta.com/pending_challenge"), transactionTypes: .login),
+                                        cryptoManager: cryptoManager,
+                                        restAPIClient: restAPIMock,
+                                        logger: OktaLoggerMock())
+        enrollment.enrolledFactors = [pushFactor]
+        let policy = AuthenticatorPolicy(metadata: TestUtils.createAuthenticatorMetadataModel(id: "id",
+                                                                                              userVerification: .preferred,
+                                                                                              methods: [.push]))
+        try mockStorageManager.storeAuthenticatorPolicy(policy, orgId: enrollment.orgId)
+        var retrieveMaintenaceTokenHookCalled = false
+        restAPIMock.retrieveMaintenaceTokenHook = { url, oidcClientId, scopes, assertion, completion in
+            retrieveMaintenaceTokenHookCalled = true
+            XCTAssertEqual(url, self.enrollment.orgHost)
+            XCTAssertEqual(oidcClientId, policy.metadata.settings?.oauthClientId ?? "")
+            XCTAssertEqual(scopes, ["okta.myAccount.appAuthenticator.maintenance.manage", "okta.myAccount.appAuthenticator.maintenance.read"])
+            let jwt = try? JSONWebToken(string: assertion)
+            XCTAssertEqual(jwt?.payload["iss"] as? String, "urn:okta:devices:app:authenticator")
+            XCTAssertEqual(jwt?.payload["sub"] as? String, self.enrollment.user.id)
+            XCTAssertEqual(jwt?.payload["aud"] as? String, self.enrollment.orgHost.absoluteString)
+            XCTAssertEqual(jwt?.payload["methodEnrollmentId"] as? String, self.enrollment.pushFactor?.id)
+            XCTAssertNotNil(jwt?.payload["nbf"])
+            XCTAssertNotNil(jwt?.payload["iat"])
+            XCTAssertNotNil(jwt?.payload["jti"])
+            XCTAssertNotNil(jwt?.payload["exp"])
+            let httpResponse = HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil)
+            completion(.success(HTTPURLResult(request: nil, response: httpResponse, data: MyAccountTestData.accessTokenResponse(), error: nil)))
+        }
+
+        let opaqueEnrollment = enrollment as AuthenticatorEnrollmentProtocol
+        var retrieveMaintenanceTokenCallbackCalled = false
+        opaqueEnrollment.retrieveMaintenanceToken(scopes: ["okta.myAccount.appAuthenticator.maintenance.manage",
+                                                          "okta.myAccount.appAuthenticator.maintenance.read"]) { result in
+            switch result {
+            case .failure(_):
+                XCTFail("Unexpected failure")
+            case .success(let oauth2Credential):
+                XCTAssertEqual(oauth2Credential.access_token, "access.token")
+                XCTAssertEqual(oauth2Credential.expires_in, "expires.in")
+                XCTAssertEqual(oauth2Credential.scope, "some.scope")
+                XCTAssertEqual(oauth2Credential.refresh_token, "refresh.token")
+            }
+            retrieveMaintenanceTokenCallbackCalled = true
+        }
+
+        XCTAssertTrue(retrieveMaintenaceTokenHookCalled)
+        XCTAssertTrue(retrieveMaintenanceTokenCallbackCalled)
+    }
+
+    func testRetrieveMaintenanceToken_Failure() throws {
+        cryptoManager.keychainGroupId = ""
+        let pushFactor = OktaFactorPush(factorData: OktaFactorMetadataPush(id: "id",
+                                                                           proofOfPossessionKeyTag: "proofOfPossessionKeyTag",
+                                                                           links: OktaFactorMetadataPush.Links(pendingLink: "https://test.okta.com/pending_challenge"), transactionTypes: .login),
+                                        cryptoManager: cryptoManager,
+                                        restAPIClient: restAPIMock,
+                                        logger: OktaLoggerMock())
+        enrollment.enrolledFactors = [pushFactor]
+        let policy = AuthenticatorPolicy(metadata: TestUtils.createAuthenticatorMetadataModel(id: "id",
+                                                                                              userVerification: .preferred,
+                                                                                              methods: [.push]))
+        try mockStorageManager.storeAuthenticatorPolicy(policy, orgId: enrollment.orgId)
+        var retrieveMaintenaceTokenHookCalled = false
+        restAPIMock.retrieveMaintenaceTokenHook = { url, oidcClientId, scopes, assertion, completion in
+            retrieveMaintenaceTokenHookCalled = true
+            let httpResponse = HTTPURLResponse(url: url, statusCode: 401, httpVersion: nil, headerFields: nil)
+            completion(.success(HTTPURLResult(request: nil, response: httpResponse, data: nil, error: nil)))
+        }
+
+        let opaqueEnrollment = enrollment as AuthenticatorEnrollmentProtocol
+        var retrieveMaintenanceTokenCallbackCalled = false
+        opaqueEnrollment.retrieveMaintenanceToken(scopes: ["okta.myAccount.appAuthenticator.maintenance.manage",
+                                                          "okta.myAccount.appAuthenticator.maintenance.read"]) { result in
+            switch result {
+            case .failure(let error):
+                XCTAssertEqual(error.errorCode, -5)
+            case .success(_):
+                XCTFail("Unexpected success")
+            }
+            retrieveMaintenanceTokenCallbackCalled = true
+        }
+
+        XCTAssertTrue(retrieveMaintenaceTokenHookCalled)
+        XCTAssertTrue(retrieveMaintenanceTokenCallbackCalled)
     }
 
     private func oktaError(for code: ServerErrorCode) -> DeviceAuthenticatorError {

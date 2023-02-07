@@ -26,17 +26,17 @@ class OktaFactorPush: OktaFactor {
     }
     /// Checks whether factor was enrolled with user verification key
     /// - Returns: true if factor enrolled with user verification key
-    override var enrolledWithUserVerificationKey: Bool {
+    var enrolledWithUserVerificationKey: Bool {
         return userVerificationKeyTag != nil
     }
 
     /// Unique id of proof of possession key. Used to read SecKey reference from the keychain
-    override var proofOfPossessionKeyTag: String {
+    var proofOfPossessionKeyTag: String? {
         return factorData.proofOfPossessionKeyTag
     }
 
     /// Unique id of user verification key. Used to read SecKey reference from the keychain
-    override var userVerificationKeyTag: String? {
+    var userVerificationKeyTag: String? {
         return factorData.userVerificationKeyTag
     }
 
@@ -44,7 +44,7 @@ class OktaFactorPush: OktaFactor {
         return factorData.transactionTypes?.supportsCIBA ?? false
     }
 
-    override var description: String {
+    var description: String {
         let info: [String: Any] =  ["type": "Push",
                                     "id": factorData.id,
                                     "popKey": factorData.proofOfPossessionKeyTag,
@@ -56,25 +56,27 @@ class OktaFactorPush: OktaFactor {
          cryptoManager: OktaSharedCryptoProtocol,
          restAPIClient: ServerAPIProtocol,
          logger: OktaLoggerProtocol) {
+        self.logger = logger
+        self.cryptoManager = cryptoManager
+        self.restAPIClient = restAPIClient
         self.factorData = factorData
-        super.init(cryptoManager: cryptoManager, restAPIClient: restAPIClient, logger: logger)
     }
 
-    override func cleanup() {
-        super.cleanup()
+    func cleanup() {
         _ = cryptoManager.delete(keyPairWith: factorData.proofOfPossessionKeyTag)
         removeUserVerificationKey()
     }
 
-    override func removeUserVerificationKey() {
-        super.removeUserVerificationKey()
+    func removeUserVerificationKey() {
         if let userVerificationKeyTag = factorData.userVerificationKeyTag {
             _ = cryptoManager.delete(keyPairWith: userVerificationKeyTag)
             factorData.userVerificationKeyTag = nil
         }
     }
 
-    /// Factor specific data and settings
+    let logger: OktaLoggerProtocol
+    let cryptoManager: OktaSharedCryptoProtocol
+    let restAPIClient: ServerAPIProtocol
     let factorData: OktaFactorMetadataPush
     private let logEventName = "PushFactor"
 }

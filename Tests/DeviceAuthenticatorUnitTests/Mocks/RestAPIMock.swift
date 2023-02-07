@@ -25,6 +25,7 @@ class RestAPIMock: ServerAPIProtocol {
     typealias downloadAuthenticatorMetadataType = (URL, String, OktaRestAPIToken, (Result<AuthenticatorMetaDataModel, DeviceAuthenticatorError>) -> Void) -> Void
     typealias deleteAuthenticatorRequestType = (AuthenticatorEnrollment, OktaRestAPIToken, (_ result: HTTPURLResult?, _ error: DeviceAuthenticatorError?) -> Void) -> Void
     typealias pendingChallengeRequestType = (URL, OktaRestAPIToken, (HTTPURLResult?, DeviceAuthenticatorError?) -> Void) -> Void
+    typealias retrieveMaintenaceTokenType = (URL, String, [String], String,(Result<HTTPURLResult, DeviceAuthenticatorError>) -> Void) -> Void
 
     var enrollAuthenticatorRequestHook: enrollAuthenticatorRequestType?
     var downloadOrgIdTypeHook: downloadOrgIdType?
@@ -33,6 +34,7 @@ class RestAPIMock: ServerAPIProtocol {
     var error: DeviceAuthenticatorError?
     var deleteAuthenticatorRequestHook: deleteAuthenticatorRequestType?
     var pendingChallengeRequestHook: pendingChallengeRequestType?
+    var retrieveMaintenaceTokenHook: retrieveMaintenaceTokenType?
 
     let client: HTTPClientProtocol
     let logger: OktaLoggerProtocol
@@ -155,6 +157,22 @@ class RestAPIMock: ServerAPIProtocol {
             let urlResponse = HTTPURLResponse()
             let resut = HTTPURLResult(request: nil, response: urlResponse, data: data)
             completion(resut, nil)
+        }
+    }
+
+    func retrieveMaintenanceToken(with orgURL: URL,
+                                  oidcClientId: String,
+                                  scopes: [String],
+                                  assertion: String,
+                                  completion: @escaping (Result<HTTPURLResult, DeviceAuthenticatorError>) -> Void) {
+        if let retrieveMaintenaceTokenHook = retrieveMaintenaceTokenHook {
+            retrieveMaintenaceTokenHook(orgURL, oidcClientId, scopes, assertion, completion)
+        } else {
+            restAPI.retrieveMaintenanceToken(with: orgURL,
+                                             oidcClientId: oidcClientId,
+                                             scopes: scopes,
+                                             assertion: assertion,
+                                             completion: completion)
         }
     }
 }
