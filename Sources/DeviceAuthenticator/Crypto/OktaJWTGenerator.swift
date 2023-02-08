@@ -18,7 +18,7 @@ import OktaLogger
 #endif
 
 /// Generates JWT
-class OktaJWTGenerator {
+class OktaJWTGenerator: OktaJWTGeneratorProtocol {
     let logger: OktaLoggerProtocol
     var encoder: JSONEncoder
 

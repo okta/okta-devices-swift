@@ -62,14 +62,26 @@ public protocol AuthenticatorEnrollmentProtocol {
     ///  Delete the enrollment from this device's local storage
     ///  - Discussion: Deleting enrollments without notifying the server will cause the user to be potentially locked out. Use [DeviceAuthenticatorProtocol.delete] instead
     func deleteFromDevice() throws
+
+    /// Retrieves maintenace access token for enrollment update and read operations
+    /// - Parameters:
+    ///   - scopes: Array of requested scopes, for example ["okta.myAccount.appAuthenticator.maintenance.read", "okta.myAccount.appAuthenticator.maintenance.manage"]
+    ///   - completion: Callback for asynchronous operation, returns acess token or error
+    func retrieveMaintenanceToken(scopes: [String],
+                                  completion: @escaping (Result<Oauth2Credential, DeviceAuthenticatorError>) -> Void)
 }
+
 
 public extension AuthenticatorEnrollmentProtocol {
     func retrievePushChallenges(authenticationToken: AuthToken,
-                                allowedClockSkewInSeconds: Int = 300,
                                 completion: @escaping (Result<[PushChallengeProtocol], DeviceAuthenticatorError>) -> Void) {
         retrievePushChallenges(authenticationToken: authenticationToken,
-                               allowedClockSkewInSeconds: allowedClockSkewInSeconds,
+                               allowedClockSkewInSeconds: 300,
                                completion: completion)
+    }
+
+    func retrieveMaintenanceToken(completion: @escaping (Result<Oauth2Credential, DeviceAuthenticatorError>) -> Void) {
+        retrieveMaintenanceToken(scopes: ["okta.myAccount.appAuthenticator.maintenance.manage"],
+                                 completion: completion)
     }
 }

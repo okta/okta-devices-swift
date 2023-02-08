@@ -155,6 +155,8 @@
 		9F7EFF12287E0E12001E2C4E /* ExampleAppConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F96023F2878A5690012C74C /* ExampleAppConstants.swift */; };
 		9F7EFF13287E0E12001E2C4E /* UNNotificationResponseMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9602402878A5690012C74C /* UNNotificationResponseMock.swift */; };
 		9F7EFF14287E0E12001E2C4E /* RestAPIMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9602412878A5690012C74C /* RestAPIMock.swift */; };
+		9F91D86C2991C503007CBDA1 /* Oauth2Credential.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F91D86B2991C503007CBDA1 /* Oauth2Credential.swift */; };
+		9F91D86E2991DDBA007CBDA1 /* OktaBearerJWTAssertion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F91D86D2991DDBA007CBDA1 /* OktaBearerJWTAssertion.swift */; };
 		9F93122528FF205400DD06DF /* MyAccountServerAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F93122428FF205400DD06DF /* MyAccountServerAPI.swift */; };
 		9F93122A28FF230400DD06DF /* MyAccountServerAPITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F93122828FF22E000DD06DF /* MyAccountServerAPITests.swift */; };
 		9F93122C28FF2A7400DD06DF /* MyAccountAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F93122B28FF2A7400DD06DF /* MyAccountAPI.swift */; };
@@ -400,6 +402,8 @@
 		9F7EFF04287E0D8A001E2C4E /* EnrollmentFlowTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EnrollmentFlowTests.swift; sourceTree = "<group>"; };
 		9F7EFF05287E0D8A001E2C4E /* UserVerificationFlowTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserVerificationFlowTests.swift; sourceTree = "<group>"; };
 		9F7EFF06287E0D8A001E2C4E /* DeleteEnrollmentFlowTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeleteEnrollmentFlowTests.swift; sourceTree = "<group>"; };
+		9F91D86B2991C503007CBDA1 /* Oauth2Credential.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Oauth2Credential.swift; sourceTree = "<group>"; };
+		9F91D86D2991DDBA007CBDA1 /* OktaBearerJWTAssertion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OktaBearerJWTAssertion.swift; sourceTree = "<group>"; };
 		9F93122428FF205400DD06DF /* MyAccountServerAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAccountServerAPI.swift; sourceTree = "<group>"; };
 		9F93122828FF22E000DD06DF /* MyAccountServerAPITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAccountServerAPITests.swift; sourceTree = "<group>"; };
 		9F93122B28FF2A7400DD06DF /* MyAccountAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAccountAPI.swift; sourceTree = "<group>"; };
@@ -593,6 +597,7 @@
 				7F88332D2874FB810034CA5E /* OktaBindJWT.swift */,
 				7F88332E2874FB810034CA5E /* OktaAuthenticationJWT.swift */,
 				7F88332F2874FB810034CA5E /* OktaJWTPayload.swift */,
+				9F91D86D2991DDBA007CBDA1 /* OktaBearerJWTAssertion.swift */,
 			);
 			path = Crypto;
 			sourceTree = "<group>";
@@ -731,6 +736,7 @@
 				7F8833792874FB820034CA5E /* AuthToken.swift */,
 				7F88337A2874FB820034CA5E /* UserAgent.swift */,
 				7F88337B2874FB820034CA5E /* OktaURLRequest.swift */,
+				9F91D86B2991C503007CBDA1 /* Oauth2Credential.swift */,
 			);
 			path = Networking;
 			sourceTree = "<group>";
@@ -1310,6 +1316,7 @@
 				7F8833A72874FB820034CA5E /* OktaCryptoProtocol.swift in Sources */,
 				7F8833972874FB820034CA5E /* InternalConstants.swift in Sources */,
 				7F8833922874FB820034CA5E /* AuthenticatorType.swift in Sources */,
+				9F91D86E2991DDBA007CBDA1 /* OktaBearerJWTAssertion.swift in Sources */,
 				7F8833A62874FB820034CA5E /* OktaJWTGeneratorProtocol.swift in Sources */,
 				7F8833EB2874FB820034CA5E /* DeviceAuthenticatorConfig.swift in Sources */,
 				7F8833D82874FB820034CA5E /* OktaTransactionPushTokenUpdate.swift in Sources */,
@@ -1424,6 +1431,7 @@
 				7F8833D72874FB820034CA5E /* OktaTransactionEnroll+Factors.swift in Sources */,
 				7F8833E82874FB820034CA5E /* SignalsManager.swift in Sources */,
 				7F8833A52874FB820034CA5E /* OktaRequestJWTGenerator.swift in Sources */,
+				9F91D86C2991C503007CBDA1 /* Oauth2Credential.swift in Sources */,
 				7F8833982874FB820034CA5E /* OktaLock.swift in Sources */,
 				7F8833C12874FB820034CA5E /* SQLiteTables.swift in Sources */,
 				7F8833D92874FB820034CA5E /* OktaTransactionEnroll+Device.swift in Sources */,

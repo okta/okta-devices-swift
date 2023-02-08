@@ -87,6 +87,12 @@ protocol ServerAPIProtocol {
     func pendingChallenge(with orgURL: URL,
                           authenticationToken: OktaRestAPIToken,
                           completion: @escaping (_ result: HTTPURLResult?, _ error: DeviceAuthenticatorError?) -> Void)
+
+    func retrieveMaintenanceToken(with orgURL: URL,
+                                  oidcClientId: String,
+                                  scopes: [String],
+                                  assertion: String,
+                                  completion: @escaping (Result<HTTPURLResult, DeviceAuthenticatorError>) -> Void)
 }
 
 extension ServerAPIProtocol {
@@ -146,6 +152,50 @@ extension ServerAPIProtocol {
             }
 
             self.validateResult(result, for: orgMetaDataURL, andCall: completion)
+        }
+    }
+
+    /// - Description: Retrieves maintenace access token for update and read operations
+    /// - Parameters:
+    ///   - orgURL:         Org host url
+    ///   - oidcClientId:   OIDC client_id
+    ///   - scopes:         Requested scopes
+    ///   - assertion:      JWT assertion that client exchanges for access token
+    ///   - completion:     Handler to execute after the async call completes
+    func retrieveMaintenanceToken(with orgURL: URL,
+                                  oidcClientId: String,
+                                  scopes: [String],
+                                  assertion: String,
+                                  completion: @escaping (Result<HTTPURLResult, DeviceAuthenticatorError>) -> Void) {
+        let completeURL = orgURL.appendingPathComponent("/oauth2/v1/token")
+        let contentTypeHeaderValue = "application/x-www-form-urlencoded"
+        let acceptHeaderValue = "application/json"
+        let grantType = "urn:ietf:params:oauth:grant-type:jwt-bearer"
+        let scopesString = scopes.joined(separator: " ")
+        var completePayload = "grant_type=" + grantType + "&" + "client_id=" + oidcClientId + "&" + "scope=" + scopesString + "&" + "assertion=" + assertion
+        completePayload = completePayload.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ""
+        logger.info(eventName: "Retrieving maintenance token", message: "URL: \(completeURL)")
+
+        let request = self.client.request(completeURL,
+                                          method: .get,
+                                          httpBody: completePayload.data(using: .utf8),
+                                          headers: [HTTPHeaderConstants.contentTypeHeader: contentTypeHeaderValue,
+                                                    HTTPHeaderConstants.acceptHeader: acceptHeaderValue])
+        request.response { result in
+            if let error = result.error {
+                let resultError = DeviceAuthenticatorError.networkError(error)
+                self.logger.error(eventName: "API error", message: "error: \(resultError) for request at URL: \(completeURL)")
+                completion(.failure(resultError))
+                return
+            }
+
+            self.validateResult(result, for: completeURL) { httpResult, error in
+                if let error = error {
+                    completion(.failure(error))
+                } else {
+                    completion(.success(result))
+                }
+            }
         }
     }
 

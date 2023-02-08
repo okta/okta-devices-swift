@@ -21,7 +21,10 @@ class OktaFactorTests: XCTestCase {
         let restAPIClient = LegacyServerAPI(client: mockHTTPClient,
                                             crypto: cryptoManager,
                                             logger: OktaLoggerMock())
-        let factor = OktaFactor(cryptoManager: cryptoManager, restAPIClient: restAPIClient, logger: OktaLoggerMock())
+        let factor = OktaFactorPush(factorData: OktaFactorMetadataPush(id: "", proofOfPossessionKeyTag: "", transactionTypes: nil),
+                                    cryptoManager: cryptoManager,
+                                    restAPIClient: restAPIClient,
+                                    logger: OktaLoggerMock())
         XCTAssertFalse(factor.enrolledWithUserVerificationKey)
     }
 }
