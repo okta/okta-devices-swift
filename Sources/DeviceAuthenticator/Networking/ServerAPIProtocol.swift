@@ -89,6 +89,7 @@ protocol ServerAPIProtocol {
                           completion: @escaping (_ result: HTTPURLResult?, _ error: DeviceAuthenticatorError?) -> Void)
 
     func retrieveMaintenanceToken(with orgURL: URL,
+                                  authorizationServerId: String?,
                                   oidcClientId: String,
                                   scopes: [String],
                                   assertion: String,
@@ -158,16 +159,23 @@ extension ServerAPIProtocol {
     /// - Description: Retrieves maintenace access token for update and read operations
     /// - Parameters:
     ///   - orgURL:         Org host url
+    ///   - authorizationServerId: Authorization server id. Pass nil if you are using Okta organization server. Pass "default" if you use default custom authorization server
     ///   - oidcClientId:   OIDC client_id
     ///   - scopes:         Requested scopes
     ///   - assertion:      JWT assertion that client exchanges for access token
     ///   - completion:     Handler to execute after the async call completes
     func retrieveMaintenanceToken(with orgURL: URL,
+                                  authorizationServerId: String?,
                                   oidcClientId: String,
                                   scopes: [String],
                                   assertion: String,
                                   completion: @escaping (Result<HTTPURLResult, DeviceAuthenticatorError>) -> Void) {
-        let completeURL = orgURL.appendingPathComponent("/oauth2/v1/token")
+        let completeURL: URL
+        if let authorizationServerId = authorizationServerId {
+            completeURL = orgURL.appendingPathComponent("/oauth2/\(authorizationServerId)/v1/token")
+        } else {
+            completeURL = orgURL.appendingPathComponent("/oauth2/v1/token")
+        }
         let contentTypeHeaderValue = "application/x-www-form-urlencoded"
         let acceptHeaderValue = "application/json"
         let grantType = "urn:ietf:params:oauth:grant-type:jwt-bearer"

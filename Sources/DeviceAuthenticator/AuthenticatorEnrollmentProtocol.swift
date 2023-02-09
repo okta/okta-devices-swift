@@ -66,8 +66,10 @@ public protocol AuthenticatorEnrollmentProtocol {
     /// Retrieves maintenace access token for enrollment update and read operations
     /// - Parameters:
     ///   - scopes: Array of requested scopes, for example ["okta.myAccount.appAuthenticator.maintenance.read", "okta.myAccount.appAuthenticator.maintenance.manage"]
+    ///   - authorizationServerId: Authorization server id. Pass nil if you are using Okta organization server. Pass "default" if you use default custom authorization server
     ///   - completion: Callback for asynchronous operation, returns acess token or error
     func retrieveMaintenanceToken(scopes: [String],
+                                  authorizationServerId: String?,
                                   completion: @escaping (Result<Oauth2Credential, DeviceAuthenticatorError>) -> Void)
 }
 
@@ -80,8 +82,10 @@ public extension AuthenticatorEnrollmentProtocol {
                                completion: completion)
     }
 
-    func retrieveMaintenanceToken(completion: @escaping (Result<Oauth2Credential, DeviceAuthenticatorError>) -> Void) {
+    func retrieveMaintenanceToken(authorizationServerId: String?,
+                                  completion: @escaping (Result<Oauth2Credential, DeviceAuthenticatorError>) -> Void) {
         retrieveMaintenanceToken(scopes: ["okta.myAccount.appAuthenticator.maintenance.manage"],
+                                 authorizationServerId: authorizationServerId,
                                  completion: completion)
     }
 }

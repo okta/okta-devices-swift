@@ -333,7 +333,8 @@ class AuthenticatorEnrollmentTests: XCTestCase {
                                                                                               methods: [.push]))
         try mockStorageManager.storeAuthenticatorPolicy(policy, orgId: enrollment.orgId)
         var retrieveMaintenaceTokenHookCalled = false
-        restAPIMock.retrieveMaintenaceTokenHook = { url, oidcClientId, scopes, assertion, completion in
+        restAPIMock.retrieveMaintenaceTokenHook = { url, authorizationServerId, oidcClientId, scopes, assertion, completion in
+            XCTAssertEqual(authorizationServerId, "default")
             retrieveMaintenaceTokenHookCalled = true
             XCTAssertEqual(url, self.enrollment.orgHost)
             XCTAssertEqual(oidcClientId, policy.metadata.settings?.oauthClientId ?? "")
@@ -354,7 +355,8 @@ class AuthenticatorEnrollmentTests: XCTestCase {
         let opaqueEnrollment = enrollment as AuthenticatorEnrollmentProtocol
         var retrieveMaintenanceTokenCallbackCalled = false
         opaqueEnrollment.retrieveMaintenanceToken(scopes: ["okta.myAccount.appAuthenticator.maintenance.manage",
-                                                          "okta.myAccount.appAuthenticator.maintenance.read"]) { result in
+                                                          "okta.myAccount.appAuthenticator.maintenance.read"],
+                                                  authorizationServerId: "default") { result in
             switch result {
             case .failure(_):
                 XCTFail("Unexpected failure")
@@ -385,7 +387,8 @@ class AuthenticatorEnrollmentTests: XCTestCase {
                                                                                               methods: [.push]))
         try mockStorageManager.storeAuthenticatorPolicy(policy, orgId: enrollment.orgId)
         var retrieveMaintenaceTokenHookCalled = false
-        restAPIMock.retrieveMaintenaceTokenHook = { url, oidcClientId, scopes, assertion, completion in
+        restAPIMock.retrieveMaintenaceTokenHook = { url, authorizationServerId, oidcClientId, scopes, assertion, completion in
+            XCTAssertNil(authorizationServerId)
             retrieveMaintenaceTokenHookCalled = true
             let httpResponse = HTTPURLResponse(url: url, statusCode: 401, httpVersion: nil, headerFields: nil)
             completion(.success(HTTPURLResult(request: nil, response: httpResponse, data: nil, error: nil)))
@@ -394,7 +397,8 @@ class AuthenticatorEnrollmentTests: XCTestCase {
         let opaqueEnrollment = enrollment as AuthenticatorEnrollmentProtocol
         var retrieveMaintenanceTokenCallbackCalled = false
         opaqueEnrollment.retrieveMaintenanceToken(scopes: ["okta.myAccount.appAuthenticator.maintenance.manage",
-                                                          "okta.myAccount.appAuthenticator.maintenance.read"]) { result in
+                                                          "okta.myAccount.appAuthenticator.maintenance.read"],
+                                                  authorizationServerId: nil) { result in
             switch result {
             case .failure(let error):
                 XCTAssertEqual(error.errorCode, -5)
