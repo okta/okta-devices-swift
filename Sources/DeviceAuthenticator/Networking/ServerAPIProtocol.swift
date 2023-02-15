@@ -178,7 +178,7 @@ extension ServerAPIProtocol {
         logger.info(eventName: "Retrieving maintenance token", message: "URL: \(completeURL)")
 
         let request = self.client.request(completeURL,
-                                          method: .get,
+                                          method: .post,
                                           httpBody: completePayload.data(using: .utf8),
                                           headers: [HTTPHeaderConstants.contentTypeHeader: contentTypeHeaderValue,
                                                     HTTPHeaderConstants.acceptHeader: acceptHeaderValue])

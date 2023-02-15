@@ -728,7 +728,7 @@ class MyAccountTestData {
         {
           "access_token": "access.token",
           "token_type": "token.type",
-          "expires_in": "expires.in",
+          "expires_in": 3600,
           "refresh_token": "refresh.token",
           "scope": "some.scope"
         }

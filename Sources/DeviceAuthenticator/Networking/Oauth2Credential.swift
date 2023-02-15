@@ -19,7 +19,7 @@ public struct Oauth2Credential: Codable {
     /// The type of token, typycally "Bearer"
     public let token_type: String
     /// The duration of time the access token is granted for
-    public let expires_in: String?
+    public let expires_in: Int?
     /// Optional refresh token, used for obtaining another access token
     public let refresh_token: String?
     /// Optional scope granted by the IDP

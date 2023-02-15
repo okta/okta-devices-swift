@@ -88,7 +88,7 @@ class PushNotificationService: NSObject, UNUserNotificationCenterDelegate {
         }
         UserDefaults.save(deviceToken: data)
         deviceAuthenticator.allEnrollments().forEach({ enrollment in
-            getAccessToken { accessToken in
+            getAccessToken(enrollment: enrollment) { accessToken in
                 enrollment.updateDeviceToken(data, authenticationToken: AuthToken.bearer(accessToken)) { error in
                     self.logger?.info(eventName: LoggerEvent.pushService.rawValue, message: "Success update device token")
                 }
@@ -120,15 +120,14 @@ class PushNotificationService: NSObject, UNUserNotificationCenterDelegate {
         completionHandler()
     }
 
-    private func getAccessToken(completion: @escaping (String) -> Void) {
-        // Fetching a valid access token. WebAuthenticator will try to refresh it if expired.
-        webAuthenticator.getAccessToken { result in
+    private func getAccessToken(enrollment: AuthenticatorEnrollmentProtocol, completion: @escaping (String) -> Void) {
+        // Fetching maintenance access token
+        enrollment.retrieveMaintenanceToken() { result in
             switch result {
-            case .success(let token):
-                completion(token.accessToken)
+            case .success(let credential):
+                completion(credential.access_token)
             case .failure(let error):
-                // If there was a failure obtaining/refreshing a valid access token, consider starting the authentication flow again as it's needed for most SDK API calls.
-                self.logger?.error(eventName: LoggerEvent.pushService.rawValue, message: error.localizedDescription)
+                self.logger?.error(eventName: LoggerEvent.pushService.rawValue, message: "Failed to retrieve maintenance token: \(error)")
             }
         }
     }
@@ -162,25 +161,20 @@ class PushNotificationService: NSObject, UNUserNotificationCenterDelegate {
     }
 
     func retrievePushChallenges() {
-        getAccessToken { accessToken in
-            self.retrievePushChallenges(accessToken: accessToken)
-        }
-    }
-
-    private func retrievePushChallenges(accessToken: String) {
-        let authToken = AuthToken.bearer(accessToken)
         logger?.info(eventName: LoggerEvent.account.rawValue, message: "Retrieve push challenges for all enrollments")
         deviceAuthenticator.allEnrollments().forEach { enrollment in
-            // Using same access token for all enrollments since this is a single user app.
-            enrollment.retrievePushChallenges(authenticationToken: authToken) { [weak self] result in
-                DispatchQueue.main.async {
-                    switch result {
-                    case .success(let challenges):
-                        challenges.forEach { challenge in
-                            self?.resolvePushChallenge(challenge)
+            getAccessToken(enrollment: enrollment) { accessToken in
+                let authToken = AuthToken.bearer(accessToken)
+                enrollment.retrievePushChallenges(authenticationToken: authToken) { [weak self] result in
+                    DispatchQueue.main.async {
+                        switch result {
+                        case .success(let challenges):
+                            challenges.forEach { challenge in
+                                self?.resolvePushChallenge(challenge)
+                            }
+                        case .failure(let error):
+                            self?.logger?.error(eventName: LoggerEvent.account.rawValue, message: error.errorDescription ?? "Unknown error")
                         }
-                    case .failure(let error):
-                        self?.logger?.error(eventName: LoggerEvent.account.rawValue, message: error.errorDescription ?? "Unknown error")
                     }
                 }
             }

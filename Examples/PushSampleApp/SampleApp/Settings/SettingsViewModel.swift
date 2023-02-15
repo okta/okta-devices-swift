@@ -34,7 +34,7 @@ enum EnrollmentError: Error {
         case .clientIdError:
             return "ClientId should not be nil"
         case .deviceAuthenticatorError(let error):
-            return "DeviceAuthenticator error \(error)"
+            return "DeviceAuthenticator error \(error?.localizedDescription ?? "")"
         }
     }
 
@@ -52,7 +52,7 @@ enum EnrollmentDeleteError: Error {
         case .accessTokenError:
             return "Error getting access token"
         case .deviceAuthenticatorError(let error):
-            return "DeviceAuthenticator error \(error)"
+            return "DeviceAuthenticator error \(error?.localizedDescription ?? "")"
         }
     }
     static let errorTitle = "Failed to delete"
@@ -262,17 +262,27 @@ class SettingsViewModel: SettingsViewModelProtocol {
     private func toggleCIBATransactions(enable: Bool) {
         guard let enrollment = deviceEnrollment else { return }
         view?.updateView(shouldShowSpinner: true)
-        getAccessToken { accessToken in
-            let authToken = AuthToken.bearer(accessToken)
-            enrollment.enableCIBATransactions(authenticationToken: authToken, enable: enable) { [weak self] error in
-                if let error = error {
-                    self?.view?.showAlert(alertTitle: "Error updating transaction types", alertText: error.localizedDescription)
-                    self?.logger?.error(eventName: LoggerEvent.ciba.rawValue, message: error.localizedDescription)
-                } else {
-                    self?.view?.showAlert(alertTitle: "Success updating supported transaction types", alertText: "")
+        enrollment.retrieveMaintenanceToken() { result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let credential):
+                    let authToken = AuthToken.bearer(credential.access_token)
+                    enrollment.enableCIBATransactions(authenticationToken: authToken, enable: enable) { [weak self] error in
+                        DispatchQueue.main.async {
+                            if let error = error {
+                                self?.view?.showAlert(alertTitle: "Error updating transaction types", alertText: error.localizedDescription)
+                                self?.logger?.error(eventName: LoggerEvent.ciba.rawValue, message: error.localizedDescription)
+                            } else {
+                                self?.view?.showAlert(alertTitle: "Success updating supported transaction types", alertText: "")
+                            }
+                            self?.setupCellModels()
+                            self?.view?.updateView(shouldShowSpinner: false)
+                        }
+                    }
+                case .failure(let error):
+                    self.view?.showAlert(alertTitle: "Error updating transaction types", alertText: error.localizedDescription)
+                    self.logger?.error(eventName: LoggerEvent.ciba.rawValue, message: error.localizedDescription)
                 }
-                self?.setupCellModels()
-                self?.view?.updateView(shouldShowSpinner: false)
             }
         }
     }
