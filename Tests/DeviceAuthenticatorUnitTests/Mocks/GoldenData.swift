@@ -588,7 +588,16 @@ class MyAccountTestData {
                   "appAuthenticatorEnrollEndpoint": "https://your-org.okta.com/idp/myaccount/app-authenticator"
                 }]
         """
-        let dict = try! JSONSerialization.jsonObject(with: authenticatorJson.data(using: .utf8)!, options: []) as! [String: Any]
+        let dict = try! JSONSerialization.jsonObject(with: authenticatorJson.data(using: .utf8)!, options: []) as! [[String: Any]]
+        let jsonData = try! JSONSerialization.data(withJSONObject: dict, options: .prettyPrinted)
+        return jsonData
+    }
+
+    class func emptyPolicyArrayResponse() -> Data {
+        let authenticatorJson: String = """
+                []
+        """
+        let dict = try! JSONSerialization.jsonObject(with: authenticatorJson.data(using: .utf8)!, options: []) as! [Any]
         let jsonData = try! JSONSerialization.data(withJSONObject: dict, options: .prettyPrinted)
         return jsonData
     }

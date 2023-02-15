@@ -37,8 +37,8 @@ class UpdatePushTokenFlowTests: XCTestCase {
                          HTTPURLResponse(url: mockURL, statusCode: 200, httpVersion: nil, headerFields: nil)!,
                          HTTPURLResponse(url: mockURL, statusCode: 200, httpVersion: nil, headerFields: nil)!]
         dataResponses = [GoldenData.orgData(),
-                         GoldenData.authenticatorMetaData(),
-                         GoldenData.authenticatorData()]
+                         MyAccountTestData.policyResponse(),
+                         MyAccountTestData.enrollmentResponse()]
     }
 
     override func tearDownWithError() throws {
@@ -51,7 +51,7 @@ class UpdatePushTokenFlowTests: XCTestCase {
 
         let updateTokenSuccessExpectation = expectation(description: "Update push token should complete")
         httpResponses.append(HTTPURLResponse(url: mockURL, statusCode: 200, httpVersion: nil, headerFields: nil)!)
-        dataResponses.append(GoldenData.authenticatorData())
+        dataResponses.append(MyAccountTestData.enrollmentResponse())
         let mockHTTPClient = MockMultipleRequestsHTTPClient(responseArray: httpResponses, dataArray: dataResponses)
 
         // Validate push token transformation
@@ -60,9 +60,8 @@ class UpdatePushTokenFlowTests: XCTestCase {
             mockHTTPClient.requestWithDataBodyHook = nil
             if let data = data {
                 let dictionary: [String: Any]? = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
-                let methods: [[String: Any]]? = dictionary?["methods"] as? [[String: Any]]
-                XCTAssertEqual(methods?.count, 1)
-                let pushMethod = methods?.first
+                let methods: [String: Any]? = dictionary?["methods"] as? [String: Any]
+                let pushMethod: [String: Any]? = methods?["push"] as? [String: Any]
                 let pushToken = pushMethod?["pushToken"] as? String
                 XCTAssertEqual(pushToken, self.enrollmentHelper.enrollmentParams.deviceToken.rawValue)
             } else {
@@ -87,9 +86,8 @@ class UpdatePushTokenFlowTests: XCTestCase {
                         mockHTTPClient.requestWithDataBodyHook = nil
                         if let data = data {
                             let dictionary: [String: Any]? = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
-                            let methods: [[String: Any]]? = dictionary?["methods"] as? [[String: Any]]
-                            XCTAssertEqual(methods?.count, 1)
-                            let pushMethod = methods?.first
+                            let methods: [String: Any]? = dictionary?["methods"] as? [String: Any]
+                            let pushMethod: [String: Any]? = methods?["push"] as? [String: Any]
                             let pushToken = pushMethod?["pushToken"] as? String
                             XCTAssertEqual(pushToken, DeviceToken.tokenData(newDeviceTokenData).rawValue)
                         } else {
@@ -133,9 +131,8 @@ class UpdatePushTokenFlowTests: XCTestCase {
             mockHTTPClient.requestWithDataBodyHook = nil
             if let data = data {
                 let dictionary: [String: Any]? = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
-                let methods: [[String: Any]]? = dictionary?["methods"] as? [[String: Any]]
-                XCTAssertEqual(methods?.count, 1)
-                let pushMethod = methods?.first
+                let methods: [String: Any]? = dictionary?["methods"] as? [String: Any]
+                let pushMethod: [String: Any]? = methods?["push"] as? [String: Any]
                 let pushToken = pushMethod?["pushToken"] as? String
                 XCTAssertEqual(pushToken, self.enrollmentHelper.enrollmentParams.deviceToken.rawValue)
             } else {
