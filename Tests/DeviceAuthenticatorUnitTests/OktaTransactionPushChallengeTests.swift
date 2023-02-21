@@ -84,6 +84,34 @@ class OktaTransactionPushChallengeTests: XCTestCase {
         XCTAssertTrue(triageRemediationEventsHookCalled)
     }
 
+    func testHandleSelectAccountStep_Success_CustomAuthZKey() throws {
+        let context = OktaTransaction.TransactionContext(challengeRequest: transaction.challengeRequestJWT) { _ in
+        } appCompletionClosure: { (_, _, _) in
+        }
+
+        var triageRemediationEventsHookCalled = false
+        transaction.triageRemediationEventsHook = { _, transactionContext in
+            XCTAssertNotNil(transactionContext.enrollment)
+            triageRemediationEventsHookCalled = true
+        }
+        let partialMockJWT = try OktaDeviceBindJWTPartialMock(string: OktaJWTTestData.pushChallengeJWT_AuthorizationServerId(),
+                                                              jwtType: "JWT",
+                                                              validatePayload: true,
+                                                              logger: OktaLoggerMock())
+        var validateJWTHookCalled = false
+        partialMockJWT.validateJWTHook = { jwtString, options, headers, logger in
+            let issuer = options["iss"] as? String
+            XCTAssertEqual(issuer, (self.transaction.pushChallenge.enrollment?.organization.url.absoluteString ?? "") + "/oauth2/" + (self.transaction.challengeRequestJWT?.authorizationServerId ?? ""))
+            validateJWTHookCalled = true
+        }
+        transaction.challengeRequestJWT = partialMockJWT
+        XCTAssertNotNil(transaction.challengeRequestJWT.authorizationServerId)
+
+        transaction.handleSelectAccountStep(transactionContext: context, appEventsQueue: [])
+        XCTAssertTrue(triageRemediationEventsHookCalled)
+        XCTAssertTrue(validateJWTHookCalled)
+    }
+
     func testHandleSelectAccountStep_JWTValidationFailed() {
         var appCompletionClosureCalled = false
         let context = OktaTransaction.TransactionContext(challengeRequest: transaction.challengeRequestJWT) { _ in
