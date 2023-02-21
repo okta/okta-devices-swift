@@ -92,7 +92,11 @@ class OktaTransactionPushChallenge: OktaTransactionPossessionChallengeBase {
         }
 
         do {
-            try challengeRequestJWT.validate(with: enrollment.orgHost.absoluteString)
+            var issuer = enrollment.orgHost.absoluteString
+            if let authorizationServerId = challengeRequestJWT.authorizationServerId {
+                issuer = enrollment.orgHost.absoluteString + "/oauth2/" + authorizationServerId
+            }
+            try challengeRequestJWT.validate(with: issuer)
         } catch {
             let deviceAuthenticatorError = DeviceAuthenticatorError.oktaError(from: error)
             transactionContext.appCompletionClosure(nil, deviceAuthenticatorError, nil)

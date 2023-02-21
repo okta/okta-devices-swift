@@ -40,6 +40,7 @@ enum OktaJWTClaims {
     case userMediation
     case authenticatorEnrollmentId
     case requestReferrer
+    case authorizationServerId
 }
 
 class OktaBindJWT {
@@ -142,6 +143,10 @@ class OktaBindJWT {
 
     lazy var requestReferrer: String? = {
         return self.jwt.payload[OktaJWTClaims.requestReferrer.rawValue] as? String
+    }()
+
+    lazy var authorizationServerId: String? = {
+        return self.jwt.payload[OktaJWTClaims.authorizationServerId.rawValue] as? String
     }()
 
     init(string input: String,
@@ -336,6 +341,8 @@ extension OktaJWTClaims {
             return "authenticatorEnrollmentId"
         case .requestReferrer:
             return "requestReferrer"
+        case .authorizationServerId:
+            return "authorizationServerId"
         }
     }
 }

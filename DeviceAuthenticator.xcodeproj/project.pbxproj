@@ -157,6 +157,7 @@
 		9F7EFF14287E0E12001E2C4E /* RestAPIMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9602412878A5690012C74C /* RestAPIMock.swift */; };
 		9F91D86C2991C503007CBDA1 /* Oauth2Credential.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F91D86B2991C503007CBDA1 /* Oauth2Credential.swift */; };
 		9F91D86E2991DDBA007CBDA1 /* OktaBearerJWTAssertion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F91D86D2991DDBA007CBDA1 /* OktaBearerJWTAssertion.swift */; };
+		9F91D87229A57E78007CBDA1 /* OktaDeviceBindJWTPartialMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F91D87129A57E78007CBDA1 /* OktaDeviceBindJWTPartialMock.swift */; };
 		9F93122528FF205400DD06DF /* MyAccountServerAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F93122428FF205400DD06DF /* MyAccountServerAPI.swift */; };
 		9F93122A28FF230400DD06DF /* MyAccountServerAPITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F93122828FF22E000DD06DF /* MyAccountServerAPITests.swift */; };
 		9F93122C28FF2A7400DD06DF /* MyAccountAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F93122B28FF2A7400DD06DF /* MyAccountAPI.swift */; };
@@ -404,6 +405,7 @@
 		9F7EFF06287E0D8A001E2C4E /* DeleteEnrollmentFlowTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeleteEnrollmentFlowTests.swift; sourceTree = "<group>"; };
 		9F91D86B2991C503007CBDA1 /* Oauth2Credential.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Oauth2Credential.swift; sourceTree = "<group>"; };
 		9F91D86D2991DDBA007CBDA1 /* OktaBearerJWTAssertion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OktaBearerJWTAssertion.swift; sourceTree = "<group>"; };
+		9F91D87129A57E78007CBDA1 /* OktaDeviceBindJWTPartialMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OktaDeviceBindJWTPartialMock.swift; sourceTree = "<group>"; };
 		9F93122428FF205400DD06DF /* MyAccountServerAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAccountServerAPI.swift; sourceTree = "<group>"; };
 		9F93122828FF22E000DD06DF /* MyAccountServerAPITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAccountServerAPITests.swift; sourceTree = "<group>"; };
 		9F93122B28FF2A7400DD06DF /* MyAccountAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAccountAPI.swift; sourceTree = "<group>"; };
@@ -1006,6 +1008,7 @@
 				9F9602472878A5690012C74C /* SecKeyHelperMock.swift */,
 				9F9602482878A5690012C74C /* OktaSecureStorageMock.swift */,
 				9F9602492878A5690012C74C /* TestUtils.swift */,
+				9F91D87129A57E78007CBDA1 /* OktaDeviceBindJWTPartialMock.swift */,
 			);
 			path = Mocks;
 			sourceTree = "<group>";
@@ -1476,6 +1479,7 @@
 				9F9602802878A8CE0012C74C /* OktaDeviceModelBuilderTests.swift in Sources */,
 				9F9602752878A7AE0012C74C /* PushChallengeTests.swift in Sources */,
 				9F47E556289C989000299CFB /* DeviceAuthenticatorConfigTests.swift in Sources */,
+				9F91D87229A57E78007CBDA1 /* OktaDeviceBindJWTPartialMock.swift in Sources */,
 				9F96028B2878AEC80012C74C /* OktaEncryptionErrorTests.swift in Sources */,
 				9F96026B2878A6CF0012C74C /* AuthenticatorObjectTests.swift in Sources */,
 				9F96024C2878A5690012C74C /* UserMock.swift in Sources */,
