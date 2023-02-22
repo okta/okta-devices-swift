@@ -277,7 +277,6 @@ class AuthenticatorEnrollment: AuthenticatorEnrollmentProtocol {
     }
 
     func retrieveMaintenanceToken(scopes: [String],
-                                  authorizationServerId: String?,
                                   completion: @escaping (Result<Oauth2Credential, DeviceAuthenticatorError>) -> Void) {
         guard let policy = try? storageManager.authenticatorPolicyForOrgId(organization.id) as? AuthenticatorPolicy else {
             completion(.failure(DeviceAuthenticatorError.genericError("Failed to fetch authenticator policy")))
@@ -312,7 +311,6 @@ class AuthenticatorEnrollment: AuthenticatorEnrollmentProtocol {
 
         logger.info(eventName: logEventName, message: "Requesting maintenance token with client_id = \(oidcClientId)")
         restAPIClient.retrieveMaintenanceToken(with: orgHost,
-                                               authorizationServerId: authorizationServerId,
                                                oidcClientId: oidcClientId,
                                                scopes: scopes,
                                                assertion: assertion) { result in
