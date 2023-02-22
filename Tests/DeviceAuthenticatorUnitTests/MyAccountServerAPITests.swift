@@ -606,7 +606,7 @@ final class MyAccountServerAPITests: XCTestCase {
         let httpClient = MockHTTPClient(result: httpResult)
         let expectedCredential = try JSONDecoder().decode(Oauth2Credential.self, from: MyAccountTestData.accessTokenResponse())
         httpClient.requestHook = { url, httpMethod, urlParameters, data, httpHeaders, timeInterval in
-            XCTAssertEqual(url.absoluteString, "https://example.okta.com/oauth2/default/v1/token")
+            XCTAssertEqual(url.absoluteString, "https://example.okta.com/oauth2/v1/token")
             XCTAssertTrue(httpMethod == .get)
             XCTAssertEqual(httpHeaders["Content-Type"], "application/x-www-form-urlencoded")
             XCTAssertEqual(httpHeaders["Accept"], "application/json")
@@ -619,7 +619,6 @@ final class MyAccountServerAPITests: XCTestCase {
         let myAccountAPI = MyAccountServerAPI(client: httpClient, crypto: crypto, logger: OktaLoggerMock())
         var closureCalled = false
         myAccountAPI.retrieveMaintenanceToken(with: mockURL,
-                                              authorizationServerId: "default",
                                               oidcClientId: "oidcClientId",
                                               scopes: ["some.scope"],
                                               assertion: "assertion") { result in
@@ -652,7 +651,6 @@ final class MyAccountServerAPITests: XCTestCase {
         let myAccountAPI = MyAccountServerAPI(client: httpClient, crypto: crypto, logger: OktaLoggerMock())
         var closureCalled = false
         myAccountAPI.retrieveMaintenanceToken(with: mockURL,
-                                              authorizationServerId: nil,
                                               oidcClientId: "oidcClientId",
                                               scopes: ["some.scope"],
                                               assertion: "assertion") { result in

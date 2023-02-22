@@ -89,7 +89,6 @@ protocol ServerAPIProtocol {
                           completion: @escaping (_ result: HTTPURLResult?, _ error: DeviceAuthenticatorError?) -> Void)
 
     func retrieveMaintenanceToken(with orgURL: URL,
-                                  authorizationServerId: String?,
                                   oidcClientId: String,
                                   scopes: [String],
                                   assertion: String,
@@ -165,17 +164,11 @@ extension ServerAPIProtocol {
     ///   - assertion:      JWT assertion that client exchanges for access token
     ///   - completion:     Handler to execute after the async call completes
     func retrieveMaintenanceToken(with orgURL: URL,
-                                  authorizationServerId: String?,
                                   oidcClientId: String,
                                   scopes: [String],
                                   assertion: String,
                                   completion: @escaping (Result<HTTPURLResult, DeviceAuthenticatorError>) -> Void) {
-        let completeURL: URL
-        if let authorizationServerId = authorizationServerId {
-            completeURL = orgURL.appendingPathComponent("/oauth2/\(authorizationServerId)/v1/token")
-        } else {
-            completeURL = orgURL.appendingPathComponent("/oauth2/v1/token")
-        }
+        let completeURL = orgURL.appendingPathComponent("/oauth2/v1/token")
         let contentTypeHeaderValue = "application/x-www-form-urlencoded"
         let acceptHeaderValue = "application/json"
         let grantType = "urn:ietf:params:oauth:grant-type:jwt-bearer"

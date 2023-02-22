@@ -69,7 +69,6 @@ public protocol AuthenticatorEnrollmentProtocol {
     ///   - authorizationServerId: Authorization server id. Pass nil if you are using Okta organization server. Pass "default" if you use default custom authorization server
     ///   - completion: Callback for asynchronous operation, returns acess token or error
     func retrieveMaintenanceToken(scopes: [String],
-                                  authorizationServerId: String?,
                                   completion: @escaping (Result<Oauth2Credential, DeviceAuthenticatorError>) -> Void)
 }
 
@@ -82,10 +81,8 @@ public extension AuthenticatorEnrollmentProtocol {
                                completion: completion)
     }
 
-    func retrieveMaintenanceToken(authorizationServerId: String?,
-                                  completion: @escaping (Result<Oauth2Credential, DeviceAuthenticatorError>) -> Void) {
+    func retrieveMaintenanceToken(completion: @escaping (Result<Oauth2Credential, DeviceAuthenticatorError>) -> Void) {
         retrieveMaintenanceToken(scopes: ["okta.myAccount.appAuthenticator.maintenance.manage"],
-                                 authorizationServerId: authorizationServerId,
                                  completion: completion)
     }
 }
