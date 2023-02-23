@@ -360,7 +360,7 @@ class AuthenticatorEnrollmentTests: XCTestCase {
                 XCTFail("Unexpected failure")
             case .success(let oauth2Credential):
                 XCTAssertEqual(oauth2Credential.access_token, "access.token")
-                XCTAssertEqual(oauth2Credential.expires_in, "expires.in")
+                XCTAssertEqual(oauth2Credential.expires_in, 3600)
                 XCTAssertEqual(oauth2Credential.scope, "some.scope")
                 XCTAssertEqual(oauth2Credential.refresh_token, "refresh.token")
             }

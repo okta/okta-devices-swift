@@ -84,5 +84,4 @@ extension WebAuthentication: OktaWebAuthProtocol {
             }
         })
     }
-
 }

@@ -607,7 +607,7 @@ final class MyAccountServerAPITests: XCTestCase {
         let expectedCredential = try JSONDecoder().decode(Oauth2Credential.self, from: MyAccountTestData.accessTokenResponse())
         httpClient.requestHook = { url, httpMethod, urlParameters, data, httpHeaders, timeInterval in
             XCTAssertEqual(url.absoluteString, "https://example.okta.com/oauth2/v1/token")
-            XCTAssertTrue(httpMethod == .get)
+            XCTAssertTrue(httpMethod == .post)
             XCTAssertEqual(httpHeaders["Content-Type"], "application/x-www-form-urlencoded")
             XCTAssertEqual(httpHeaders["Accept"], "application/json")
             XCTAssertNotNil(data)
