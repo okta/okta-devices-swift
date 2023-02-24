@@ -1,4 +1,4 @@
-﻿#  Okta Devices SDK 
+#  Okta Devices SDK 
 
 Enable your app to validate the identity of a user for an Okta authenticator that uses Apple Push Notification service (APNs).
 
@@ -299,6 +299,49 @@ func handle(_ remediationStep: RemediationStep) {
 
 See the [Push Sample App] for a complete implementation on resolving a push challenge.
 
+## Access token management
+The SDK communicates with an Okta server using the HTTPS protocol and requires an access token for user authentication and authorization. For authentication flows and access token requests, use the latest version of the [Okta Swift mobile SDK](https://github.com/okta/okta-mobile-swift). To enroll a push authenticator, the user needs to have an access token that contains the `okta.myAccount.appAuthenticator.manage` scope. You can also use this scope for the following operations:
+- Enroll and unenroll user verification keys
+- Update device token for push authenticator enrollment
+- Request pending push challenges
+- Enable and disable CIBA capability for push authenticator enrollment
+- Delete push authenticator enrollment
+
+**Note:** Applications that use sensitive data shouldn't store or cache access tokens or refresh access tokens that contain the `okta.myAccount.appAuthenticator.manage` scope. Instead, reauthenticate the user and get a new access token.
+ High risk operations include the following:
+- Enroll push authenticator
+- Enable or disable user verification for push authenticator enrollment
+- Delete push authenticator enrollment
+
+Other operations are low risk and may not require interactive authentication. For that reason, the Okta Push SDK implements the silent user reauthentication API `retrieveMaintenanceToken`. By retrieving a maintenance access token, an application can silently perform the following operations:
+- Request pending push challenges
+- Enable and disable CIBA capability for the push authenticator enrollment
+- Update device tokens for push authenticator enrollment
+
+Usage example:
+```swift
+func retrievePushChallenges() {
+    let enrollments = authenticator.allEnrollments()
+    enrollments.forEach { enrollment in
+        enrollment.retrieveMaintenanceToken() { result in
+            switch result {
+            case .success(let credential):
+                let authToken = AuthToken.bearer(credential.access_token)
+                enrollment.retrievePushChallenges(authenticationToken: authToken) { result in
+                    switch result {
+                    case .success(let challenges):
+                        print("Challenges retrieve: \(challenges)")      
+                    case .failure(let error):
+                        print(error.localizedDescription)
+                }
+            case .failure(let error):
+                print(error.localizedDescription)
+            }
+        }
+    }
+}
+```
+
 ## Known issues
 As of iOS 16, Apple requires an entitlement to read the user's UIDevice.current.name. Without this, the Okta end user dashboard and the admin's Devices page will show 'iPhone' or 'iPad' instead of the user's input name. Your host app will need to [request the entitlement when the process becomes available](https://developer.apple.com/forums/thread/708275).
 
@@ -307,6 +350,7 @@ As of iOS 16, Apple requires an entitlement to read the user's UIDevice.current.
 We are happy to accept contributions and PRs! Please see the [contribution guide](CONTRIBUTING.md) to understand how to structure a contribution.
 
 
+[Custom authenticator integration guide]: https://developer.okta.com/docs/guides/authenticators-custom-authenticator/ios/main/
 [devforum]: https://devforum.okta.com/
 [lang-landing]: https://developer.okta.com/code/swift/
 [github-releases]: https://github.com/okta/okta-devices-swift/releases
@@ -314,4 +358,3 @@ We are happy to accept contributions and PRs! Please see the [contribution guide
 [Rate Limiting at Okta]: https://developer.okta.com/docs/api/getting_started/rate-limits
 [okta-library-versioning]: https://developer.okta.com/code/library-versions
 [Push Sample App]: https://github.com/okta/okta-devices-swift/tree/master/Examples/PushSampleApp
-[Custom authenticator integration guide]: https://developer.okta.com/docs/guides/authenticators-custom-authenticator/ios/main/
