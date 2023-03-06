@@ -50,7 +50,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         guard let webAuthenticator = WebAuthentication.shared else {
             logger.error(eventName: LoggerEvent.appInit.rawValue, message: "Failed to initialize WebAuthenticator SDK")
             fatalError("Couldn't initialize OktaWebAuthenticator, please review your Okta.plist settings")
-            return true
         }
         webAuthenticator.ephemeralSession = true
 

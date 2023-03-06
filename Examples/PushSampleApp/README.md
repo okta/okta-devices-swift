@@ -13,7 +13,7 @@ This sample app demonstrates how to integrate [Okta Devices SDK](https://github.
 ## Prerequisites
 ### Admin prerequisites
 In order to use this project, your org's admin needs to:
-1. Add an OIDC app with the proper scopes (`okta.authenticators.manage.self`, `okta.authenticators.read` and `okta.users.read.self`).
+1. Add an OIDC app with the proper scopes (`okta.myAccount.appAuthenticator.manage`, `okta.myAccount.appAuthenticator.read` and `openid`).
 2. Create an `APNs` config.
 3. Create a custom authenticator using the `APNs` config created above.
 
