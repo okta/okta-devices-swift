@@ -56,9 +56,9 @@ extension WebAuthentication: OktaWebAuthProtocol {
 
     func signOut(from window: WebAuthentication.WindowAnchor?, completion: @escaping (Result<Void, WebAuthenticationError>) -> Void) {
         signOut(from: window, credential: Credential.default) { result in
+            self.clearCredential()
             switch result {
             case .success():
-                self.clearCredential()
                 completion(Result.success(()))
             case .failure(let error):
                 completion(Result.failure(error))

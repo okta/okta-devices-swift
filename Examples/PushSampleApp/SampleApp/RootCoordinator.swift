@@ -173,13 +173,12 @@ class RootCoordinator {
 
     private func signOut(from window: UIWindow) {
         oktaWebAuthenticator.signOut(from: window) { [weak self] result in
-            switch result {
-            case .success():
-                self?.navController?.popViewController(animated: true)
-                self?.begin(on: window)
-            case .failure(let error):
+            if case .failure(let error) = result {
                 self?.logger?.error(eventName: LoggerEvent.webSignIn.rawValue, message: error.localizedDescription)
+                self?.begin(on: window)
             }
+            self?.navController?.popViewController(animated: true)
+            self?.begin(on: window)
         }
     }
 
