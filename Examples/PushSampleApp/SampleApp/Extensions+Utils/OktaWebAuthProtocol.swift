@@ -39,7 +39,8 @@ extension WebAuthentication: OktaWebAuthProtocol {
     }
 
     var baseURL: URL? {
-        Credential.default?.oauth2.baseURL
+        let config = try? OAuth2Client.PropertyListConfiguration()
+        return config?.issuer
     }
 
     var clientId: String? {
