@@ -159,6 +159,7 @@ class LegacyServerAPI: ServerAPIProtocol {
                                     appSignals: [String: _OktaCodableArbitaryType]?,
                                     enrollingFactors: [EnrollingFactor],
                                     token: OktaRestAPIToken,
+                                    enrollmentContext: EnrollmentContext,
                                     completion: @escaping (_ result: Result<EnrollmentSummary, DeviceAuthenticatorError>) -> Void) {
         if case .none = token {
             completion(.failure(DeviceAuthenticatorError.internalError("No token provided for update enrollment request")))

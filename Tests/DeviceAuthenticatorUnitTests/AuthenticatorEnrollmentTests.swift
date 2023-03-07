@@ -103,7 +103,7 @@ class AuthenticatorEnrollmentTests: XCTestCase {
         enrollment.enrolledFactors.append(pushFactor)
         var updateAuthenticatorRequestHookCalled = false
         let pushTokenToCompare = "push_token".data(using: .utf8)!
-        restAPIMock.updateAuthenticatorRequestHook = { url, enrollmentId, metadata, deviceSignalsModel, allSignals, factors, _, completion in
+        restAPIMock.updateAuthenticatorRequestHook = { url, enrollmentId, metadata, deviceSignalsModel, allSignals, factors, _, context, completion in
             let pushMethod = factors.first(where: { $0.methodType == .push })
             let pushToken = pushMethod?.pushToken
             XCTAssertEqual(pushToken, pushTokenToCompare.hexString())
@@ -257,7 +257,7 @@ class AuthenticatorEnrollmentTests: XCTestCase {
                                                                                               methods: [.push]))
         try? mockStorageManager.storeAuthenticatorPolicy(policy, orgId: enrollment.orgId)
         var updateAuthenticatorRequestHookCalled = false
-        restAPIMock.updateAuthenticatorRequestHook = { url, data, token, _, _, enrollingFactors, _, completion in
+        restAPIMock.updateAuthenticatorRequestHook = { url, data, token, _, _, enrollingFactors, _, context, completion in
             guard let enrollingPushFactor = enrollingFactors.first(where: { $0.methodType == .push }) else {
                 completion(.failure(.genericError("")))
                 return
