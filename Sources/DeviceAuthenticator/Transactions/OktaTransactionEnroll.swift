@@ -295,7 +295,8 @@ class OktaTransactionEnroll: OktaTransaction {
                                                     deviceModel: deviceModel,
                                                     appSignals: self.enrollmentContext.applicationSignals,
                                                     enrollingFactors: factorsMetaData,
-                                                    token: token) { result in
+                                                    token: token,
+                                                    enrollmentContext: self.enrollmentContext) { result in
                 self.handleServerResult(result, andCall: onCompletion)
             }
         }

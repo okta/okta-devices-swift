@@ -70,6 +70,7 @@ protocol ServerAPIProtocol {
                                     appSignals: [String: _OktaCodableArbitaryType]?,
                                     enrollingFactors: [EnrollingFactor],
                                     token: OktaRestAPIToken,
+                                    enrollmentContext: EnrollmentContext,
                                     completion: @escaping (_ result: Result<EnrollmentSummary, DeviceAuthenticatorError>) -> Void)
 
     func deleteAuthenticatorRequest(enrollment: AuthenticatorEnrollment,

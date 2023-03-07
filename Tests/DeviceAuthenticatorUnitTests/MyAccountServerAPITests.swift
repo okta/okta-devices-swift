@@ -230,13 +230,24 @@ final class MyAccountServerAPITests: XCTestCase {
                                               isFipsCompliant: nil,
                                               keys: signingKeys,
                                               transactionTypes: TransactionType(rawValue: 3))
+        let enrollmentContext = EnrollmentContext(accessToken: nil,
+                                                  activationToken: nil,
+                                                  orgHost: URL(string: "tenant.okta.com")!,
+                                                  authenticatorKey: "authenticatorKey",
+                                                  oidcClientId: nil,
+                                                  pushToken: .tokenString("pushToken"),
+                                                  enrollBiometricKey: true,
+                                                  deviceSignals: nil,
+                                                  biometricSettings: nil,
+                                                  transactionTypes: [.ciba, .login])
         myAccountAPI.updateAuthenticatorRequest(orgHost: mockURL,
                                                 enrollmentId: enrollmentId,
                                                 metadata: metadata,
                                                 deviceModel: deviceSignals,
                                                 appSignals: nil,
                                                 enrollingFactors: [enrollingFactor],
-                                                token: .accessToken("accessToken")) { result in
+                                                token: .accessToken("accessToken"),
+                                                enrollmentContext: enrollmentContext) { result in
             switch result {
             case .failure(_):
                 XCTFail("Unexpected failure")
@@ -422,13 +433,24 @@ final class MyAccountServerAPITests: XCTestCase {
                                               isFipsCompliant: nil,
                                               keys: signingKeys,
                                               transactionTypes: .login)
+        let enrollmentContext = EnrollmentContext(accessToken: nil,
+                                                  activationToken: nil,
+                                                  orgHost: URL(string: "tenant.okta.com")!,
+                                                  authenticatorKey: "authenticatorKey",
+                                                  oidcClientId: nil,
+                                                  pushToken: .tokenString("pushToken"),
+                                                  enrollBiometricKey: true,
+                                                  deviceSignals: nil,
+                                                  biometricSettings: nil,
+                                                  transactionTypes: [.ciba, .login])
         myAccountAPI.updateAuthenticatorRequest(orgHost: mockURL,
                                                 enrollmentId: "enrollmentId",
                                                 metadata: metadata,
                                                 deviceModel: deviceSignals,
                                                 appSignals: nil,
                                                 enrollingFactors: [enrollingFactor],
-                                                token: .accessToken("accessToken")) { result in
+                                                token: .accessToken("accessToken"),
+                                                enrollmentContext: enrollmentContext) { result in
             switch result {
             case .failure(let error):
                 XCTAssertEqual(error.errorCode, -1)
@@ -453,7 +475,8 @@ final class MyAccountServerAPITests: XCTestCase {
                                                 deviceModel: deviceSignals,
                                                 appSignals: nil,
                                                 enrollingFactors: [enrollingFactor],
-                                                token: .accessToken("accessToken")) { result in
+                                                token: .accessToken("accessToken"),
+                                                enrollmentContext: enrollmentContext) { result in
             switch result {
             case .failure(let error):
                 XCTAssertEqual(error.errorCode, -6)
@@ -478,7 +501,8 @@ final class MyAccountServerAPITests: XCTestCase {
                                                 deviceModel: deviceSignals,
                                                 appSignals: nil,
                                                 enrollingFactors: [enrollingFactor],
-                                                token: .accessToken("accessToken")) { result in
+                                                token: .accessToken("accessToken"),
+                                                enrollmentContext: enrollmentContext) { result in
             switch result {
             case .failure(let error):
                 XCTAssertEqual(error.errorCode, -6)

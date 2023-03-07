@@ -172,6 +172,7 @@ class MyAccountServerAPI: ServerAPIProtocol {
                                     appSignals: [String: _OktaCodableArbitaryType]?,
                                     enrollingFactors: [EnrollingFactor],
                                     token: OktaRestAPIToken,
+                                    enrollmentContext: EnrollmentContext,
                                     completion: @escaping (Result<EnrollmentSummary, DeviceAuthenticatorError>) -> Void) {
         if case .none = token {
             completion(.failure(DeviceAuthenticatorError.internalError("No token provided for update enrollment request")))
@@ -186,7 +187,7 @@ class MyAccountServerAPI: ServerAPIProtocol {
         }
 
         var capabilitiesModel: CapabilitiesModel?
-        if let transactionTypes = pushMethod.transactionTypes {
+        if let transactionTypes = enrollmentContext.transactionTypes {
             var transactionTypesRequestModel: [MethodSettingsModel.TransactionType] = [.LOGIN]
             if transactionTypes.contains(.ciba) {
                 transactionTypesRequestModel.append(.CIBA)
@@ -201,9 +202,15 @@ class MyAccountServerAPI: ServerAPIProtocol {
             pushTokenValue = pushMethod.pushToken
         }
 
-        let pushUpdateModel = MyAccountAPI.MethodUpdateRequestModel.MethodsModel.PushMethodModel(pushToken: pushTokenValue,
-                                                                                    keys: SigningKeysModel(proofOfPossession: nil,
-                                                                                                           userVerification: pushMethod.keys?.userVerification),
+        var keys: SigningKeysModel?
+        if enrollmentContext.enrollBiometricKey != nil {
+            keys = SigningKeysModel(proofOfPossession: nil,
+                                    userVerification: pushMethod.keys?.userVerification)
+        }
+
+        let pushUpdateModel = MyAccountAPI.MethodUpdateRequestModel.MethodsModel.PushMethodModel(
+                                                                                    pushToken: pushTokenValue,
+                                                                                    keys: keys,
                                                                                     capabilities: capabilitiesModel)
         let updateRequestModel = MyAccountAPI.MethodUpdateRequestModel(methods: MyAccountAPI.MethodUpdateRequestModel.MethodsModel(push: pushUpdateModel))
         let updateRequestJson: Data

@@ -610,7 +610,7 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
                                                                  cryptoManager: cryptoManager)
 
         let restAPIHookCalled = expectation(description: "Rest API hook expected!")
-        self.restAPIMock.updateAuthenticatorRequestHook = { orgHost, _, _, _, _, _, token, completion in
+        self.restAPIMock.updateAuthenticatorRequestHook = { orgHost, _, _, _, _, _, token, context, completion in
             XCTAssertEqual(orgHost.absoluteString, "tenant.okta.com")
             if case .authenticationToken(_) = token {
                 XCTAssertNotNil(token.token)
@@ -651,7 +651,7 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
                                                                  userVerificationKeyTag: nil)
 
         let hookCalled = expectation(description: "Rest API hook expected!")
-        self.restAPIMock.updateAuthenticatorRequestHook = { orgHost, _, _, _, _, _, token, completion in
+        self.restAPIMock.updateAuthenticatorRequestHook = { orgHost, _, _, _, _, _, token, context, completion in
             if case .authenticationToken(_) = token {
                 XCTAssertNotNil(token.token)
             } else {
@@ -984,7 +984,7 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
         }
 
         let updateAuthenticatorCompletionCalled = expectation(description: "Update authenticator expected!")
-        restAPIMock.updateAuthenticatorRequestHook = { _, _, _, _, _, _, _, completion in
+        restAPIMock.updateAuthenticatorRequestHook = { _, _, _, _, _, _, _, _, completion in
             updateAuthenticatorCompletionCalled.fulfill()
             let enrollmentSummary = EnrollmentSummary(enrollmentId: "",
                                                       userId: "",
@@ -1021,7 +1021,7 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
         restAPIMock.downloadAuthenticatorMetadataHook = { _, _, _, _ in
             XCTFail("Unexpected call")
         }
-        restAPIMock.updateAuthenticatorRequestHook = { _, _, _, _, _, _, _, completion in
+        restAPIMock.updateAuthenticatorRequestHook = { _, _, _, _, _, _, _, _, completion in
             XCTFail("Unexpected call")
         }
 
@@ -1062,7 +1062,7 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
         }
 
         var updateAuthenticatorCompletionCalled = false
-        restAPIMock.updateAuthenticatorRequestHook = { _, _, _, _, _, _, _, completion in
+        restAPIMock.updateAuthenticatorRequestHook = { _, _, _, _, _, _, _, _, completion in
             updateAuthenticatorCompletionCalled = true
             let enrollmentSummary = EnrollmentSummary(enrollmentId: "",
                                                       userId: "",
@@ -1111,7 +1111,7 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
             XCTFail("Unexpected call")
         }
         let updateAuthenticatorRequestHookCalled = expectation(description: "Update authenticator request expected!")
-        restAPIMock.updateAuthenticatorRequestHook = { _, _, _, _, _, _, _, completion in
+        restAPIMock.updateAuthenticatorRequestHook = { _, _, _, _, _, _, _, _, completion in
             updateAuthenticatorRequestHookCalled.fulfill()
             let enrollmentSummary = EnrollmentSummary(enrollmentId: "",
                                                       userId: "",
