@@ -20,11 +20,6 @@ extension OktaTransactionEnroll {
         let proofOfPossessionKeyTag = pushFactor?.proofOfPossessionKeyTag
         let userVerificationKeyTag = pushFactor?.userVerificationKeyTag
         var deviceToken: DeviceToken = enrollmentContext.pushToken
-        if case DeviceToken.empty = deviceToken {
-            if let deviceTokenData = readDeviceToken(enrollmentId: enrollmentToUpdate?.enrollmentId ?? "") {
-                deviceToken = .tokenData(deviceTokenData)
-            }
-        }
 
         let transactionTypes = enrollmentContext.transactionTypes ?? enrollmentToUpdate?.pushFactor?.factorData.transactionTypes ?? .login
         let enrollingFactor = try createEnrollingFactorModel(with: proofOfPossessionKeyTag,

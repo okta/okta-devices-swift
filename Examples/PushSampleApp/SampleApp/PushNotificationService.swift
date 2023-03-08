@@ -83,9 +83,6 @@ class PushNotificationService: NSObject, UNUserNotificationCenterDelegate {
     }
 
     func updateDeviceTokenForEnrollments(data: Data) {
-        guard data != UserDefaults.deviceToken() else {
-            return
-        }
         UserDefaults.save(deviceToken: data)
         deviceAuthenticator.allEnrollments().forEach({ enrollment in
             getAccessToken(enrollment: enrollment) { accessToken in
