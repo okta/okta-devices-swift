@@ -100,10 +100,12 @@ class DeviceSignalsModel: Codable {
 
     struct PlatformSSOPayload: Codable {
         let keys: KeysPayload
+        let userOSAccount: String
 
         struct KeysPayload: Codable {
             let deviceSigningKey: [String: _OktaCodableArbitaryType]
             let encryptionKey: [String: _OktaCodableArbitaryType]
+            let deviceEncryptionKey: [String: _OktaCodableArbitaryType]
         }
     }
 

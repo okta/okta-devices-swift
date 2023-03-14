@@ -191,8 +191,8 @@ class OktaDeviceModelBuilder {
             return
         }
 
-        let keysPayload = DeviceSignalsModel.PlatformSSOPayload.KeysPayload(deviceSigningKey: deviceSigningJWK, encryptionKey: deviceEncryptionJWK)
-        deviceModel.platformSSO = DeviceSignalsModel.PlatformSSOPayload(keys: keysPayload)
+        let keysPayload = DeviceSignalsModel.PlatformSSOPayload.KeysPayload(deviceSigningKey: deviceSigningJWK, encryptionKey: deviceEncryptionJWK, deviceEncryptionKey: deviceEncryptionJWK)
+        deviceModel.platformSSO = DeviceSignalsModel.PlatformSSOPayload(keys: keysPayload, userOSAccount: "None")
     }
 
     private func retrieveDeviceSignals(customDeviceSignals: DeviceSignals?, requestedSignals: Set<RequestableSignal>) -> DeviceSignalsModel {
