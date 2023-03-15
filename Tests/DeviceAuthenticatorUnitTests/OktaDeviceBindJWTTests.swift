@@ -179,7 +179,7 @@ class OktaDeviceBindJWTTests: XCTestCase {
                                                         clientInstanceKeyTag: "clientInstanceKeyTag")
             let deviceSignals = builder.buildForVerifyTransaction(deviceEnrollmentId: deviceEnrollment.id,
                                                                   clientInstanceKey: deviceEnrollment.clientInstanceId)
-            let context = ["userConsent": "NONE"]
+            let context: [String: _OktaCodableArbitaryType] = ["userConsent": .string("NONE")]
             let encodedJWT = try mut!.generateDeviceChallengeResponseJWT(key: key!,
                                                                          enrollmentId: "authenticatorEnrollmentId",
                                                                          sub: "user_id",
@@ -205,7 +205,11 @@ class OktaDeviceBindJWTTests: XCTestCase {
             XCTAssertEqual(decodedJWT.payload["methodEnrollmentId"] as! String, "factorId")
             XCTAssertNotNil(decodedJWT.payload["nonce"])
             XCTAssertEqual(decodedJWT.payload["nonce"] as? String, "FWkfwFWkfw3jfd3jfd")
-            XCTAssertEqual(decodedJWT.payload["challengeResponseContext"] as? [String: String], context)
+            let challengeResponseContext = decodedJWT.payload["challengeResponseContext"] as? [String: String]
+            XCTAssertNotNil(challengeResponseContext)
+            let userConsent = challengeResponseContext?["userConsent"]
+            XCTAssertNotNil(userConsent)
+            XCTAssertEqual(.string(userConsent!), context["userConsent"])
             XCTAssertEqual(decodedJWT.payload["keyType"] as? String, "proofOfPossession")
             let integrations = decodedJWT.payload["integrations"] as? [[String: Any]]
             XCTAssertEqual(integrations?.first?["name"] as! String, "name")
@@ -329,7 +333,8 @@ class OktaDeviceBindJWTTests: XCTestCase {
         let audience = UUID().uuidString
         let subject = UUID().uuidString
         let nonce = UUID().uuidString
-        let context = ["binding": "UNIVERSAL_LINK"]
+        let binding = UUID().uuidString
+        let context: [String: _OktaCodableArbitaryType] = ["binding": .string(binding)]
         let signalData = _PluginSignalData(name: "com.okta.device.integrity", configuration: .local, signal: "{signalExample}", timeCollected: 1233456)
         let signalProviderData = _IntegrationData.signal(signalData)
         let signals = DeviceSignalsModel(platform: .iOS, osVersion: "1.2.3", displayName: "displayName")
@@ -356,8 +361,7 @@ class OktaDeviceBindJWTTests: XCTestCase {
         XCTAssertTrue(desc.contains(subject))
         XCTAssertTrue(desc.contains(nonce))
         XCTAssertTrue(desc.contains("txValue"))
-
-        XCTAssertTrue(desc.contains(context["binding"] ?? "__FAIL__"))
+        XCTAssertTrue(desc.contains(binding))
         XCTAssertTrue(desc.contains(signalData.name))
         XCTAssertTrue(desc.contains(signalData.signal))
         XCTAssertTrue(desc.contains("\(signalData.timeCollected)"))
