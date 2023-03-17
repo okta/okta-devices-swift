@@ -490,7 +490,7 @@ class OktaTransactionPossessionChallengeBase: OktaTransaction {
         return jwtResponse
     }
 
-    private func challengeContext(consent: OktaUserConsentValue, deviceBindJWT: OktaBindJWT) -> [String: String] {
+    func challengeContext(consent: OktaUserConsentValue, deviceBindJWT: OktaBindJWT) -> [String: String] {
         let transactionTypeKey = "transactionType"
         var context: [String: String] = [
             "userConsent": consent.rawValue
