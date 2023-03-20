@@ -19,9 +19,9 @@ extension OktaTransactionEnroll {
         let pushFactor = enrollmentToUpdate?.enrolledFactors.first(where: { $0 is OktaFactorPush }) as? OktaFactorPush
         let proofOfPossessionKeyTag = pushFactor?.proofOfPossessionKeyTag
         let userVerificationKeyTag = pushFactor?.userVerificationKeyTag
-        var deviceToken: DeviceToken = enrollmentContext.pushToken
-
+        let deviceToken: DeviceToken = enrollmentContext.pushToken
         let transactionTypes = enrollmentContext.transactionTypes ?? enrollmentToUpdate?.pushFactor?.factorData.transactionTypes ?? .login
+
         let enrollingFactor = try createEnrollingFactorModel(with: proofOfPossessionKeyTag,
                                                              uvKeyTag: userVerificationKeyTag,
                                                              methodType: .push,
