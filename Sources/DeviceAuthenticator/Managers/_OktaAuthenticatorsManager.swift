@@ -222,12 +222,7 @@ public class _OktaAuthenticatorsManager {
     }
 
     func parse(notification: UNNotification, allowedClockSkewInSeconds: Int) throws -> PushChallengeProtocol {
-        guard let userInfo = notification.request.content.userInfo as? [String: Any] else {
-            logger.error(eventName: "Parse push challenge", message: "Failed to parse push notification")
-            throw DeviceAuthenticatorError.pushNotRecognized
-        }
-
-        return try parse(userInfo: userInfo, allowedClockSkewInSeconds: allowedClockSkewInSeconds)
+        return try parse(userInfo: notification.request.content.userInfo, allowedClockSkewInSeconds: allowedClockSkewInSeconds)
     }
 
     func parse(response: UNNotificationResponse, allowedClockSkewInSeconds: Int) throws -> PushChallengeProtocol {
@@ -245,7 +240,7 @@ public class _OktaAuthenticatorsManager {
         return pushChallenge
     }
 
-    func parse(userInfo: [String: Any], allowedClockSkewInSeconds: Int) throws -> PushChallengeProtocol {
+    func parse(userInfo: [AnyHashable: Any], allowedClockSkewInSeconds: Int) throws -> PushChallengeProtocol {
         var validateJWT = true
 #if targetEnvironment(simulator)
         validateJWT = false

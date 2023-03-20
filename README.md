@@ -27,13 +27,6 @@ Enable your app to validate the identity of a user for an Okta authenticator tha
 
 This library uses semantic versioning and follows Okta's [Library Version Policy][okta-library-versioning].
 
-
-| Version | Status                             |
-| ------- | ---------------------------------- |
-| 0.0.3   | ⚠ Beta                                   |
-
-⚠ Beta version is currently in development and isn't ready for production use
-
 The latest release can always be found on the [releases page][github-releases].
 
 ## Need help?
