@@ -85,7 +85,7 @@ class OktaTransactionPossessionChallengeBase: OktaTransaction {
                                                     appIdentityStepClosure: onIdentityStep,
                                                     appCompletionClosure: onCompletion)
 
-        // Skip UserConsent event for initial handling. UserConsent even can be added later during key requirements evaluation
+        // Skip UserConsent event for initial handling. UserConsent event can be added later during key requirements evaluation
         let appEvents = [RemediationEvents.SelectAccount,
                          RemediationEvents.DeviceSignals]
         triageRemediationEvents(appEvents, transactionContext: transactionContext)
@@ -490,23 +490,21 @@ class OktaTransactionPossessionChallengeBase: OktaTransaction {
         return jwtResponse
     }
 
-    func challengeContext(consent: OktaUserConsentValue, deviceBindJWT: OktaBindJWT) -> [String: String] {
+    func challengeContext(consent: OktaUserConsentValue, deviceBindJWT: OktaBindJWT) -> [String: _OktaCodableArbitaryType] {
         let transactionTypeKey = "transactionType"
-        var context: [String: String] = [
-            "userConsent": consent.rawValue
-        ]
+        var context: [String: _OktaCodableArbitaryType] = ["userConsent": .string(consent.rawValue)]
         if let httpHeaders = self.httpHeaders,
            let value = httpHeaders["Origin"] {
-            context["originHeader"] = value
+            context["originHeader"] = .string(value)
         }
 
         // Replay transactionType sent from push challenge
         if let challengeContext = deviceBindJWT.jwt.payload["challengeContext"] as? [AnyHashable: Any],
            let rawTransactionType = challengeContext[transactionTypeKey] as? String,
            let transactionType = MethodSettingsModel.TransactionType(rawValue: rawTransactionType) {
-            context[transactionTypeKey] = transactionType.rawValue
+            context[transactionTypeKey] = .string(transactionType.rawValue)
         } else {
-            context[transactionTypeKey] = MethodSettingsModel.TransactionType.LOGIN.rawValue
+            context[transactionTypeKey] = .string(MethodSettingsModel.TransactionType.LOGIN.rawValue)
         }
         return context
     }

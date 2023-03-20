@@ -233,7 +233,7 @@ class OktaBindJWT {
                                             methodEnrollmentId: String,
                                             kid: String,
                                             signals: DeviceSignalsModel,
-                                            context: [String: String]?,
+                                            context: [String: _OktaCodableArbitaryType]?,
                                             integrations: [_IntegrationData]?,
                                             signalProviders: [_IntegrationData]?,
                                             keyType: OktaBindJWT.KeyType,

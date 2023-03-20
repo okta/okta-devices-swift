@@ -19,7 +19,7 @@ class OktaDeviceBindJWTPayload: OktaJWTPayload, CustomStringConvertible {
     let nonce: String
     let methodEnrollmentId: String?
     let keyType: String?
-    let challengeResponseContext: [String: String]?
+    let challengeResponseContext: [String: _OktaCodableArbitaryType]?
     let integrations: [_IntegrationData]?
     let signalProviders: [_IntegrationData]?
 
@@ -58,7 +58,7 @@ class OktaDeviceBindJWTPayload: OktaJWTPayload, CustomStringConvertible {
          nonce: String,
          methodEnrollmentId: String?,
          keyType: String?,
-         challengeResponseContext: [String: String]?,
+         challengeResponseContext: [String: _OktaCodableArbitaryType]?,
          integrations: [_IntegrationData]?,
          signalProviders: [_IntegrationData]?) {
         self.tx = tx
