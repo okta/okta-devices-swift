@@ -135,7 +135,7 @@ class PushChallenge: PushChallengeProtocol, CIBAChallengeProtocol {
         }
     }
 
-    static func parse(info: [String: Any],
+    static func parse(info: [AnyHashable: Any],
                       allowedClockSkewInSeconds: Int,
                       validateJWT: Bool = true,
                       applicationGroupId: String,
