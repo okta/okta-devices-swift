@@ -227,6 +227,25 @@ public class _OktaAuthenticatorsManager {
             throw DeviceAuthenticatorError.pushNotRecognized
         }
 
+        return try parse(userInfo: userInfo, allowedClockSkewInSeconds: allowedClockSkewInSeconds)
+    }
+
+    func parse(response: UNNotificationResponse, allowedClockSkewInSeconds: Int) throws -> PushChallengeProtocol {
+        var pushChallenge = try parse(notification: response.notification, allowedClockSkewInSeconds: allowedClockSkewInSeconds)
+
+        switch response.actionIdentifier {
+        case InternalConstants.PushNotificationConstants.approveActionIdentifier:
+            pushChallenge.userResponse = .userApproved
+        case InternalConstants.PushNotificationConstants.denyActionIdentifier:
+            pushChallenge.userResponse = .userDenied
+        default:
+            pushChallenge.userResponse = .userNotResponded
+        }
+
+        return pushChallenge
+    }
+
+    func parse(userInfo: [String: Any], allowedClockSkewInSeconds: Int) throws -> PushChallengeProtocol {
         var validateJWT = true
 #if targetEnvironment(simulator)
         validateJWT = false
@@ -255,21 +274,6 @@ public class _OktaAuthenticatorsManager {
             throw DeviceAuthenticatorError.accountNotFoundForChallenge(pushChallenge)
         }
         pushChallenge.enrollment = enrollment
-
-        return pushChallenge
-    }
-
-    func parse(response: UNNotificationResponse, allowedClockSkewInSeconds: Int) throws -> PushChallengeProtocol {
-        var pushChallenge = try parse(notification: response.notification, allowedClockSkewInSeconds: allowedClockSkewInSeconds)
-
-        switch response.actionIdentifier {
-        case InternalConstants.PushNotificationConstants.approveActionIdentifier:
-            pushChallenge.userResponse = .userApproved
-        case InternalConstants.PushNotificationConstants.denyActionIdentifier:
-            pushChallenge.userResponse = .userDenied
-        default:
-            pushChallenge.userResponse = .userNotResponded
-        }
 
         return pushChallenge
     }
