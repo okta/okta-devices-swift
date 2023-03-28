@@ -31,4 +31,9 @@ public struct BiometricEnrollmentSettings {
         let settings = BiometricEnrollmentSettings(accessControlFlags: accessControl)
         return settings
     }
+
+    // - Description: Constructs a BiometricEnrollmentSettings instance with enabled bio or passcode settings
+    public static var userPresence: BiometricEnrollmentSettings {
+        return BiometricEnrollmentSettings(accessControlFlags: .userPresence)
+    }
 }

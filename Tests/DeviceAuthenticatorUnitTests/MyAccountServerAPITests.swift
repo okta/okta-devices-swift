@@ -158,9 +158,12 @@ final class MyAccountServerAPITests: XCTestCase {
         }
         let myAccountAPI = MyAccountServerAPI(client: httpClient, crypto: crypto, logger: OktaLoggerMock())
         var closureCalled = false
-        let signingKeys = SigningKeysModel(proofOfPossession: nil, userVerification: nil)
+        let signingKeys = SigningKeysModel(proofOfPossession: nil,
+                                           userVerification: nil,
+                                           userVerificationBioOrPin: nil)
         let enrollingFactor = EnrollingFactor(proofOfPossessionKeyTag: "proofOfPossessionKeyTag",
                                               userVerificationKeyTag: "userVerificationKeyTag",
+                                              userVerificationBioOrPinKeyTag: "userVerificationBioOrPinKeyTag",
                                               methodType: .push, apsEnvironment: .development,
                                               pushToken: "pushToken",
                                               supportUserVerification: true,
@@ -221,9 +224,12 @@ final class MyAccountServerAPITests: XCTestCase {
         }
         let myAccountAPI = MyAccountServerAPI(client: httpClient, crypto: crypto, logger: OktaLoggerMock())
         var closureCalled = false
-        let signingKeys = SigningKeysModel(proofOfPossession: nil, userVerification: SigningKeysModel.UserVerificationKey.null)
+        let signingKeys = SigningKeysModel(proofOfPossession: nil,
+                                           userVerification: SigningKeysModel.UserVerificationKey.null,
+                                           userVerificationBioOrPin: SigningKeysModel.UserVerificationKey.null)
         let enrollingFactor = EnrollingFactor(proofOfPossessionKeyTag: "proofOfPossessionKeyTag",
                                               userVerificationKeyTag: "userVerificationKeyTag",
+                                              userVerificationBioOrPinKeyTag: "userVerificationBioOrPinKeyTag",
                                               methodType: .push, apsEnvironment: .development,
                                               pushToken: "pushToken",
                                               supportUserVerification: true,
@@ -237,8 +243,10 @@ final class MyAccountServerAPITests: XCTestCase {
                                                   oidcClientId: nil,
                                                   pushToken: .tokenString("pushToken"),
                                                   enrollBiometricKey: true,
+                                                  enrollBiometricOrPinKey: true,
                                                   deviceSignals: nil,
                                                   biometricSettings: nil,
+                                                  biometricOrPinSettings: nil,
                                                   transactionTypes: [.ciba, .login])
         myAccountAPI.updateAuthenticatorRequest(orgHost: mockURL,
                                                 enrollmentId: enrollmentId,
@@ -340,9 +348,12 @@ final class MyAccountServerAPITests: XCTestCase {
         var httpClient = MockHTTPClient(result: httpResult)
         var myAccountAPI = MyAccountServerAPI(client: httpClient, crypto: crypto, logger: OktaLoggerMock())
         var closureCalled = false
-        let signingKeys = SigningKeysModel(proofOfPossession: nil, userVerification: nil)
+        let signingKeys = SigningKeysModel(proofOfPossession: nil,
+                                           userVerification: nil,
+                                           userVerificationBioOrPin: nil)
         let enrollingFactor = EnrollingFactor(proofOfPossessionKeyTag: "proofOfPossessionKeyTag",
                                               userVerificationKeyTag: "userVerificationKeyTag",
+                                              userVerificationBioOrPinKeyTag: "userVerificationBioOrPinKeyTag",
                                               methodType: .push, apsEnvironment: .development,
                                               pushToken: "pushToken",
                                               supportUserVerification: true,
@@ -424,9 +435,12 @@ final class MyAccountServerAPITests: XCTestCase {
         var httpClient = MockHTTPClient(result: httpResult)
         var myAccountAPI = MyAccountServerAPI(client: httpClient, crypto: crypto, logger: OktaLoggerMock())
         var closureCalled = false
-        let signingKeys = SigningKeysModel(proofOfPossession: nil, userVerification: nil)
+        let signingKeys = SigningKeysModel(proofOfPossession: nil,
+                                           userVerification: nil,
+                                           userVerificationBioOrPin: nil)
         let enrollingFactor = EnrollingFactor(proofOfPossessionKeyTag: "proofOfPossessionKeyTag",
                                               userVerificationKeyTag: "userVerificationKeyTag",
+                                              userVerificationBioOrPinKeyTag: "userVerificationBioOrPinKeyTag",
                                               methodType: .push, apsEnvironment: .development,
                                               pushToken: "pushToken",
                                               supportUserVerification: true,
@@ -440,8 +454,10 @@ final class MyAccountServerAPITests: XCTestCase {
                                                   oidcClientId: nil,
                                                   pushToken: .tokenString("pushToken"),
                                                   enrollBiometricKey: true,
+                                                  enrollBiometricOrPinKey: true,
                                                   deviceSignals: nil,
                                                   biometricSettings: nil,
+                                                  biometricOrPinSettings: nil,
                                                   transactionTypes: [.ciba, .login])
         myAccountAPI.updateAuthenticatorRequest(orgHost: mockURL,
                                                 enrollmentId: "enrollmentId",
@@ -596,9 +612,12 @@ final class MyAccountServerAPITests: XCTestCase {
                                        data: GoldenData.authenticatorData())
         let httpClient = MockHTTPClient(result: httpResult)
         let myAccountAPI = MyAccountServerAPI(client: httpClient, crypto: crypto, logger: OktaLoggerMock())
-        let signingKeys = SigningKeysModel(proofOfPossession: ["key": .string("value")], userVerification: .keyValue(["key": .string("value")]))
+        let signingKeys = SigningKeysModel(proofOfPossession: ["key": .string("value")],
+                                           userVerification: .keyValue(["key": .string("value")]),
+                                           userVerificationBioOrPin: .keyValue(["key": .string("value")]))
         let enrollingFactor = EnrollingFactor(proofOfPossessionKeyTag: "proofOfPossessionKeyTag",
                                               userVerificationKeyTag: "userVerificationKeyTag",
+                                              userVerificationBioOrPinKeyTag: "userVerificationBioOrPinKeyTag",
                                               methodType: AuthenticatorMethod.push,
                                               apsEnvironment: .development,
                                               pushToken: "pushToken",
@@ -619,8 +638,10 @@ final class MyAccountServerAPITests: XCTestCase {
         let keys = pushMethod["keys"] as! [String: Any]
         let popKeyJWK = keys["proofOfPossession"] as! [String: Any]
         let uvKeyJWK = keys["userVerification"] as! [String: Any]
+        let uvBioOrPinKeyJWK = keys["userVerificationBioOrPin"] as! [String: Any]
         XCTAssertEqual(popKeyJWK["key"] as! String, "value")
         XCTAssertEqual(uvKeyJWK["key"] as! String, "value")
+        XCTAssertEqual(uvBioOrPinKeyJWK["key"] as! String, "value")
     }
 
     func testRetrieveMaintenanceToken_Success() throws {

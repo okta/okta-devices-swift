@@ -32,6 +32,9 @@ protocol OktaFactor: CustomStringConvertible {
     /// Unique id of user verification key. Used to read SecKey reference from the keychain
     var userVerificationKeyTag: String? { get }
 
+    /// Unique id of user verification using bio or pin key. Used to read SecKey reference from the keychain
+    var userVerificationBioOrPinKeyTag: String? { get }
+
     /// Returns true if factor owns user verification key
     var enrolledWithUserVerificationKey: Bool { get }
 

@@ -29,6 +29,15 @@ public struct EnrollmentParameters {
         self.userVerificationSettings = userVerificationSettings
     }
 
+    /// Enables/disables user verification with biometrics or pin capabilities for the enrollment
+    /// - Parameters:
+    ///   - enable: Boolean for enable/disable user verification capabilties
+    ///   - userVerificationBioOrPinSettings: User verification using biometry or pin settings for the enrollment
+    public mutating func enableUserVerificationBioOrPin(enable: Bool, userVerificationBioOrPinSettings: BiometricEnrollmentSettings = .userPresence) {
+        self.enrollUserVerificationBioOrPinKey = enable
+        self.userVerificationSettings = userVerificationBioOrPinSettings
+    }
+
     /// Enables/disables CIBA transactions (Transactional MFA) for the enrollment in addition to Login transactions. By default is false
     /// By disabling it, this authenticator won't receive CIBA transactions via Push or Pending challenges.
     /// - Parameters:
@@ -40,5 +49,7 @@ public struct EnrollmentParameters {
     let deviceToken: DeviceToken
     var enrollUserVerificationKey: Bool?
     var userVerificationSettings: BiometricEnrollmentSettings?
+    var enrollUserVerificationBioOrPinKey: Bool?
+    var userVerificationBioOrPinSettings: BiometricEnrollmentSettings?
     var isCIBAEnabled: Bool = false
 }

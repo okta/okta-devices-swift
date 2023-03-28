@@ -51,7 +51,8 @@ class EnrollAuthenticatorRequestModelTests: XCTestCase {
     func testKeysEncoding() {
         // test user verification `null` value
         var keysModel = SigningKeysModel(proofOfPossession: ["key": .string("value")],
-                                         userVerification: SigningKeysModel.UserVerificationKey.null)
+                                         userVerification: SigningKeysModel.UserVerificationKey.null,
+                                         userVerificationBioOrPin: SigningKeysModel.UserVerificationKey.null)
         let encoder = JSONEncoder()
         var encodedData = try? encoder.encode(keysModel)
         XCTAssertNotNil(encodedData)
@@ -60,10 +61,12 @@ class EnrollAuthenticatorRequestModelTests: XCTestCase {
 
         // test user verification with jwt
         keysModel = SigningKeysModel(proofOfPossession: ["key": .string("value")],
-                                     userVerification: SigningKeysModel.UserVerificationKey.keyValue(["uvKey": .string("uvValue")]))
+                                     userVerification: SigningKeysModel.UserVerificationKey.keyValue(["uvKey": .string("uvValue")]),
+                                     userVerificationBioOrPin: SigningKeysModel.UserVerificationKey.keyValue(["uvBioOrPinKey": .string("uvBioOrPinKey")]))
         encodedData = try? encoder.encode(keysModel)
         XCTAssertNotNil(encodedData)
         encodedString = String(data: encodedData!, encoding: .utf8)
         XCTAssertTrue(encodedString!.contains("\"userVerification\":{\"uvKey\":\"uvValue\""))
+        XCTAssertTrue(encodedString!.contains("\"userVerificationBioOrPin\":{\"uvBioOrPinKey\":\"uvBioOrPinKey\""))
     }
 }

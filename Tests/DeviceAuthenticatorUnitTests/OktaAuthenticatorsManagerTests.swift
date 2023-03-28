@@ -199,12 +199,14 @@ class OktaAuthenticatorsManagerTests: XCTestCase {
                                                   oidcClientId: nil,
                                                   pushToken: DeviceToken.tokenData("token".data(using: .utf8)!),
                                                   enrollBiometricKey: true,
+                                                  enrollBiometricOrPinKey: true,
                                                   deviceSignals: deviceSignals,
                                                   biometricSettings: nil,
+                                                  biometricOrPinSettings: nil,
                                                   transactionTypes: nil)
         let deleteKeyHookCalled = expectation(description: "Delete hook expected!")
-        // Delete push keys(pop, uv), delete clientInstanceKey = 5 calls
-        deleteKeyHookCalled.expectedFulfillmentCount = 3
+        // Delete push keys(pop, uv, uvBioOrPin), delete clientInstanceKey = 5 calls
+        deleteKeyHookCalled.expectedFulfillmentCount = 4
         restAPI.enrollAuthenticatorRequestHook = { _, _, _, _, _, _, completion in
             self.secHelperMock.deleteKeyHook = { query in
                 deleteKeyHookCalled.fulfill()
@@ -231,8 +233,10 @@ class OktaAuthenticatorsManagerTests: XCTestCase {
                                                   oidcClientId: nil,
                                                   pushToken: .empty,
                                                   enrollBiometricKey: nil,
+                                                  enrollBiometricOrPinKey: nil,
                                                   deviceSignals: nil,
                                                   biometricSettings: nil,
+                                                  biometricOrPinSettings: nil,
                                                   transactionTypes: nil)
 
         // suspended
