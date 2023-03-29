@@ -26,6 +26,7 @@ struct HTTPHeaderConstants {
 struct EnrollingFactor {
     let proofOfPossessionKeyTag: String?
     let userVerificationKeyTag: String?
+    let userVerificationBioOrPinKeyTag: String?
     let methodType: AuthenticatorMethod
     let apsEnvironment: APSEnvironment?
     let pushToken: String?

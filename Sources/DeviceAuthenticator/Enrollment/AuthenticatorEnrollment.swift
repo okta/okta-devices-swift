@@ -123,8 +123,10 @@ class AuthenticatorEnrollment: AuthenticatorEnrollmentProtocol {
                                                   oidcClientId: policy.metadata.settings?.oauthClientId,
                                                   pushToken: DeviceToken.tokenData(token),
                                                   enrollBiometricKey: nil,
+                                                  enrollBiometricOrPinKey: nil,
                                                   deviceSignals: nil,
                                                   biometricSettings: nil,
+                                                  biometricOrPinSettings: nil,
                                                   applicationSignals: nil,
                                                   transactionTypes: nil)
         let updateTransaction = OktaTransactionPushTokenUpdate(storageManager: self.storageManager,
@@ -195,8 +197,10 @@ class AuthenticatorEnrollment: AuthenticatorEnrollmentProtocol {
                                                   oidcClientId: policy.metadata.settings?.oauthClientId,
                                                   pushToken: .empty,
                                                   enrollBiometricKey: enable,
+                                                  enrollBiometricOrPinKey: nil,
                                                   deviceSignals: nil,
                                                   biometricSettings: .default,
+                                                  biometricOrPinSettings: nil,
                                                   applicationSignals: nil,
                                                   transactionTypes: nil)
         let enrollTransaction = OktaTransactionEnroll(storageManager: self.storageManager,
@@ -245,8 +249,10 @@ class AuthenticatorEnrollment: AuthenticatorEnrollmentProtocol {
                                                   oidcClientId: policy.metadata.settings?.oauthClientId,
                                                   pushToken: .empty,
                                                   enrollBiometricKey: nil,
+                                                  enrollBiometricOrPinKey: nil,
                                                   deviceSignals: nil,
                                                   biometricSettings: .default,
+                                                  biometricOrPinSettings: nil,
                                                   applicationSignals: nil,
                                                   transactionTypes: enable ? [.login, .ciba] : .login)
         let enrollTransaction = OktaTransactionEnroll(storageManager: self.storageManager,

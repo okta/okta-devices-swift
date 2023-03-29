@@ -32,13 +32,13 @@ extension OktaTransactionEnroll {
 
     func createEnrollingFactorModel(with popKeyTag: String?,
                                     uvKeyTag: String?,
+                                    uvBioOrPinKeyTag: String?,
                                     methodType: AuthenticatorMethod,
                                     pushToken: String?,
                                     transactionTypes: TransactionType) throws -> EnrollingFactor {
         // Note: for update operation we need to rebuild the whole Factor object
         var proofOfPossessionJWK: [String: _OktaCodableArbitaryType]? = nil
         let proofOfPossessionKeyTag: String
-        var userVerificationKeyTag: String!
         if let tag = popKeyTag {
             proofOfPossessionKeyTag = tag
             proofOfPossessionJWK = try registerKey(with: .ES256, keyTag: proofOfPossessionKeyTag, reuseKey: true)
@@ -48,46 +48,29 @@ extension OktaTransactionEnroll {
             proofOfPossessionJWK = try registerKey(with: .ES256, keyTag: proofOfPossessionKeyTag)
         }
 
-        var userVerificationEncodableValue: UserVerificationEncodableValue?
-        if let tag = uvKeyTag {
-            // Existing key tag found. Check key health to decide if it can be re-used.
-            if cryptoManager.isPrivateKeyAvailable(tag) {
-                userVerificationKeyTag = tag
-                let userVerificationJWK = try registerKey(with: .ES256,
-                                                          keyTag: userVerificationKeyTag,
-                                                          reuseKey: true,
-                                                          useBiometrics: true,
-                                                          biometricSettings: enrollmentContext.biometricSettings)
-                userVerificationEncodableValue = UserVerificationEncodableValue.keyValue(userVerificationJWK)
-            }
-        }
+        let (userVerificationKeyTag, userVerificationEncodableValue) = try registerUserVerificationKey(
+            using: uvKeyTag,
+            enrollKey: enrollmentContext.enrollBiometricKey,
+            biometricSettings: enrollmentContext.biometricSettings
+        )
 
-        if let enrollUserVerificationKey = enrollmentContext.enrollBiometricKey {
-            if enrollUserVerificationKey {
-                if userVerificationKeyTag == nil {
-                    // register new key
-                    userVerificationKeyTag = UUID().uuidString
-                    let userVerificationJWK = try registerKey(with: .ES256,
-                                                              keyTag: userVerificationKeyTag,
-                                                              useBiometrics: true,
-                                                              biometricSettings: enrollmentContext.biometricSettings)
-                    userVerificationEncodableValue = UserVerificationEncodableValue.keyValue(userVerificationJWK)
-                }
-            } else {
-                userVerificationKeyTag = nil
-                userVerificationEncodableValue = UserVerificationEncodableValue.null
-            }
-        }
+        let (userVerificationBioOrPinKeyTag, userVerificationBioOrPinEncodableValue) = try registerUserVerificationKey(
+            using: uvBioOrPinKeyTag,
+            enrollKey: enrollmentContext.enrollBiometricOrPinKey,
+            biometricSettings: enrollmentContext.biometricOrPinSettings
+        )
 
         var signingKeys: SigningKeysModel? = nil
-        if proofOfPossessionJWK != nil || userVerificationEncodableValue != nil {
+        if proofOfPossessionJWK != nil || userVerificationEncodableValue != nil || userVerificationBioOrPinEncodableValue != nil {
             signingKeys = SigningKeysModel(proofOfPossession: proofOfPossessionJWK,
-                                           userVerification: userVerificationEncodableValue)
+                                           userVerification: userVerificationEncodableValue,
+                                           userVerificationBioOrPin: userVerificationBioOrPinEncodableValue)
         }
 
         let apsEnvironment = applicationConfig.pushSettings.apsEnvironment == .production ? APSEnvironment.production : APSEnvironment.development
         let enrollingFactor = EnrollingFactor(proofOfPossessionKeyTag: proofOfPossessionKeyTag,
                                               userVerificationKeyTag: userVerificationKeyTag,
+                                              userVerificationBioOrPinKeyTag: userVerificationBioOrPinKeyTag,
                                               methodType: methodType,
                                               apsEnvironment: methodType == .push ? apsEnvironment : nil,
                                               pushToken: pushToken,
@@ -110,5 +93,43 @@ extension OktaTransactionEnroll {
         case .unknown(_):
             return .unknown
         }
+    }
+
+    private func registerUserVerificationKey(using keyTag: String?,
+                                             enrollKey: Bool?,
+                                             biometricSettings: BiometricEnrollmentSettings) throws -> (String?, UserVerificationEncodableValue?) {
+        var userVerificationKeyTag: String!
+        var userVerificationEncodableValue: UserVerificationEncodableValue?
+        if let keyTag = keyTag {
+            // Existing key tag found. Check key health to decide if it can be re-used.
+            if cryptoManager.isPrivateKeyAvailable(keyTag) {
+                userVerificationKeyTag = keyTag
+                let userVerificationJWK = try registerKey(with: .ES256,
+                                                          keyTag: userVerificationKeyTag,
+                                                          reuseKey: true,
+                                                          useBiometrics: true,
+                                                          biometricSettings: biometricSettings)
+                userVerificationEncodableValue = UserVerificationEncodableValue.keyValue(userVerificationJWK)
+            }
+        }
+
+        if let enrollKey = enrollKey {
+            if enrollKey {
+                if userVerificationKeyTag == nil {
+                    // register new key
+                    userVerificationKeyTag = UUID().uuidString
+                    let userVerificationJWK = try registerKey(with: .ES256,
+                                                              keyTag: userVerificationKeyTag,
+                                                              useBiometrics: true,
+                                                              biometricSettings: biometricSettings)
+                    userVerificationEncodableValue = UserVerificationEncodableValue.keyValue(userVerificationJWK)
+                }
+            } else {
+                userVerificationKeyTag = nil
+                userVerificationEncodableValue = UserVerificationEncodableValue.null
+            }
+        }
+
+        return (userVerificationKeyTag, userVerificationEncodableValue)
     }
 }

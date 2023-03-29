@@ -40,6 +40,11 @@ class OktaFactorPush: OktaFactor {
         return factorData.userVerificationKeyTag
     }
 
+    /// Unique id of user verification using bio or pin key. Used to read SecKey reference from the keychain
+    var userVerificationBioOrPinKeyTag: String? {
+        return nil
+    }
+
     var enrolledWithCIBASupport: Bool {
         return factorData.transactionTypes?.supportsCIBA ?? false
     }

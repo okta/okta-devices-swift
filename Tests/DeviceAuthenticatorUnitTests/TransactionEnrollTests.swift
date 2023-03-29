@@ -168,6 +168,7 @@ class TransactionEnrollTests: XCTestCase {
             XCTAssertEqual(pushMethod?.methodType, .push)
             XCTAssertNotNil(pushMethod?.proofOfPossessionKeyTag)
             XCTAssertNotNil(pushMethod?.userVerificationKeyTag)
+            XCTAssertNil(pushMethod?.userVerificationBioOrPinKeyTag)
             XCTAssertNotNil(pushMethod?.keys)
             XCTAssertNotNil(pushMethod?.pushToken)
             XCTAssertEqual(pushMethod?.pushToken, "push_token".data(using: .utf8)?.hexString())
@@ -177,6 +178,65 @@ class TransactionEnrollTests: XCTestCase {
         }
 
         XCTAssertEqual(numberOfRegisterKeyCalls, 2)
+    }
+
+    func testEnrollPushFactorWithBioOrPinKey_Success() {
+        enrollmentContext = createEnrollmentContext(enrollBiometricKey: true,
+                                                    enrollBiometricOrPinKey: true,
+                                                    pushToken: "push_token",
+                                                    supportsCIBA: true)
+        transactionPartialMock = OktaTransactionEnrollPartialMock(storageManager: mockStorageManager,
+                                                                  cryptoManager: cryptoManager,
+                                                                  restAPI: restAPIMock,
+                                                                  enrollmentContext: enrollmentContext,
+                                                                  jwkGenerator: jwkGeneratorMock,
+                                                                  jwtGenerator: OktaJWTGenerator(logger: OktaLoggerMock()),
+                                                                  applicationConfig: applicationConfig,
+                                                                  logger: OktaLoggerMock())
+        transactionPartialMock.metaData = metaData
+        transactionPartialMock.orgId = ""
+
+        var numberOfRegisterKeyCalls = 0
+        transactionPartialMock.registerKeyHook = { algorithm, keyTag, reuseKey, useBiometrics, biometricSettings in
+            numberOfRegisterKeyCalls += 1
+            XCTAssertEqual(algorithm, Algorithm.ES256)
+            switch numberOfRegisterKeyCalls {
+            case 1: // popKey
+                XCTAssertFalse(useBiometrics)
+                XCTAssertNil(biometricSettings)
+            case 2: // uvKey
+                XCTAssertTrue(useBiometrics)
+                XCTAssertNotNil(biometricSettings)
+                XCTAssertEqual(biometricSettings!.accessControlFlags, .biometryCurrentSet)
+            case 3: // uvBioOrPinKey
+                XCTAssertTrue(useBiometrics)
+                XCTAssertNotNil(biometricSettings)
+                XCTAssertEqual(biometricSettings!.accessControlFlags, .userPresence)
+            default:
+                break
+            }
+
+            XCTAssertFalse(reuseKey)
+
+            return [:]
+        }
+
+        do {
+            let pushMethod = try transactionPartialMock.enrollPushFactor(serverMethod: transaction.metaData._embedded.methods[0])
+            XCTAssertNotNil(pushMethod)
+            XCTAssertEqual(pushMethod?.methodType, .push)
+            XCTAssertNotNil(pushMethod?.proofOfPossessionKeyTag)
+            XCTAssertNotNil(pushMethod?.userVerificationKeyTag)
+            XCTAssertNotNil(pushMethod?.userVerificationBioOrPinKeyTag)
+            XCTAssertNotNil(pushMethod?.keys)
+            XCTAssertNotNil(pushMethod?.pushToken)
+            XCTAssertEqual(pushMethod?.pushToken, "push_token".data(using: .utf8)?.hexString())
+            XCTAssertEqual(pushMethod?.methodType, AuthenticatorMethod.push)
+        } catch {
+            XCTFail("Unexpected exception thrown - \(error)")
+        }
+
+        XCTAssertEqual(numberOfRegisterKeyCalls, 3)
     }
 
     func testEnrollPushFactor_UpdateEnrollment() {
@@ -192,6 +252,31 @@ class TransactionEnrollTests: XCTestCase {
             XCTAssertNotNil(enrollingFactor)
             XCTAssertNotNil(enrollingFactor?.proofOfPossessionKeyTag)
             XCTAssertNotNil(enrollingFactor?.userVerificationKeyTag)
+            XCTAssertNil(enrollingFactor?.userVerificationBioOrPinKeyTag)
+            XCTAssertNotNil(enrollingFactor?.keys)
+            XCTAssertNotNil(enrollingFactor?.pushToken)
+            XCTAssertEqual(enrollingFactor?.apsEnvironment, .production)
+            XCTAssertEqual(enrollingFactor?.methodType, .push)
+        } catch {
+            XCTFail("Unexpected exception thrown - \(error)")
+        }
+    }
+
+    func testEnrollPushFactor_UpdateEnrollmentWithBioOrPinKey() {
+        do {
+            let enrollment = TestUtils.createAuthenticatorEnrollment(orgHost: URL(string: "tenant.okta.com")!,
+                                                                     orgId: "orgId",
+                                                                     enrollmentId: "enrollmentId",
+                                                                     cryptoManager: cryptoManager,
+                                                                     enrollPush: false)
+            enrollmentContext = createEnrollmentContext(enrollBiometricKey: true, enrollBiometricOrPinKey: true, pushToken: "push_token", supportsCIBA: true)
+            transaction = createTransaction(enrollmentContext: enrollmentContext, enrollment: enrollment, jwtGenerator: OktaJWTGenerator(logger: OktaLoggerMock()))
+            transaction.metaData = metaData
+            let enrollingFactor = try transaction.enrollPushFactor(serverMethod: transaction.metaData._embedded.methods[0])
+            XCTAssertNotNil(enrollingFactor)
+            XCTAssertNotNil(enrollingFactor?.proofOfPossessionKeyTag)
+            XCTAssertNotNil(enrollingFactor?.userVerificationKeyTag)
+            XCTAssertNotNil(enrollingFactor?.userVerificationBioOrPinKeyTag)
             XCTAssertNotNil(enrollingFactor?.keys)
             XCTAssertNotNil(enrollingFactor?.pushToken)
             XCTAssertEqual(enrollingFactor?.apsEnvironment, .production)
@@ -216,6 +301,7 @@ class TransactionEnrollTests: XCTestCase {
             XCTAssertNotNil(enrollingFactor?.keys)
             XCTAssertNotNil(enrollingFactor?.proofOfPossessionKeyTag)
             XCTAssertNotNil(enrollingFactor?.userVerificationKeyTag)
+            XCTAssertNil(enrollingFactor?.userVerificationBioOrPinKeyTag)
             XCTAssertEqual(enrollingFactor?.methodType, .push)
         } catch {
             XCTFail("Unexpected exception thrown - \(error)")
@@ -237,6 +323,7 @@ class TransactionEnrollTests: XCTestCase {
             XCTAssertNotNil(enrollingFactor?.pushToken)
             XCTAssertNotNil(enrollingFactor?.proofOfPossessionKeyTag)
             XCTAssertNotNil(enrollingFactor?.userVerificationKeyTag)
+            XCTAssertNil(enrollingFactor?.userVerificationBioOrPinKeyTag)
             XCTAssertEqual(enrollingFactor?.methodType, .push)
         } catch {
             XCTFail("Unexpected exception thrown - \(error)")
@@ -259,6 +346,7 @@ class TransactionEnrollTests: XCTestCase {
             XCTAssertNotNil(enrollingFactor?.pushToken)
             XCTAssertNotNil(enrollingFactor?.proofOfPossessionKeyTag)
             XCTAssertNotNil(enrollingFactor?.userVerificationKeyTag)
+            XCTAssertNil(enrollingFactor?.userVerificationBioOrPinKeyTag)
         } catch {
             XCTFail("Unexpected exception thrown - \(error)")
         }
@@ -278,6 +366,7 @@ class TransactionEnrollTests: XCTestCase {
             XCTAssertNotNil(enrollingFactor?.pushToken)
             XCTAssertNotNil(enrollingFactor?.proofOfPossessionKeyTag)
             XCTAssertNotNil(enrollingFactor?.userVerificationKeyTag)
+            XCTAssertNil(enrollingFactor?.userVerificationBioOrPinKeyTag)
             XCTAssertEqual(enrollingFactor?.methodType, .push)
         } catch {
             XCTFail("Unexpected exception thrown - \(error)")
@@ -1300,6 +1389,7 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
                                  deviceSignals: DeviceSignals? = nil,
                                  applicationSignals: [String: _OktaCodableArbitaryType]? = nil,
                                  enrollBiometricKey: Bool? = nil,
+                                 enrollBiometricOrPinKey: Bool? = nil,
                                  pushToken: String? = nil,
                                  supportsCIBA: Bool) -> EnrollmentContext {
         var deviceToken = DeviceToken.empty
@@ -1315,8 +1405,10 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
                                  oidcClientId: nil,
                                  pushToken: deviceToken,
                                  enrollBiometricKey: enrollBiometricKey,
+                                 enrollBiometricOrPinKey: enrollBiometricOrPinKey,
                                  deviceSignals: deviceSignals,
                                  biometricSettings: nil,
+                                 biometricOrPinSettings: nil,
                                  applicationSignals: applicationSignals,
                                  transactionTypes: transactionTypes)
     }

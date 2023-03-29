@@ -58,8 +58,10 @@ public class _OktaAuthenticatorsManager {
                                                   oidcClientId: authenticatorConfig.oidcClientId,
                                                   pushToken: enrollmentParameters.deviceToken,
                                                   enrollBiometricKey: enrollmentParameters.enrollUserVerificationKey,
+                                                  enrollBiometricOrPinKey: nil,
                                                   deviceSignals: nil,
                                                   biometricSettings: enrollmentParameters.userVerificationSettings,
+                                                  biometricOrPinSettings: nil,
                                                   applicationSignals: nil,
                                                   transactionTypes: transactionTypes)
         enroll(with: enrollmentContext,

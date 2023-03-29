@@ -75,9 +75,10 @@ final class LegacyServerAPITests: XCTestCase {
         }
         let legacyAPI = LegacyServerAPI(client: httpClient, crypto: crypto, logger: OktaLoggerMock())
         var closureCalled = false
-        let signingKeys = SigningKeysModel(proofOfPossession: nil, userVerification: nil)
+        let signingKeys = SigningKeysModel(proofOfPossession: nil, userVerification: nil, userVerificationBioOrPin: nil)
         let enrollingFactor = EnrollingFactor(proofOfPossessionKeyTag: "proofOfPossessionKeyTag",
                                               userVerificationKeyTag: "userVerificationKeyTag",
+                                              userVerificationBioOrPinKeyTag: "userVerificationBioOrPinKeyTag",
                                               methodType: .push, apsEnvironment: .development,
                                               pushToken: "pushToken",
                                               supportUserVerification: true,
@@ -120,10 +121,12 @@ final class LegacyServerAPITests: XCTestCase {
         }
         let legacyAPI = LegacyServerAPI(client: httpClient, crypto: crypto, logger: OktaLoggerMock())
         var closureCalled = false
-        let signingKeys = SigningKeysModel(proofOfPossession: nil, userVerification: nil)
+        let signingKeys = SigningKeysModel(proofOfPossession: nil, userVerification: nil, userVerificationBioOrPin: nil)
         let enrollingFactor = EnrollingFactor(proofOfPossessionKeyTag: "proofOfPossessionKeyTag",
                                               userVerificationKeyTag: "userVerificationKeyTag",
-                                              methodType: .push, apsEnvironment: .development,
+                                              userVerificationBioOrPinKeyTag: "userVerificationBioOrPinKeyTag",
+                                              methodType: .push,
+                                              apsEnvironment: .development,
                                               pushToken: "pushToken",
                                               supportUserVerification: true,
                                               isFipsCompliant: nil,
@@ -136,8 +139,10 @@ final class LegacyServerAPITests: XCTestCase {
                                                   oidcClientId: nil,
                                                   pushToken: .tokenString("pushToken"),
                                                   enrollBiometricKey: true,
+                                                  enrollBiometricOrPinKey: true,
                                                   deviceSignals: nil,
                                                   biometricSettings: nil,
+                                                  biometricOrPinSettings: nil,
                                                   transactionTypes: [.login])
         legacyAPI.updateAuthenticatorRequest(orgHost: mockURL,
                                              enrollmentId: "enrollmentId",
@@ -225,9 +230,12 @@ final class LegacyServerAPITests: XCTestCase {
                                        data: GoldenData.authenticatorData())
         let httpClient = MockHTTPClient(result: httpResult)
         let legacyAPI = LegacyServerAPI(client: httpClient, crypto: crypto, logger: OktaLoggerMock())
-        let signingKeys = SigningKeysModel(proofOfPossession: ["key": .string("value")], userVerification: .keyValue(["key": .string("value")]))
+        let signingKeys = SigningKeysModel(proofOfPossession: ["key": .string("value")],
+                                           userVerification: .keyValue(["key": .string("value")]),
+                                           userVerificationBioOrPin: .keyValue(["key": .string("value")]))
         let enrollingFactor = EnrollingFactor(proofOfPossessionKeyTag: "proofOfPossessionKeyTag",
                                               userVerificationKeyTag: "userVerificationKeyTag",
+                                              userVerificationBioOrPinKeyTag: "userVerificationBioOrPinKeyTag",
                                               methodType: AuthenticatorMethod.push,
                                               apsEnvironment: .development,
                                               pushToken: "pushToken",
@@ -250,8 +258,10 @@ final class LegacyServerAPITests: XCTestCase {
         let keys = pushMethod["keys"] as! [String: Any]
         let popKeyJWK = keys["proofOfPossession"] as! [String: Any]
         let uvKeyJWK = keys["userVerification"] as! [String: Any]
+        let uvBioOrPinKeyJWK = keys["userVerificationBioOrPin"] as! [String: Any]
         XCTAssertEqual(popKeyJWK["key"] as! String, "value")
         XCTAssertEqual(uvKeyJWK["key"] as! String, "value")
+        XCTAssertEqual(uvBioOrPinKeyJWK["key"] as! String, "value")
     }
 
     func testDownloadAuthenticatorMetadata_Failure() throws {
@@ -330,9 +340,10 @@ final class LegacyServerAPITests: XCTestCase {
         var httpClient = MockHTTPClient(result: httpResult)
         var legacyAPI = LegacyServerAPI(client: httpClient, crypto: crypto, logger: OktaLoggerMock())
         var closureCalled = false
-        let signingKeys = SigningKeysModel(proofOfPossession: nil, userVerification: nil)
+        let signingKeys = SigningKeysModel(proofOfPossession: nil, userVerification: nil, userVerificationBioOrPin: nil)
         let enrollingFactor = EnrollingFactor(proofOfPossessionKeyTag: "proofOfPossessionKeyTag",
                                               userVerificationKeyTag: "userVerificationKeyTag",
+                                              userVerificationBioOrPinKeyTag: "userVerificationBioOrPinKeyTag",
                                               methodType: .push, apsEnvironment: .development,
                                               pushToken: "pushToken",
                                               supportUserVerification: true,
@@ -414,9 +425,10 @@ final class LegacyServerAPITests: XCTestCase {
         var httpClient = MockHTTPClient(result: httpResult)
         var legacyAPI = LegacyServerAPI(client: httpClient, crypto: crypto, logger: OktaLoggerMock())
         var closureCalled = false
-        let signingKeys = SigningKeysModel(proofOfPossession: nil, userVerification: nil)
+        let signingKeys = SigningKeysModel(proofOfPossession: nil, userVerification: nil, userVerificationBioOrPin: nil)
         let enrollingFactor = EnrollingFactor(proofOfPossessionKeyTag: "proofOfPossessionKeyTag",
                                               userVerificationKeyTag: "userVerificationKeyTag",
+                                              userVerificationBioOrPinKeyTag: "userVerificationBioOrPinKeyTag",
                                               methodType: .push, apsEnvironment: .development,
                                               pushToken: "pushToken",
                                               supportUserVerification: true,
@@ -430,8 +442,10 @@ final class LegacyServerAPITests: XCTestCase {
                                                   oidcClientId: nil,
                                                   pushToken: .tokenString("pushToken"),
                                                   enrollBiometricKey: true,
+                                                  enrollBiometricOrPinKey: true,
                                                   deviceSignals: nil,
                                                   biometricSettings: nil,
+                                                  biometricOrPinSettings: nil,
                                                   transactionTypes: [.login])
         legacyAPI.updateAuthenticatorRequest(orgHost: mockURL,
                                              enrollmentId: "enrollmentId",

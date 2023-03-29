@@ -26,9 +26,11 @@ struct EnrollmentContext {
     let oidcClientId: String?
     let deviceSignals: DeviceSignals?
     let applicationSignals: [String: _OktaCodableArbitaryType]?
-    let biometricSettings: BiometricEnrollmentSettings?
+    let biometricSettings: BiometricEnrollmentSettings
+    let biometricOrPinSettings: BiometricEnrollmentSettings
     let pushToken: DeviceToken
     let enrollBiometricKey: Bool?
+    let enrollBiometricOrPinKey: Bool?
     let transactionTypes: TransactionType?
 
     var isCIBASupported: Bool {
@@ -42,8 +44,10 @@ struct EnrollmentContext {
          oidcClientId: String?,
          pushToken: DeviceToken,
          enrollBiometricKey: Bool?,
+         enrollBiometricOrPinKey: Bool?,
          deviceSignals: DeviceSignals?,
          biometricSettings: BiometricEnrollmentSettings?,
+         biometricOrPinSettings: BiometricEnrollmentSettings?,
          applicationSignals: [String: _OktaCodableArbitaryType]? = nil,
          transactionTypes: TransactionType?) {
         self.accessToken = accessToken
@@ -53,8 +57,10 @@ struct EnrollmentContext {
         self.authenticatorKey = authenticatorKey
         self.pushToken = pushToken
         self.enrollBiometricKey = enrollBiometricKey
+        self.enrollBiometricOrPinKey = enrollBiometricOrPinKey
         self.deviceSignals = deviceSignals
         self.biometricSettings = biometricSettings ?? BiometricEnrollmentSettings.default
+        self.biometricOrPinSettings = biometricOrPinSettings ?? BiometricEnrollmentSettings(accessControlFlags: .userPresence)
         self.applicationSignals = applicationSignals
         self.transactionTypes = transactionTypes
     }

@@ -205,7 +205,8 @@ class MyAccountServerAPI: ServerAPIProtocol {
         var keys: SigningKeysModel?
         if enrollmentContext.enrollBiometricKey != nil {
             keys = SigningKeysModel(proofOfPossession: nil,
-                                    userVerification: pushMethod.keys?.userVerification)
+                                    userVerification: pushMethod.keys?.userVerification,
+                                    userVerificationBioOrPin: nil)
         }
 
         let pushUpdateModel = MyAccountAPI.MethodUpdateRequestModel.MethodsModel.PushMethodModel(

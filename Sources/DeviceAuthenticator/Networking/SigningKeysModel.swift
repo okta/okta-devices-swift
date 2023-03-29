@@ -23,6 +23,7 @@ enum APSEnvironment: String, Encodable {
 struct SigningKeysModel: Codable {
     let proofOfPossession: [String: _OktaCodableArbitaryType]?
     let userVerification: UserVerificationKey?
+    let userVerificationBioOrPin: UserVerificationKey?
 
     enum UserVerificationKey: Codable {
         case null
