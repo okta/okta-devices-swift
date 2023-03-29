@@ -200,7 +200,7 @@ class AuthenticatorEnrollment: AuthenticatorEnrollmentProtocol {
                                                   enrollBiometricOrPinKey: nil,
                                                   deviceSignals: nil,
                                                   biometricSettings: .default,
-                                                  biometricOrPinSettings: .userPresence,
+                                                  biometricOrPinSettings: nil,
                                                   applicationSignals: nil,
                                                   transactionTypes: nil)
         let enrollTransaction = OktaTransactionEnroll(storageManager: self.storageManager,
@@ -252,7 +252,7 @@ class AuthenticatorEnrollment: AuthenticatorEnrollmentProtocol {
                                                   enrollBiometricOrPinKey: nil,
                                                   deviceSignals: nil,
                                                   biometricSettings: .default,
-                                                  biometricOrPinSettings: .userPresence,
+                                                  biometricOrPinSettings: nil,
                                                   applicationSignals: nil,
                                                   transactionTypes: enable ? [.login, .ciba] : .login)
         let enrollTransaction = OktaTransactionEnroll(storageManager: self.storageManager,

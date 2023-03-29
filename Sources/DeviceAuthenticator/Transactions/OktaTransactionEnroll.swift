@@ -60,7 +60,7 @@ struct EnrollmentContext {
         self.enrollBiometricOrPinKey = enrollBiometricOrPinKey
         self.deviceSignals = deviceSignals
         self.biometricSettings = biometricSettings ?? BiometricEnrollmentSettings.default
-        self.biometricOrPinSettings = biometricOrPinSettings ?? BiometricEnrollmentSettings.userPresence
+        self.biometricOrPinSettings = biometricOrPinSettings ?? BiometricEnrollmentSettings(accessControlFlags: .userPresence)
         self.applicationSignals = applicationSignals
         self.transactionTypes = transactionTypes
     }
