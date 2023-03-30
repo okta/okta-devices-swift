@@ -111,7 +111,7 @@ class OktaSQLiteEncryptionManager: OktaSQLiteColumnEncryptionManagerProtocol {
                                             forKey: keyTag.rawValue,
                                             behindBiometrics: false,
                                             accessGroup: keychainGroupId,
-                                            accessibility: kSecAttrAccessibleWhenUnlocked)
+                                            accessibility: kSecAttrAccessibleAfterFirstUnlock)
 
                     return cryptoKey
                 } catch {
@@ -130,6 +130,6 @@ class OktaSQLiteEncryptionManager: OktaSQLiteColumnEncryptionManagerProtocol {
     }
 
     enum EncryptionTag: String {
-        case columnEncryptionKeyTag = "com.okta.SQLiteColumnEncryptionKeyTag"
+        case columnEncryptionKeyTag = "com.okta.SQLiteEncryptionKeyTag"
     }
 }
