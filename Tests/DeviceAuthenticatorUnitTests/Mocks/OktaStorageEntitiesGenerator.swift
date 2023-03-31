@@ -63,7 +63,8 @@ class OktaStorageEntitiesGenerator {
         if methodTypes.contains(.push) {
             let pushMetadata = OktaFactorMetadataPush(id: "push_id",
                                                       proofOfPossessionKeyTag: "proofOfPossessionKeyTag",
-                                                      userVerificationKeyTag: nil,
+                                                      userVerificationKeyTag: "userVerificationKeyTag",
+                                                      userVerificationBioOrPinKeyTag: "userVerificationBioOrPinKeyTag",
                                                       links: OktaFactorMetadataPush.Links(pendingLink: "pendingLink"),
                                                       transactionTypes: transactionTypes)
             let pushFactor = OktaFactorPush(factorData: pushMetadata,

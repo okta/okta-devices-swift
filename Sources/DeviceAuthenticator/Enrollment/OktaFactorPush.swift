@@ -42,7 +42,7 @@ class OktaFactorPush: OktaFactor {
 
     /// Unique id of user verification using bio or pin key. Used to read SecKey reference from the keychain
     var userVerificationBioOrPinKeyTag: String? {
-        return nil
+        return factorData.userVerificationBioOrPinKeyTag
     }
 
     var enrolledWithCIBASupport: Bool {
@@ -53,7 +53,8 @@ class OktaFactorPush: OktaFactor {
         let info: [String: Any] =  ["type": "Push",
                                     "id": factorData.id,
                                     "popKey": factorData.proofOfPossessionKeyTag,
-                                    "uvKey": factorData.userVerificationKeyTag ?? ""]
+                                    "uvKey": factorData.userVerificationKeyTag ?? "",
+                                    "uvBioOrPinKey": factorData.userVerificationBioOrPinKeyTag ?? ""]
         return "\(info as AnyObject)"
     }
 

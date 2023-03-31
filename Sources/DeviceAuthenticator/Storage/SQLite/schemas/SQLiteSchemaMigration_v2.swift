@@ -14,7 +14,5 @@ import Foundation
 
 let sqliteSchemaMigration_v2 =
     """
-    CREATE TABLE 'Example' (
-    'id' TEXT NOT NULL
-    );
+    ALTER TABLE 'EnrolledMethod' ADD COLUMN 'userVerificationBioOrPinKeyTag' TEXT DEFAULT NULL;
     """

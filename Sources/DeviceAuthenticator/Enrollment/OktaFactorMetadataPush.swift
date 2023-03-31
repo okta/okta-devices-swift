@@ -23,6 +23,8 @@ class OktaFactorMetadataPush: OktaFactorMetadata {
     let proofOfPossessionKeyTag: String
     /// Unique id of user verification key. Used to read SecKey reference from the keychain
     var userVerificationKeyTag: String?
+    /// Unique id of user verification bio or pin key. Used to read SecKey reference from the keychain
+    var userVerificationBioOrPinKeyTag: String?
 
     var transactionTypes: TransactionType?
 
@@ -31,11 +33,13 @@ class OktaFactorMetadataPush: OktaFactorMetadata {
     init(id: String,
          proofOfPossessionKeyTag: String,
          userVerificationKeyTag: String? = nil,
+         userVerificationBioOrPinKeyTag: String? = nil,
          links: Links? = nil,
          transactionTypes: TransactionType?) {
         self.pushLinks = links
         self.proofOfPossessionKeyTag = proofOfPossessionKeyTag
         self.userVerificationKeyTag = userVerificationKeyTag
+        self.userVerificationBioOrPinKeyTag = userVerificationBioOrPinKeyTag
         self.transactionTypes = transactionTypes
         super.init(id: id)
         type = .push
@@ -46,6 +50,7 @@ class OktaFactorMetadataPush: OktaFactorMetadata {
         case links
         case proofOfPossessionKeyTag
         case pushUserVerificationKey
+        case userVerificationBioOrPinKey
         case transactionTypes
     }
 
@@ -56,6 +61,7 @@ class OktaFactorMetadataPush: OktaFactorMetadata {
         try container.encode(EnrolledAuthenticatorModel.AuthenticatorMethods.Links(pending: nil), forKey: .links)
         try container.encode(proofOfPossessionKeyTag, forKey: .proofOfPossessionKeyTag)
         try container.encode(userVerificationKeyTag, forKey: .pushUserVerificationKey)
+        try container.encode(userVerificationBioOrPinKeyTag, forKey: .userVerificationBioOrPinKey)
         try container.encode(transactionTypes?.rawValue, forKey: .transactionTypes)
     }
 
@@ -64,6 +70,7 @@ class OktaFactorMetadataPush: OktaFactorMetadata {
         self.pushLinks = nil
         proofOfPossessionKeyTag = try container.decode(String.self, forKey: .proofOfPossessionKeyTag)
         userVerificationKeyTag = try container.decodeIfPresent(String.self, forKey: .pushUserVerificationKey)
+        userVerificationBioOrPinKeyTag = try container.decodeIfPresent(String.self, forKey: .userVerificationBioOrPinKey)
         if let rawTransactionType = try container.decodeIfPresent(Int.self, forKey: .transactionTypes) {
             transactionTypes = TransactionType(rawValue: rawTransactionType)
         } else {

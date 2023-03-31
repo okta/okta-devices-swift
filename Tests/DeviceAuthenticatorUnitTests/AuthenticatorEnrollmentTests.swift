@@ -81,7 +81,7 @@ class AuthenticatorEnrollmentTests: XCTestCase {
                 "userId": enrollment.user.id,
                 "created": DateFormatter.oktaDateFormatter().string(from: enrollment.creationDate),
                 "orgHost": mockURL.absoluteString,
-                "OktaFactorPush": "{\n    id = \"push_id\";\n    popKey = proofOfPossessionKeyTag;\n    type = Push;\n    uvKey = userVerificationKeyTag;\n}"
+                "OktaFactorPush": "{\n    id = \"push_id\";\n    popKey = proofOfPossessionKeyTag;\n    type = Push;\n    uvBioOrPinKey = userVerificationBioOrPinKeyTag;\n    uvKey = userVerificationKeyTag;\n}"
             ]
             return "\(info as AnyObject)"
         }()

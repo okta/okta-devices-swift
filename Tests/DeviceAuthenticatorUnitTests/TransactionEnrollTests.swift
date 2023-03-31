@@ -323,7 +323,7 @@ class TransactionEnrollTests: XCTestCase {
             XCTAssertNotNil(enrollingFactor?.pushToken)
             XCTAssertNotNil(enrollingFactor?.proofOfPossessionKeyTag)
             XCTAssertNotNil(enrollingFactor?.userVerificationKeyTag)
-            XCTAssertNil(enrollingFactor?.userVerificationBioOrPinKeyTag)
+            XCTAssertNotNil(enrollingFactor?.userVerificationBioOrPinKeyTag)
             XCTAssertEqual(enrollingFactor?.methodType, .push)
         } catch {
             XCTFail("Unexpected exception thrown - \(error)")
@@ -366,7 +366,7 @@ class TransactionEnrollTests: XCTestCase {
             XCTAssertNotNil(enrollingFactor?.pushToken)
             XCTAssertNotNil(enrollingFactor?.proofOfPossessionKeyTag)
             XCTAssertNotNil(enrollingFactor?.userVerificationKeyTag)
-            XCTAssertNil(enrollingFactor?.userVerificationBioOrPinKeyTag)
+            XCTAssertNotNil(enrollingFactor?.userVerificationBioOrPinKeyTag)
             XCTAssertEqual(enrollingFactor?.methodType, .push)
         } catch {
             XCTFail("Unexpected exception thrown - \(error)")
