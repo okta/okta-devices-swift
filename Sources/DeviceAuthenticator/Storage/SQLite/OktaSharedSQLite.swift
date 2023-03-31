@@ -644,6 +644,7 @@ extension OktaSharedSQLite: OktaMigratableStorage {
                 try db.execute(sql: "PRAGMA user_version = \(version.rawValue)")
             }
         } catch {
+            logger.error(eventName: "Storage Migration", message: "Migration to version \(version) failed: \(error)")
             throw DeviceAuthenticatorError.storageError(StorageError.sqliteError(error.localizedDescription))
         }
     }
