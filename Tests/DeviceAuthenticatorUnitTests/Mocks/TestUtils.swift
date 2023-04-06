@@ -25,7 +25,8 @@ class TestUtils {
                                              enrollPush: Bool = true,
                                              createdDate: String = "2020-09-08T19:03:30.166Z",
                                              storageManager: PersistentStorageProtocol? = nil,
-                                             transactionTypes: TransactionType? = .login) -> AuthenticatorEnrollmentMock {
+                                             transactionTypes: TransactionType? = .login,
+                                             jwtGenerator: OktaJWTGenerator = OktaJWTGenerator(logger: OktaLoggerMock())) -> AuthenticatorEnrollmentMock {
         let mockHTTPClient = MockMultipleRequestsHTTPClient(responseArray: [],
                                                             dataArray: [])
         let restAPIMock = RestAPIMock(client: mockHTTPClient, logger: OktaLoggerMock())
@@ -64,6 +65,7 @@ class TestUtils {
                                                                   restAPIClient: restAPIMock,
                                                                   storageManager: storage,
                                                                   applicationConfig: appConfig,
+                                                                  jwtGenerator: jwtGenerator,
                                                                   logger: OktaLoggerMock())
 
         return authenticatorEnrollment

@@ -413,11 +413,11 @@ class VerifyFlowTests: XCTestCase {
                         switch pushChallengesResult {
                         case .success(let pushChallenges):
                             XCTAssertTrue(pushChallenges.isEmpty)
-                            retrievePushChallengesEmptyPayloadExpectation.fulfill()
                         case .failure(let error):
                             XCTFail(error.errorDescription ?? error.localizedDescription)
                         }
                     }
+                    retrievePushChallengesEmptyPayloadExpectation.fulfill()
                 case .failure(let error):
                     XCTFail(error.errorDescription ?? error.localizedDescription)
                 }
