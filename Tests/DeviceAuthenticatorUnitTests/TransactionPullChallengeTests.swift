@@ -70,22 +70,19 @@ class TransactionPullChallengeTests: XCTestCase {
                                                                   userId: "email@okta.com",
                                                                   methodTypes: [.push])
         var pullChallengeTransaction = OktaTransactionPullChallengePartialMock(enrollment: authenticator,
-                                                                               authenticationToken: AuthToken.bearer("access_token"),
+                                                                               authenticationToken: OktaRestAPIToken.accessToken("access_token"),
                                                                                storageManager: storageMock,
                                                                                cryptoManager: cryptoManager,
                                                                                restAPI: restAPIClient,
                                                                                applicationConfig: applicationConfig,
                                                                                logger: OktaLoggerMock())
         var completionExpectation = expectation(description: "callback should be called")
-        pullChallengeTransaction.pullChallenge(allowedClockSkewInSeconds: 300) { result in
-            switch result {
-            case .success(let pushChallenges):
+        pullChallengeTransaction.pullChallenge(
+            allowedClockSkewInSeconds: 300) { pushChallenges, unrecognizedChallenges, error in
                 XCTAssertEqual(pullChallengeTransaction.allowedClockSkewInSeconds, 300)
                 XCTAssertEqual(pushChallenges.count, 1)
-            case .failure(let error):
-                XCTFail("Unexpected error - \(error.errorDescription ?? "")")
-            }
-            completionExpectation.fulfill()
+                XCTAssertNil(error)
+                completionExpectation.fulfill()
         }
         wait(for: [completionExpectation], timeout: 1)
 
@@ -98,22 +95,19 @@ class TransactionPullChallengeTests: XCTestCase {
                                         crypto: cryptoManager,
                                         logger: OktaLoggerMock())
         pullChallengeTransaction = OktaTransactionPullChallengePartialMock(enrollment: authenticator,
-                                                                           authenticationToken: AuthToken.bearer("access_token"),
+                                                                           authenticationToken: OktaRestAPIToken.accessToken("access_token"),
                                                                            storageManager: storageMock,
                                                                            cryptoManager: cryptoManager,
                                                                            restAPI: restAPIClient,
                                                                            applicationConfig: applicationConfig,
                                                                            logger: OktaLoggerMock())
         completionExpectation = expectation(description: "callback should be called")
-        pullChallengeTransaction.pullChallenge(allowedClockSkewInSeconds: 300) { result in
-            switch result {
-            case .success(let pushChallenges):
+        pullChallengeTransaction.pullChallenge(
+            allowedClockSkewInSeconds: 300) { pushChallenges, unrecognizedChallenges, error in
                 XCTAssertEqual(pushChallenges.count, 1)
-            case .failure(let error):
-                XCTFail("Unexpected error - \(error.errorDescription ?? "")")
-            }
-
-            completionExpectation.fulfill()
+                XCTAssertEqual(unrecognizedChallenges.count, 1)
+                XCTAssertNil(error)
+                completionExpectation.fulfill()
         }
 
         wait(for: [completionExpectation], timeout: 1)
@@ -138,22 +132,19 @@ class TransactionPullChallengeTests: XCTestCase {
                                                                   userId: "email@okta.com",
                                                                   methodTypes: [.push])
         let pullChallengeTransaction = OktaTransactionPullChallengePartialMock(enrollment: authenticator,
-                                                                               authenticationToken: AuthToken.bearer("access_token"),
+                                                                               authenticationToken: OktaRestAPIToken.accessToken("access_token"),
                                                                                storageManager: storageMock,
                                                                                cryptoManager: cryptoManager,
                                                                                restAPI: restAPIClient,
                                                                                applicationConfig: applicationConfig,
                                                                                logger: OktaLoggerMock())
         let completionExpectation = expectation(description: "callback should be called")
-        pullChallengeTransaction.pullChallenge(allowedClockSkewInSeconds: 300) { result in
-            switch result {
-            case .success(let pushChallenges):
+        pullChallengeTransaction.pullChallenge(
+            allowedClockSkewInSeconds: 300) { pushChallenges, unrecognizedChallenges, error in
                 XCTAssertEqual(pullChallengeTransaction.allowedClockSkewInSeconds, 300)
                 XCTAssertEqual(pushChallenges.count, 1)
-            case .failure(let error):
-                XCTFail("Unexpected error - \(error.errorDescription ?? "")")
-            }
-            completionExpectation.fulfill()
+                XCTAssertNil(error)
+                completionExpectation.fulfill()
         }
         wait(for: [completionExpectation], timeout: 1)
     }
@@ -187,20 +178,21 @@ class TransactionPullChallengeTests: XCTestCase {
                                                                   userId: "email@okta.com",
                                                                   enrolledFactors: [pushFactor])
         let pullChallengeTransaction = OktaTransactionPullChallengePartialMock(enrollment: authenticator,
-                                                                               authenticationToken: AuthToken.bearer("access_token"),
+                                                                               authenticationToken: OktaRestAPIToken.accessToken("access_token"),
                                                                                storageManager: storageMock,
                                                                                cryptoManager: cryptoManager,
                                                                                restAPI: restAPIClient,
                                                                                applicationConfig: applicationConfig,
                                                                                logger: OktaLoggerMock())
-        pullChallengeTransaction.pullChallenge(allowedClockSkewInSeconds: 300) { result in
-            switch result {
-            case .success(_):
-                XCTFail("Unexpected success result")
-            case .failure(let error):
-                XCTAssertEqual(error.localizedDescription, "Failed to read update push token url")
-            }
+        var pullChallengeCallbackCalled = false
+        pullChallengeTransaction.pullChallenge(
+            allowedClockSkewInSeconds: 300) { pushChallenges, unrecognizedChallenges, error in
+                XCTAssertEqual(error?.localizedDescription, "Failed to read update push token url")
+                XCTAssertTrue(pushChallenges.isEmpty)
+                XCTAssertTrue(unrecognizedChallenges.isEmpty)
+                pullChallengeCallbackCalled = true
         }
+        XCTAssertTrue(pullChallengeCallbackCalled)
     }
 
     func testPendingChallenge_RestAPIError() {
@@ -222,20 +214,21 @@ class TransactionPullChallengeTests: XCTestCase {
                                                                   userId: "email@okta.com",
                                                                   methodTypes: [.push])
         let pullChallengeTransaction = OktaTransactionPullChallengePartialMock(enrollment: authenticator,
-                                                                               authenticationToken: AuthToken.bearer("access_token"),
+                                                                               authenticationToken: OktaRestAPIToken.accessToken("access_token"),
                                                                                storageManager: storageMock,
                                                                                cryptoManager: cryptoManager,
                                                                                restAPI: restAPIClient,
                                                                                applicationConfig: applicationConfig,
                                                                                logger: OktaLoggerMock())
-        pullChallengeTransaction.pullChallenge(allowedClockSkewInSeconds: 300) { result in
-            switch result {
-            case .success(_):
-                XCTFail("Unexpected success result")
-            case .failure(let error):
-                XCTAssertEqual(error.localizedDescription, "Server call has failed")
-            }
+        let completionExpectation = expectation(description: "callback should be called")
+        pullChallengeTransaction.pullChallenge(
+            allowedClockSkewInSeconds: 300) { pushChallenges, unrecognizedChallenges, error in
+                XCTAssertEqual(error?.localizedDescription, "Server call has failed")
+                XCTAssertTrue(pushChallenges.isEmpty)
+                XCTAssertTrue(unrecognizedChallenges.isEmpty)
+                completionExpectation.fulfill()
         }
+        wait(for: [completionExpectation], timeout: 1)
     }
 
     func testPendingChallenge_BadServerPayload() {
@@ -257,20 +250,21 @@ class TransactionPullChallengeTests: XCTestCase {
                                                                   userId: "email@okta.com",
                                                                   methodTypes: [.push])
         let pullChallengeTransaction = OktaTransactionPullChallengePartialMock(enrollment: authenticator,
-                                                                               authenticationToken: AuthToken.bearer("access_token"),
+                                                                               authenticationToken: OktaRestAPIToken.accessToken("access_token"),
                                                                                storageManager: storageMock,
                                                                                cryptoManager: cryptoManager,
                                                                                restAPI: restAPIClient,
                                                                                applicationConfig: applicationConfig,
                                                                                logger: OktaLoggerMock())
-        pullChallengeTransaction.pullChallenge(allowedClockSkewInSeconds: 300) { result in
-            switch result {
-            case .success(_):
-                XCTFail("Unexpected success result")
-            case .failure(let error):
-                XCTAssertEqual(error.localizedDescription, "Failed to decode server payload")
-            }
+        let completionExpectation = expectation(description: "callback should be called")
+        pullChallengeTransaction.pullChallenge(
+            allowedClockSkewInSeconds: 300) { pushChallenges, unrecognizedChallenges, error in
+                XCTAssertEqual(error?.localizedDescription, "Failed to decode server payload")
+                XCTAssertTrue(pushChallenges.isEmpty)
+                XCTAssertTrue(unrecognizedChallenges.isEmpty)
+                completionExpectation.fulfill()
         }
+        wait(for: [completionExpectation], timeout: 1)
     }
 
     func testPendingChallenge_NoIdxChallengeInPayload() {
@@ -292,20 +286,21 @@ class TransactionPullChallengeTests: XCTestCase {
                                                                   userId: "email@okta.com",
                                                                   methodTypes: [.push])
         let pullChallengeTransaction = OktaTransactionPullChallengePartialMock(enrollment: authenticator,
-                                                                               authenticationToken: AuthToken.bearer("access_token"),
+                                                                               authenticationToken: OktaRestAPIToken.accessToken("access_token"),
                                                                                storageManager: storageMock,
                                                                                cryptoManager: cryptoManager,
                                                                                restAPI: restAPIClient,
                                                                                applicationConfig: applicationConfig,
                                                                                logger: OktaLoggerMock())
-        pullChallengeTransaction.pullChallenge(allowedClockSkewInSeconds: 300) { result in
-            switch result {
-            case .success(let pushChallenges):
-                XCTAssert(pushChallenges.isEmpty)
-            case .failure(let error):
-                XCTFail("Unexpected error - \(error.errorDescription ?? "")")
-            }
+        let completionExpectation = expectation(description: "callback should be called")
+        pullChallengeTransaction.pullChallenge(
+            allowedClockSkewInSeconds: 300) { pushChallenges, unrecognizedChallenges, error in
+                XCTAssertNil(error)
+                XCTAssertTrue(pushChallenges.isEmpty)
+                XCTAssertEqual(unrecognizedChallenges.count, 1)
+                completionExpectation.fulfill()
         }
+        wait(for: [completionExpectation], timeout: 1)
     }
 
     func testPendingChallenge_PayloadWithBadBindJWT() {
@@ -327,19 +322,20 @@ class TransactionPullChallengeTests: XCTestCase {
                                                                   userId: "email@okta.com",
                                                                   methodTypes: [.push])
         let pullChallengeTransaction = OktaTransactionPullChallengePartialMock(enrollment: authenticator,
-                                                                               authenticationToken: AuthToken.bearer("access_token"),
+                                                                               authenticationToken: OktaRestAPIToken.accessToken("access_token"),
                                                                                storageManager: storageMock,
                                                                                cryptoManager: cryptoManager,
                                                                                restAPI: restAPIClient,
                                                                                applicationConfig: applicationConfig,
                                                                                logger: OktaLoggerMock())
-        pullChallengeTransaction.pullChallenge(allowedClockSkewInSeconds: 300) { result in
-            switch result {
-            case .success(let pushChallenges):
-                XCTAssert(pushChallenges.isEmpty)
-            case .failure(let error):
-                XCTFail("Unexpected error - \(error.errorDescription ?? "")")
-            }
+        let completionExpectation = expectation(description: "callback should be called")
+        pullChallengeTransaction.pullChallenge(
+            allowedClockSkewInSeconds: 300) { pushChallenges, unrecognizedChallenges, error in
+                XCTAssertNil(error)
+                XCTAssertTrue(pushChallenges.isEmpty)
+                XCTAssertEqual(unrecognizedChallenges.count, 1)
+                completionExpectation.fulfill()
         }
+        wait(for: [completionExpectation], timeout: 1)
     }
 }

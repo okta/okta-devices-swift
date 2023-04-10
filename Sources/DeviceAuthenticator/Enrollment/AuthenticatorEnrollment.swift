@@ -157,13 +157,20 @@ class AuthenticatorEnrollment: AuthenticatorEnrollmentProtocol {
                                 allowedClockSkewInSeconds: Int,
                                 completion: @escaping (Result<[PushChallengeProtocol], DeviceAuthenticatorError>) -> Void) {
         let pullChallengeTransaction = OktaTransactionPullChallenge(enrollment: self,
-                                                                    authenticationToken: authenticationToken,
+                                                                    authenticationToken: OktaRestAPIToken.accessToken(authenticationToken.tokenValue()),
                                                                     storageManager: storageManager,
                                                                     cryptoManager: cryptoManager,
                                                                     restAPI: restAPIClient,
                                                                     applicationConfig: applicationConfig,
                                                                     logger: logger)
-        pullChallengeTransaction.pullChallenge(allowedClockSkewInSeconds: allowedClockSkewInSeconds, completion: completion)
+        pullChallengeTransaction.pullChallenge(
+            allowedClockSkewInSeconds: allowedClockSkewInSeconds) { challenges, unrecognizedChallenges, error in
+                if let error = error {
+                    completion(.failure(error))
+                    return
+                }
+                completion(.success(challenges))
+        }
     }
 
     func deleteFromDevice() throws {
@@ -363,6 +370,56 @@ class AuthenticatorEnrollment: AuthenticatorEnrollmentProtocol {
         case .phishingAttemptDetected:
             return .active
         }
+    }
+
+    func generateSSWSToken(jwtType: String = "okta-enrollmentupdate+jwt",
+                           preferUVKey: Bool = true,
+                           onCompletion: @escaping (Result<String, DeviceAuthenticatorError>) -> Void) {
+        DispatchQueue.global().async {
+            guard var keyTagToUse = self.findPoPKeyTagFromEnrolledFactors() else {
+                let error = DeviceAuthenticatorError.internalError("Proof of possession key tag is not found")
+                self.logger.error(eventName: "JWT generating error", message: "\(error)")
+                onCompletion(.failure(error))
+                return
+            }
+
+            if preferUVKey,
+               let userVerificationKeyTag = self.findUVKeyTagFromEnrolledFactors() {
+                keyTagToUse = userVerificationKeyTag
+            }
+
+            guard let key = self.cryptoManager.get(keyOf: .privateKey, with: keyTagToUse, context: LAContext()) else {
+                let error = SecurityError.jwtError("Failed to read private key")
+                self.logger.error(eventName: "JWT generating error", message: "\(error)")
+                onCompletion(.failure(DeviceAuthenticatorError.securityError(error)))
+                return
+            }
+
+            do {
+                let jwtString = try OktaAuthenticationJWTGenerator(enrollmentId: self.enrollmentId,
+                                                                   orgHost: self.orgHost.absoluteString,
+                                                                   userId: self.userId,
+                                                                   key: key,
+                                                                   kid: keyTagToUse,
+                                                                   jwtType: jwtType,
+                                                                   cryptoManager: self.cryptoManager,
+                                                                   logger: self.logger,
+                                                                   jwtGenerator: self.jwtGenerator).generateJWTString()
+                onCompletion(.success(jwtString))
+            } catch {
+                self.logger.error(eventName: "JWT generating error", message: "\(error)")
+                let error = error as? SecurityError ?? SecurityError.jwtError(error.localizedDescription)
+                onCompletion(.failure(DeviceAuthenticatorError.securityError(error)))
+            }
+        }
+    }
+
+    func findPoPKeyTagFromEnrolledFactors() -> String? {
+        return self.enrolledFactors.first(where: { $0.proofOfPossessionKeyTag != nil })?.proofOfPossessionKeyTag
+    }
+
+    func findUVKeyTagFromEnrolledFactors() -> String? {
+        return self.enrolledFactors.first(where: { $0.userVerificationKeyTag != nil })?.userVerificationKeyTag
     }
 }
 

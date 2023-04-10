@@ -28,7 +28,7 @@ class OktaAuthenticationJWTGenerator {
     let jwtType: String
     let key: SecKey
     let kid: String
-    let jwtGenerator: OktaJWTGenerator
+    let jwtGenerator: OktaJWTGeneratorProtocol
     let logger: OktaLoggerProtocol
 
     init(enrollmentId: String,
@@ -39,7 +39,7 @@ class OktaAuthenticationJWTGenerator {
          jwtType: String,
          cryptoManager: OktaCryptoProtocol,
          logger: OktaLoggerProtocol,
-         jwtGenerator: OktaJWTGenerator? = nil) {
+         jwtGenerator: OktaJWTGeneratorProtocol? = nil) {
         self.enrollmentId = enrollmentId
         self.orgHost = orgHost
         self.userId = userId

@@ -20,11 +20,11 @@ import OktaLogger
 class OktaTransactionPullChallenge: OktaTransaction {
     let restAPI: ServerAPIProtocol
     let enrollment: AuthenticatorEnrollment
-    let authenticationToken: AuthToken
+    let authenticationToken: OktaRestAPIToken
     let applicationConfig: ApplicationConfig
 
     init(enrollment: AuthenticatorEnrollment,
-         authenticationToken: AuthToken,
+         authenticationToken: OktaRestAPIToken,
          storageManager: PersistentStorageProtocol,
          cryptoManager: OktaSharedCryptoProtocol,
          restAPI: ServerAPIProtocol,
@@ -41,21 +41,21 @@ class OktaTransactionPullChallenge: OktaTransaction {
                    logger: logger)
     }
 
-    func pullChallenge(allowedClockSkewInSeconds: Int, completion: @escaping ((Result<[PushChallengeProtocol], DeviceAuthenticatorError>) -> Void)) {
+    func pullChallenge(allowedClockSkewInSeconds: Int, completion: @escaping (([PushChallengeProtocol], [[String: Any]], DeviceAuthenticatorError?) -> Void)) {
         guard let link = enrollment.pushFactor?.factorData.pushLinks?.pendingLink,
               let url = URL(string: link) else {
             let error = DeviceAuthenticatorError.internalError("Failed to read update push token url")
             logger.error(eventName: "Pull challenge failed", message: "Error: \(error)")
-            completion(Result.failure(error))
+            completion([], [], error)
             return
         }
 
         restAPI.pendingChallenge(with: url,
-                                 authenticationToken: OktaRestAPIToken.accessToken(authenticationToken.tokenValue())) { result, error in
+                                 authenticationToken: authenticationToken) { result, error in
             DispatchQueue.global().async {
                 if let error = error {
                     self.logger.error(eventName: "Pull challenge failed", message: "Error: \(error)")
-                    completion(Result.failure(error))
+                    completion([], [], error)
                     return
                 }
 
@@ -63,22 +63,24 @@ class OktaTransactionPullChallenge: OktaTransaction {
                       let data = result.data else {
                     let error = DeviceAuthenticatorError.genericError("Server replied with empty response")
                     self.logger.error(eventName: "Pull challenge failed", message: "Error: \(error)")
-                    completion(Result.failure(error))
+                    completion([], [], error)
                     return
                 }
 
                 guard let payload = (try? JSONSerialization.jsonObject(with: data, options: [])) as? [[String: Any]] else {
                     let error = DeviceAuthenticatorError.genericError("Failed to decode server payload")
                     self.logger.error(eventName: "Pull challenge failed", message: "Error: \(error)")
-                    completion(Result.failure(error))
+                    completion([], [], error)
                     return
                 }
 
                 var challenges = [PushChallenge]()
+                var unrecognizedChallenges = [[String: Any]]()
                 payload.forEach { challengeDictionary in
                     guard let pushBindJWT = self.parsePushBindJWT(info: challengeDictionary, allowedClockSkewInSeconds: allowedClockSkewInSeconds),
                           let context = pushBindJWT.jwt.payload["challengeContext"] as? [AnyHashable: Any] else {
                         self.logger.warning(eventName: "Pull challenge failed", message: "Failed to parse JWT. Payload is invalid or expired")
+                        unrecognizedChallenges.append(challengeDictionary)
                         return
                     }
 
@@ -96,7 +98,7 @@ class OktaTransactionPullChallenge: OktaTransaction {
                     challenges.append(pushChallenge)
                 }
 
-                completion(Result.success(challenges))
+                completion(challenges, unrecognizedChallenges, nil)
             }
         }
     }

@@ -12,6 +12,7 @@
 
 import XCTest
 import OktaJWT
+import LocalAuthentication
 @testable import DeviceAuthenticator
 
 class AuthenticatorEnrollmentTests: XCTestCase {
@@ -406,6 +407,131 @@ class AuthenticatorEnrollmentTests: XCTestCase {
 
         XCTAssertTrue(retrieveMaintenaceTokenHookCalled)
         XCTAssertTrue(retrieveMaintenanceTokenCallbackCalled)
+    }
+
+    func testGenerateSSWSToken_Success() {
+        let authenticator = TestUtils.createAuthenticatorEnrollment(orgHost: URL(string: "okta.okta.com")!,
+                                                                    orgId: "orgId",
+                                                                    enrollmentId: "enrollment_id",
+                                                                    cryptoManager: cryptoManager)
+        let ex = expectation(description: "Completion expected!")
+        authenticator.generateSSWSToken { result in
+            switch result {
+            case .success(let token):
+                XCTAssertEqual(token.split(separator: ".").count, 3)
+            case .failure(let error):
+                XCTFail("Unexpected failure: \(error)")
+            }
+            ex.fulfill()
+        }
+        waitForExpectations(timeout: 1.0, handler: nil)
+    }
+
+    func testGenerateSSWSToken_CantGetKey() {
+        let authenticator = TestUtils.createAuthenticatorEnrollment(orgHost: URL(string: "okta.okta.com")!,
+                                                                    orgId: "orgId",
+                                                                    enrollmentId: "enrollment_id",
+                                                                    cryptoManager: OktaCryptoManager(keychainGroupId: "", logger: OktaLoggerMock()))
+
+        let ex = expectation(description: "Completion expected!")
+        authenticator.generateSSWSToken { result in
+            switch result {
+            case .success(_):
+                XCTFail("Unexpected success")
+            case .failure(let error):
+                if case let .securityError(encryptionError) = error {
+                    XCTAssertEqual(encryptionError, SecurityError.jwtError("Failed to read private key"))
+                } else {
+                    XCTFail("Unexpected error: \(error)")
+                }
+            }
+            ex.fulfill()
+        }
+        waitForExpectations(timeout: 1.0, handler: nil)
+    }
+
+    func testGenerateSSWSToken_GenerationFailed() {
+        let jwtGeneratorMock = OktaJWTGeneratorMock(logger: OktaLoggerMock())
+        jwtGeneratorMock.generateHook = { jwtType, kid, payLoad, key, algo in
+            XCTAssertEqual(kid, "userVerificationKeyTag")
+            throw DeviceAuthenticatorError.genericError("Failed to sign jwt")
+        }
+        let authenticator = TestUtils.createAuthenticatorEnrollment(orgHost: URL(string: "okta.okta.com")!,
+                                                                    orgId: "orgId",
+                                                                    enrollmentId: "enrollment_id",
+                                                                    cryptoManager: cryptoManager,
+                                                                    jwtGenerator: jwtGeneratorMock)
+        let ex = expectation(description: "Completion expected!")
+        authenticator.generateSSWSToken { result in
+            switch result {
+            case .success(_):
+                XCTFail("Unexpected success")
+            case .failure(let error):
+                if case let .securityError(encryptionError) = error {
+                    XCTAssertEqual(encryptionError, SecurityError.jwtError("Failed to sign jwt"))
+                } else {
+                    XCTFail("Unexpected error: \(error)")
+                }
+            }
+            ex.fulfill()
+        }
+        waitForExpectations(timeout: 1.0, handler: nil)
+    }
+
+    func testGenerateSSWSToken_UserCancelled() {
+        let jwtGeneratorMock = OktaJWTGeneratorMock(logger: OktaLoggerMock())
+        jwtGeneratorMock.generateHook = { jwtType, kid, payLoad, key, algo in
+            XCTAssertEqual(kid, "userVerificationKeyTag")
+            throw SecurityError.localAuthenticationCancelled(LAError(.userCancel))
+        }
+        let authenticator = TestUtils.createAuthenticatorEnrollment(orgHost: URL(string: "okta.okta.com")!,
+                                                                    orgId: "orgId",
+                                                                    enrollmentId: "enrollment_id",
+                                                                    cryptoManager: cryptoManager,
+                                                                    jwtGenerator: jwtGeneratorMock)
+        let ex = expectation(description: "Completion expected!")
+        authenticator.generateSSWSToken { result in
+            switch result {
+            case .success(_):
+                XCTFail("Unexpected success")
+            case .failure(let error):
+                XCTAssertEqual(error.userVerificationCancelled(), true)
+                XCTAssertEqual(error.localizedDescription, "Encryption operation failed")
+                let expectedErrorCode = DeviceAuthenticatorError.securityError(SecurityError.localAuthenticationCancelled(LAError(.userCancel))).errorCode
+                XCTAssertEqual(error.errorCode, expectedErrorCode)
+            }
+            ex.fulfill()
+        }
+        waitForExpectations(timeout: 1.0, handler: nil)
+    }
+
+    func testGenerateSSWSToken_UseProofOfPossessionKeyIfUVIsNotEnrolled() {
+        let jwtGeneratorMock = OktaJWTGeneratorMock(logger: OktaLoggerMock())
+        jwtGeneratorMock.generateHook = { jwtType, kid, payLoad, key, algo in
+            XCTAssertEqual(kid, "proofOfPossessionKeyTag")
+            throw DeviceAuthenticatorError.genericError("Failed to sign jwt")
+        }
+        let authenticator = TestUtils.createAuthenticatorEnrollment(orgHost: URL(string: "okta.okta.com")!,
+                                                                    orgId: "orgId",
+                                                                    enrollmentId: "enrollment_id",
+                                                                    cryptoManager: cryptoManager,
+                                                                    userVerificationKeyTag: nil,
+                                                                    jwtGenerator: jwtGeneratorMock)
+        let ex = expectation(description: "Completion expected!")
+        authenticator.generateSSWSToken { result in
+            switch result {
+            case .success(_):
+                XCTFail("Unexpected success")
+            case .failure(let error):
+                if case let .securityError(encryptionError) = error {
+                    XCTAssertEqual(encryptionError, SecurityError.jwtError("Failed to sign jwt"))
+                } else {
+                    XCTFail("Unexpected error: \(error)")
+                }
+            }
+            ex.fulfill()
+        }
+        waitForExpectations(timeout: 1.0, handler: nil)
     }
 
     private func oktaError(for code: ServerErrorCode) -> DeviceAuthenticatorError {
