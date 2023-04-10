@@ -443,8 +443,10 @@ class OktaSharedSQLite: OktaSharedSQLiteProtocol {
         }
         // List active methods as a string (e.g. "totp, push")
         let activeMethodsStr = stringFromAuthenticatorMethods(authenticatorPolicy.methods)
-        // UserVerificationSetting as Integer
+        // UserVerificationSetting as String
         let userVerification = authenticatorPolicy.userVerificationSetting.rawValue
+        // _userVerificationMethods as String
+        let userVerificationMethods = string(from: authenticatorPolicy._userVerificationMethods)
         // Policy metadata
         let data = try JSONEncoder().encode(authenticatorPolicy.metadata)
         let currentDate = Date()
@@ -454,6 +456,7 @@ class OktaSharedSQLite: OktaSharedSQLiteProtocol {
             Column.orgId: orgId,
             Column.activeMethods: activeMethodsStr,
             Column.userVerification: userVerification,
+            Column.userVerificationMethods: userVerificationMethods,
             Column.metadata: data,
             Column.updatedTimestamp: currentDate,
             Column.createdTimestamp: currentDate
@@ -461,9 +464,13 @@ class OktaSharedSQLite: OktaSharedSQLiteProtocol {
         return writeArguments
     }
 
+    var authenticatorPolicyStatement: String {
+        return "INSERT INTO AuthenticatorPolicy (policyId, orgId, activeMethods, userVerification, userVerificationMethods, metadata, createdTimestamp, updatedTimestamp) VALUES (:policyId, :orgId, :activeMethods, :userVerification, :userVerificationMethods, :metadata, :createdTimestamp, :updatedTimestamp) ON CONFLICT(policyId,orgId) DO UPDATE SET policyId = :policyId, orgId = :orgId, activeMethods = :activeMethods, userVerification = :userVerification, userVerificationMethods = :userVerificationMethods, metadata = :metadata, updatedTimestamp = :updatedTimestamp"
+    }
+
     func storeAuthenticatorPolicy(writeArguments: StatementArguments, db: Database) throws {
         do {
-            try db.execute(sql: "INSERT INTO AuthenticatorPolicy (policyId, orgId, activeMethods, userVerification, metadata, createdTimestamp, updatedTimestamp) VALUES (:policyId, :orgId, :activeMethods, :userVerification, :metadata, :createdTimestamp, :updatedTimestamp) ON CONFLICT(policyId,orgId) DO UPDATE SET policyId = :policyId, orgId = :orgId, activeMethods = :activeMethods, userVerification = :userVerification, metadata = :metadata, updatedTimestamp = :updatedTimestamp", arguments: writeArguments)
+            try db.execute(sql: authenticatorPolicyStatement, arguments: writeArguments)
         } catch {
             throw DeviceAuthenticatorError.storageError(StorageError.sqliteError(error.localizedDescription))
         }
@@ -491,9 +498,11 @@ class OktaSharedSQLite: OktaSharedSQLiteProtocol {
                     let decoder = JSONDecoder()
                     let metadata = try decoder.decode(AuthenticatorMetaDataModel.self, from: data)
                     let userVerification = row.userVerificationSetting
+                    let userVerificationMethods = row.userVerificationMethodsSetting
                     let methods = row.activeMethods
                     policy = AuthenticatorPolicy(metadata: metadata,
                                                  userVerification: userVerification,
+                                                 userVerificationMethods: userVerificationMethods,
                                                  methods: methods)
                 }
             })
@@ -520,6 +529,10 @@ class OktaSharedSQLite: OktaSharedSQLiteProtocol {
 
     private func stringFromAuthenticatorMethods(_ methods: [AuthenticatorMethod]) -> String {
         return methods.compactMap({ $0.rawValue }).joined(separator: ",")
+    }
+
+    private func string(from userVerificationMethods: [AuthenticatorSettingsModel.UserVerificationMethodSetting]?) -> String? {
+        userVerificationMethods?.compactMap({ $0.rawValue }).joined(separator: ",")
     }
 
     private var pool: DatabasePool? {

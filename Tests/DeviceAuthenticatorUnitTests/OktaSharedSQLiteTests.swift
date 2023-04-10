@@ -595,7 +595,7 @@ class OktaSharedSQLiteTests: XCTestCase {
         XCTAssertEqual(migrationSchema_v2, sqliteSchemaMigration_v2)
     }
 
-    func testStorageMigrationFrom_v1_To_v2() throws {
+    func testEnrolledMethodTableMigrationFrom_v1_To_v2() throws {
         var sqlite = try createSqlite(fullDatabaseEncryption: false, prefersSecureEnclaveUsage: false, schemaVersion: .v1)
 
         let enrollment = entitiesGenerator.createAuthenticator(methodTypes: [AuthenticatorMethod.push], transactionTypes: [.login, .ciba])
@@ -667,6 +667,80 @@ class OktaSharedSQLiteTests: XCTestCase {
         XCTAssertEqual(retrieved_v2.pushFactor?.factorData.userVerificationBioOrPinKeyTag, enrollment.pushFactor?.factorData.userVerificationBioOrPinKeyTag)
     }
 
+    func testAuthenticatorPolicyTableMigrationFrom_v1_To_v2() throws {
+        var sqlite = try createSqlite(fullDatabaseEncryption: false, prefersSecureEnclaveUsage: false, schemaVersion: .v1)
+
+        let orgId = "orgId"
+        let policy = entitiesGenerator.createPolicy(userVerification: .required, userVerificationMethods: [.presence, .pin, .biometrics])
+
+        try sqlite.storeAuthenticatorPolicy(policy, orgId: orgId)
+        XCTAssertEqual(sqlite.lastKnownVersion, .v1)
+
+        typealias AuthenticatorPolicyRawData = (AuthenticatorSettingsModel.UserVerificationSetting?,
+                                                [AuthenticatorSettingsModel.UserVerificationMethodSetting]?,
+                                                [AuthenticatorMethod]?)
+
+        func fetchAuthenticatorPolicy() throws -> AuthenticatorPolicyRawData {
+            var policy: AuthenticatorPolicyRawData?
+            let pool = sqlite.sqlitePersistentStorage.sqlitePool
+            do {
+                try pool?.read { db in
+                    if let row = try Row.fetchOne(db, sql: "SELECT * from AuthenticatorPolicy WHERE orgId = ?", arguments: [orgId]) {
+                        let userVerification = row.userVerificationSetting
+                        let userVerificationMethods = row.userVerificationMethodsSetting
+                        let methods = row.activeMethods
+                        policy = (userVerification, userVerificationMethods, methods)
+                    }
+                }
+            } catch {
+                XCTFail()
+                throw NSError(domain: "TestError", code: -1, userInfo: nil)
+            }
+
+            guard let policy = policy else {
+                XCTFail()
+                throw NSError(domain: "TestError", code: -1, userInfo: nil)
+            }
+
+            return policy
+        }
+
+        let retrieved_v1 = try fetchAuthenticatorPolicy()
+
+        func assert(retrievedPolicy: AuthenticatorPolicyRawData) {
+            let (userVerificationSetting, _userVerificationMethods, activeMethods) = retrievedPolicy
+            XCTAssertEqual(userVerificationSetting, .required)
+            XCTAssertNil(_userVerificationMethods)
+            XCTAssertNotNil(activeMethods)
+            XCTAssertFalse(activeMethods!.contains(.totp))
+            XCTAssertTrue(activeMethods!.contains(.push))
+        }
+
+        assert(retrievedPolicy: retrieved_v1)
+
+        // Migrate to .v2 and check the stored policy is still the same
+        try sqlite.performIncrementalStorageMigration(.v2)
+        XCTAssertEqual(sqlite.lastKnownVersion, .v2)
+
+        sqlite = try createSqlite(fullDatabaseEncryption: false, prefersSecureEnclaveUsage: false, schemaVersion: .v2)
+
+        let migrated_v2 = try fetchAuthenticatorPolicy()
+
+        assert(retrievedPolicy: migrated_v2)
+
+        // Re-store the policy using .v2 schema
+        try sqlite.storeAuthenticatorPolicy(policy, orgId: orgId)
+
+        let (userVerificationSetting, _userVerificationMethods, activeMethods) = try fetchAuthenticatorPolicy()
+        XCTAssertEqual(userVerificationSetting, .required)
+        XCTAssertNotNil(_userVerificationMethods)
+        XCTAssertNotNil(_userVerificationMethods!.contains(.presence))
+        XCTAssertNotNil(_userVerificationMethods!.contains(.pin))
+        XCTAssertNotNil(_userVerificationMethods!.contains(.biometrics))
+        XCTAssertNotNil(activeMethods)
+        XCTAssertFalse(activeMethods!.contains(.totp))
+        XCTAssertTrue(activeMethods!.contains(.push))
+    }
     // MARK: Private Helpers
 
     private func createStorage(prefersSecureEnclaveUsage: Bool, schemaVersion: SQLiteStorageVersion = .latestVersion) throws -> OktaSQLitePersistentStorage {
@@ -715,5 +789,9 @@ class OktaSharedSQLiteTests: XCTestCase {
 class OktaSharedSQLite_v1: OktaSharedSQLite {
     override var factorStatement: String {
         "INSERT INTO EnrolledMethod (id, enrollmentId, orgId, type, proofOfPossessionKeyTag, userVerificationKeyTag, links, passCodeLength, timeIntervalSec, algorithm, sharedSecret, transactionTypes, createdTimestamp, updatedTimestamp) VALUES (:id, :enrollmentId, :enrollmentOrgId, :type, :proofOfPossessionKeyTag, :userVerificationKeyTag, :links, :passCodeLength, :timeIntervalSec, :algorithm, :sharedSecret, :transactionTypes, :createdTimestamp, :updatedTimestamp) ON CONFLICT(id,enrollmentId,orgId) DO UPDATE SET id = :id, enrollmentId = :enrollmentId, orgId = :enrollmentOrgId, type = :type, proofOfPossessionKeyTag = :proofOfPossessionKeyTag, userVerificationKeyTag = :userVerificationKeyTag, links = :links, passCodeLength = :passCodeLength, timeIntervalSec = :timeIntervalSec, algorithm = :algorithm, sharedSecret = :sharedSecret, transactionTypes = :transactionTypes, updatedTimestamp = :updatedTimestamp"
+    }
+
+    override var authenticatorPolicyStatement: String {
+        return "INSERT INTO AuthenticatorPolicy (policyId, orgId, activeMethods, userVerification, metadata, createdTimestamp, updatedTimestamp) VALUES (:policyId, :orgId, :activeMethods, :userVerification, :metadata, :createdTimestamp, :updatedTimestamp) ON CONFLICT(policyId,orgId) DO UPDATE SET policyId = :policyId, orgId = :orgId, activeMethods = :activeMethods, userVerification = :userVerification, metadata = :metadata, updatedTimestamp = :updatedTimestamp"
     }
 }

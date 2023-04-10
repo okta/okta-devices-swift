@@ -15,4 +15,6 @@ import Foundation
 let sqliteSchemaMigration_v2 =
     """
     ALTER TABLE 'EnrolledMethod' ADD COLUMN 'userVerificationBioOrPinKeyTag' TEXT DEFAULT NULL;
+
+    ALTER TABLE 'AuthenticatorPolicy' ADD COLUMN 'userVerificationMethods' TEXT DEFAULT NULL;
     """

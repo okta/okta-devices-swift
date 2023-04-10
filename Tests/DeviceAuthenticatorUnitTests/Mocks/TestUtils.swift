@@ -132,9 +132,11 @@ class TestUtils {
 
     class func createAuthenticatorMetadataModel(id: String = "id",
                                                 userVerification: AuthenticatorSettingsModel.UserVerificationSetting = .preferred,
+                                                userVerificationMethods: [AuthenticatorSettingsModel.UserVerificationMethodSetting] = [],
                                                 methods: [AuthenticatorMethod] = [.push, .signedNonce]) -> AuthenticatorMetaDataModel {
         let settings = AuthenticatorSettingsModel(appInstanceId: nil,
                                                   userVerification: userVerification,
+                                                  userVerificationMethods: userVerificationMethods,
                                                   oauthClientId: "oauthClientId")
 
         var embeddedMethods = [MethodResponseModel]()
