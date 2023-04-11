@@ -75,12 +75,10 @@ class OktaTransactionPullChallenge: OktaTransaction {
                 }
 
                 var challenges = [PushChallenge]()
-                var unrecognizedChallenges = [[String: Any]]()
                 payload.forEach { challengeDictionary in
                     guard let pushBindJWT = self.parsePushBindJWT(info: challengeDictionary, allowedClockSkewInSeconds: allowedClockSkewInSeconds),
                           let context = pushBindJWT.jwt.payload["challengeContext"] as? [AnyHashable: Any] else {
                         self.logger.warning(eventName: "Pull challenge failed", message: "Failed to parse JWT. Payload is invalid or expired")
-                        unrecognizedChallenges.append(challengeDictionary)
                         return
                     }
 
@@ -98,7 +96,7 @@ class OktaTransactionPullChallenge: OktaTransaction {
                     challenges.append(pushChallenge)
                 }
 
-                completion(challenges, unrecognizedChallenges, nil)
+                completion(challenges, payload, nil)
             }
         }
     }

@@ -78,7 +78,7 @@ class TransactionPullChallengeTests: XCTestCase {
                                                                                logger: OktaLoggerMock())
         var completionExpectation = expectation(description: "callback should be called")
         pullChallengeTransaction.pullChallenge(
-            allowedClockSkewInSeconds: 300) { pushChallenges, unrecognizedChallenges, error in
+            allowedClockSkewInSeconds: 300) { pushChallenges, allChallenges, error in
                 XCTAssertEqual(pullChallengeTransaction.allowedClockSkewInSeconds, 300)
                 XCTAssertEqual(pushChallenges.count, 1)
                 XCTAssertNil(error)
@@ -103,9 +103,9 @@ class TransactionPullChallengeTests: XCTestCase {
                                                                            logger: OktaLoggerMock())
         completionExpectation = expectation(description: "callback should be called")
         pullChallengeTransaction.pullChallenge(
-            allowedClockSkewInSeconds: 300) { pushChallenges, unrecognizedChallenges, error in
+            allowedClockSkewInSeconds: 300) { pushChallenges, allChallenges, error in
                 XCTAssertEqual(pushChallenges.count, 1)
-                XCTAssertEqual(unrecognizedChallenges.count, 1)
+                XCTAssertEqual(allChallenges.count, 2)
                 XCTAssertNil(error)
                 completionExpectation.fulfill()
         }
@@ -140,7 +140,7 @@ class TransactionPullChallengeTests: XCTestCase {
                                                                                logger: OktaLoggerMock())
         let completionExpectation = expectation(description: "callback should be called")
         pullChallengeTransaction.pullChallenge(
-            allowedClockSkewInSeconds: 300) { pushChallenges, unrecognizedChallenges, error in
+            allowedClockSkewInSeconds: 300) { pushChallenges, allChallenges, error in
                 XCTAssertEqual(pullChallengeTransaction.allowedClockSkewInSeconds, 300)
                 XCTAssertEqual(pushChallenges.count, 1)
                 XCTAssertNil(error)
@@ -186,10 +186,10 @@ class TransactionPullChallengeTests: XCTestCase {
                                                                                logger: OktaLoggerMock())
         var pullChallengeCallbackCalled = false
         pullChallengeTransaction.pullChallenge(
-            allowedClockSkewInSeconds: 300) { pushChallenges, unrecognizedChallenges, error in
+            allowedClockSkewInSeconds: 300) { pushChallenges, allChallenges, error in
                 XCTAssertEqual(error?.localizedDescription, "Failed to read update push token url")
                 XCTAssertTrue(pushChallenges.isEmpty)
-                XCTAssertTrue(unrecognizedChallenges.isEmpty)
+                XCTAssertTrue(allChallenges.isEmpty)
                 pullChallengeCallbackCalled = true
         }
         XCTAssertTrue(pullChallengeCallbackCalled)
@@ -222,10 +222,10 @@ class TransactionPullChallengeTests: XCTestCase {
                                                                                logger: OktaLoggerMock())
         let completionExpectation = expectation(description: "callback should be called")
         pullChallengeTransaction.pullChallenge(
-            allowedClockSkewInSeconds: 300) { pushChallenges, unrecognizedChallenges, error in
+            allowedClockSkewInSeconds: 300) { pushChallenges, allChallenges, error in
                 XCTAssertEqual(error?.localizedDescription, "Server call has failed")
                 XCTAssertTrue(pushChallenges.isEmpty)
-                XCTAssertTrue(unrecognizedChallenges.isEmpty)
+                XCTAssertTrue(allChallenges.isEmpty)
                 completionExpectation.fulfill()
         }
         wait(for: [completionExpectation], timeout: 1)
@@ -258,10 +258,10 @@ class TransactionPullChallengeTests: XCTestCase {
                                                                                logger: OktaLoggerMock())
         let completionExpectation = expectation(description: "callback should be called")
         pullChallengeTransaction.pullChallenge(
-            allowedClockSkewInSeconds: 300) { pushChallenges, unrecognizedChallenges, error in
+            allowedClockSkewInSeconds: 300) { pushChallenges, allChallenges, error in
                 XCTAssertEqual(error?.localizedDescription, "Failed to decode server payload")
                 XCTAssertTrue(pushChallenges.isEmpty)
-                XCTAssertTrue(unrecognizedChallenges.isEmpty)
+                XCTAssertTrue(allChallenges.isEmpty)
                 completionExpectation.fulfill()
         }
         wait(for: [completionExpectation], timeout: 1)
@@ -294,10 +294,10 @@ class TransactionPullChallengeTests: XCTestCase {
                                                                                logger: OktaLoggerMock())
         let completionExpectation = expectation(description: "callback should be called")
         pullChallengeTransaction.pullChallenge(
-            allowedClockSkewInSeconds: 300) { pushChallenges, unrecognizedChallenges, error in
+            allowedClockSkewInSeconds: 300) { pushChallenges, allChallenges, error in
                 XCTAssertNil(error)
                 XCTAssertTrue(pushChallenges.isEmpty)
-                XCTAssertEqual(unrecognizedChallenges.count, 1)
+                XCTAssertEqual(allChallenges.count, 1)
                 completionExpectation.fulfill()
         }
         wait(for: [completionExpectation], timeout: 1)
@@ -330,10 +330,10 @@ class TransactionPullChallengeTests: XCTestCase {
                                                                                logger: OktaLoggerMock())
         let completionExpectation = expectation(description: "callback should be called")
         pullChallengeTransaction.pullChallenge(
-            allowedClockSkewInSeconds: 300) { pushChallenges, unrecognizedChallenges, error in
+            allowedClockSkewInSeconds: 300) { pushChallenges, allChallenges, error in
                 XCTAssertNil(error)
                 XCTAssertTrue(pushChallenges.isEmpty)
-                XCTAssertEqual(unrecognizedChallenges.count, 1)
+                XCTAssertEqual(allChallenges.count, 1)
                 completionExpectation.fulfill()
         }
         wait(for: [completionExpectation], timeout: 1)
