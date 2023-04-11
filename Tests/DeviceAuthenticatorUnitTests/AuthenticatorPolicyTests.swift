@@ -43,7 +43,7 @@ class AuthenticatorPolicyTests: XCTestCase {
         XCTAssertEqual(policy.userVerificationSetting, .preferred)
         XCTAssertEqual(policy._userVerificationMethods, userVerificationMethods)
 
-        userVerificationMethods = [.presence, .pin, .biometrics]
+        userVerificationMethods = [.pin, .biometrics]
         policy = AuthenticatorPolicy(metadata: createMetadataWithSettings(
             AuthenticatorSettingsModel(appInstanceId: nil, userVerification: .required , userVerificationMethods: userVerificationMethods, oauthClientId: nil)
         ))

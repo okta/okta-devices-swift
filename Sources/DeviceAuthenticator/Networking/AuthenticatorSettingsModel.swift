@@ -25,7 +25,6 @@ struct AuthenticatorSettingsModel: Codable {
     }
 
     enum UserVerificationMethodSetting {
-        case presence
         case pin
         case biometrics
         case unknown(String)
@@ -74,8 +73,6 @@ extension AuthenticatorSettingsModel.UserVerificationSetting: Codable {
 extension AuthenticatorSettingsModel.UserVerificationMethodSetting {
     init(rawValue: String) {
         switch rawValue.lowercased() {
-        case "presence":
-            self = .presence
         case "pin":
             self = .pin
         case "biometrics":
@@ -87,8 +84,6 @@ extension AuthenticatorSettingsModel.UserVerificationMethodSetting {
 
     var rawValue: String {
         switch self {
-        case .presence:
-            return "presence"
         case .pin:
             return "pin"
         case .biometrics:

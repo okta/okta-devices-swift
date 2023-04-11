@@ -671,7 +671,7 @@ class OktaSharedSQLiteTests: XCTestCase {
         var sqlite = try createSqlite(fullDatabaseEncryption: false, prefersSecureEnclaveUsage: false, schemaVersion: .v1)
 
         let orgId = "orgId"
-        let policy = entitiesGenerator.createPolicy(userVerification: .required, userVerificationMethods: [.presence, .pin, .biometrics])
+        let policy = entitiesGenerator.createPolicy(userVerification: .required, userVerificationMethods: [.pin, .biometrics])
 
         try sqlite.storeAuthenticatorPolicy(policy, orgId: orgId)
         XCTAssertEqual(sqlite.lastKnownVersion, .v1)
@@ -734,7 +734,6 @@ class OktaSharedSQLiteTests: XCTestCase {
         let (userVerificationSetting, _userVerificationMethods, activeMethods) = try fetchAuthenticatorPolicy()
         XCTAssertEqual(userVerificationSetting, .required)
         XCTAssertNotNil(_userVerificationMethods)
-        XCTAssertNotNil(_userVerificationMethods!.contains(.presence))
         XCTAssertNotNil(_userVerificationMethods!.contains(.pin))
         XCTAssertNotNil(_userVerificationMethods!.contains(.biometrics))
         XCTAssertNotNil(activeMethods)
