@@ -64,11 +64,10 @@ class AuthenticatorPolicy: Codable, AuthenticatorPolicyProtocol {
 
     init(metadata: AuthenticatorMetaDataModel,
          userVerification: AuthenticatorSettingsModel.UserVerificationSetting? = nil,
-         userVerificationMethods: [AuthenticatorSettingsModel.UserVerificationMethodSetting]? = nil,
          methods: [AuthenticatorMethod]? = nil) {
         self.metadata = metadata
         self._userVerification = userVerification ?? metadata.settings?.userVerification
-        self._userVerificationMethods = userVerificationMethods ?? metadata.settings?.userVerificationMethods
+        self._userVerificationMethods = metadata.settings?.userVerificationMethods
         self.methods = methods ?? metadata._embedded.methods.compactMap({ $0.type })
     }
 

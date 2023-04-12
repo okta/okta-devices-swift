@@ -52,7 +52,6 @@ extension OktaSharedSQLite {
         // AuthenticatorPolicy
         static let policyId = "policyId"
         static let userVerification = "userVerification"
-        static let userVerificationMethods = "userVerificationMethods"
         static let activeMethods = "activeMethods"
 
         // DeviceEnrollments
@@ -171,14 +170,6 @@ extension GRDB.Row {
         return AuthenticatorSettingsModel.UserVerificationSetting(raw: value)
     }
 
-    var userVerificationMethodsSetting: [AuthenticatorSettingsModel.UserVerificationMethodSetting]? {
-        guard let userVerificationMethods: String = self[OktaSharedSQLite.Column.userVerificationMethods] else {
-            return nil
-        }
-
-        return convert(userVerificationMethods)
-    }
-
     var activeMethods: [AuthenticatorMethod]? {
         guard let methodsStr: String = self[OktaSharedSQLite.Column.activeMethods] else {
             return []
@@ -188,9 +179,5 @@ extension GRDB.Row {
 
     private func convertAuthenticatorMethodString(_ methodString: String?) -> [AuthenticatorMethod]? {
         methodString?.components(separatedBy: ",").compactMap({ AuthenticatorMethod(raw: $0) })
-    }
-
-    private func convert(_ userVerificationMethods: String) -> [AuthenticatorSettingsModel.UserVerificationMethodSetting]? {
-        userVerificationMethods.components(separatedBy: ",").compactMap { AuthenticatorSettingsModel.UserVerificationMethodSetting(rawValue: $0) }
     }
 }
