@@ -33,6 +33,7 @@ class OktaFactorPushTests: XCTestCase {
         factorData = OktaFactorMetadataPush(id: "id",
                                             proofOfPossessionKeyTag: "proofOfPossessionKeyTag",
                                             userVerificationKeyTag: "userVerificationKeyTag",
+                                            userVerificationBioOrPinKeyTag: "userVerificationBioOrPinKeyTag",
                                             transactionTypes: .login)
         factor = OktaFactorPush(factorData: factorData,
                                 cryptoManager: cryptoManager,
@@ -44,6 +45,12 @@ class OktaFactorPushTests: XCTestCase {
         XCTAssertTrue(factor.enrolledWithUserVerificationKey)
         factor.factorData.userVerificationKeyTag = nil
         XCTAssertFalse(factor.enrolledWithUserVerificationKey)
+    }
+
+    func testEnrolledWithUserVerificationBioOrPinKey() {
+        XCTAssertTrue(factor.enrolledWithUserVerificationBioOrPinKey)
+        factor.factorData.userVerificationBioOrPinKeyTag = nil
+        XCTAssertFalse(factor.enrolledWithUserVerificationBioOrPinKey)
     }
 
     func testCleanup() {

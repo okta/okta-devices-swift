@@ -38,6 +38,9 @@ protocol OktaFactor: CustomStringConvertible {
     /// Returns true if factor owns user verification key
     var enrolledWithUserVerificationKey: Bool { get }
 
+    /// Returns true if factor owns bio or pin user verification key
+    var enrolledWithUserVerificationBioOrPinKey: Bool { get }
+
     /// Debug description
     var description: String { get }
 

@@ -41,7 +41,12 @@ class AuthenticatorEnrollment: AuthenticatorEnrollmentProtocol {
 
     /// Checks for registered user verification keys in enrolled factors
     var hasFactorsWithUserVerificationKey: Bool {
-        return enrolledFactors.first(where: { $0.enrolledWithUserVerificationKey }) != nil
+        return enrolledFactors.contains { $0.enrolledWithUserVerificationKey }
+    }
+
+    /// Checks for registered bio or pin user verification  keys in enrolled factors
+    var hasFactorsWithUserVerificationBioOrPinKey: Bool {
+        return enrolledFactors.contains { $0.enrolledWithUserVerificationBioOrPinKey }
     }
 
     /// Returns  push factor if enrolled

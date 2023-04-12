@@ -24,10 +24,17 @@ class OktaFactorPush: OktaFactor {
     var id: String {
         return factorData.id
     }
+
     /// Checks whether factor was enrolled with user verification key
     /// - Returns: true if factor enrolled with user verification key
     var enrolledWithUserVerificationKey: Bool {
         return userVerificationKeyTag != nil
+    }
+
+    /// Checks whether factor was enrolled with bio or pin user verification key
+    /// - Returns: true if factor enrolled with bio or pin user verification key
+    var enrolledWithUserVerificationBioOrPinKey: Bool {
+        return userVerificationBioOrPinKeyTag != nil
     }
 
     /// Unique id of proof of possession key. Used to read SecKey reference from the keychain
