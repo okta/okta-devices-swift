@@ -156,20 +156,24 @@ class AuthenticatorEnrollment: AuthenticatorEnrollmentProtocol {
     func retrievePushChallenges(authenticationToken: AuthToken,
                                 allowedClockSkewInSeconds: Int,
                                 completion: @escaping (Result<[PushChallengeProtocol], DeviceAuthenticatorError>) -> Void) {
-        let pullChallengeTransaction = OktaTransactionPullChallenge(enrollment: self,
-                                                                    authenticationToken: OktaRestAPIToken.accessToken(authenticationToken.tokenValue()),
-                                                                    storageManager: storageManager,
-                                                                    cryptoManager: cryptoManager,
-                                                                    restAPI: restAPIClient,
-                                                                    applicationConfig: applicationConfig,
-                                                                    logger: logger)
-        pullChallengeTransaction.pullChallenge(
-            allowedClockSkewInSeconds: allowedClockSkewInSeconds) { challenges, unrecognizedChallenges, error in
-                if let error = error {
-                    completion(.failure(error))
-                    return
-                }
-                completion(.success(challenges))
+        do {
+            let pullChallengeTransaction = try OktaTransactionPullChallenge(enrollment: self,
+                                                                            authenticationToken: OktaRestAPIToken.accessToken(authenticationToken.tokenValue()),
+                                                                            storageManager: storageManager,
+                                                                            cryptoManager: cryptoManager,
+                                                                            restAPI: restAPIClient,
+                                                                            applicationConfig: applicationConfig,
+                                                                            logger: logger)
+            pullChallengeTransaction.pullChallenge(
+                allowedClockSkewInSeconds: allowedClockSkewInSeconds) { challenges, unrecognizedChallenges, error in
+                    if let error = error {
+                        completion(.failure(error))
+                        return
+                    }
+                    completion(.success(challenges))
+            }
+        } catch {
+            completion(.failure(DeviceAuthenticatorError.oktaError(from: error)))
         }
     }
 
