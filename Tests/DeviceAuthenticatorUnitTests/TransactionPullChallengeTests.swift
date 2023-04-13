@@ -69,13 +69,13 @@ class TransactionPullChallengeTests: XCTestCase {
                                                                   orgId: "testOrgId1",
                                                                   userId: "email@okta.com",
                                                                   methodTypes: [.push])
-        var pullChallengeTransaction = OktaTransactionPullChallengePartialMock(enrollment: authenticator,
-                                                                               authenticationToken: OktaRestAPIToken.accessToken("access_token"),
-                                                                               storageManager: storageMock,
-                                                                               cryptoManager: cryptoManager,
-                                                                               restAPI: restAPIClient,
-                                                                               applicationConfig: applicationConfig,
-                                                                               logger: OktaLoggerMock())
+        var pullChallengeTransaction = try! OktaTransactionPullChallengePartialMock(enrollment: authenticator,
+                                                                                    authenticationToken: OktaRestAPIToken.accessToken("access_token"),
+                                                                                    storageManager: storageMock,
+                                                                                    cryptoManager: cryptoManager,
+                                                                                    restAPI: restAPIClient,
+                                                                                    applicationConfig: applicationConfig,
+                                                                                    logger: OktaLoggerMock())
         var completionExpectation = expectation(description: "callback should be called")
         pullChallengeTransaction.pullChallenge(
             allowedClockSkewInSeconds: 300) { pushChallenges, allChallenges, error in
@@ -94,13 +94,16 @@ class TransactionPullChallengeTests: XCTestCase {
         restAPIClient = LegacyServerAPI(client: mockHTTPClient,
                                         crypto: cryptoManager,
                                         logger: OktaLoggerMock())
-        pullChallengeTransaction = OktaTransactionPullChallengePartialMock(enrollment: authenticator,
-                                                                           authenticationToken: OktaRestAPIToken.accessToken("access_token"),
-                                                                           storageManager: storageMock,
-                                                                           cryptoManager: cryptoManager,
-                                                                           restAPI: restAPIClient,
-                                                                           applicationConfig: applicationConfig,
-                                                                           logger: OktaLoggerMock())
+        pullChallengeTransaction = try! OktaTransactionPullChallengePartialMock(enrollment: authenticator,
+                                                                                authenticationToken: OktaRestAPIToken.accessToken("access_token"),
+                                                                                storageManager: storageMock,
+                                                                                cryptoManager: cryptoManager,
+                                                                                restAPI: restAPIClient,
+                                                                                applicationConfig: applicationConfig,
+                                                                                logger: OktaLoggerMock(),
+                                                                                endpointURL: URL(string: "tenant.okta.com/notifications")!)
+        XCTAssertNotNil(pullChallengeTransaction.endpointURL)
+        XCTAssertEqual(pullChallengeTransaction.endpointURL.absoluteString, "tenant.okta.com/notifications")
         completionExpectation = expectation(description: "callback should be called")
         pullChallengeTransaction.pullChallenge(
             allowedClockSkewInSeconds: 300) { pushChallenges, allChallenges, error in
@@ -131,13 +134,13 @@ class TransactionPullChallengeTests: XCTestCase {
                                                                   orgId: "testOrgId1",
                                                                   userId: "email@okta.com",
                                                                   methodTypes: [.push])
-        let pullChallengeTransaction = OktaTransactionPullChallengePartialMock(enrollment: authenticator,
-                                                                               authenticationToken: OktaRestAPIToken.accessToken("access_token"),
-                                                                               storageManager: storageMock,
-                                                                               cryptoManager: cryptoManager,
-                                                                               restAPI: restAPIClient,
-                                                                               applicationConfig: applicationConfig,
-                                                                               logger: OktaLoggerMock())
+        let pullChallengeTransaction = try! OktaTransactionPullChallengePartialMock(enrollment: authenticator,
+                                                                                    authenticationToken: OktaRestAPIToken.accessToken("access_token"),
+                                                                                    storageManager: storageMock,
+                                                                                    cryptoManager: cryptoManager,
+                                                                                    restAPI: restAPIClient,
+                                                                                    applicationConfig: applicationConfig,
+                                                                                    logger: OktaLoggerMock())
         let completionExpectation = expectation(description: "callback should be called")
         pullChallengeTransaction.pullChallenge(
             allowedClockSkewInSeconds: 300) { pushChallenges, allChallenges, error in
@@ -177,22 +180,22 @@ class TransactionPullChallengeTests: XCTestCase {
                                                                   orgId: "testOrgId1",
                                                                   userId: "email@okta.com",
                                                                   enrolledFactors: [pushFactor])
-        let pullChallengeTransaction = OktaTransactionPullChallengePartialMock(enrollment: authenticator,
-                                                                               authenticationToken: OktaRestAPIToken.accessToken("access_token"),
-                                                                               storageManager: storageMock,
-                                                                               cryptoManager: cryptoManager,
-                                                                               restAPI: restAPIClient,
-                                                                               applicationConfig: applicationConfig,
-                                                                               logger: OktaLoggerMock())
-        var pullChallengeCallbackCalled = false
-        pullChallengeTransaction.pullChallenge(
-            allowedClockSkewInSeconds: 300) { pushChallenges, allChallenges, error in
-                XCTAssertEqual(error?.localizedDescription, "Failed to read update push token url")
-                XCTAssertTrue(pushChallenges.isEmpty)
-                XCTAssertTrue(allChallenges.isEmpty)
-                pullChallengeCallbackCalled = true
+        do {
+            let _ = try OktaTransactionPullChallengePartialMock(enrollment: authenticator,
+                                                                authenticationToken: OktaRestAPIToken.accessToken("access_token"),
+                                                                storageManager: storageMock,
+                                                                cryptoManager: cryptoManager,
+                                                                restAPI: restAPIClient,
+                                                                applicationConfig: applicationConfig,
+                                                                logger: OktaLoggerMock())
+            XCTFail("Unexpected success")
+        } catch {
+            if case DeviceAuthenticatorError.internalError(let description) = error {
+                XCTAssertEqual(description, "Failed to construct pending challenge URL")
+            } else {
+                XCTFail("Unexpected error type - \(error.localizedDescription)")
+            }
         }
-        XCTAssertTrue(pullChallengeCallbackCalled)
     }
 
     func testPendingChallenge_RestAPIError() {
@@ -213,13 +216,13 @@ class TransactionPullChallengeTests: XCTestCase {
                                                                   orgId: "testOrgId1",
                                                                   userId: "email@okta.com",
                                                                   methodTypes: [.push])
-        let pullChallengeTransaction = OktaTransactionPullChallengePartialMock(enrollment: authenticator,
-                                                                               authenticationToken: OktaRestAPIToken.accessToken("access_token"),
-                                                                               storageManager: storageMock,
-                                                                               cryptoManager: cryptoManager,
-                                                                               restAPI: restAPIClient,
-                                                                               applicationConfig: applicationConfig,
-                                                                               logger: OktaLoggerMock())
+        let pullChallengeTransaction = try! OktaTransactionPullChallengePartialMock(enrollment: authenticator,
+                                                                                    authenticationToken: OktaRestAPIToken.accessToken("access_token"),
+                                                                                    storageManager: storageMock,
+                                                                                    cryptoManager: cryptoManager,
+                                                                                    restAPI: restAPIClient,
+                                                                                    applicationConfig: applicationConfig,
+                                                                                    logger: OktaLoggerMock())
         let completionExpectation = expectation(description: "callback should be called")
         pullChallengeTransaction.pullChallenge(
             allowedClockSkewInSeconds: 300) { pushChallenges, allChallenges, error in
@@ -249,13 +252,13 @@ class TransactionPullChallengeTests: XCTestCase {
                                                                   orgId: "testOrgId1",
                                                                   userId: "email@okta.com",
                                                                   methodTypes: [.push])
-        let pullChallengeTransaction = OktaTransactionPullChallengePartialMock(enrollment: authenticator,
-                                                                               authenticationToken: OktaRestAPIToken.accessToken("access_token"),
-                                                                               storageManager: storageMock,
-                                                                               cryptoManager: cryptoManager,
-                                                                               restAPI: restAPIClient,
-                                                                               applicationConfig: applicationConfig,
-                                                                               logger: OktaLoggerMock())
+        let pullChallengeTransaction = try! OktaTransactionPullChallengePartialMock(enrollment: authenticator,
+                                                                                    authenticationToken: OktaRestAPIToken.accessToken("access_token"),
+                                                                                    storageManager: storageMock,
+                                                                                    cryptoManager: cryptoManager,
+                                                                                    restAPI: restAPIClient,
+                                                                                    applicationConfig: applicationConfig,
+                                                                                    logger: OktaLoggerMock())
         let completionExpectation = expectation(description: "callback should be called")
         pullChallengeTransaction.pullChallenge(
             allowedClockSkewInSeconds: 300) { pushChallenges, allChallenges, error in
@@ -285,13 +288,13 @@ class TransactionPullChallengeTests: XCTestCase {
                                                                   orgId: "testOrgId1",
                                                                   userId: "email@okta.com",
                                                                   methodTypes: [.push])
-        let pullChallengeTransaction = OktaTransactionPullChallengePartialMock(enrollment: authenticator,
-                                                                               authenticationToken: OktaRestAPIToken.accessToken("access_token"),
-                                                                               storageManager: storageMock,
-                                                                               cryptoManager: cryptoManager,
-                                                                               restAPI: restAPIClient,
-                                                                               applicationConfig: applicationConfig,
-                                                                               logger: OktaLoggerMock())
+        let pullChallengeTransaction = try! OktaTransactionPullChallengePartialMock(enrollment: authenticator,
+                                                                                    authenticationToken: OktaRestAPIToken.accessToken("access_token"),
+                                                                                    storageManager: storageMock,
+                                                                                    cryptoManager: cryptoManager,
+                                                                                    restAPI: restAPIClient,
+                                                                                    applicationConfig: applicationConfig,
+                                                                                    logger: OktaLoggerMock())
         let completionExpectation = expectation(description: "callback should be called")
         pullChallengeTransaction.pullChallenge(
             allowedClockSkewInSeconds: 300) { pushChallenges, allChallenges, error in
@@ -321,13 +324,13 @@ class TransactionPullChallengeTests: XCTestCase {
                                                                   orgId: "testOrgId1",
                                                                   userId: "email@okta.com",
                                                                   methodTypes: [.push])
-        let pullChallengeTransaction = OktaTransactionPullChallengePartialMock(enrollment: authenticator,
-                                                                               authenticationToken: OktaRestAPIToken.accessToken("access_token"),
-                                                                               storageManager: storageMock,
-                                                                               cryptoManager: cryptoManager,
-                                                                               restAPI: restAPIClient,
-                                                                               applicationConfig: applicationConfig,
-                                                                               logger: OktaLoggerMock())
+        let pullChallengeTransaction = try! OktaTransactionPullChallengePartialMock(enrollment: authenticator,
+                                                                                    authenticationToken: OktaRestAPIToken.accessToken("access_token"),
+                                                                                    storageManager: storageMock,
+                                                                                    cryptoManager: cryptoManager,
+                                                                                    restAPI: restAPIClient,
+                                                                                    applicationConfig: applicationConfig,
+                                                                                    logger: OktaLoggerMock())
         let completionExpectation = expectation(description: "callback should be called")
         pullChallengeTransaction.pullChallenge(
             allowedClockSkewInSeconds: 300) { pushChallenges, allChallenges, error in

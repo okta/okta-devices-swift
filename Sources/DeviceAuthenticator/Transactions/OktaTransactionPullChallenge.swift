@@ -22,6 +22,7 @@ class OktaTransactionPullChallenge: OktaTransaction {
     let enrollment: AuthenticatorEnrollment
     let authenticationToken: OktaRestAPIToken
     let applicationConfig: ApplicationConfig
+    let endpointURL: URL
 
     init(enrollment: AuthenticatorEnrollment,
          authenticationToken: OktaRestAPIToken,
@@ -29,11 +30,26 @@ class OktaTransactionPullChallenge: OktaTransaction {
          cryptoManager: OktaSharedCryptoProtocol,
          restAPI: ServerAPIProtocol,
          applicationConfig: ApplicationConfig,
-         logger: OktaLoggerProtocol) {
+         logger: OktaLoggerProtocol,
+         endpointURL: URL? = nil) throws {
         self.restAPI = restAPI
         self.enrollment = enrollment
         self.authenticationToken = authenticationToken
         self.applicationConfig = applicationConfig
+        var pendingChallengeURL: URL!
+        if let link = enrollment.pushFactor?.factorData.pushLinks?.pendingLink,
+           let url = URL(string: link) {
+            pendingChallengeURL = url
+        }
+        pendingChallengeURL = endpointURL ?? pendingChallengeURL
+
+        if pendingChallengeURL == nil {
+            let error = DeviceAuthenticatorError.internalError("Failed to construct pending challenge URL")
+            logger.error(eventName: "Pull challenge failed", message: "Error: \(error)")
+            throw error
+        }
+        self.endpointURL = pendingChallengeURL
+
         super.init(loginHint: nil,
                    storageManager: storageManager,
                    cryptoManager: cryptoManager,
@@ -42,15 +58,7 @@ class OktaTransactionPullChallenge: OktaTransaction {
     }
 
     func pullChallenge(allowedClockSkewInSeconds: Int, completion: @escaping (([PushChallengeProtocol], [[String: Any]], DeviceAuthenticatorError?) -> Void)) {
-        guard let link = enrollment.pushFactor?.factorData.pushLinks?.pendingLink,
-              let url = URL(string: link) else {
-            let error = DeviceAuthenticatorError.internalError("Failed to read update push token url")
-            logger.error(eventName: "Pull challenge failed", message: "Error: \(error)")
-            completion([], [], error)
-            return
-        }
-
-        restAPI.pendingChallenge(with: url,
+        restAPI.pendingChallenge(with: endpointURL,
                                  authenticationToken: authenticationToken) { result, error in
             DispatchQueue.global().async {
                 if let error = error {
