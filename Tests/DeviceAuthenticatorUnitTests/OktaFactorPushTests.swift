@@ -55,18 +55,44 @@ class OktaFactorPushTests: XCTestCase {
 
     func testCleanup() {
         factor.cleanup()
-        XCTAssertEqual(secKeyHelper.deleteCallCount, 2)
+        XCTAssertEqual(secKeyHelper.deleteCallCount, 3) // pop, uv, uvBioOrPin
+    }
+
+    func testCleanupNoUserVerificationKeyTag() {
         factor.factorData.userVerificationKeyTag = nil
-        secKeyHelper.deleteCallCount = 0
         factor.cleanup()
-        XCTAssertEqual(secKeyHelper.deleteCallCount, 1)
+        XCTAssertEqual(secKeyHelper.deleteCallCount, 2) // pop, uvBioOrPin
+    }
+
+    func testCleanupNoUserVerificationBioOrPinKeyTag() {
+        factor.factorData.userVerificationBioOrPinKeyTag = nil
+        factor.cleanup()
+        XCTAssertEqual(secKeyHelper.deleteCallCount, 2) // pop, uv
+    }
+
+    func testCleanupNoUserVerificationKeyTags() {
+        factor.factorData.userVerificationKeyTag = nil
+        factor.factorData.userVerificationBioOrPinKeyTag = nil
+        factor.cleanup()
+        XCTAssertEqual(secKeyHelper.deleteCallCount, 1) // pop
     }
 
     func testRemoveUserVerificationKey() {
         factor.removeUserVerificationKey()
         XCTAssertEqual(secKeyHelper.deleteCallCount, 1)
     }
-    
+
+    func testRemoveUserVerificationBioOrPinKey() {
+        factor.removeUserVerificationBioOrPinKey()
+        XCTAssertEqual(secKeyHelper.deleteCallCount, 1)
+    }
+
+    func removeAllUserVerificationKeys() {
+        factor.removeUserVerificationKey()
+        factor.removeUserVerificationBioOrPinKey()
+        XCTAssertEqual(secKeyHelper.deleteCallCount, 2)
+    }
+
     func testEnrolledWithLoginTransactionTypes() {
         XCTAssertFalse(factor.enrolledWithCIBASupport)
     }

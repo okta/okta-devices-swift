@@ -49,4 +49,7 @@ protocol OktaFactor: CustomStringConvertible {
 
     /// Removes user verification key
     func removeUserVerificationKey()
+
+    /// Removes user verification bio or pin key
+    func removeUserVerificationBioOrPinKey()
 }

@@ -78,12 +78,20 @@ class OktaFactorPush: OktaFactor {
     func cleanup() {
         _ = cryptoManager.delete(keyPairWith: factorData.proofOfPossessionKeyTag)
         removeUserVerificationKey()
+        removeUserVerificationBioOrPinKey()
     }
 
     func removeUserVerificationKey() {
         if let userVerificationKeyTag = factorData.userVerificationKeyTag {
             _ = cryptoManager.delete(keyPairWith: userVerificationKeyTag)
             factorData.userVerificationKeyTag = nil
+        }
+    }
+
+    func removeUserVerificationBioOrPinKey() {
+        if let userVerificationBioOrPinKeyTag = factorData.userVerificationBioOrPinKeyTag {
+            _ = cryptoManager.delete(keyPairWith: userVerificationBioOrPinKeyTag)
+            factorData.userVerificationBioOrPinKeyTag = nil
         }
     }
 

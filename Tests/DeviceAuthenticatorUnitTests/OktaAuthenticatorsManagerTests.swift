@@ -52,7 +52,7 @@ class OktaAuthenticatorsManagerTests: XCTestCase {
     }
 
     func testDeleteEnrollment_Success() {
-        let deleteAuthenticatorRequestHookCalled = expectation(description: "Delete authenticator rrequest expected!")
+        let deleteAuthenticatorRequestHookCalled = expectation(description: "Delete authenticator request expected!")
         restAPI.deleteAuthenticatorRequestHook = { url, _, completion  in
             deleteAuthenticatorRequestHookCalled.fulfill()
             completion(HTTPURLResult(request: nil, response: nil, data: nil), nil)
@@ -63,7 +63,7 @@ class OktaAuthenticatorsManagerTests: XCTestCase {
                                                                  cryptoManager: cryptoManager,
                                                                  storageManager: mockStorageManager)
         let deleteHookCalled = expectation(description: "Delete hook expected!")
-        deleteHookCalled.expectedFulfillmentCount = 2
+        deleteHookCalled.expectedFulfillmentCount = 3 // pop, uv, uvBioOrPin
         secHelperMock.deleteKeyHook = { query in
             deleteHookCalled.fulfill()
             return noErr
@@ -132,7 +132,7 @@ class OktaAuthenticatorsManagerTests: XCTestCase {
                                                                  cryptoManager: cryptoManager,
                                                                  storageManager: mockStorageManager)
         let deleteKeyHookCalled = expectation(description: "Delete hook expected!")
-        deleteKeyHookCalled.expectedFulfillmentCount = 2
+        deleteKeyHookCalled.expectedFulfillmentCount = 3 // pop, uv, uvBioOrPin
         secHelperMock.deleteKeyHook = { query in
             deleteKeyHookCalled.fulfill()
             return noErr
@@ -169,7 +169,7 @@ class OktaAuthenticatorsManagerTests: XCTestCase {
                                                                  cryptoManager: cryptoManager,
                                                                  storageManager: mockStorageManager)
         let deleteKeyHookCalled = expectation(description: "Delete hook expected!")
-        deleteKeyHookCalled.expectedFulfillmentCount = 2
+        deleteKeyHookCalled.expectedFulfillmentCount = 3 // pop, uv, uvBioOrPin
         secHelperMock.deleteKeyHook = { query in
             deleteKeyHookCalled.fulfill()
             return noErr

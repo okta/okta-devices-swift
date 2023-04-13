@@ -118,9 +118,13 @@ class OktaTransactionEnroll: OktaTransaction {
         logger.info(eventName: logEventName, message: "Running cleanupOnSuccess function")
         if let enrollUserVerificationKey = enrollmentContext.enrollBiometricKey {
             if !enrollUserVerificationKey {
-                enrollmentToUpdate?.enrolledFactors.forEach({ factor in
-                    factor.removeUserVerificationKey()
-                })
+                enrollmentToUpdate?.enrolledFactors.forEach { $0.removeUserVerificationKey() }
+            }
+        }
+
+        if let enrollUserVerificationBioOrPinKey = enrollmentContext.enrollBiometricOrPinKey {
+            if !enrollUserVerificationBioOrPinKey {
+                enrollmentToUpdate?.enrolledFactors.forEach { $0.removeUserVerificationBioOrPinKey() }
             }
         }
     }
