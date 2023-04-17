@@ -49,6 +49,7 @@ class OktaBindJWT {
         case unknown
         case proofOfPossession
         case userVerification
+        case userVerificationBioOrPin
     }
 
     enum MethodType: String, RawRepresentable {

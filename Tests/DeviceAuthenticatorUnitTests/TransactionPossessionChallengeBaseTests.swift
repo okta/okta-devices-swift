@@ -246,8 +246,13 @@ class TransactionPossessionChallengeBaseTests: XCTestCase {
         }
     }
 
-    func testReadSigningKeyErrorHandler() throws {
-        var mut = try OktaTransactionPossessionChallengeBasePartialMock(applicationConfig: applicationConfig,
+    func testUserVerificationKeyType() {
+        XCTAssertEqual(UserVerificationKeyType.biometrics.jwtKeyType, .userVerification)
+        XCTAssertEqual(UserVerificationKeyType.biometricsOrPin.jwtKeyType, .userVerificationBioOrPin)
+    }
+
+    func testReadSigningKeyErrorHandler_userVerificationPermanentlyUnavailable() throws {
+        let mut = try OktaTransactionPossessionChallengeBasePartialMock(applicationConfig: applicationConfig,
                                                                         challengeRequest: OktaJWTTestData.validDeviceChallengeRequestJWTWithUserMediationRequired(),
                                                                         stateHandle: "state_handle",
                                                                         httpHeaders: nil,
@@ -257,7 +262,7 @@ class TransactionPossessionChallengeBaseTests: XCTestCase {
                                                                         signalsManager: SignalsManager(logger: OktaLoggerMock()),
                                                                         restAPI: restAPIMock,
                                                                         logger: OktaLoggerMock())
-        var transactionContext = OktaTransactionPossessionChallengeBase.TransactionContext(challengeRequest: mut.challengeRequestJWT,
+        let transactionContext = OktaTransactionPossessionChallengeBase.TransactionContext(challengeRequest: mut.challengeRequestJWT,
                                                                                            appIdentityStepClosure: { step in
         },
                                                                                            appCompletionClosure: { jwt, error, enrollment in
@@ -279,24 +284,27 @@ class TransactionPossessionChallengeBaseTests: XCTestCase {
                                        keysRequirements: [.userVerification, .proofOfPossession])
         XCTAssertTrue(signJWTAndSendRequestHookCalled)
         XCTAssertTrue(postMessageToApplicationHookCalled)
+    }
 
-        transactionContext = OktaTransactionPossessionChallengeBase.TransactionContext(challengeRequest: mut.challengeRequestJWT,
+    func testReadSigningKeyErrorHandler_userVerificationTemporarilyUnavailable() throws {
+        let mut = try OktaTransactionPossessionChallengeBasePartialMock(applicationConfig: applicationConfig,
+                                                                        challengeRequest: OktaJWTTestData.validDeviceChallengeRequestJWTWithUserMediationRequired(),
+                                                                        stateHandle: "state_handle",
+                                                                        httpHeaders: nil,
+                                                                        loginHint: nil,
+                                                                        storageManager: storageMock,
+                                                                        cryptoManager: cryptoManager,
+                                                                        signalsManager: SignalsManager(logger: OktaLoggerMock()),
+                                                                        restAPI: restAPIMock,
+                                                                        logger: OktaLoggerMock())
+        let transactionContext = OktaTransactionPossessionChallengeBase.TransactionContext(challengeRequest: mut.challengeRequestJWT,
                                                                                            appIdentityStepClosure: { step in
         },
                                                                                            appCompletionClosure: { jwt, error, enrollment in
         })
-        mut = try OktaTransactionPossessionChallengeBasePartialMock(applicationConfig: applicationConfig,
-                                                                    challengeRequest: OktaJWTTestData.validDeviceChallengeRequestJWTWithUserMediationRequired(),
-                                                                    stateHandle: "state_handle",
-                                                                    httpHeaders: nil,
-                                                                    loginHint: nil,
-                                                                    storageManager: storageMock,
-                                                                    cryptoManager: cryptoManager,
-                                                                    signalsManager: SignalsManager(logger: OktaLoggerMock()),
-                                                                    restAPI: restAPIMock,
-                                                                    logger: OktaLoggerMock())
-        signJWTAndSendRequestHookCalled = false
-        postMessageToApplicationHookCalled = false
+
+        var signJWTAndSendRequestHookCalled = false
+        var postMessageToApplicationHookCalled = false
         mut.postMessageToApplicationHook = { message, reasonType, error, context in
             XCTAssertEqual(message, "Failed to sign with key userVerification, falling back to proofOfPossession")
             XCTAssertEqual(reasonType, .userVerificationFailed)
@@ -311,24 +319,27 @@ class TransactionPossessionChallengeBaseTests: XCTestCase {
                                        keysRequirements: [.userVerification, .proofOfPossession])
         XCTAssertTrue(signJWTAndSendRequestHookCalled)
         XCTAssertTrue(postMessageToApplicationHookCalled)
+    }
 
-        transactionContext = OktaTransactionPossessionChallengeBase.TransactionContext(challengeRequest: mut.challengeRequestJWT,
+    func testReadSigningKeyErrorHandler_userVerificationCancelledByUser() throws {
+        let mut = try OktaTransactionPossessionChallengeBasePartialMock(applicationConfig: applicationConfig,
+                                                                        challengeRequest: OktaJWTTestData.validDeviceChallengeRequestJWTWithUserMediationRequired(),
+                                                                        stateHandle: "state_handle",
+                                                                        httpHeaders: nil,
+                                                                        loginHint: nil,
+                                                                        storageManager: storageMock,
+                                                                        cryptoManager: cryptoManager,
+                                                                        signalsManager: SignalsManager(logger: OktaLoggerMock()),
+                                                                        restAPI: restAPIMock,
+                                                                        logger: OktaLoggerMock())
+        let transactionContext = OktaTransactionPossessionChallengeBase.TransactionContext(challengeRequest: mut.challengeRequestJWT,
                                                                                            appIdentityStepClosure: { step in
         },
                                                                                            appCompletionClosure: { jwt, error, enrollment in
         })
-        mut = try OktaTransactionPossessionChallengeBasePartialMock(applicationConfig: applicationConfig,
-                                                                    challengeRequest: OktaJWTTestData.validDeviceChallengeRequestJWTWithUserMediationRequired(),
-                                                                    stateHandle: "state_handle",
-                                                                    httpHeaders: nil,
-                                                                    loginHint: nil,
-                                                                    storageManager: storageMock,
-                                                                    cryptoManager: cryptoManager,
-                                                                    signalsManager: SignalsManager(logger: OktaLoggerMock()),
-                                                                    restAPI: restAPIMock,
-                                                                    logger: OktaLoggerMock())
-        signJWTAndSendRequestHookCalled = false
-        postMessageToApplicationHookCalled = false
+
+        var signJWTAndSendRequestHookCalled = false
+        var postMessageToApplicationHookCalled = false
         mut.postMessageToApplicationHook = { message, reasonType, error, context in
             XCTAssertEqual(message, "Failed to sign with key userVerification, falling back to proofOfPossession")
             XCTAssertEqual(reasonType, .userVerificationCancelledByUser)
@@ -343,24 +354,27 @@ class TransactionPossessionChallengeBaseTests: XCTestCase {
                                        keysRequirements: [.userVerification, .proofOfPossession])
         XCTAssertTrue(signJWTAndSendRequestHookCalled)
         XCTAssertTrue(postMessageToApplicationHookCalled)
+    }
 
-        transactionContext = OktaTransactionPossessionChallengeBase.TransactionContext(challengeRequest: mut.challengeRequestJWT,
+    func testReadSigningKeyErrorHandler_userVerificationKeyNotEnrolled() throws {
+        let mut = try OktaTransactionPossessionChallengeBasePartialMock(applicationConfig: applicationConfig,
+                                                                        challengeRequest: OktaJWTTestData.validDeviceChallengeRequestJWTWithUserMediationRequired(),
+                                                                        stateHandle: "state_handle",
+                                                                        httpHeaders: nil,
+                                                                        loginHint: nil,
+                                                                        storageManager: storageMock,
+                                                                        cryptoManager: cryptoManager,
+                                                                        signalsManager: SignalsManager(logger: OktaLoggerMock()),
+                                                                        restAPI: restAPIMock,
+                                                                        logger: OktaLoggerMock())
+        let transactionContext = OktaTransactionPossessionChallengeBase.TransactionContext(challengeRequest: mut.challengeRequestJWT,
                                                                                            appIdentityStepClosure: { step in
         },
                                                                                            appCompletionClosure: { jwt, error, enrollment in
         })
-        mut = try OktaTransactionPossessionChallengeBasePartialMock(applicationConfig: applicationConfig,
-                                                                    challengeRequest: OktaJWTTestData.validDeviceChallengeRequestJWTWithUserMediationRequired(),
-                                                                    stateHandle: "state_handle",
-                                                                    httpHeaders: nil,
-                                                                    loginHint: nil,
-                                                                    storageManager: storageMock,
-                                                                    cryptoManager: cryptoManager,
-                                                                    signalsManager: SignalsManager(logger: OktaLoggerMock()),
-                                                                    restAPI: restAPIMock,
-                                                                    logger: OktaLoggerMock())
-        signJWTAndSendRequestHookCalled = false
-        postMessageToApplicationHookCalled = false
+
+        var signJWTAndSendRequestHookCalled = false
+        var postMessageToApplicationHookCalled = false
         mut.postMessageToApplicationHook = { message, reasonType, error, context in
             XCTAssertEqual(message, "Failed to sign with key userVerification, falling back to proofOfPossession")
             XCTAssertEqual(reasonType, .userVerificationKeyNotEnrolled)
@@ -429,6 +443,10 @@ fileprivate class OktaTransactionPossessionChallengeBasePartialMock: OktaTransac
 
     override func getUserVerificationKeyTag(methodType: OktaBindJWT.MethodType, enrollment: AuthenticatorEnrollment) -> String? {
         return enrollment.enrolledFactors.first { $0.userVerificationKeyTag != nil }.map({ $0.userVerificationKeyTag! })
+    }
+
+    override func getUserVerificationBioOrPinKeyTag(methodType: OktaBindJWT.MethodType, enrollment: AuthenticatorEnrollment) -> String? {
+        return enrollment.enrolledFactors.first { $0.userVerificationBioOrPinKeyTag != nil }.map({ $0.userVerificationBioOrPinKeyTag! })
     }
 
     override func getFactorIdFromEnrollment(_ enrollment: AuthenticatorEnrollment) -> String? {

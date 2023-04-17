@@ -18,6 +18,20 @@ import LoggerCore
 import OktaLogger
 #endif
 
+enum UserVerificationKeyType {
+    case biometrics
+    case biometricsOrPin
+
+    var jwtKeyType: OktaBindJWT.KeyType {
+        switch self {
+        case .biometrics:
+            return .userVerification
+        case .biometricsOrPin:
+            return .userVerificationBioOrPin
+        }
+    }
+}
+
 class OktaTransactionPossessionChallengeBase: OktaTransaction {
     enum AuthenticationMethodReference: String {
         case fingerPrint = "fpt"
@@ -122,6 +136,7 @@ class OktaTransactionPossessionChallengeBase: OktaTransaction {
 
     /// Try to read UV key. Ask for UV prompt customization settings via `onIdentityStep` closure
     func tryReadUserVerificationKey(with keyTag: String,
+                                    keyType: UserVerificationKeyType,
                                     userVerificationType: UserVerificationChallengeRequirement? = nil,
                                     enrollment: AuthenticatorEnrollment,
                                     onIdentityStep: @escaping (RemediationStep) -> Void,
@@ -167,21 +182,25 @@ class OktaTransactionPossessionChallengeBase: OktaTransaction {
         if let keyRequirements = transactionContext.keyRequirements {
             keyTypes = keyRequirements
         } else if let userVerification = challenge.userVerification {
-            switch userVerification {
-            case .none, .discouraged, .unknown:
-                keyTypes = [.proofOfPossession]
-            case .preferred:
-                keyTypes = [.userVerification, .proofOfPossession]
-            case .required:
-                // Add PoP key as a fallback key
-                keyTypes = [.userVerification, .proofOfPossession]
-            }
+            keyTypes = getKeyRequirements(for: userVerification)
         } else {
             // Add PoP key as a fallback key
             keyTypes = [.proofOfPossession]
         }
         self.signJWTAndSendRequest(transactionContext: transactionContext,
                                    keysRequirements: keyTypes)
+    }
+
+    func getKeyRequirements(for userVerification: UserVerificationChallengeRequirement) -> [OktaBindJWT.KeyType] {
+        switch userVerification {
+        case .none, .discouraged, .unknown:
+            return [.proofOfPossession]
+        case .preferred:
+            return [.userVerification, .proofOfPossession]
+        case .required:
+            // Add PoP key as a fallback key
+            return [.userVerification, .proofOfPossession]
+        }
     }
 
     func parseJWT(string: String) throws -> OktaBindJWT {
@@ -199,7 +218,7 @@ class OktaTransactionPossessionChallengeBase: OktaTransaction {
             return
         }
 
-        if keyType == .userVerification {
+        if keyType == .userVerification || keyType == .userVerificationBioOrPin {
             transactionContext.userConsentResponseValue = .approvedUserVerification
         }
 
@@ -288,7 +307,6 @@ class OktaTransactionPossessionChallengeBase: OktaTransaction {
             // Fallback to next key in the array of key types
             var keyTypes = keysRequirements
             let skippedKey = keyTypes.removeFirst()
-            let nextKey = keyTypes[0]
 
             var messageReason: RemediationStepMessageReasonType = .userVerificationKeyNotEnrolled
             if case .securityError(let encErr) = error {
@@ -301,29 +319,31 @@ class OktaTransactionPossessionChallengeBase: OktaTransaction {
                 }
             }
             // Surface the error via the non-blocking 'message' identity step
-            self.postMessageToApplication(message: "Failed to sign with key \(skippedKey), falling back to \(nextKey)",
+            self.postMessageToApplication(message: "Failed to sign with key \(skippedKey), falling back to \(keyTypes.description)",
                                           reason: messageReason,
                                           error: error,
                                           transactionContext: transactionContext)
 
             // Update consent value for cases where appropriate for error
-            if skippedKey == .userVerification {
+            if skippedKey == .userVerification || skippedKey == .userVerificationBioOrPin {
                 if messageReason == .userVerificationCancelledByUser {
                     transactionContext.userConsentResponseValue = .cancelledUserVerification
-                    // User cancelled biometric prompt and SDK fallbacks to PoP key. Set keyRequirements in transactionContext to avoid sending of unnecessary user consent screen event
-                    transactionContext.keyRequirements = [nextKey]
+                    // User cancelled biometric or biometricOrPin prompt and SDK fallbacks to PoP key. Set keyRequirements in transactionContext to avoid sending of unnecessary user consent screen event
+                    keyTypes.removeUserVerificationKeys()
+                    transactionContext.keyRequirements = [.proofOfPossession]
                 } else if messageReason == .userVerificationFailed {
                     transactionContext.userConsentResponseValue = .userVerificationTemporarilyUnavailable
                     // Local authentication failed and SDK falls back to PoP key. Set keyRequirements in transactionContext to avoid sending of unnecessary user consent screen event
-                    transactionContext.keyRequirements = [nextKey]
+                    keyTypes.removeUserVerificationKeys()
+                    transactionContext.keyRequirements = [.proofOfPossession]
                 } else if messageReason == .userVerificationKeyCorruptedOrMissing {
                     transactionContext.userConsentResponseValue = .userVerificationPermanentlyUnavailable
-                    // Local authentication failed and SDK falls back to PoP key. Set keyRequirements in transactionContext to avoid sending of unnecessary user consent screen event
-                    transactionContext.keyRequirements = [nextKey]
+                    // Local authentication failed and SDK falls back to the next keys. Set keyRequirements in transactionContext to avoid sending of unnecessary user consent screen event
+                    transactionContext.keyRequirements = keyTypes
                 } else {
                     if transactionContext.challengeRequest.userVerification == .required {
                         transactionContext.userConsentResponseValue = .userVerificationPermanentlyUnavailable
-                        transactionContext.keyRequirements = [nextKey]
+                        transactionContext.keyRequirements = keyTypes
                     } else {
                         transactionContext.userConsentResponseValue = transactionContext.userConsentResponseValue.userVerificationFailed()
                     }
@@ -360,11 +380,25 @@ class OktaTransactionPossessionChallengeBase: OktaTransaction {
                 return
             }
             tryReadUserVerificationKey(with: userVerificationKeyTag,
+                                       keyType: .biometrics,
                                        userVerificationType: userVerificationType,
                                        enrollment: enrollment,
                                        onIdentityStep: onIdentityStep,
                                        onCompletion: onCompletion)
             return
+        case .userVerificationBioOrPin:
+            guard let userVerificationBioOrPinKeyTag = getUserVerificationBioOrPinKeyTag(methodType: methodType, enrollment: enrollment) else {
+                let error = DeviceAuthenticatorError.genericError("Can't find enrolled user verification bio or pin key in enrollment object")
+                logger.error(eventName: self.logEventName, message: "Verification flow failed with error: \(error)")
+                onCompletion(nil, error)
+                return
+            }
+            tryReadUserVerificationKey(with: userVerificationBioOrPinKeyTag,
+                                       keyType: .biometricsOrPin,
+                                       userVerificationType: userVerificationType,
+                                       enrollment: enrollment,
+                                       onIdentityStep: onIdentityStep,
+                                       onCompletion: onCompletion)
         default:
             let error = DeviceAuthenticatorError.internalError("Unknown key type provided by the server")
             logger.error(eventName: self.logEventName, message: "Verification flow failed with error: \(error)")
@@ -378,6 +412,11 @@ class OktaTransactionPossessionChallengeBase: OktaTransaction {
     }
 
     func getUserVerificationKeyTag(methodType: OktaBindJWT.MethodType, enrollment: AuthenticatorEnrollment) -> String? {
+        assert(false, "Override")
+        return nil
+    }
+
+    func getUserVerificationBioOrPinKeyTag(methodType: OktaBindJWT.MethodType, enrollment: AuthenticatorEnrollment) -> String? {
         assert(false, "Override")
         return nil
     }
@@ -510,4 +549,14 @@ class OktaTransactionPossessionChallengeBase: OktaTransaction {
     }
 
     let logEventName = "TransactionPossessionChallenge"
+}
+
+extension Array where Element == OktaBindJWT.KeyType {
+    var description: String {
+        return String(self.map({ $0.rawValue }).joined(separator: ", "))
+    }
+
+    mutating func removeUserVerificationKeys() {
+        self.removeAll(where: { $0 == .userVerification || $0 == .userVerificationBioOrPin })
+    }
 }

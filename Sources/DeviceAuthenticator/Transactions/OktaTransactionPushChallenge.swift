@@ -59,7 +59,7 @@ class OktaTransactionPushChallenge: OktaTransactionPossessionChallengeBase {
         if pushChallenge.userResponse != .userApproved {
             transactionContext.userConsentResponseValue = .denied
         }
-        if keyType == .userVerification && pushChallenge.userResponse == .userApproved {
+        if (keyType == .userVerification || keyType == .userVerificationBioOrPin) && pushChallenge.userResponse == .userApproved {
             transactionContext.userConsentResponseValue = .approvedUserVerification
         } else {
             // Use PoP key for the deny case
@@ -147,6 +147,7 @@ class OktaTransactionPushChallenge: OktaTransactionPossessionChallengeBase {
     }
 
     override func tryReadUserVerificationKey(with keyTag: String,
+                                             keyType: UserVerificationKeyType,
                                              userVerificationType: UserVerificationChallengeRequirement? = nil,
                                              enrollment: AuthenticatorEnrollment,
                                              onIdentityStep: @escaping (RemediationStep) -> Void,
@@ -162,7 +163,7 @@ class OktaTransactionPushChallenge: OktaTransactionPossessionChallengeBase {
         onCompletion(KeyData(keyTag: keyTag,
                              key: jwsKey,
                              amr: [amr],
-                             keyType: .userVerification),
+                             keyType: keyType.jwtKeyType),
                      nil)
     }
 
@@ -202,6 +203,20 @@ class OktaTransactionPushChallenge: OktaTransactionPossessionChallengeBase {
 
         if let pushFactor = enrollment.pushFactor {
             return pushFactor.factorData.userVerificationKeyTag
+        } else {
+            logger.error(eventName: self.logEventName, message: "Can't find push factor in enrollment object")
+            return nil
+        }
+    }
+
+    override func getUserVerificationBioOrPinKeyTag(methodType: OktaBindJWT.MethodType, enrollment: AuthenticatorEnrollment) -> String? {
+        guard methodType == .push else {
+            logger.error(eventName: self.logEventName, message: "Unexpected factor - \(methodType.rawValue)")
+            return nil
+        }
+
+        if let pushFactor = enrollment.pushFactor {
+            return pushFactor.factorData.userVerificationBioOrPinKeyTag
         } else {
             logger.error(eventName: self.logEventName, message: "Can't find push factor in enrollment object")
             return nil
