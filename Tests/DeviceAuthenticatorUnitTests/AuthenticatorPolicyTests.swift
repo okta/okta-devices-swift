@@ -31,24 +31,31 @@ class AuthenticatorPolicyTests: XCTestCase {
         XCTAssertEqual(policy.userVerificationSetting, .preferred)
 
         policy = AuthenticatorPolicy(metadata: createMetadataWithSettings(
-            AuthenticatorSettingsModel(appInstanceId: nil, userVerification: nil, oauthClientId: nil)
+            AuthenticatorSettingsModel(appInstanceId: nil, userVerification: nil, userVerificationMethods: nil, oauthClientId: nil)
         ))
         XCTAssertEqual(policy.userVerificationSetting, .preferred)
+        XCTAssertEqual(policy._userVerificationMethods, nil)
 
+        var userVerificationMethods: [AuthenticatorSettingsModel.UserVerificationMethodSetting] = []
         policy = AuthenticatorPolicy(metadata: createMetadataWithSettings(
-            AuthenticatorSettingsModel(appInstanceId: nil, userVerification: .preferred, oauthClientId: nil)
+            AuthenticatorSettingsModel(appInstanceId: nil, userVerification: .preferred, userVerificationMethods: userVerificationMethods, oauthClientId: nil)
         ))
         XCTAssertEqual(policy.userVerificationSetting, .preferred)
+        XCTAssertEqual(policy._userVerificationMethods, userVerificationMethods)
 
+        userVerificationMethods = [.pin, .biometrics]
         policy = AuthenticatorPolicy(metadata: createMetadataWithSettings(
-            AuthenticatorSettingsModel(appInstanceId: nil, userVerification: .required, oauthClientId: nil)
+            AuthenticatorSettingsModel(appInstanceId: nil, userVerification: .required , userVerificationMethods: userVerificationMethods, oauthClientId: nil)
         ))
         XCTAssertEqual(policy.userVerificationSetting, .required)
+        XCTAssertEqual(policy._userVerificationMethods, userVerificationMethods)
 
+        userVerificationMethods = [.unknown("")]
         policy = AuthenticatorPolicy(metadata: createMetadataWithSettings(
-            AuthenticatorSettingsModel(appInstanceId: nil, userVerification: .unknown(""), oauthClientId: nil)
+            AuthenticatorSettingsModel(appInstanceId: nil, userVerification: .unknown(""), userVerificationMethods: userVerificationMethods, oauthClientId: nil)
         ))
         XCTAssertEqual(policy.userVerificationSetting, .unknown(""))
+        XCTAssertEqual(policy._userVerificationMethods, userVerificationMethods)
     }
 
     func testHasMethodOfType() {

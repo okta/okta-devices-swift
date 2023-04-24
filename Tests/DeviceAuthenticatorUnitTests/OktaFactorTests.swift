@@ -26,5 +26,6 @@ class OktaFactorTests: XCTestCase {
                                     restAPIClient: restAPIClient,
                                     logger: OktaLoggerMock())
         XCTAssertFalse(factor.enrolledWithUserVerificationKey)
+        XCTAssertFalse(factor.enrolledWithUserVerificationBioOrPinKey)
     }
 }

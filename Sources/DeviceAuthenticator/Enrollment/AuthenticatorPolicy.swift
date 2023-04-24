@@ -42,15 +42,23 @@ class AuthenticatorPolicy: Codable, AuthenticatorPolicyProtocol {
     required init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         metadata = try values.decode(AuthenticatorMetaDataModel.self, forKey: .metadata)
+
         if let deserializedMethods = try? values.decode([AuthenticatorMethod].self, forKey: .methods) {
             methods = deserializedMethods
         } else {
             methods = metadata._embedded.methods.compactMap({ $0.type })
         }
+
         if let deserializedUserVerification = try? values.decode(AuthenticatorSettingsModel.UserVerificationSetting.self, forKey: ._userVerification) {
             _userVerification = deserializedUserVerification
         } else {
             _userVerification = metadata.settings?.userVerification
+        }
+
+        if let deserializedUserVerificationMethods = try? values.decode([AuthenticatorSettingsModel.UserVerificationMethodSetting].self, forKey: ._userVerificationMethods) {
+            _userVerificationMethods = deserializedUserVerificationMethods
+        } else {
+            _userVerificationMethods = metadata.settings?.userVerificationMethods
         }
     }
 
@@ -59,16 +67,19 @@ class AuthenticatorPolicy: Codable, AuthenticatorPolicyProtocol {
          methods: [AuthenticatorMethod]? = nil) {
         self.metadata = metadata
         self._userVerification = userVerification ?? metadata.settings?.userVerification
+        self._userVerificationMethods = metadata.settings?.userVerificationMethods
         self.methods = methods ?? metadata._embedded.methods.compactMap({ $0.type })
     }
 
     let methods: [AuthenticatorMethod]
 
     private let _userVerification: AuthenticatorSettingsModel.UserVerificationSetting?
+    let _userVerificationMethods: [AuthenticatorSettingsModel.UserVerificationMethodSetting]?
 
     enum CodingKeys: String, CodingKey {
         case metadata
         case _userVerification
+        case _userVerificationMethods
         case methods
     }
 }

@@ -311,6 +311,7 @@ class LegacyServerAPI: ServerAPIProtocol {
         let factorMetadata = OktaFactorMetadataPush(id: enrolledModel.id,
                                                     proofOfPossessionKeyTag: proofOfPossessionKeyTag,
                                                     userVerificationKeyTag: factorModel.userVerificationKeyTag,
+                                                    userVerificationBioOrPinKeyTag: factorModel.userVerificationBioOrPinKeyTag,
                                                     links: OktaFactorMetadataPush.Links(pendingLink: links.pending?.href),
                                                     transactionTypes: factorModel.transactionTypes)
         let factor = OktaFactorPush(factorData: factorMetadata,

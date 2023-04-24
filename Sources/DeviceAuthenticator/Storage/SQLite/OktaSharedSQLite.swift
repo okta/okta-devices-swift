@@ -117,11 +117,15 @@ class OktaSharedSQLite: OktaSharedSQLiteProtocol {
                                                              orgId: enrollment.organization.id,
                                                              factorData: factor,
                                                              creationDate: enrollment.creationDate)
-                try db.execute(sql: "INSERT INTO EnrolledMethod (id, enrollmentId, orgId, type, proofOfPossessionKeyTag, userVerificationKeyTag, links, passCodeLength, timeIntervalSec, algorithm, sharedSecret, transactionTypes, createdTimestamp, updatedTimestamp) VALUES (:id, :enrollmentId, :enrollmentOrgId, :type, :proofOfPossessionKeyTag, :userVerificationKeyTag, :links, :passCodeLength, :timeIntervalSec, :algorithm, :sharedSecret, :transactionTypes, :createdTimestamp, :updatedTimestamp) ON CONFLICT(id,enrollmentId,orgId) DO UPDATE SET id = :id, enrollmentId = :enrollmentId, orgId = :enrollmentOrgId, type = :type, proofOfPossessionKeyTag = :proofOfPossessionKeyTag, userVerificationKeyTag = :userVerificationKeyTag, links = :links, passCodeLength = :passCodeLength, timeIntervalSec = :timeIntervalSec, algorithm = :algorithm, sharedSecret = :sharedSecret, transactionTypes = :transactionTypes, updatedTimestamp = :updatedTimestamp", arguments: writeArguments)
+                try db.execute(sql: factorStatement, arguments: writeArguments)
             }
         } catch {
             throw DeviceAuthenticatorError.storageError(StorageError.sqliteError(error.localizedDescription))
         }
+    }
+
+    var factorStatement: String {
+        return "INSERT INTO EnrolledMethod (id, enrollmentId, orgId, type, proofOfPossessionKeyTag, userVerificationKeyTag, userVerificationBioOrPinKeyTag, links, passCodeLength, timeIntervalSec, algorithm, sharedSecret, transactionTypes, createdTimestamp, updatedTimestamp) VALUES (:id, :enrollmentId, :enrollmentOrgId, :type, :proofOfPossessionKeyTag, :userVerificationKeyTag, :userVerificationBioOrPinKeyTag, :links, :passCodeLength, :timeIntervalSec, :algorithm, :sharedSecret, :transactionTypes, :createdTimestamp, :updatedTimestamp) ON CONFLICT(id,enrollmentId,orgId) DO UPDATE SET id = :id, enrollmentId = :enrollmentId, orgId = :enrollmentOrgId, type = :type, proofOfPossessionKeyTag = :proofOfPossessionKeyTag, userVerificationKeyTag = :userVerificationKeyTag, userVerificationBioOrPinKeyTag = :userVerificationBioOrPinKeyTag, links = :links, passCodeLength = :passCodeLength, timeIntervalSec = :timeIntervalSec, algorithm = :algorithm, sharedSecret = :sharedSecret, transactionTypes = :transactionTypes, updatedTimestamp = :updatedTimestamp"
     }
 
     func buildFactorsMetadata(enrollment: AuthenticatorEnrollment) -> [OktaFactorMetadata] {
@@ -439,7 +443,7 @@ class OktaSharedSQLite: OktaSharedSQLiteProtocol {
         }
         // List active methods as a string (e.g. "totp, push")
         let activeMethodsStr = stringFromAuthenticatorMethods(authenticatorPolicy.methods)
-        // UserVerificationSetting as Integer
+        // UserVerificationSetting as String
         let userVerification = authenticatorPolicy.userVerificationSetting.rawValue
         // Policy metadata
         let data = try JSONEncoder().encode(authenticatorPolicy.metadata)
@@ -536,6 +540,7 @@ class OktaSharedSQLite: OktaSharedSQLiteProtocol {
                                        Column.updatedTimestamp: Date(),
                                        Column.proofOfPossessionKeyTag: nil,
                                        Column.userVerificationKeyTag: nil,
+                                       Column.userVerificationBioOrPinKeyTag: nil,
                                        Column.links: nil,
                                        Column.passCodeLength: nil,
                                        Column.timeIntervalSec: nil,
@@ -547,6 +552,7 @@ class OktaSharedSQLite: OktaSharedSQLiteProtocol {
         if let push = factorData as? OktaFactorMetadataPush {
             args = args &+ [Column.proofOfPossessionKeyTag: push.proofOfPossessionKeyTag]
             args = args &+ [Column.userVerificationKeyTag: push.userVerificationKeyTag]
+            args = args &+ [Column.userVerificationBioOrPinKeyTag: push.userVerificationBioOrPinKeyTag]
             if let links = push.pushLinks {
                 args = args &+ [Column.links: try? JSONEncoder().encode(links)]
             } else {
@@ -585,6 +591,7 @@ class OktaSharedSQLite: OktaSharedSQLiteProtocol {
             let pushFactorMetadata = OktaFactorMetadataPush(id: id,
                                                             proofOfPossessionKeyTag: proofOfPossessionKeyTag,
                                                             userVerificationKeyTag: row.userVerificationKeyTag,
+                                                            userVerificationBioOrPinKeyTag: row.userVerificationBioOrPinKeyTag,
                                                             links: links,
                                                             transactionTypes: transactionType)
             return VerificationMethodFactory.pushFactorFromMetadata(pushFactorMetadata,
@@ -608,20 +615,37 @@ extension OktaSharedSQLite: OktaMigratableStorage {
     func performIncrementalStorageMigration(_ nextVersion: Version) throws {
         //  "nextVersion" is guaranteed to be +1 from the "current" version
         //  By the end of this function execution, it is expected storage is migrated to "nextVersion"
-        //  Upon every mid-version migration update DB's user_version, like:
-        //  try db.execute(literal: "PRAGMA user_version = \(nextVersion.rawValue)")
         // TODO: Do each version migration within a single SQLite Transaction to make it auto Rolled-back in case of error
-        switch nextVersion {
-        case .v1:
-            // Do nothing for initial schema version
-            break
-        default:
-            break
+        if let migrationSchema = getStorageMigrationSchema(for: nextVersion) {
+            try performStorageMigration(to: nextVersion, using: migrationSchema)
         }
     }
 
     func didFinishStorageIncrementalMigrationSequence(startVersion: Version, endVersion: Version) {
         let logMessage = "Start version: \(startVersion), end version: \(endVersion)"
         logger.info(eventName: "Success for DeviceSDK Storage Migration", message: logMessage)
+    }
+
+    func getStorageMigrationSchema(for version: Version) -> String? {
+        switch version {
+        case .unknown, .v1:
+            // Do nothing for unknown and initial schema versions
+            return nil
+        case .v2:
+            return sqliteSchemaMigration_v2
+        }
+    }
+
+    func performStorageMigration(to version: Version, using migrationSchema: String) throws {
+        logger.info(eventName: "Storage Migration", message: "Migrating to version: \(version)")
+        do {
+            try pool?.write { db in
+                try db.execute(sql: migrationSchema)
+                try db.execute(sql: "PRAGMA user_version = \(version.rawValue)")
+            }
+        } catch {
+            logger.error(eventName: "Storage Migration", message: "Migration to version \(version) failed: \(error)")
+            throw DeviceAuthenticatorError.storageError(StorageError.sqliteError(error.localizedDescription))
+        }
     }
 }

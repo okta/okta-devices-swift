@@ -15,11 +15,18 @@ import Foundation
 struct AuthenticatorSettingsModel: Codable {
     let appInstanceId: String?
     let userVerification: UserVerificationSetting?
+    let userVerificationMethods: [UserVerificationMethodSetting]?
     let oauthClientId: String?
 
-    public enum UserVerificationSetting {
+    enum UserVerificationSetting {
         case preferred
         case required
+        case unknown(String)
+    }
+
+    enum UserVerificationMethodSetting {
+        case pin
+        case biometrics
         case unknown(String)
     }
 }
@@ -60,5 +67,44 @@ extension AuthenticatorSettingsModel.UserVerificationSetting: Codable {
         let container = try decoder.singleValueContainer()
         let stringValue = try container.decode(String.self)
         self = AuthenticatorSettingsModel.UserVerificationSetting(raw: stringValue)
+    }
+}
+
+extension AuthenticatorSettingsModel.UserVerificationMethodSetting {
+    init(rawValue: String) {
+        switch rawValue.lowercased() {
+        case "pin":
+            self = .pin
+        case "biometrics":
+            self = .biometrics
+        default:
+            self = .unknown(rawValue)
+        }
+    }
+
+    var rawValue: String {
+        switch self {
+        case .pin:
+            return "pin"
+        case .biometrics:
+            return "biometrics"
+        case .unknown(let unknown):
+            return unknown
+        }
+    }
+}
+
+extension AuthenticatorSettingsModel.UserVerificationMethodSetting: Equatable {}
+
+extension AuthenticatorSettingsModel.UserVerificationMethodSetting: Codable {
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(self.rawValue)
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        let rawValue = try container.decode(String.self)
+        self = AuthenticatorSettingsModel.UserVerificationMethodSetting(rawValue: rawValue)
     }
 }

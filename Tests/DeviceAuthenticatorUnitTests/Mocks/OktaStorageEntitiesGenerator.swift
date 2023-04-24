@@ -27,9 +27,11 @@ class OktaStorageEntitiesGenerator {
 
     func createPolicy(id: String = "id",
                       userVerification: AuthenticatorSettingsModel.UserVerificationSetting = .preferred,
+                      userVerificationMethods: [AuthenticatorSettingsModel.UserVerificationMethodSetting] = [],
                       methods: [AuthenticatorMethod] = [.push]) -> AuthenticatorPolicy {
         let metadata = TestUtils.createAuthenticatorMetadataModel(id: id,
                                                                   userVerification: userVerification,
+                                                                  userVerificationMethods: userVerificationMethods,
                                                                   methods: methods)
         return AuthenticatorPolicy(metadata: metadata)
     }
@@ -63,7 +65,8 @@ class OktaStorageEntitiesGenerator {
         if methodTypes.contains(.push) {
             let pushMetadata = OktaFactorMetadataPush(id: "push_id",
                                                       proofOfPossessionKeyTag: "proofOfPossessionKeyTag",
-                                                      userVerificationKeyTag: nil,
+                                                      userVerificationKeyTag: "userVerificationKeyTag",
+                                                      userVerificationBioOrPinKeyTag: "userVerificationBioOrPinKeyTag",
                                                       links: OktaFactorMetadataPush.Links(pendingLink: "pendingLink"),
                                                       transactionTypes: transactionTypes)
             let pushFactor = OktaFactorPush(factorData: pushMetadata,

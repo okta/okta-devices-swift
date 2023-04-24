@@ -22,6 +22,7 @@ class TestUtils {
                                              userId: String = "user_id",
                                              userName: String = "user_name",
                                              userVerificationKeyTag: String? = "userVerificationKeyTag",
+                                             userVerificationBioOrPinKeyTag: String? = "userVerificationBioOrPinKeyTag",
                                              enrollPush: Bool = true,
                                              createdDate: String = "2020-09-08T19:03:30.166Z",
                                              storageManager: PersistentStorageProtocol? = nil,
@@ -41,8 +42,9 @@ class TestUtils {
         var factors = [OktaFactor]()
         if enrollPush {
             let pushFactorMetadata = OktaFactorMetadataPush(id: "push_id",
-                                                    proofOfPossessionKeyTag: "proofOfPossessionKeyTag",
+                                                            proofOfPossessionKeyTag: "proofOfPossessionKeyTag",
                                                             userVerificationKeyTag: userVerificationKeyTag,
+                                                            userVerificationBioOrPinKeyTag: userVerificationBioOrPinKeyTag,
                                                             transactionTypes: transactionTypes)
             let pushFactor = VerificationMethodFactory.pushFactorFromMetadata(pushFactorMetadata,
                                                                               cryptoManager: cryptoManager,
@@ -130,9 +132,11 @@ class TestUtils {
 
     class func createAuthenticatorMetadataModel(id: String = "id",
                                                 userVerification: AuthenticatorSettingsModel.UserVerificationSetting = .preferred,
+                                                userVerificationMethods: [AuthenticatorSettingsModel.UserVerificationMethodSetting] = [],
                                                 methods: [AuthenticatorMethod] = [.push, .signedNonce]) -> AuthenticatorMetaDataModel {
         let settings = AuthenticatorSettingsModel(appInstanceId: nil,
                                                   userVerification: userVerification,
+                                                  userVerificationMethods: userVerificationMethods,
                                                   oauthClientId: "oauthClientId")
 
         var embeddedMethods = [MethodResponseModel]()

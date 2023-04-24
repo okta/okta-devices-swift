@@ -72,6 +72,16 @@ class AuthenticatorEnrollmentTests: XCTestCase {
         XCTAssertFalse(enrollment.hasFactorsWithUserVerificationKey)
     }
 
+    func testHasFactorsWithUserVerificationBioOrPinKey() {
+        XCTAssertTrue(enrollment.hasFactorsWithUserVerificationBioOrPinKey)
+        enrollment = TestUtils.createAuthenticatorEnrollment(orgHost: mockURL,
+                                                             orgId: "orgId",
+                                                             enrollmentId: "enrollmentId",
+                                                             cryptoManager: cryptoManager,
+                                                             enrollPush: false)
+        XCTAssertFalse(enrollment.hasFactorsWithUserVerificationBioOrPinKey)
+    }
+
     func testDescription() {
         let expectedDescription: String = {
             let info: [String: Any] = [
@@ -81,7 +91,7 @@ class AuthenticatorEnrollmentTests: XCTestCase {
                 "userId": enrollment.user.id,
                 "created": DateFormatter.oktaDateFormatter().string(from: enrollment.creationDate),
                 "orgHost": mockURL.absoluteString,
-                "OktaFactorPush": "{\n    id = \"push_id\";\n    popKey = proofOfPossessionKeyTag;\n    type = Push;\n    uvKey = userVerificationKeyTag;\n}"
+                "OktaFactorPush": "{\n    id = \"push_id\";\n    popKey = proofOfPossessionKeyTag;\n    type = Push;\n    uvBioOrPinKey = userVerificationBioOrPinKeyTag;\n    uvKey = userVerificationKeyTag;\n}"
             ]
             return "\(info as AnyObject)"
         }()
@@ -290,6 +300,7 @@ class AuthenticatorEnrollmentTests: XCTestCase {
         enrollment.enrolledFactors.append(pushFactor)
         var completionCalled = false
         XCTAssertFalse(enrollment.hasFactorsWithUserVerificationKey)
+        XCTAssertFalse(enrollment.hasFactorsWithUserVerificationBioOrPinKey)
         enrollment.setUserVerification(authenticationToken: AuthToken.bearer(""), enable: true) { _ in
             completionCalled = true
         }
@@ -297,6 +308,7 @@ class AuthenticatorEnrollmentTests: XCTestCase {
         XCTAssertTrue(completionCalled)
         XCTAssertTrue(updateAuthenticatorRequestHookCalled)
         XCTAssertTrue(enrollment.hasFactorsWithUserVerificationKey)
+        XCTAssertFalse(enrollment.hasFactorsWithUserVerificationBioOrPinKey)
 
         completionCalled = false
         updateAuthenticatorRequestHookCalled = false

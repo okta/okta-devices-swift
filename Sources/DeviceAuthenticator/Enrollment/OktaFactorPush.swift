@@ -24,10 +24,17 @@ class OktaFactorPush: OktaFactor {
     var id: String {
         return factorData.id
     }
+
     /// Checks whether factor was enrolled with user verification key
     /// - Returns: true if factor enrolled with user verification key
     var enrolledWithUserVerificationKey: Bool {
         return userVerificationKeyTag != nil
+    }
+
+    /// Checks whether factor was enrolled with bio or pin user verification key
+    /// - Returns: true if factor enrolled with bio or pin user verification key
+    var enrolledWithUserVerificationBioOrPinKey: Bool {
+        return userVerificationBioOrPinKeyTag != nil
     }
 
     /// Unique id of proof of possession key. Used to read SecKey reference from the keychain
@@ -42,7 +49,7 @@ class OktaFactorPush: OktaFactor {
 
     /// Unique id of user verification using bio or pin key. Used to read SecKey reference from the keychain
     var userVerificationBioOrPinKeyTag: String? {
-        return nil
+        return factorData.userVerificationBioOrPinKeyTag
     }
 
     var enrolledWithCIBASupport: Bool {
@@ -53,7 +60,8 @@ class OktaFactorPush: OktaFactor {
         let info: [String: Any] =  ["type": "Push",
                                     "id": factorData.id,
                                     "popKey": factorData.proofOfPossessionKeyTag,
-                                    "uvKey": factorData.userVerificationKeyTag ?? ""]
+                                    "uvKey": factorData.userVerificationKeyTag ?? "",
+                                    "uvBioOrPinKey": factorData.userVerificationBioOrPinKeyTag ?? ""]
         return "\(info as AnyObject)"
     }
 
@@ -70,12 +78,20 @@ class OktaFactorPush: OktaFactor {
     func cleanup() {
         _ = cryptoManager.delete(keyPairWith: factorData.proofOfPossessionKeyTag)
         removeUserVerificationKey()
+        removeUserVerificationBioOrPinKey()
     }
 
     func removeUserVerificationKey() {
         if let userVerificationKeyTag = factorData.userVerificationKeyTag {
             _ = cryptoManager.delete(keyPairWith: userVerificationKeyTag)
             factorData.userVerificationKeyTag = nil
+        }
+    }
+
+    func removeUserVerificationBioOrPinKey() {
+        if let userVerificationBioOrPinKeyTag = factorData.userVerificationBioOrPinKeyTag {
+            _ = cryptoManager.delete(keyPairWith: userVerificationBioOrPinKeyTag)
+            factorData.userVerificationBioOrPinKeyTag = nil
         }
     }
 

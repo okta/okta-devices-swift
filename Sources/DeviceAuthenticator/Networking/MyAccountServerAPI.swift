@@ -87,6 +87,7 @@ class MyAccountServerAPI: ServerAPIProtocol {
                                                                  logos: nil)
                     let authenticatorSettings = AuthenticatorSettingsModel(appInstanceId: nil,
                                                                            userVerification: policyModel.settings?.userVerification,
+                                                                           userVerificationMethods: policyModel.settings?.userVerificationMethods,
                                                                            oauthClientId: oidcClientId)
                     let embedded = AuthenticatorMetaDataModel.Embedded(methods: policyModel.supportedMethods)
                     let metadata = AuthenticatorMetaDataModel(id: policyModel.authenticatorId,
@@ -354,6 +355,7 @@ class MyAccountServerAPI: ServerAPIProtocol {
         let factorMetadata = OktaFactorMetadataPush(id: enrolledModel.id,
                                                     proofOfPossessionKeyTag: proofOfPossessionKeyTag,
                                                     userVerificationKeyTag: factorModel.userVerificationKeyTag,
+                                                    userVerificationBioOrPinKeyTag: factorModel.userVerificationBioOrPinKeyTag,
                                                     links: OktaFactorMetadataPush.Links(pendingLink: links.pending?.href),
                                                     transactionTypes: factorModel.transactionTypes)
         let factor = OktaFactorPush(factorData: factorMetadata,

@@ -42,6 +42,7 @@ extension OktaSharedSQLite {
 
         static let proofOfPossessionKeyTag = "proofOfPossessionKeyTag"
         static let userVerificationKeyTag = "userVerificationKeyTag"
+        static let userVerificationBioOrPinKeyTag = "userVerificationBioOrPinKeyTag"
         static let links = "links"
         static let passCodeLength = "passCodeLength"
         static let timeIntervalSec = "timeIntervalSec"
@@ -111,6 +112,10 @@ extension GRDB.Row {
 
     var userVerificationKeyTag: String? {
         return self[OktaSharedSQLite.Column.userVerificationKeyTag]
+    }
+
+    var userVerificationBioOrPinKeyTag: String? {
+        return self[OktaSharedSQLite.Column.userVerificationBioOrPinKeyTag]
     }
 
     var metadata: Data? {

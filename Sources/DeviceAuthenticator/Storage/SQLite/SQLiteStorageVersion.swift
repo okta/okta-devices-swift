@@ -15,6 +15,7 @@ import Foundation
 enum SQLiteStorageVersion: Int, OktaVersionType {
     case unknown = -1
     case v1 = 1
+    case v2 = 2
 
     static var unknownVersion: SQLiteStorageVersion { return .unknown }
 
@@ -29,11 +30,8 @@ enum SQLiteStorageVersion: Int, OktaVersionType {
             return ""
         case .v1:
             return sqliteBaseSchema
-        /*
-        Example of schema migration to v2
         case .v2:
             return SQLiteStorageVersion.v1.schema() + sqliteSchemaMigration_v2
-        */
         }
     }
 }
