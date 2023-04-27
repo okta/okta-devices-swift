@@ -318,13 +318,8 @@ class OktaTransactionPossessionChallengeBase: OktaTransaction {
                     messageReason = .userVerificationFailed
                 }
             }
-            // Surface the error via the non-blocking 'message' identity step
-            self.postMessageToApplication(message: "Failed to sign with key \(skippedKey), falling back to \(keyTypes.description)",
-                                          reason: messageReason,
-                                          error: error,
-                                          transactionContext: transactionContext)
 
-            // Update consent value for cases where appropriate for error
+            // Update consent value and next keys for cases where appropriate for error
             if skippedKey == .userVerification || skippedKey == .userVerificationBioOrPin {
                 if messageReason == .userVerificationCancelledByUser {
                     transactionContext.userConsentResponseValue = .cancelledUserVerification
@@ -349,6 +344,13 @@ class OktaTransactionPossessionChallengeBase: OktaTransaction {
                     }
                 }
             }
+
+            // Surface the error via the non-blocking 'message' identity step
+            self.postMessageToApplication(message: "Failed to sign with key \(skippedKey), falling back to \(keyTypes.description)",
+                                          reason: messageReason,
+                                          error: error,
+                                          transactionContext: transactionContext)
+
             self.signJWTAndSendRequest(transactionContext: transactionContext,
                                        keysRequirements: keyTypes)
         } else {

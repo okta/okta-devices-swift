@@ -68,9 +68,10 @@ class OktaTransaction {
     func generateAuthenticationJWTString(for enrollment: AuthenticatorEnrollment,
                                          onCompletion: @escaping (String?, DeviceAuthenticatorError?) -> Void) {
         // If no Oauth token provided try to authenticate with jwt signed by:
+        // 1. User verification bio or pin key, if not available:
         // 1. User verification key, if not available:
         // 2. Proof of possession key
-        // 3. If both are not available respond with error, so application can fallback to OIDC flow
+        // 3. If all three are not available respond with error, so application can fallback to OIDC flow
         guard var keyTagToUse = findPoPKeyTagFromEnrolledFactors(enrollment: enrollment) else {
             let error = DeviceAuthenticatorError.internalError("Proof of possession key tag is not found")
             logger.error(eventName: "JWT generating error", message: "\(error)")
@@ -78,7 +79,9 @@ class OktaTransaction {
             return
         }
 
-        if let userVerificationKeyTag = findUVKeyTagFromEnrolledFactors(enrollment: enrollment) {
+        if let userVerificationBioOrPinKeyTag = findUVBioOrPinKeyTagFromEnrolledFactors(enrollment: enrollment) {
+            keyTagToUse = userVerificationBioOrPinKeyTag
+        } else if let userVerificationKeyTag = findUVKeyTagFromEnrolledFactors(enrollment: enrollment) {
             keyTagToUse = userVerificationKeyTag
         }
 
@@ -111,12 +114,18 @@ class OktaTransaction {
     }
 
     func findPoPKeyTagFromEnrolledFactors(enrollment: AuthenticatorEnrollment) -> String? {
-        let pushFactor = enrollment.enrolledFactors.first(where: { $0 is OktaFactorPush }) as? OktaFactorPush
-        return pushFactor?.proofOfPossessionKeyTag
+        return getPushFactor(for: enrollment)?.proofOfPossessionKeyTag
     }
 
     func findUVKeyTagFromEnrolledFactors(enrollment: AuthenticatorEnrollment) -> String? {
-        let pushFactor = enrollment.enrolledFactors.first(where: { $0 is OktaFactorPush }) as? OktaFactorPush
-        return pushFactor?.userVerificationKeyTag
+        return getPushFactor(for: enrollment)?.userVerificationKeyTag
+    }
+
+    func findUVBioOrPinKeyTagFromEnrolledFactors(enrollment: AuthenticatorEnrollment) -> String? {
+        return getPushFactor(for: enrollment)?.userVerificationBioOrPinKeyTag
+    }
+
+    private func getPushFactor(for enrollment: AuthenticatorEnrollment) -> OktaFactorPush? {
+        return enrollment.enrolledFactors.first { $0 is OktaFactorPush } as? OktaFactorPush
     }
 }
