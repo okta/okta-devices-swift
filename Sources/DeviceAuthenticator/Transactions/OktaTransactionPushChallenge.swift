@@ -147,11 +147,18 @@ class OktaTransactionPushChallenge: OktaTransactionPossessionChallengeBase {
     }
 
     override func tryReadUserVerificationKey(with keyTag: String,
-                                             keyType: UserVerificationKeyType,
+                                             keyType: OktaBindJWT.KeyType,
                                              userVerificationType: UserVerificationChallengeRequirement? = nil,
                                              enrollment: AuthenticatorEnrollment,
                                              onIdentityStep: @escaping (RemediationStep) -> Void,
                                              onCompletion: @escaping ((KeyData?, DeviceAuthenticatorError?) -> Void)) {
+        guard keyType == .userVerification || keyType == .userVerificationBioOrPin else {
+            let error = DeviceAuthenticatorError.genericError("User verification keyType (\(keyType)) mismatch")
+            self.logger.error(eventName: self.logEventName, message: "Verification flow failed with error: \(error)")
+            onCompletion(nil, error)
+            return
+        }
+
         let amr = OktaTransactionPossessionChallengeBase.AuthenticationMethodReference.create()
         guard let jwsKey = self.cryptoManager.get(keyOf: .privateKey, with: keyTag, context: self.localAuthenticationContext) else {
             let error = DeviceAuthenticatorError.genericError("Can't find crypto factor silent key in secure storage")
@@ -163,7 +170,7 @@ class OktaTransactionPushChallenge: OktaTransactionPossessionChallengeBase {
         onCompletion(KeyData(keyTag: keyTag,
                              key: jwsKey,
                              amr: [amr],
-                             keyType: keyType.jwtKeyType),
+                             keyType: keyType),
                      nil)
     }
 

@@ -18,20 +18,6 @@ import LoggerCore
 import OktaLogger
 #endif
 
-enum UserVerificationKeyType {
-    case biometrics
-    case biometricsOrPin
-
-    var jwtKeyType: OktaBindJWT.KeyType {
-        switch self {
-        case .biometrics:
-            return .userVerification
-        case .biometricsOrPin:
-            return .userVerificationBioOrPin
-        }
-    }
-}
-
 class OktaTransactionPossessionChallengeBase: OktaTransaction {
     enum AuthenticationMethodReference: String {
         case fingerPrint = "fpt"
@@ -136,7 +122,7 @@ class OktaTransactionPossessionChallengeBase: OktaTransaction {
 
     /// Try to read UV key. Ask for UV prompt customization settings via `onIdentityStep` closure
     func tryReadUserVerificationKey(with keyTag: String,
-                                    keyType: UserVerificationKeyType,
+                                    keyType: OktaBindJWT.KeyType,
                                     userVerificationType: UserVerificationChallengeRequirement? = nil,
                                     enrollment: AuthenticatorEnrollment,
                                     onIdentityStep: @escaping (RemediationStep) -> Void,
@@ -382,7 +368,7 @@ class OktaTransactionPossessionChallengeBase: OktaTransaction {
                 return
             }
             tryReadUserVerificationKey(with: userVerificationKeyTag,
-                                       keyType: .biometrics,
+                                       keyType: .userVerification,
                                        userVerificationType: userVerificationType,
                                        enrollment: enrollment,
                                        onIdentityStep: onIdentityStep,
@@ -396,7 +382,7 @@ class OktaTransactionPossessionChallengeBase: OktaTransaction {
                 return
             }
             tryReadUserVerificationKey(with: userVerificationBioOrPinKeyTag,
-                                       keyType: .biometricsOrPin,
+                                       keyType: .userVerificationBioOrPin,
                                        userVerificationType: userVerificationType,
                                        enrollment: enrollment,
                                        onIdentityStep: onIdentityStep,

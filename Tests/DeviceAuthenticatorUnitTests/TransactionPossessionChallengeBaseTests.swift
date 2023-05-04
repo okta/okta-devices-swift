@@ -246,11 +246,6 @@ class TransactionPossessionChallengeBaseTests: XCTestCase {
         }
     }
 
-    func testUserVerificationKeyType() {
-        XCTAssertEqual(UserVerificationKeyType.biometrics.jwtKeyType, .userVerification)
-        XCTAssertEqual(UserVerificationKeyType.biometricsOrPin.jwtKeyType, .userVerificationBioOrPin)
-    }
-
     func testReadSigningKeyErrorHandler_userVerificationPermanentlyUnavailable() throws {
         let mut = try OktaTransactionPossessionChallengeBasePartialMock(applicationConfig: applicationConfig,
                                                                         challengeRequest: OktaJWTTestData.validDeviceChallengeRequestJWTWithUserMediationRequired(),

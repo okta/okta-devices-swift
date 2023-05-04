@@ -317,7 +317,7 @@ class OktaTransactionPushChallengeTests: XCTestCase {
         authContextMock.passcode = true
 
         transaction.localAuthenticationContext = authContextMock
-        transaction.tryReadUserVerificationKey(with: enrollment.pushFactor!.factorData.userVerificationKeyTag!, keyType: .biometrics, enrollment: enrollment, onIdentityStep: { identityStep in
+        transaction.tryReadUserVerificationKey(with: enrollment.pushFactor!.factorData.userVerificationKeyTag!, keyType: .userVerification, enrollment: enrollment, onIdentityStep: { identityStep in
             XCTFail("Unexpected closure call")
         }) { keyData, error in
             XCTAssertEqual(keyData?.keyTag, "userVerificationKeyTag")
@@ -352,13 +352,41 @@ class OktaTransactionPushChallengeTests: XCTestCase {
         authContextMock.passcode = true
 
         transaction.localAuthenticationContext = authContextMock
-        transaction.tryReadUserVerificationKey(with: enrollment.pushFactor!.factorData.userVerificationBioOrPinKeyTag!, keyType: .biometricsOrPin, enrollment: enrollment, onIdentityStep: { identityStep in
+        transaction.tryReadUserVerificationKey(with: enrollment.pushFactor!.factorData.userVerificationBioOrPinKeyTag!, keyType: .userVerificationBioOrPin, enrollment: enrollment, onIdentityStep: { identityStep in
             XCTFail("Unexpected closure call")
         }) { keyData, error in
             XCTAssertEqual(keyData?.keyTag, userVerificationBioOrPinKeyTag)
             XCTAssertEqual(keyData?.keyType, .userVerificationBioOrPin)
             XCTAssertNotNil(keyData?.key)
             XCTAssertNil(error)
+            completionExpectation.fulfill()
+        }
+        
+        wait(for: [completionExpectation], timeout: 3.0)
+    }
+
+    func testTryReadUserVerificationPoPKey() throws {
+
+        let proofOfPossessionKeyTag = "proofOfPossessionKeyTag"
+        let transaction = try OktaTransactionPushChallengePartialMock(pushChallenge: pushChallenge,
+                                                                      applicationConfig: applicationConfig,
+                                                                      storageManager: storageMock,
+                                                                      cryptoManager: cryptoManager,
+                                                                      signalsManager: SignalsManager(logger: OktaLoggerMock()),
+                                                                      restAPI: restAPIMock,
+                                                                      logger: OktaLoggerMock())
+
+        let completionExpectation = expectation(description: "Completion has been called!")
+
+        let authContextMock = LAContextMock()
+        authContextMock.passcode = true
+
+        transaction.localAuthenticationContext = authContextMock
+        transaction.tryReadUserVerificationKey(with: proofOfPossessionKeyTag, keyType: .proofOfPossession, enrollment: enrollment, onIdentityStep: { identityStep in
+            XCTFail("Unexpected closure call")
+        }) { keyData, error in
+            XCTAssertNil(keyData)
+            XCTAssertEqual(error, DeviceAuthenticatorError.genericError("User verification keyType (proofOfPossession) mismatch"))
             completionExpectation.fulfill()
         }
 
