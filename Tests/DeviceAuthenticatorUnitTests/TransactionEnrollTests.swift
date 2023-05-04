@@ -690,13 +690,22 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
     }
 
     func testDoUpdate_SuccessWithUserVerificationKey() {
-        enrollmentContext = createEnrollmentContext(accessToken: nil, deviceSignals: nil, applicationSignals: nil, enrollBiometricKey: nil, pushToken: nil, supportsCIBA: false)
+        enrollmentContext = createEnrollmentContext(accessToken: nil,
+                                                    deviceSignals: nil,
+                                                    applicationSignals: nil,
+                                                    enrollBiometricKey: nil,
+                                                    enrollBiometricOrPinKey: nil,
+                                                    pushToken: nil,
+                                                    supportsCIBA: false)
         transaction = createTransaction(enrollmentContext: enrollmentContext, enrollment: nil)
         transaction.metaData = metaData
+        let userVerificationKeyTag = "userVerificationKeyTag"
         let enrollment = TestUtils.createAuthenticatorEnrollment(orgHost: URL(string: "tenant.okta.com")!,
                                                                  orgId: "orgId",
                                                                  enrollmentId: "enrollmentId",
-                                                                 cryptoManager: cryptoManager)
+                                                                 cryptoManager: cryptoManager,
+                                                                 userVerificationKeyTag: userVerificationKeyTag,
+                                                                 userVerificationBioOrPinKeyTag: nil)
 
         let restAPIHookCalled = expectation(description: "Rest API hook expected!")
         self.restAPIMock.updateAuthenticatorRequestHook = { orgHost, _, _, _, _, _, token, context, completion in
@@ -716,7 +725,57 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
         let cryptoHookCalled = expectation(description: "Crypto hook expected!")
         cryptoManager.getHook = { type, tag, context in
             cryptoHookCalled.fulfill()
-            XCTAssertEqual(tag, "userVerificationKeyTag")
+            XCTAssertEqual(tag, userVerificationKeyTag)
+            self.cryptoManager.getHook = nil
+            return self.cryptoManager.get(keyOf: type, with: tag, context: context)
+        }
+        let completionCalled = expectation(description: "Completion should be called!")
+        transaction.doUpdate(enrollment: enrollment,
+                             factorsMetaData: enrolledFactors!) { result in
+            completionCalled.fulfill()
+        }
+
+        waitForExpectations(timeout: 1.0, handler: nil)
+    }
+
+    func testDoUpdate_SuccessWithUserVerificationBioOrPinKey() {
+        enrollmentContext = createEnrollmentContext(accessToken: nil,
+                                                    deviceSignals: nil,
+                                                    applicationSignals: nil,
+                                                    enrollBiometricKey: nil,
+                                                    enrollBiometricOrPinKey: nil,
+                                                    pushToken: nil,
+                                                    supportsCIBA: false)
+        transaction = createTransaction(enrollmentContext: enrollmentContext, enrollment: nil)
+        transaction.metaData = metaData
+        let userVerificationKeyTag = "userVerificationKeyTag"
+        let userVerificationBioOrPinKeyTag = "userVerificationBioOrPinKeyTag"
+        let enrollment = TestUtils.createAuthenticatorEnrollment(orgHost: URL(string: "tenant.okta.com")!,
+                                                                 orgId: "orgId",
+                                                                 enrollmentId: "enrollmentId",
+                                                                 cryptoManager: cryptoManager,
+                                                                 userVerificationKeyTag: userVerificationKeyTag,
+                                                                 userVerificationBioOrPinKeyTag: userVerificationBioOrPinKeyTag)
+
+        let restAPIHookCalled = expectation(description: "Rest API hook expected!")
+        self.restAPIMock.updateAuthenticatorRequestHook = { orgHost, _, _, _, _, _, token, context, completion in
+            XCTAssertEqual(orgHost.absoluteString, "tenant.okta.com")
+            if case .authenticationToken(_) = token {
+                XCTAssertNotNil(token.token)
+            } else {
+                XCTFail()
+            }
+            completion(.failure(.genericError("")))
+            restAPIHookCalled.fulfill()
+        }
+
+        let enrolledFactors = try? transaction.enrollFactors()
+        XCTAssertNotNil(enrolledFactors)
+
+        let cryptoHookCalled = expectation(description: "Crypto hook expected!")
+        cryptoManager.getHook = { type, tag, context in
+            cryptoHookCalled.fulfill()
+            XCTAssertEqual(tag, userVerificationBioOrPinKeyTag)
             self.cryptoManager.getHook = nil
             return self.cryptoManager.get(keyOf: type, with: tag, context: context)
         }
@@ -762,7 +821,7 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
     }
 
     func testDoUpdate_NoPoPKeyError() {
-        enrollmentContext = createEnrollmentContext(accessToken: nil, deviceSignals: nil, applicationSignals: nil, enrollBiometricKey: nil, pushToken: nil, supportsCIBA: false)
+        enrollmentContext = createEnrollmentContext(accessToken: nil, deviceSignals: nil, applicationSignals: nil, enrollBiometricKey: nil, enrollBiometricOrPinKey: nil, pushToken: nil, supportsCIBA: false)
         transaction = createTransaction(enrollmentContext: enrollmentContext, enrollment: nil)
         transaction.metaData = metaData
         let enrollment = TestUtils.createAuthenticatorEnrollment(orgHost: URL(string: "tenant.okta.com")!,

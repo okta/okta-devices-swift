@@ -67,15 +67,19 @@ class TransactionTests: XCTestCase {
     }
 
     func testGenerateAuthenticationJWTString_GenerationFailed() {
+        let userVerificationKeyTag = "userVerificationKeyTag"
+
         jwtGeneratorMock.generateHook = { jwtType, kid, payLoad, key, algo in
-            XCTAssertEqual(kid, "userVerificationKeyTag")
+            XCTAssertEqual(kid, userVerificationKeyTag)
             throw DeviceAuthenticatorError.genericError("Some error")
         }
         let mut = OktaTransaction(loginHint: nil, storageManager: storageMock, cryptoManager: cryptoManager, jwtGenerator: jwtGeneratorMock, logger: OktaLoggerMock())
         let authenticator = TestUtils.createAuthenticatorEnrollment(orgHost: URL(string: "okta.okta.com")!,
                                                                     orgId: "orgId",
                                                                     enrollmentId: "enrollment_id",
-                                                                    cryptoManager: cryptoManager)
+                                                                    cryptoManager: cryptoManager,
+                                                                    userVerificationKeyTag: userVerificationKeyTag,
+                                                                    userVerificationBioOrPinKeyTag: nil)
         let ex = expectation(description: "Completion expected!")
         mut.generateAuthenticationJWTString(for: authenticator) { token, error in
             XCTAssertNil(token)
@@ -90,15 +94,19 @@ class TransactionTests: XCTestCase {
     }
 
     func testGenerateAuthenticationJWTString_UserCancelled() {
+        let userVerificationKeyTag = "userVerificationKeyTag"
+
         jwtGeneratorMock.generateHook = { jwtType, kid, payLoad, key, algo in
-            XCTAssertEqual(kid, "userVerificationKeyTag")
+            XCTAssertEqual(kid, userVerificationKeyTag)
             throw SecurityError.localAuthenticationCancelled(LAError(.userCancel))
         }
         let mut = OktaTransaction(loginHint: nil, storageManager: storageMock, cryptoManager: cryptoManager, jwtGenerator: jwtGeneratorMock, logger: OktaLoggerMock())
         let authenticator = TestUtils.createAuthenticatorEnrollment(orgHost: URL(string: "okta.okta.com")!,
                                                                     orgId: "orgId",
                                                                     enrollmentId: "enrollment_id",
-                                                                    cryptoManager: cryptoManager)
+                                                                    cryptoManager: cryptoManager,
+                                                                    userVerificationKeyTag: userVerificationKeyTag,
+                                                                    userVerificationBioOrPinKeyTag: nil)
         let ex = expectation(description: "Completion expected!")
         mut.generateAuthenticationJWTString(for: authenticator) { token, error in
             XCTAssertNil(token)
@@ -121,7 +129,36 @@ class TransactionTests: XCTestCase {
                                                                     orgId: "orgId",
                                                                     enrollmentId: "enrollment_id",
                                                                     cryptoManager: cryptoManager,
-                                                                    userVerificationKeyTag: nil)
+                                                                    userVerificationKeyTag: nil,
+                                                                    userVerificationBioOrPinKeyTag: nil)
+        let ex = expectation(description: "Completion expected!")
+        mut.generateAuthenticationJWTString(for: authenticator) { token, error in
+            XCTAssertNil(token)
+            if case let .securityError(encryptionError) = error {
+                XCTAssertEqual(encryptionError, SecurityError.jwtError("Failed to sign jwt"))
+            } else {
+                XCTFail()
+            }
+            ex.fulfill()
+        }
+        waitForExpectations(timeout: 1.0, handler: nil)
+    }
+
+    func testGenerateAuthenticationJWTString_UseUserVerificationBioOrPinKeyIfEnrolled() {
+        let userVerificationKeyTag = "userVerificationKeyTag"
+        let userVerificationBioOrPinKeyTag = "userVerificationBioOrPinKeyTag"
+
+        jwtGeneratorMock.generateHook = { jwtType, kid, payLoad, key, algo in
+            XCTAssertEqual(kid, userVerificationBioOrPinKeyTag)
+            throw DeviceAuthenticatorError.genericError("Some error")
+        }
+        let mut = OktaTransaction(loginHint: nil, storageManager: storageMock, cryptoManager: cryptoManager, jwtGenerator: jwtGeneratorMock, logger: OktaLoggerMock())
+        let authenticator = TestUtils.createAuthenticatorEnrollment(orgHost: URL(string: "okta.okta.com")!,
+                                                                    orgId: "orgId",
+                                                                    enrollmentId: "enrollment_id",
+                                                                    cryptoManager: cryptoManager,
+                                                                    userVerificationKeyTag: userVerificationKeyTag,
+                                                                    userVerificationBioOrPinKeyTag: userVerificationBioOrPinKeyTag)
         let ex = expectation(description: "Completion expected!")
         mut.generateAuthenticationJWTString(for: authenticator) { token, error in
             XCTAssertNil(token)

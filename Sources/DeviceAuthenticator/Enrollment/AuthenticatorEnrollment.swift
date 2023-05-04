@@ -392,9 +392,12 @@ class AuthenticatorEnrollment: AuthenticatorEnrollmentProtocol {
                 return
             }
 
-            if preferUVKey,
-               let userVerificationKeyTag = self.findUVKeyTagFromEnrolledFactors() {
-                keyTagToUse = userVerificationKeyTag
+            if preferUVKey {
+                if let userVerificationBioOrPinKeyTag = self.findUVBioOrPinKeyTagFromEnrolledFactors() {
+                    keyTagToUse = userVerificationBioOrPinKeyTag
+                } else if let userVerificationKeyTag = self.findUVKeyTagFromEnrolledFactors() {
+                    keyTagToUse = userVerificationKeyTag
+                }
             }
 
             guard let key = self.cryptoManager.get(keyOf: .privateKey, with: keyTagToUse, context: LAContext()) else {
@@ -429,6 +432,10 @@ class AuthenticatorEnrollment: AuthenticatorEnrollmentProtocol {
 
     func findUVKeyTagFromEnrolledFactors() -> String? {
         return self.enrolledFactors.first(where: { $0.userVerificationKeyTag != nil })?.userVerificationKeyTag
+    }
+
+    func findUVBioOrPinKeyTagFromEnrolledFactors() -> String? {
+        return self.enrolledFactors.first(where: { $0.userVerificationBioOrPinKeyTag != nil })?.userVerificationBioOrPinKeyTag
     }
 }
 
