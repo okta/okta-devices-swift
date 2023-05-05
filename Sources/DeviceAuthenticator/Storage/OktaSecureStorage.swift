@@ -12,7 +12,16 @@
 import Foundation
 import LocalAuthentication
 
-class OktaSecureStorage {
+public protocol OktaSecureStorageProtocol {
+    func getData(key: String, biometricPrompt prompt: String?, accessGroup: String?) throws -> Data
+    func set(data: Data,
+             forKey key: String,
+             behindBiometrics: Bool,
+             accessGroup: String?,
+             accessibility: CFString?) throws
+}
+
+class OktaSecureStorage: OktaSecureStorageProtocol {
 
     static let keychainErrorDomain = "com.okta.securestorage"
 

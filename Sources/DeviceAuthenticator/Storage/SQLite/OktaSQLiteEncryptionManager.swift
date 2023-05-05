@@ -48,16 +48,19 @@ protocol OktaSQLiteColumnEncryptionManagerProtocol {
 
 class OktaSQLiteEncryptionManager: OktaSQLiteColumnEncryptionManagerProtocol {
     let cryptoManager: OktaSharedCryptoProtocol
-    let keychainStorage: OktaSecureStorage
-    let keychainGroupId: String
+    let keychainStorage: OktaSecureStorageProtocol
+    let keychainGroupId: String?
+    let accessibility: CFString?
     var cryptoKey: SymmetricKey?
 
     init(cryptoManager: OktaSharedCryptoProtocol,
-         keychainGroupId: String,
-         keychainStorage: OktaSecureStorage = OktaSecureStorage(applicationPassword: nil)) {
+         keychainGroupId: String?,
+         keychainStorage: OktaSecureStorageProtocol = OktaSecureStorage(applicationPassword: nil),
+         accessibility: CFString? = kSecAttrAccessibleAfterFirstUnlock) {
         self.cryptoManager = cryptoManager
         self.keychainGroupId = keychainGroupId
         self.keychainStorage = keychainStorage
+        self.accessibility = accessibility
     }
 
     func encryptedColumnUTF8Data(from string: String) throws -> Data {
@@ -95,7 +98,7 @@ class OktaSQLiteEncryptionManager: OktaSQLiteColumnEncryptionManagerProtocol {
 
         let keyTag = EncryptionTag.columnEncryptionKeyTag
         do {
-            let storedPublicKey = try keychainStorage.getData(key: keyTag.rawValue, accessGroup: keychainGroupId)
+            let storedPublicKey = try keychainStorage.getData(key: keyTag.rawValue, biometricPrompt: nil, accessGroup: keychainGroupId)
             let symmetricKey = SymmetricKey(data: storedPublicKey)
             self.cryptoKey = symmetricKey
 
@@ -111,7 +114,7 @@ class OktaSQLiteEncryptionManager: OktaSQLiteColumnEncryptionManagerProtocol {
                                             forKey: keyTag.rawValue,
                                             behindBiometrics: false,
                                             accessGroup: keychainGroupId,
-                                            accessibility: kSecAttrAccessibleAfterFirstUnlock)
+                                            accessibility: self.accessibility)
 
                     return cryptoKey
                 } catch {
