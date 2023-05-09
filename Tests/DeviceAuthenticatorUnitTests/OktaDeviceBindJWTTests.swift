@@ -335,12 +335,18 @@ class OktaDeviceBindJWTTests: XCTestCase {
         let nonce = UUID().uuidString
         let binding = UUID().uuidString
         let context: [String: _OktaCodableArbitaryType] = ["binding": .string(binding)]
-        let signalData = _PluginSignalData(name: "com.okta.device.integrity", configuration: .local, signal: "{signalExample}", timeCollected: 1233456)
-        let signalProviderData = _IntegrationData.signal(signalData)
+        let signalProvider = _PluginSignalData(name: "com.okta.device.integrity", configuration: .local, signal: "{sensitiveSignal}", timeCollected: 1233456)
+        let signalProviderData = _IntegrationData.signal(signalProvider)
+
+        let integration = _PluginSignalData(name: "com.okta.test.integration", configuration: .local, signal: "{sensitiveIntegration}", timeCollected: 1233456)
+        let integrationData = _IntegrationData.signal(integration)
+
         let signals = DeviceSignalsModel(platform: .iOS, osVersion: "1.2.3", displayName: "displayName")
         signals.displayName = "helloPIIName"
         signals.udid = "helloPIIUDID"
         signals.serialNumber = "abcdef8888PII"
+        signals.deviceAttestation = ["managementHint":
+                .string("{sensitiveDeviceAttestation}")]
         let payload = OktaDeviceBindJWTPayload(iss: issuer,
                                                aud: audience,
                                                sub: subject,
@@ -351,7 +357,7 @@ class OktaDeviceBindJWTTests: XCTestCase {
                                                methodEnrollmentId: nil,
                                                keyType: nil,
                                                challengeResponseContext: context,
-                                               integrations: nil,
+                                               integrations: [integrationData],
                                                signalProviders: [signalProviderData])
 
         let desc = payload.description
@@ -362,13 +368,23 @@ class OktaDeviceBindJWTTests: XCTestCase {
         XCTAssertTrue(desc.contains(nonce))
         XCTAssertTrue(desc.contains("txValue"))
         XCTAssertTrue(desc.contains(binding))
-        XCTAssertTrue(desc.contains(signalData.name))
-        XCTAssertTrue(desc.contains(signalData.signal))
-        XCTAssertTrue(desc.contains("\(signalData.timeCollected)"))
         XCTAssertTrue(desc.contains("IOS"))
 
-        // PII should be redacted
-        XCTAssertTrue(desc.contains("<REDACTED>"))
+        // Integration should be printered, but the sensitive part redacted
+        XCTAssertTrue(desc.contains(integration.name))
+        XCTAssertTrue(desc.contains("\(integration.timeCollected)"))
+        XCTAssertFalse(desc.contains(integration.signal))
+
+        // SignalProvider should be present, signal part redacted
+        XCTAssertTrue(desc.contains(signalProvider.name))
+        XCTAssertTrue(desc.contains("\(signalProvider.timeCollected)"))
+        XCTAssertFalse(desc.contains(signalProvider.signal))
+
+        // Device Attestation should be printed, sensitive portion redacted
+        XCTAssertTrue(desc.contains("deviceAttestation"))
+        XCTAssertFalse(desc.contains("managementHint"))
+        XCTAssertFalse(desc.contains("{sensitiveDeviceAttestation}"))
+
         XCTAssertFalse(desc.contains(signals.serialNumber ?? UUID().uuidString))
         XCTAssertFalse(desc.contains(signals.udid ?? UUID().uuidString))
         XCTAssertFalse(desc.contains(signals.displayName ?? UUID().uuidString))

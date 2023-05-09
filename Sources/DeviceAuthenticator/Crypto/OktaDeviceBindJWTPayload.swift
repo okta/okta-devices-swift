@@ -79,7 +79,7 @@ class OktaDeviceBindJWTPayload: OktaJWTPayload, CustomStringConvertible {
             return "OktaDeviceBindJWTPayload<REDACTED>"
         }
 
-        // Redact PII from signals (for logging purposes)
+        // Redact sensitive signals (for logging purposes)
         if var signals = descDict[DeviceBindCodingKeys.deviceSignals.rawValue] as? [String: Any] {
             let loggableSignals = loggableSignals()
             for key in signals.keys {
@@ -88,6 +88,35 @@ class OktaDeviceBindJWTPayload: OktaJWTPayload, CustomStringConvertible {
                 }
             }
             descDict[DeviceBindCodingKeys.deviceSignals.rawValue] = signals
+        }
+
+        if let integrations = descDict[DeviceBindCodingKeys.integrations.rawValue] as? [[String: Any]] {
+            let loggableSignals = loggableSignalProviderKeys()
+
+            var redactedIntegrations: [[String: Any]] = []
+            for var integration in integrations {
+                for key in integration.keys {
+                    if !loggableSignals.contains(key) {
+                        integration[key] = "<REDACTED>"
+                    }
+                }
+                redactedIntegrations.append(integration)
+            }
+            descDict[DeviceBindCodingKeys.integrations.rawValue] = redactedIntegrations
+        }
+
+        if let signalProviders = descDict[DeviceBindCodingKeys.signalProviders.rawValue] as? [[String: Any]] {
+            let loggableSignals = loggableSignalProviderKeys()
+            var redactedSignalProviders: [[String: Any]] = []
+            for var provider in signalProviders {
+                for key in provider.keys {
+                    if !loggableSignals.contains(key) {
+                        provider[key] = "<REDACTED>"
+                    }
+                }
+                redactedSignalProviders.append(provider)
+            }
+            descDict[DeviceBindCodingKeys.signalProviders.rawValue] = redactedSignalProviders
         }
 
         // Redact PII from top level keys (for logging purposes)
@@ -142,13 +171,21 @@ extension OktaDeviceBindJWTPayload {
             RequestableSignal.model.rawValue,
             RequestableSignal.osVersion.rawValue,
             RequestableSignal.secureHardwarePresent.rawValue,
-            RequestableSignal.deviceAttestation.rawValue,
             RequestableSignal.diskEncryptionType.rawValue,
             RequestableSignal.screenLockType.rawValue,
             RequestableSignal.clientInstanceBundleId.rawValue,
             RequestableSignal.clientInstanceDeviceSdkVersion.rawValue,
             RequestableSignal.clientInstanceId.rawValue,
             RequestableSignal.clientInstanceVersion.rawValue
+        ])
+    }
+
+    ///  List of device signals which can be logged (No PII)
+    func loggableSignalProviderKeys() -> Set<String> {
+        Set<String>([
+            "name",
+            "error",
+            "timeCollected",
         ])
     }
 }
