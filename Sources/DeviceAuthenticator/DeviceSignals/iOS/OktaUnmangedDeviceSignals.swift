@@ -50,8 +50,7 @@ class OktaUnmanagedDeviceSignals {
         }
 
         if requestedSignals.contains(.udid) {
-            let udid: String? = customDeviceSignals?.udid
-            deviceSignals.udid = udid ?? UIDevice.current.identifierForVendor?.uuidString
+            deviceSignals.udid = customDeviceSignals?.udid
         }
 
         if requestedSignals.contains(.secureHardwarePresent) {
@@ -69,6 +68,10 @@ class OktaUnmanagedDeviceSignals {
 
         if requestedSignals.contains(.screenLockType) {
             deviceSignals.screenLockType = screenLockType
+        }
+
+        if requestedSignals.contains(.serialNumber) {
+            deviceSignals.serialNumber = customDeviceSignals?.serialNumber
         }
 
         return deviceSignals

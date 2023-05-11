@@ -133,7 +133,7 @@ class OktaUnmanagedDeviceSignalsTests: XCTestCase {
         #endif
         XCTAssertEqual("test device", deviceSignalModel.displayName)
         XCTAssertEqual(ScreenLockValue.biometric, deviceSignalModel.screenLockType)
-        XCTAssertNotNil(deviceSignalModel.udid)
+        XCTAssertNil(deviceSignalModel.udid)
         XCTAssertNil(deviceSignalModel.sid)
         XCTAssertNil(deviceSignalModel.imei)
         XCTAssertNil(deviceSignalModel.meid)

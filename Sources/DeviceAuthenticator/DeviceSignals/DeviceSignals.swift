@@ -18,6 +18,8 @@ struct DeviceSignals {
     let displayName: String
     /// Unique device identifier
     var udid: String?
+    /// Device serial number
+    var serialNumber: String?
     /// Dictionary with additional application/device signals
     var deviceAttestation: [String: _OktaCodableArbitaryType]?
 
