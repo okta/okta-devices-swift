@@ -147,6 +147,7 @@ class OktaDeviceModelBuilderTests: XCTestCase {
         // Existing signals should remain
         XCTAssertNotNil(deviceSignalsModel.osVersion)
         XCTAssertNotNil(deviceSignalsModel.clientInstanceVersion, applicationConfig.applicationInfo.applicationVersion)
+        XCTAssertEqual(deviceSignalsModel.id, deviceEnrollment.id)
     }
 
     func testBuildForCreate_WithCustomSignals() {
@@ -172,6 +173,7 @@ class OktaDeviceModelBuilderTests: XCTestCase {
     func testBuildForVerify_WithCustomSignals() {
         var customSignals = DeviceSignals(displayName: "customDisplayName")
         customSignals.udid = "udid"
+        customSignals.serialNumber = "serialNumber"
         customSignals.deviceAttestation = ["managementHint": _OktaCodableArbitaryType.string("managementHint")]
 
         let mut = OktaDeviceModelBuilder(orgHost: "https://tenant.okta.com",
@@ -179,7 +181,8 @@ class OktaDeviceModelBuilderTests: XCTestCase {
                                          requestedSignals: [RequestableSignal.screenLockType.rawValue,
                                                             RequestableSignal.deviceAttestation.rawValue,
                                                             RequestableSignal.udid.rawValue,
-                                                            RequestableSignal.displayName.rawValue],
+                                                            RequestableSignal.displayName.rawValue,
+                                                            RequestableSignal.serialNumber.rawValue],
                                          customSignals: customSignals,
                                          cryptoManager: cryptoManager,
                                          jwtGenerator: jwtGenerator,
@@ -188,8 +191,9 @@ class OktaDeviceModelBuilderTests: XCTestCase {
         let deviceSignalsModel = mut.buildForVerifyTransaction(deviceEnrollmentId: "deviceEnrollment.id",
                                                                clientInstanceKey: "deviceEnrollment.clientInstanceId")
 
-        XCTAssertEqual(deviceSignalsModel.udid, "udid")
-        XCTAssertEqual(deviceSignalsModel.displayName, "customDisplayName")
+        XCTAssertEqual(deviceSignalsModel.udid, customSignals.udid)
+        XCTAssertEqual(deviceSignalsModel.serialNumber, customSignals.serialNumber)
+        XCTAssertEqual(deviceSignalsModel.displayName, customSignals.displayName)
         let localAuthContext = LAContext()
         var screenLockValue: ScreenLockValue = .none
         if localAuthContext.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: nil) {
@@ -221,7 +225,7 @@ class OktaDeviceModelBuilderTests: XCTestCase {
         XCTAssertNil(deviceSignalsModel.imei)
         XCTAssertNil(deviceSignalsModel.sid)
         #if os(iOS)
-        XCTAssertEqual(UIDevice.current.identifierForVendor?.uuidString, deviceSignalsModel.udid)
+        XCTAssertNil(deviceSignalsModel.udid)
         XCTAssertNil(deviceSignalsModel.serialNumber)
         XCTAssertEqual(displayName, deviceSignalsModel.displayName)
         #else
