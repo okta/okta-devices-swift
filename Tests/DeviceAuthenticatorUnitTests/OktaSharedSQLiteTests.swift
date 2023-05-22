@@ -33,6 +33,7 @@ class OktaSharedSQLiteTests: XCTestCase {
     override func setUp() {
         super.setUp()
 
+        OktaSharedSQLite_v1.targetVersion = .v1
         // Clean SQLite-related files before test run
         try? fileManager.removeItem(at: sqlDirectoryURL)
     }
@@ -667,6 +668,61 @@ class OktaSharedSQLiteTests: XCTestCase {
         XCTAssertEqual(retrieved_v2.pushFactor?.factorData.userVerificationBioOrPinKeyTag, enrollment.pushFactor?.factorData.userVerificationBioOrPinKeyTag)
     }
 
+    func testStorageDowngradeFrom_v2_To_v1() throws {
+        var sqlite = try createSqlite(fullDatabaseEncryption: false, prefersSecureEnclaveUsage: false, schemaVersion: .v2)
+
+        let enrollment = entitiesGenerator.createAuthenticator(methodTypes: [AuthenticatorMethod.push], transactionTypes: [.login, .ciba])
+        try sqlite.storeEnrollment(enrollment)
+        XCTAssertEqual(sqlite.lastKnownVersion, .v2)
+
+        guard let retrieved_v2 = sqlite.allEnrollments().first as? AuthenticatorEnrollment else {
+            XCTFail()
+            throw NSError(domain: "TestError", code: -1, userInfo: nil)
+        }
+
+        func assert(retrieved: AuthenticatorEnrollment, schemaVersion: SQLiteStorageVersion) {
+            XCTAssertEqual(retrieved.enrollmentId, enrollment.enrollmentId)
+            XCTAssertEqual(retrieved.orgHost, enrollment.orgHost)
+            XCTAssertEqual(retrieved.userId, enrollment.userId)
+            XCTAssertEqual(retrieved.userName, enrollment.userName)
+            XCTAssertEqual(retrieved.orgId, enrollment.orgId)
+            XCTAssertEqual(retrieved.deviceId, enrollment.deviceId)
+
+            XCTAssertTrue(retrieved.isCIBAEnabled)
+
+            // Spot check key factor values for expected key values
+            XCTAssertNotNil(retrieved.pushFactor?.factorData.proofOfPossessionKeyTag)
+            XCTAssertNotNil(retrieved.pushFactor?.factorData.userVerificationKeyTag)
+            if schemaVersion == .v2 {
+                XCTAssertNotNil(retrieved.pushFactor?.factorData.userVerificationBioOrPinKeyTag)
+            } else {
+                XCTAssertNil(retrieved.pushFactor?.factorData.userVerificationBioOrPinKeyTag)
+            }
+            
+            XCTAssertEqual(retrieved.pushFactor?.factorData.proofOfPossessionKeyTag, enrollment.pushFactor?.factorData.proofOfPossessionKeyTag)
+            XCTAssertEqual(retrieved.pushFactor?.factorData.userVerificationKeyTag, enrollment.pushFactor?.factorData.userVerificationKeyTag)
+            if schemaVersion == .v2 {
+                XCTAssertEqual(retrieved.pushFactor?.factorData.userVerificationBioOrPinKeyTag, enrollment.pushFactor?.factorData.userVerificationBioOrPinKeyTag)
+            }
+        }
+
+        assert(retrieved: retrieved_v2, schemaVersion: .v2)
+
+        sqlite = try createSqlite(fullDatabaseEncryption: false, prefersSecureEnclaveUsage: false, schemaVersion: .v1)
+        XCTAssertTrue(sqlite is OktaSharedSQLite_v1)
+        XCTAssertEqual(sqlite.lastKnownVersion, .v2)
+        let result = try OktaStorageMigrator(logger: OktaLoggerMock()).isMigrationToTargetVersionNeeded(migratableStorage: sqlite,
+                                                                                                        type: OktaSharedSQLite.self)
+        XCTAssertFalse(result)
+
+        XCTAssertNoThrow(try sqlite.storeEnrollment(retrieved_v2))
+        guard let retrieved_v2 = sqlite.allEnrollments().first as? AuthenticatorEnrollment else {
+            XCTFail()
+            throw NSError(domain: "TestError", code: -1, userInfo: nil)
+        }
+        assert(retrieved: retrieved_v2, schemaVersion: .v1)
+    }
+
     // MARK: Private Helpers
 
     private func createStorage(prefersSecureEnclaveUsage: Bool, schemaVersion: SQLiteStorageVersion = .latestVersion) throws -> OktaSQLitePersistentStorage {
@@ -713,6 +769,7 @@ class OktaSharedSQLiteTests: XCTestCase {
 }
 
 class OktaSharedSQLite_v1: OktaSharedSQLite {
+
     override var factorStatement: String {
         "INSERT INTO EnrolledMethod (id, enrollmentId, orgId, type, proofOfPossessionKeyTag, userVerificationKeyTag, links, passCodeLength, timeIntervalSec, algorithm, sharedSecret, transactionTypes, createdTimestamp, updatedTimestamp) VALUES (:id, :enrollmentId, :enrollmentOrgId, :type, :proofOfPossessionKeyTag, :userVerificationKeyTag, :links, :passCodeLength, :timeIntervalSec, :algorithm, :sharedSecret, :transactionTypes, :createdTimestamp, :updatedTimestamp) ON CONFLICT(id,enrollmentId,orgId) DO UPDATE SET id = :id, enrollmentId = :enrollmentId, orgId = :enrollmentOrgId, type = :type, proofOfPossessionKeyTag = :proofOfPossessionKeyTag, userVerificationKeyTag = :userVerificationKeyTag, links = :links, passCodeLength = :passCodeLength, timeIntervalSec = :timeIntervalSec, algorithm = :algorithm, sharedSecret = :sharedSecret, transactionTypes = :transactionTypes, updatedTimestamp = :updatedTimestamp"
     }

@@ -45,8 +45,8 @@ class OktaSharedSQLite: OktaSharedSQLiteProtocol {
         self.logger = logger
     }
 
-    // MARK: Versioning and Migraiton
-    public static let targetVersion = SQLiteStorageVersion.latestVersion
+    // MARK: Versioning and Migration
+    public internal(set) static var targetVersion = SQLiteStorageVersion.latestVersion
     public var lastKnownVersion: Version {
         if !sqlitePersistentStorage.sqliteFileExist() {
             // if there is no SQLite stored yet, return Self.targetVersion right away to avoid
