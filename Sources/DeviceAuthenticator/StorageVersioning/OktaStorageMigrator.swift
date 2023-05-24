@@ -30,9 +30,8 @@ class OktaStorageMigrator {
         let storageTargetVersion = type.targetVersion
 
         guard storageTargetVersion >= storageLastKnownVersion else {
-            let error = DeviceAuthenticatorError.storageError(.storageMigrationError("Storage is not backward compatible! Current version: \(storageTargetVersion), last known version: \(storageLastKnownVersion) for \(type)"))
-            logger.error(eventName: "Migration Error", message: "\(error)")
-            throw error
+            logger.warning(eventName: "Migration", message: "DB downgrade detected, current version: \(storageLastKnownVersion.rawValue), target version: \(storageTargetVersion.rawValue)")
+            return false
         }
 
         guard storageTargetVersion != storageLastKnownVersion else {
