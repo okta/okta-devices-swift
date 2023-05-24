@@ -29,6 +29,11 @@ class OktaStorageMigrator {
         let storageLastKnownVersion = migratableStorage.lastKnownVersion
         let storageTargetVersion = type.targetVersion
 
+        guard storageLastKnownVersion != .unknownVersion else {
+            logger.warning(eventName: "Migration", message: "DB downgrade detected, current version: \(storageLastKnownVersion.rawValue), target version: \(storageTargetVersion.rawValue)")
+            return false
+        }
+
         guard storageTargetVersion >= storageLastKnownVersion else {
             logger.warning(eventName: "Migration", message: "DB downgrade detected, current version: \(storageLastKnownVersion.rawValue), target version: \(storageTargetVersion.rawValue)")
             return false
@@ -53,9 +58,6 @@ class OktaStorageMigrator {
     /// Ensures that `lastKnownVersion` and `targetVersion` are not `.unknown`, not equal and `targetVersion` > `lastKnownVersion`
     func migrateToTargetVersion<T>(migratableStorage: T, type: T.Type) throws where T: OktaMigratableStorage {
         let storageLastKnownVersion = migratableStorage.lastKnownVersion
-        guard storageLastKnownVersion != .unknownVersion else {
-            throw DeviceAuthenticatorError.storageError(.storageMigrationError("Current storage version can't be unknown"))
-        }
         let storageTargetVersion = type.targetVersion
         guard try isMigrationToTargetVersionNeeded(migratableStorage: migratableStorage, type: type) else {
             migratableStorage.didFinishStorageIncrementalMigrationSequence(startVersion: storageLastKnownVersion, endVersion: storageTargetVersion)

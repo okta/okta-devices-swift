@@ -33,7 +33,7 @@ class OktaSharedSQLiteTests: XCTestCase {
     override func setUp() {
         super.setUp()
 
-        OktaSharedSQLite_v1.targetVersion = .v1
+        OktaSharedSQLiteMock.targetVersion = .v1
         // Clean SQLite-related files before test run
         try? fileManager.removeItem(at: sqlDirectoryURL)
     }
@@ -709,7 +709,7 @@ class OktaSharedSQLiteTests: XCTestCase {
         assert(retrieved: retrieved_v2, schemaVersion: .v2)
 
         sqlite = try createSqlite(fullDatabaseEncryption: false, prefersSecureEnclaveUsage: false, schemaVersion: .v1)
-        XCTAssertTrue(sqlite is OktaSharedSQLite_v1)
+        XCTAssertTrue(sqlite is OktaSharedSQLiteMock)
         XCTAssertEqual(sqlite.lastKnownVersion, .v2)
         let result = try OktaStorageMigrator(logger: OktaLoggerMock()).isMigrationToTargetVersionNeeded(migratableStorage: sqlite,
                                                                                                         type: OktaSharedSQLite.self)
@@ -721,6 +721,14 @@ class OktaSharedSQLiteTests: XCTestCase {
             throw NSError(domain: "TestError", code: -1, userInfo: nil)
         }
         assert(retrieved: retrieved_v2, schemaVersion: .v1)
+    }
+
+    func testIsMigrationToTargetVersionNeeded_UnknownVersion() throws {
+        let sqlite = try createSqlite(fullDatabaseEncryption: false, prefersSecureEnclaveUsage: false, schemaVersion: .v1)
+        (sqlite as! OktaSharedSQLiteMock).lastKnownVersionMock = .unknown
+        let result = try OktaStorageMigrator(logger: OktaLoggerMock()).isMigrationToTargetVersionNeeded(migratableStorage: sqlite,
+                                                                                                        type: OktaSharedSQLite.self)
+        XCTAssertFalse(result)
     }
 
     // MARK: Private Helpers
@@ -751,12 +759,12 @@ class OktaSharedSQLiteTests: XCTestCase {
                                        applicationGroupId: ExampleAppConstants.appGroupId)
         switch schemaVersion {
         case .v1:
-            return OktaSharedSQLite_v1(sqlitePersistentStorage: storage,
-                                       cryptoManager: crypto,
-                                       restAPIClient: restAPI,
-                                       sqliteColumnEncryptionManager: OktaSQLiteEncryptionManager(cryptoManager: crypto, keychainGroupId: crypto.keychainGroupId),
-                                       applicationConfig: config,
-                                       logger: logger)
+            return OktaSharedSQLiteMock(sqlitePersistentStorage: storage,
+                                        cryptoManager: crypto,
+                                        restAPIClient: restAPI,
+                                        sqliteColumnEncryptionManager: OktaSQLiteEncryptionManager(cryptoManager: crypto, keychainGroupId: crypto.keychainGroupId),
+                                        applicationConfig: config,
+                                        logger: logger)
         default:
             return OktaSharedSQLite(sqlitePersistentStorage: storage,
                                     cryptoManager: crypto,
@@ -768,8 +776,15 @@ class OktaSharedSQLiteTests: XCTestCase {
     }
 }
 
-class OktaSharedSQLite_v1: OktaSharedSQLite {
+class OktaSharedSQLiteMock: OktaSharedSQLite {
 
+    var lastKnownVersionMock: Version?
+    
+    override var lastKnownVersion: Version {
+        return lastKnownVersionMock ?? super.lastKnownVersion
+    }
+
+    // V1 version of factor query
     override var factorStatement: String {
         "INSERT INTO EnrolledMethod (id, enrollmentId, orgId, type, proofOfPossessionKeyTag, userVerificationKeyTag, links, passCodeLength, timeIntervalSec, algorithm, sharedSecret, transactionTypes, createdTimestamp, updatedTimestamp) VALUES (:id, :enrollmentId, :enrollmentOrgId, :type, :proofOfPossessionKeyTag, :userVerificationKeyTag, :links, :passCodeLength, :timeIntervalSec, :algorithm, :sharedSecret, :transactionTypes, :createdTimestamp, :updatedTimestamp) ON CONFLICT(id,enrollmentId,orgId) DO UPDATE SET id = :id, enrollmentId = :enrollmentId, orgId = :enrollmentOrgId, type = :type, proofOfPossessionKeyTag = :proofOfPossessionKeyTag, userVerificationKeyTag = :userVerificationKeyTag, links = :links, passCodeLength = :passCodeLength, timeIntervalSec = :timeIntervalSec, algorithm = :algorithm, sharedSecret = :sharedSecret, transactionTypes = :transactionTypes, updatedTimestamp = :updatedTimestamp"
     }
