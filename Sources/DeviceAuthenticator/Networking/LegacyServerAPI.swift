@@ -340,7 +340,7 @@ class LegacyServerAPI: ServerAPIProtocol {
                                                                     metadata: metadata,
                                                                     enrollingFactorsData: enrollingFactorsData)
             if let factor = factor {
-                self.logger.info(eventName: "Enroll request", message: "Enrolled factor type: \(method.type.rawValue)")
+                self.logger.info(eventName: "Enroll request", message: "Enrolled factor type: \(method.type.rawValue), keys: \(factor.keyTags)")
                 enrolledFactors.append(factor)
             } else {
                 self.logger.error(eventName: "Enroll request", message: "Failed to enroll server method with type: \(method.type)")
@@ -360,5 +360,11 @@ class LegacyServerAPI: ServerAPIProtocol {
                                                   creationDate: enrolledAuthenticatorModel.creationDate,
                                                   factors: enrolledFactors)
         return enrollmentSummary
+    }
+}
+
+extension OktaFactor {
+    var keyTags: String {
+        return "pop: \(proofOfPossessionKeyTag ?? "nil"), uv: \(userVerificationKeyTag ?? "nil"), uvBioOrPin: \(userVerificationBioOrPinKeyTag ?? "nil")"
     }
 }
