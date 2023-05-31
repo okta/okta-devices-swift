@@ -115,4 +115,10 @@ class StorageMock: PersistentStorageProtocol {
     func deleteAuthenticatorPolicyForOrgId(_ orgId: String) throws {
         policies.removeValue(forKey: orgId)
     }
+
+    func storeServerErrorCode(_ errorCode: ServerErrorCode?, enrollment: AuthenticatorEnrollmentProtocol) throws {
+        let enrollmentObject = enrollment as! AuthenticatorEnrollment
+        enrollmentObject.serverError = errorCode
+        try self.storeEnrollment(enrollmentObject)
+    }
 }

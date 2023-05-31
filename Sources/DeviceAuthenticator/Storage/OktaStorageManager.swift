@@ -121,6 +121,10 @@ extension OktaStorageManager: OktaEnrollmentStorageProtocol {
         return storage.enrollmentsByOrgId(orgId)
     }
 
+    public func storeServerErrorCode(_ errorCode: ServerErrorCode?, enrollment: AuthenticatorEnrollmentProtocol) throws {
+        return try storage.storeServerErrorCode(errorCode, enrollment: enrollment)
+    }
+
     var enrollmentsCount: Int? {
         return storage.enrollmentsCount
     }

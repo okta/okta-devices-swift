@@ -731,6 +731,20 @@ class OktaSharedSQLiteTests: XCTestCase {
         XCTAssertFalse(result)
     }
 
+    func testStoreServerErrorCode() throws {
+        let sqlite = try createSqlite(fullDatabaseEncryption: false, prefersSecureEnclaveUsage: false, schemaVersion: .v2)
+        let enrollment = entitiesGenerator.createAuthenticator(methodTypes: [AuthenticatorMethod.push], transactionTypes: [.login])
+        try sqlite.storeEnrollment(enrollment)
+
+        try sqlite.storeServerErrorCode(.deviceDeleted, enrollment: enrollment)
+        var enrollmentToVerify = sqlite.enrollmentById(enrollmentId: enrollment.enrollmentId) as! AuthenticatorEnrollment
+        XCTAssertEqual(enrollmentToVerify.serverError, ServerErrorCode.deviceDeleted)
+
+        try sqlite.storeServerErrorCode(nil, enrollment: enrollment)
+        enrollmentToVerify = sqlite.enrollmentById(enrollmentId: enrollment.enrollmentId) as! AuthenticatorEnrollment
+        XCTAssertNil(enrollmentToVerify.serverError)
+    }
+
     // MARK: Private Helpers
 
     private func createStorage(prefersSecureEnclaveUsage: Bool, schemaVersion: SQLiteStorageVersion = .latestVersion) throws -> OktaSQLitePersistentStorage {

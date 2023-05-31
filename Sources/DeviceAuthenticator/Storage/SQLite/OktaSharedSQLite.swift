@@ -124,6 +124,18 @@ class OktaSharedSQLite: OktaSharedSQLiteProtocol {
         }
     }
 
+    func storeServerErrorCode(_ errorCode: ServerErrorCode?, enrollment: AuthenticatorEnrollmentProtocol) throws {
+        do {
+            try pool?.write({ db in
+                try db.execute(
+                    sql: "UPDATE Enrollment SET serverErrorCode = :serverErrorCode WHERE enrollmentId = :enrollmentId AND orgId = :orgId",
+                    arguments: [errorCode?.rawValue, enrollment.enrollmentId, enrollment.organization.id])
+            })
+        } catch {
+            throw DeviceAuthenticatorError.storageError(StorageError.sqliteError(error.localizedDescription))
+        }
+    }
+
     var factorStatement: String {
         return "INSERT INTO EnrolledMethod (id, enrollmentId, orgId, type, proofOfPossessionKeyTag, userVerificationKeyTag, userVerificationBioOrPinKeyTag, links, passCodeLength, timeIntervalSec, algorithm, sharedSecret, transactionTypes, createdTimestamp, updatedTimestamp) VALUES (:id, :enrollmentId, :enrollmentOrgId, :type, :proofOfPossessionKeyTag, :userVerificationKeyTag, :userVerificationBioOrPinKeyTag, :links, :passCodeLength, :timeIntervalSec, :algorithm, :sharedSecret, :transactionTypes, :createdTimestamp, :updatedTimestamp) ON CONFLICT(id,enrollmentId,orgId) DO UPDATE SET id = :id, enrollmentId = :enrollmentId, orgId = :enrollmentOrgId, type = :type, proofOfPossessionKeyTag = :proofOfPossessionKeyTag, userVerificationKeyTag = :userVerificationKeyTag, userVerificationBioOrPinKeyTag = :userVerificationBioOrPinKeyTag, links = :links, passCodeLength = :passCodeLength, timeIntervalSec = :timeIntervalSec, algorithm = :algorithm, sharedSecret = :sharedSecret, transactionTypes = :transactionTypes, updatedTimestamp = :updatedTimestamp"
     }
