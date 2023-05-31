@@ -193,7 +193,7 @@ class AuthenticatorEnrollment: AuthenticatorEnrollmentProtocol {
         } else if let errorCode = error?.serverErrorCode {
             recordError(errorCode)
         }
-        try? self.storageManager.storeEnrollment(self)
+        try? self.storageManager.storeServerErrorCode(self.serverError, enrollment: self)
     }
 
     var userVerificationEnabled: Bool {
