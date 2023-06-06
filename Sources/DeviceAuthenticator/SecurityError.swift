@@ -24,6 +24,8 @@ public enum SecurityError: Error {
     case keyCorrupted(Error)
     /// Thrown when user cancels local authentication process via local authentication dialog
     case localAuthenticationCancelled(Error)
+    /// Thrown when SDK detect that no passcode set on the device
+    case localAuthenticationPasscodeNotSet(Error)
     /// Thrown when user fails to authenticate via local authentication process
     case localAuthenticationFailed(Error)
     /// Thrown for cases that can't be mapped to specific error domains. For example SDK failed to parse web token information
@@ -51,6 +53,11 @@ public extension SecurityError {
         let userCancelledErrorCode = LAError.Code.userCancel.rawValue // -2
         if nsError.code == userCancelledErrorCode && nsError.domain == LAErrorDomain {
             return localAuthenticationCancelled(nsError)
+        }
+
+        let passcodeNotSetErrorCode = LAError.Code.passcodeNotSet.rawValue // -5
+        if nsError.code == passcodeNotSetErrorCode && nsError.domain == LAErrorDomain {
+            return localAuthenticationPasscodeNotSet(nsError)
         }
 
         let corruptedDataErrorCode = TKError.Code.corruptedData.rawValue // -3

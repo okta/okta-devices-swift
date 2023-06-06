@@ -493,6 +493,34 @@ class AuthenticatorEnrollmentTests: XCTestCase {
         waitForExpectations(timeout: 1.0, handler: nil)
     }
 
+    func testGenerateSSWSToken_PasscodeNotSet() {
+        let userVerificationKeyTag = "userVerificationKeyTag"
+        let jwtGeneratorMock = OktaJWTGeneratorMock(logger: OktaLoggerMock())
+        jwtGeneratorMock.generateHook = { jwtType, kid, payLoad, key, algo in
+            XCTAssertEqual(kid, userVerificationKeyTag)
+            throw SecurityError.localAuthenticationPasscodeNotSet(LAError(.passcodeNotSet))
+        }
+        let authenticator = TestUtils.createAuthenticatorEnrollment(orgHost: URL(string: "okta.okta.com")!,
+                                                                    orgId: "orgId",
+                                                                    enrollmentId: "enrollment_id",
+                                                                    cryptoManager: cryptoManager,
+                                                                    userVerificationKeyTag: userVerificationKeyTag,
+                                                                    userVerificationBioOrPinKeyTag: nil,
+                                                                    jwtGenerator: jwtGeneratorMock)
+        let ex = expectation(description: "Completion expected!")
+        authenticator.generateSSWSToken { result in
+            switch result {
+            case .success(_):
+                XCTFail("Unexpected success")
+            case .failure(let error):
+                XCTAssertEqual(error, DeviceAuthenticatorError.securityError(.localAuthenticationPasscodeNotSet(LAError(.passcodeNotSet))))
+                XCTAssertEqual(error.localizedDescription, "Encryption operation failed")
+            }
+            ex.fulfill()
+        }
+        waitForExpectations(timeout: 1.0, handler: nil)
+    }
+
     func testGenerateSSWSToken_UserCancelled() {
         let userVerificationKeyTag = "userVerificationKeyTag"
         let jwtGeneratorMock = OktaJWTGeneratorMock(logger: OktaLoggerMock())
