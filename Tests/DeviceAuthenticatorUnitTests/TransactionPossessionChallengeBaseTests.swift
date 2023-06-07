@@ -320,6 +320,8 @@ class TransactionPossessionChallengeBaseTests: XCTestCase {
         mut.readSigningKeyErrorHandler(error: .securityError(.localAuthenticationPasscodeNotSet(NSError())),
                                        transactionContext: transactionContext,
                                        keysRequirements: [.userVerification, .proofOfPossession])
+        XCTAssertTrue(signJWTAndSendRequestHookCalled)
+        XCTAssertTrue(postMessageToApplicationHookCalled)
     }
 
     func testReadSigningKeyErrorHandler_userVerificationCancelledByUser() throws {
