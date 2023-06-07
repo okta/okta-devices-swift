@@ -300,6 +300,9 @@ class OktaTransactionPossessionChallengeBase: OktaTransaction {
                     messageReason = .userVerificationKeyCorruptedOrMissing
                 } else if case .localAuthenticationCancelled(_) = encErr {
                     messageReason = .userVerificationCancelledByUser
+                } else if case .localAuthenticationPasscodeNotSet(_) = encErr {
+                    // Biometrics still might be available after re-setting a device passcode
+                    messageReason = .userVerificationFailed
                 } else if case .localAuthenticationFailed(_) = encErr {
                     messageReason = .userVerificationFailed
                 }

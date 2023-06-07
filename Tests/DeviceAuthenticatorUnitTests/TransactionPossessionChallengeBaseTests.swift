@@ -314,6 +314,12 @@ class TransactionPossessionChallengeBaseTests: XCTestCase {
                                        keysRequirements: [.userVerification, .proofOfPossession])
         XCTAssertTrue(signJWTAndSendRequestHookCalled)
         XCTAssertTrue(postMessageToApplicationHookCalled)
+
+        signJWTAndSendRequestHookCalled = false
+        postMessageToApplicationHookCalled = false
+        mut.readSigningKeyErrorHandler(error: .securityError(.localAuthenticationPasscodeNotSet(NSError())),
+                                       transactionContext: transactionContext,
+                                       keysRequirements: [.userVerification, .proofOfPossession])
     }
 
     func testReadSigningKeyErrorHandler_userVerificationCancelledByUser() throws {

@@ -93,6 +93,30 @@ class TransactionTests: XCTestCase {
         waitForExpectations(timeout: 1.0, handler: nil)
     }
 
+    func testGenerateAuthenticationJWTString_PasscodeNotSet() {
+        let userVerificationKeyTag = "userVerificationKeyTag"
+
+        jwtGeneratorMock.generateHook = { jwtType, kid, payLoad, key, algo in
+            XCTAssertEqual(kid, userVerificationKeyTag)
+            throw SecurityError.localAuthenticationPasscodeNotSet(LAError(.passcodeNotSet))
+        }
+        let mut = OktaTransaction(loginHint: nil, storageManager: storageMock, cryptoManager: cryptoManager, jwtGenerator: jwtGeneratorMock, logger: OktaLoggerMock())
+        let authenticator = TestUtils.createAuthenticatorEnrollment(orgHost: URL(string: "okta.okta.com")!,
+                                                                    orgId: "orgId",
+                                                                    enrollmentId: "enrollment_id",
+                                                                    cryptoManager: cryptoManager,
+                                                                    userVerificationKeyTag: userVerificationKeyTag,
+                                                                    userVerificationBioOrPinKeyTag: nil)
+        let ex = expectation(description: "Completion expected!")
+        mut.generateAuthenticationJWTString(for: authenticator) { token, error in
+            XCTAssertNil(token)
+            XCTAssertEqual(error, DeviceAuthenticatorError.securityError(.localAuthenticationPasscodeNotSet(LAError(.passcodeNotSet))))
+            XCTAssertEqual(error?.localizedDescription, "Encryption operation failed")
+            ex.fulfill()
+        }
+        waitForExpectations(timeout: 1.0, handler: nil)
+    }
+
     func testGenerateAuthenticationJWTString_UserCancelled() {
         let userVerificationKeyTag = "userVerificationKeyTag"
 
