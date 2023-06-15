@@ -26,6 +26,7 @@ class RestAPIMock: ServerAPIProtocol {
     typealias deleteAuthenticatorRequestType = (AuthenticatorEnrollment, OktaRestAPIToken, (_ result: HTTPURLResult?, _ error: DeviceAuthenticatorError?) -> Void) -> Void
     typealias pendingChallengeRequestType = (URL, OktaRestAPIToken, (HTTPURLResult?, DeviceAuthenticatorError?) -> Void) -> Void
     typealias retrieveMaintenaceTokenType = (URL, String, [String], String,(Result<HTTPURLResult, DeviceAuthenticatorError>) -> Void) -> Void
+    typealias updateDeviceTokenType = (String, URL, OktaRestAPIToken, String, (Result<Void, DeviceAuthenticatorError>) -> Void) -> Void
 
     var enrollAuthenticatorRequestHook: enrollAuthenticatorRequestType?
     var downloadOrgIdTypeHook: downloadOrgIdType?
@@ -35,6 +36,7 @@ class RestAPIMock: ServerAPIProtocol {
     var deleteAuthenticatorRequestHook: deleteAuthenticatorRequestType?
     var pendingChallengeRequestHook: pendingChallengeRequestType?
     var retrieveMaintenaceTokenHook: retrieveMaintenaceTokenType?
+    var updateDeviceTokenHook: updateDeviceTokenType?
 
     let client: HTTPClientProtocol
     let logger: OktaLoggerProtocol
@@ -45,10 +47,10 @@ class RestAPIMock: ServerAPIProtocol {
          defaultAPI: ServerAPIProtocol? = nil) {
         self.client = client
         self.logger = logger
-        self.restAPI = defaultAPI ?? LegacyServerAPI(client: client,
-                                                     crypto: OktaCryptoManager(keychainGroupId: ExampleAppConstants.appGroupId,
-                                                                               logger: logger),
-                                                     logger: logger)
+        self.restAPI = defaultAPI ?? MyAccountServerAPI(client: client,
+                                                        crypto: OktaCryptoManager(keychainGroupId: ExampleAppConstants.appGroupId,
+                                                                                  logger: logger),
+                                                        logger: logger)
     }
 
     func deleteAuthenticatorRequest(enrollment: AuthenticatorEnrollment, token: OktaRestAPIToken, completion: @escaping (HTTPURLResult?, DeviceAuthenticatorError?) -> Void) {
@@ -183,6 +185,18 @@ class RestAPIMock: ServerAPIProtocol {
                                              scopes: scopes,
                                              assertion: assertion,
                                              completion: completion)
+        }
+    }
+
+    public func updateDeviceToken(_ deviceToken: String,
+                                  orgURL: URL,
+                                  token: OktaRestAPIToken,
+                                  enrollmentId: String,
+                                  completion: @escaping (Result<Void, DeviceAuthenticatorError>) -> Void) {
+        if let updateDeviceTokenHook = updateDeviceTokenHook {
+            updateDeviceTokenHook(deviceToken, orgURL, token, enrollmentId, completion)
+        } else {
+            restAPI.updateDeviceToken(deviceToken, orgURL: orgURL, token: token, enrollmentId: enrollmentId, completion: completion)
         }
     }
 }

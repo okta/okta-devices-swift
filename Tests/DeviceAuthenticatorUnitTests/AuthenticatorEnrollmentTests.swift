@@ -114,18 +114,9 @@ class AuthenticatorEnrollmentTests: XCTestCase {
         enrollment.enrolledFactors.append(pushFactor)
         var updateAuthenticatorRequestHookCalled = false
         let pushTokenToCompare = "push_token".data(using: .utf8)!
-        restAPIMock.updateAuthenticatorRequestHook = { url, enrollmentId, metadata, deviceSignalsModel, allSignals, factors, _, context, completion in
-            let pushMethod = factors.first(where: { $0.methodType == .push })
-            let pushToken = pushMethod?.pushToken
-            XCTAssertEqual(pushToken, pushTokenToCompare.hexString())
-            let enrollmentSummary = EnrollmentSummary(enrollmentId: "",
-                                                      userId: "",
-                                                      username: nil,
-                                                      deviceId: "",
-                                                      clientInstanceId: "",
-                                                      creationDate: Date(), factors: [])
+        restAPIMock.updateDeviceTokenHook = { deviceToken, url, authenticationToken, enrollmentId, completion in
             updateAuthenticatorRequestHookCalled = true
-            completion(.success(enrollmentSummary))
+            completion(.success(()))
         }
 
         let policy = AuthenticatorPolicy(metadata: TestUtils.createAuthenticatorMetadataModel(id: "id",
@@ -147,20 +138,23 @@ class AuthenticatorEnrollmentTests: XCTestCase {
 
     func testUpdatePushTokenError() {
         cryptoManager.keychainGroupId = ""
-        let enrollment = TestUtils.createAuthenticatorEnrollment(orgHost: mockURL,
-                                                                 orgId: "orgId",
-                                                                 enrollmentId: "enrollmentId",
-                                                                 cryptoManager: cryptoManager,
-                                                                 storageManager: mockStorageManager)
+
+        var updateAuthenticatorRequestHookCalled = false
+        restAPIMock.updateDeviceTokenHook = { deviceToken, url, authenticationToken, enrollmentId, completion in
+            updateAuthenticatorRequestHookCalled = true
+            completion(.failure(.genericError("Failed to update device token")))
+        }
+
         let ex = expectation(description: "Completion callback expected!")
         enrollment.updateDeviceToken("push_token".data(using: .utf8)!,
-                                               authenticationToken: AuthToken.bearer("access_token")) { error in
+                                     authenticationToken: AuthToken.bearer("access_token")) { error in
             XCTAssertNotNil(error)
-            XCTAssertEqual(error?.errorDescription, "Failed to fetch authenticator policy")
+            XCTAssertEqual(error?.errorDescription, "Failed to update device token")
             ex.fulfill()
         }
 
         waitForExpectations(timeout: 1.0, handler: nil)
+        XCTAssertTrue(updateAuthenticatorRequestHookCalled)
     }
 
     func testRetrievePushChallenges() {

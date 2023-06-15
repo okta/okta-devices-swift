@@ -95,6 +95,12 @@ protocol ServerAPIProtocol {
                                   scopes: [String],
                                   assertion: String,
                                   completion: @escaping (Result<HTTPURLResult, DeviceAuthenticatorError>) -> Void)
+
+    func updateDeviceToken(_ deviceToken: String,
+                           orgURL: URL,
+                           token: OktaRestAPIToken,
+                           enrollmentId: String,
+                           completion: @escaping (Result<Void, DeviceAuthenticatorError>) -> Void)
 }
 
 extension ServerAPIProtocol {
