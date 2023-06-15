@@ -39,7 +39,7 @@ class TransactionEnrollTests: XCTestCase {
         let mockHTTPClient = MockMultipleRequestsHTTPClient(responseArray: [HTTPURLResponse(url: mockURL, statusCode: 200, httpVersion: nil, headerFields: nil)!,
                                                                             HTTPURLResponse(url: mockURL, statusCode: 200, httpVersion: nil, headerFields: nil)!,
                                                                             HTTPURLResponse(url: mockURL, statusCode: 200, httpVersion: nil, headerFields: nil)!],
-                                                            dataArray: [GoldenData.orgData(), GoldenData.authenticatorMetaData(), GoldenData.authenticatorData()])
+                                                            dataArray: [GoldenData.orgData(), MyAccountTestData.policyResponse(), MyAccountTestData.enrollmentResponse()])
         restAPIMock = RestAPIMock(client: mockHTTPClient, logger: OktaLoggerMock())
 
         mockStorageManager = StorageMock()
@@ -922,7 +922,7 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
         let mockURL = URL(string: "https://example.okta.com")!
         let mockHTTPClient = MockMultipleRequestsHTTPClient(responseArray: [HTTPURLResponse(url: mockURL, statusCode: 200, httpVersion: nil, headerFields: nil)!,
                                                                             HTTPURLResponse(url: mockURL, statusCode: 200, httpVersion: nil, headerFields: nil)!],
-                                                            dataArray: [GoldenData.authenticatorMetaData(), GoldenData.authenticatorData()])
+                                                            dataArray: [MyAccountTestData.policyResponse(), MyAccountTestData.enrollmentResponse()])
         restAPIMock = RestAPIMock(client: mockHTTPClient, logger: OktaLoggerMock())
         transactionPartialMock = OktaTransactionEnrollPartialMock(storageManager: mockStorageManager,
                                                                   cryptoManager: cryptoManager,

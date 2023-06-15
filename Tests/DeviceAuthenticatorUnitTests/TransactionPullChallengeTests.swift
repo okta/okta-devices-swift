@@ -32,7 +32,7 @@ class TransactionPullChallengeTests: XCTestCase {
 
     var cryptoManager: CryptoManagerMock!
     var secKeyHelper: SecKeyHelperMock!
-    var restAPIClient: LegacyServerAPI!
+    var restAPIClient: MyAccountServerAPI!
     let entitiesGenerator = OktaStorageEntitiesGenerator()
     var storageMock: StorageMock!
     var applicationConfig: ApplicationConfig!
@@ -42,9 +42,9 @@ class TransactionPullChallengeTests: XCTestCase {
         cryptoManager = CryptoManagerMock(keychainGroupId: "", secKeyHelper: secKeyHelper, logger: OktaLoggerMock())
         storageMock = StorageMock()
         let mockHTTPClient = MockMultipleRequestsHTTPClient(responseArray: [], dataArray: [])
-        restAPIClient = LegacyServerAPI(client: mockHTTPClient,
-                                        crypto: cryptoManager,
-                                        logger: OktaLoggerMock())
+        restAPIClient = MyAccountServerAPI(client: mockHTTPClient,
+                                           crypto: cryptoManager,
+                                           logger: OktaLoggerMock())
         applicationConfig = ApplicationConfig(applicationName: "AppName",
                                               applicationVersion: "1.0.0",
                                               applicationGroupId: "")
@@ -62,9 +62,9 @@ class TransactionPullChallengeTests: XCTestCase {
                                                                                             httpVersion: nil,
                                                                                             headerFields: nil)!],
                                                             dataArray: [GoldenData.pendingChallengeData()])
-        var restAPIClient = LegacyServerAPI(client: mockHTTPClient,
-                                            crypto: cryptoManager,
-                                            logger: OktaLoggerMock())
+        var restAPIClient = MyAccountServerAPI(client: mockHTTPClient,
+                                               crypto: cryptoManager,
+                                               logger: OktaLoggerMock())
         let authenticator = entitiesGenerator.createAuthenticator(orgHost: "okta.okta.com",
                                                                   orgId: "testOrgId1",
                                                                   userId: "email@okta.com",
@@ -91,9 +91,9 @@ class TransactionPullChallengeTests: XCTestCase {
                                                                                         httpVersion: nil,
                                                                                         headerFields: nil)!],
                                                             dataArray: [GoldenData.pendingChallengeData_WithMultipleChallenges()])
-        restAPIClient = LegacyServerAPI(client: mockHTTPClient,
-                                        crypto: cryptoManager,
-                                        logger: OktaLoggerMock())
+        restAPIClient = MyAccountServerAPI(client: mockHTTPClient,
+                                           crypto: cryptoManager,
+                                           logger: OktaLoggerMock())
         pullChallengeTransaction = try! OktaTransactionPullChallengePartialMock(enrollment: authenticator,
                                                                                 authenticationToken: OktaRestAPIToken.accessToken("access_token"),
                                                                                 storageManager: storageMock,
@@ -127,9 +127,9 @@ class TransactionPullChallengeTests: XCTestCase {
                                                                                             httpVersion: nil,
                                                                                             headerFields: nil)!],
                                                             dataArray: [GoldenData.pendingChallengeCIBAData()])
-        let restAPIClient = LegacyServerAPI(client: mockHTTPClient,
-                                            crypto: cryptoManager,
-                                            logger: OktaLoggerMock())
+        let restAPIClient = MyAccountServerAPI(client: mockHTTPClient,
+                                               crypto: cryptoManager,
+                                               logger: OktaLoggerMock())
         let authenticator = entitiesGenerator.createAuthenticator(orgHost: "okta.okta.com",
                                                                   orgId: "testOrgId1",
                                                                   userId: "email@okta.com",
@@ -163,9 +163,9 @@ class TransactionPullChallengeTests: XCTestCase {
                                                                                             httpVersion: nil,
                                                                                             headerFields: nil)!],
                                                             dataArray: [GoldenData.pendingChallengeData()])
-        let restAPIClient = LegacyServerAPI(client: mockHTTPClient,
-                                            crypto: cryptoManager,
-                                            logger: OktaLoggerMock())
+        let restAPIClient = MyAccountServerAPI(client: mockHTTPClient,
+                                               crypto: cryptoManager,
+                                               logger: OktaLoggerMock())
         let links = OktaFactorMetadataPush.Links(pendingLink: nil)
         let factorData = OktaFactorMetadataPush(id: "id",
                                                 proofOfPossessionKeyTag: "proofOfPossessionKeyTag",
@@ -209,9 +209,9 @@ class TransactionPullChallengeTests: XCTestCase {
                                                                                             httpVersion: nil,
                                                                                             headerFields: nil)!],
                                                             dataArray: [GoldenData.pendingChallengeData()])
-        let restAPIClient = LegacyServerAPI(client: mockHTTPClient,
-                                            crypto: cryptoManager,
-                                            logger: OktaLoggerMock())
+        let restAPIClient = MyAccountServerAPI(client: mockHTTPClient,
+                                               crypto: cryptoManager,
+                                               logger: OktaLoggerMock())
         let authenticator = entitiesGenerator.createAuthenticator(orgHost: "okta.okta.com",
                                                                   orgId: "testOrgId1",
                                                                   userId: "email@okta.com",
@@ -245,9 +245,9 @@ class TransactionPullChallengeTests: XCTestCase {
                                                                                             httpVersion: nil,
                                                                                             headerFields: nil)!],
                                                             dataArray: [])
-        let restAPIClient = LegacyServerAPI(client: mockHTTPClient,
-                                            crypto: cryptoManager,
-                                            logger: OktaLoggerMock())
+        let restAPIClient = MyAccountServerAPI(client: mockHTTPClient,
+                                               crypto: cryptoManager,
+                                               logger: OktaLoggerMock())
         let authenticator = entitiesGenerator.createAuthenticator(orgHost: "okta.okta.com",
                                                                   orgId: "testOrgId1",
                                                                   userId: "email@okta.com",
@@ -281,9 +281,9 @@ class TransactionPullChallengeTests: XCTestCase {
                                                                                             httpVersion: nil,
                                                                                             headerFields: nil)!],
                                                             dataArray: [GoldenData.pendingChallenge_Empty()])
-        let restAPIClient = LegacyServerAPI(client: mockHTTPClient,
-                                            crypto: cryptoManager,
-                                            logger: OktaLoggerMock())
+        let restAPIClient = MyAccountServerAPI(client: mockHTTPClient,
+                                               crypto: cryptoManager,
+                                               logger: OktaLoggerMock())
         let authenticator = entitiesGenerator.createAuthenticator(orgHost: "okta.okta.com",
                                                                   orgId: "testOrgId1",
                                                                   userId: "email@okta.com",
@@ -317,9 +317,9 @@ class TransactionPullChallengeTests: XCTestCase {
                                                                                             httpVersion: nil,
                                                                                             headerFields: nil)!],
                                                             dataArray: [GoldenData.pendingChallengeData_NoChallengeContextInBindJWT()])
-        let restAPIClient = LegacyServerAPI(client: mockHTTPClient,
-                                            crypto: cryptoManager,
-                                            logger: OktaLoggerMock())
+        let restAPIClient = MyAccountServerAPI(client: mockHTTPClient,
+                                               crypto: cryptoManager,
+                                               logger: OktaLoggerMock())
         let authenticator = entitiesGenerator.createAuthenticator(orgHost: "okta.okta.com",
                                                                   orgId: "testOrgId1",
                                                                   userId: "email@okta.com",

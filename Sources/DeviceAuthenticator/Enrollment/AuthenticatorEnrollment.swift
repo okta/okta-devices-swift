@@ -117,42 +117,44 @@ class AuthenticatorEnrollment: AuthenticatorEnrollmentProtocol {
     func updateDeviceToken(_ token: Data,
                            authenticationToken: AuthToken,
                            completion: @escaping (DeviceAuthenticatorError?) -> Void) {
-        guard let policy = try? storageManager.authenticatorPolicyForOrgId(organization.id) as? AuthenticatorPolicy else {
-            completion(DeviceAuthenticatorError.genericError("Failed to fetch authenticator policy"))
-            return
-        }
-        let enrollmentContext = EnrollmentContext(accessToken: authenticationToken.tokenValue(),
-                                                  activationToken: nil,
-                                                  orgHost: organization.url,
-                                                  authenticatorKey: policy.metadata.key,
-                                                  oidcClientId: policy.metadata.settings?.oauthClientId,
-                                                  pushToken: DeviceToken.tokenData(token),
-                                                  enrollBiometricKey: nil,
-                                                  enrollBiometricOrPinKey: nil,
-                                                  deviceSignals: nil,
-                                                  biometricSettings: nil,
-                                                  biometricOrPinSettings: nil,
-                                                  applicationSignals: nil,
-                                                  transactionTypes: nil)
-        let updateTransaction = OktaTransactionPushTokenUpdate(storageManager: self.storageManager,
-                                                               cryptoManager: self.cryptoManager,
-                                                               restAPI: self.restAPIClient,
-                                                               enrollmentContext: enrollmentContext,
-                                                               enrollmentToUpdate: self,
-                                                               jwkGenerator: nil,
-                                                               jwtGenerator: nil,
-                                                               applicationConfig: applicationConfig,
-                                                               logger: self.logger,
-                                                               authenticatorPolicy: policy)
-        updateTransaction.enroll() { [weak self] result in
+        let tokenString = DeviceToken.tokenData(token).rawValue
+        let accessToken = OktaRestAPIToken.accessToken(authenticationToken.tokenValue())
+
+        restAPIClient.updateDeviceToken(tokenString, orgURL: organization.url,
+                                        token: accessToken,
+                                        enrollmentId: enrollmentId) { result in
             switch result {
             case .success(_):
-                updateTransaction.cleanupOnSuccess()
-                self?.recordServerResponse(error: nil)
+                self.recordServerResponse(error: nil)
                 completion(nil)
             case .failure(let error):
-                self?.recordServerResponse(error: error)
-                updateTransaction.rollback()
+                self.recordServerResponse(error: error)
+                completion(error)
+            }
+        }
+    }
+
+    func updateDeviceToken(_ token: Data,
+                           completion: @escaping (DeviceAuthenticatorError?) -> Void) {
+        self.generateSSWSToken { result in
+            switch result {
+            case .success(let sswsToken):
+                let tokenString = DeviceToken.tokenData(token).rawValue
+                let authenticationToken = OktaRestAPIToken.authenticationToken(sswsToken)
+
+                self.restAPIClient.updateDeviceToken(tokenString, orgURL: self.organization.url,
+                                                     token: authenticationToken,
+                                                     enrollmentId: self.enrollmentId) { result in
+                    switch result {
+                    case .success(_):
+                        self.recordServerResponse(error: nil)
+                        completion(nil)
+                    case .failure(let error):
+                        self.recordServerResponse(error: error)
+                        completion(error)
+                    }
+                }
+            case .failure(let error):
                 completion(error)
             }
         }

@@ -20,16 +20,16 @@ class OktaFactorPushTests: XCTestCase {
     var cryptoManager: CryptoManagerMock!
     var secKeyHelper: SecKeyHelperMock!
     var factorData: OktaFactorMetadataPush!
-    var restAPIClient: LegacyServerAPI!
+    var restAPIClient: MyAccountServerAPI!
 
     override func setUp() {
         secKeyHelper = SecKeyHelperMock()
         cryptoManager = CryptoManagerMock(keychainGroupId: "", secKeyHelper: secKeyHelper, logger: OktaLoggerMock())
         let mockHTTPClient = MockMultipleRequestsHTTPClient(responseArray: [], dataArray: [])
-        restAPIClient = LegacyServerAPI(client: mockHTTPClient,
-                                        crypto: OktaCryptoManager(keychainGroupId: ExampleAppConstants.appGroupId,
-                                                                  logger: OktaLoggerMock()),
-                                        logger: OktaLoggerMock())
+        restAPIClient = MyAccountServerAPI(client: mockHTTPClient,
+                                           crypto: OktaCryptoManager(keychainGroupId: ExampleAppConstants.appGroupId,
+                                                                     logger: OktaLoggerMock()),
+                                           logger: OktaLoggerMock())
         factorData = OktaFactorMetadataPush(id: "id",
                                             proofOfPossessionKeyTag: "proofOfPossessionKeyTag",
                                             userVerificationKeyTag: "userVerificationKeyTag",

@@ -302,6 +302,45 @@ final class MyAccountServerAPITests: XCTestCase {
         XCTAssertTrue(closureCalled)
     }
 
+    func testUpdateDeviceToken_Success() throws {
+        let httpResult = HTTPURLResult(request: URLRequest(url: mockURL),
+                                       response: HTTPURLResponse(url: mockURL, statusCode: 200, httpVersion: nil, headerFields: nil)!,
+                                       data: MyAccountTestData.enrollmentResponse())
+        let httpClient = MockHTTPClient(result: httpResult)
+        let enrollmentId = "enrollmentId"
+        var numberOfHTTPHeaders = 0
+        httpClient.requestHook = { url, httpMethod, urlParameters, data, httpHeaders, timeInterval in
+            XCTAssertEqual(url.absoluteString, self.mockURL.absoluteString + "/idp/myaccount/app-authenticators/" + enrollmentId)
+            XCTAssertTrue(httpMethod == .patch)
+            let decodedRequest = try? JSONSerialization.jsonObject(with: data!, options: []) as? [String: Any]
+            let decodedMehtods = decodedRequest?["methods"] as? [String: Any]
+            let decodedPushMethod = decodedMehtods?["push"] as? [String: Any]
+            XCTAssertEqual(decodedPushMethod?["pushToken"] as! String, "device_token")
+            let mockURLRequest = MockURLRequest(result: httpResult, headers: httpHeaders)
+            mockURLRequest.requestHeadersHook = { key, value in
+                if key == "Authorization" {
+                    XCTAssertEqual(value, "Bearer accessToken")
+                    numberOfHTTPHeaders += 1
+                } else if key == "Accept" {
+                    XCTAssertEqual(value, "application/merge-patch+json; okta-version=1.0.0")
+                    numberOfHTTPHeaders += 1
+                }
+            }
+
+            return mockURLRequest
+        }
+        let myAccountAPI = MyAccountServerAPI(client: httpClient, crypto: crypto, logger: OktaLoggerMock())
+        var closureCalled = false
+        myAccountAPI.updateDeviceToken("device_token", orgURL: mockURL, token: .accessToken("accessToken"), enrollmentId: enrollmentId) { result in
+            if case .failure(_) = result {
+                XCTFail("Unexpected failure")
+            }
+            closureCalled = true
+        }
+
+        XCTAssertTrue(closureCalled)
+    }
+
     func testDelete_Success() throws {
         let httpResult = HTTPURLResult(request: URLRequest(url: mockURL),
                                        response: HTTPURLResponse(url: mockURL, statusCode: 204, httpVersion: nil, headerFields: nil)!,
@@ -704,6 +743,31 @@ final class MyAccountServerAPITests: XCTestCase {
                 XCTAssertEqual(error.errorCode, -1)
             case .success(_):
                 XCTFail("Unexpected success")
+            }
+            closureCalled = true
+        }
+
+        XCTAssertTrue(closureCalled)
+    }
+
+    func testUpdateDeviceToken_Failure() throws {
+        let httpResult = HTTPURLResult(request: URLRequest(url: mockURL),
+                                       response: HTTPURLResponse(url: mockURL, statusCode: 401, httpVersion: nil, headerFields: nil)!,
+                                       data: MyAccountTestData.enrollmentResponse())
+        let httpClient = MockHTTPClient(result: httpResult)
+        let enrollmentId = "enrollmentId"
+        httpClient.requestHook = { url, httpMethod, urlParameters, data, httpHeaders, timeInterval in
+            let mockURLRequest = MockURLRequest(result: httpResult, headers: httpHeaders)
+            return mockURLRequest
+        }
+        let myAccountAPI = MyAccountServerAPI(client: httpClient, crypto: crypto, logger: OktaLoggerMock())
+        var closureCalled = false
+        myAccountAPI.updateDeviceToken("device_token", orgURL: mockURL, token: .accessToken("accessToken"), enrollmentId: enrollmentId) { result in
+            switch result {
+            case .success(_):
+                XCTFail("Unexpected success")
+            case .failure(let error):
+                XCTAssertEqual(error.errorDescription, "Server call has failed")
             }
             closureCalled = true
         }

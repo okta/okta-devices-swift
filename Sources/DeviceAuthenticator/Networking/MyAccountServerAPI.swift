@@ -256,6 +256,55 @@ class MyAccountServerAPI: ServerAPIProtocol {
             }
     }
 
+    func updateDeviceToken(_ deviceToken: String,
+                           orgURL: URL,
+                           token: OktaRestAPIToken,
+                           enrollmentId: String,
+                           completion: @escaping (Result<Void, DeviceAuthenticatorError>) -> Void) {
+        let pushUpdateModel = MyAccountAPI.MethodUpdateRequestModel.MethodsModel.PushMethodModel(
+                                                                                    pushToken: deviceToken,
+                                                                                    keys: nil,
+                                                                                    capabilities: nil)
+        let updateRequestModel = MyAccountAPI.MethodUpdateRequestModel(methods: MyAccountAPI.MethodUpdateRequestModel.MethodsModel(push: pushUpdateModel))
+        let updateRequestJson: Data
+        do {
+            logger.info(eventName: "Update request", message: "Building update request")
+            updateRequestJson = try JSONEncoder().encode(updateRequestModel)
+        } catch {
+            let resultError = DeviceAuthenticatorError.internalError(error.localizedDescription)
+            logger.error(eventName: "Update request", message: "Error: \(resultError)")
+            completion(.failure(resultError))
+            return
+        }
+
+        let finalURL = orgURL.appendingPathComponent("/idp/myaccount/app-authenticators/\(enrollmentId)")
+        self.client
+            .request(finalURL, method: .patch, httpBody: updateRequestJson, headers: [HTTPHeaderConstants.contentTypeHeader: jsonPatchHeaderValue])
+            .addHeader(name: HTTPHeaderConstants.authorizationHeader, value: authorizationHeaderValue(forAuthType: token.type, withToken: token.token))
+            .addHeader(name: HTTPHeaderConstants.acceptHeader, value: jsonPatchHeaderValue)
+            .response { (result) in
+                if let error = result.error {
+                    let resultError = DeviceAuthenticatorError.networkError(error)
+                    self.logger.error(eventName: "API error", message: "\(resultError), for request at URL: \(finalURL)")
+                    completion(.failure(resultError))
+                    return
+                }
+
+                do {
+                    try self.validateResult(result, for: finalURL)
+                    completion(.success(()))
+                } catch let oktaError as DeviceAuthenticatorError {
+                    completion(Result.failure(oktaError))
+                    return
+                } catch {
+                    let resultError = DeviceAuthenticatorError.internalError(error.localizedDescription)
+                    self.logger.error(eventName: "API error", message: "error: \(resultError) for request at URL: \(finalURL)")
+                    completion(Result.failure(resultError))
+                    return
+                }
+            }
+    }
+
     func pendingChallenge(with orgURL: URL,
                           authenticationToken: OktaRestAPIToken,
                           completion: @escaping (_ result: HTTPURLResult?, _ error: DeviceAuthenticatorError?) -> Void) {
