@@ -440,7 +440,7 @@ class AuthenticatorEnrollmentTests: XCTestCase {
                                                                     cryptoManager: OktaCryptoManager(keychainGroupId: "", logger: OktaLoggerMock()))
 
         let ex = expectation(description: "Completion expected!")
-        authenticator.generateSSWSToken { result in
+        authenticator.generateSSWSToken(preferUVKey: true) { result in
             switch result {
             case .success(_):
                 XCTFail("Unexpected success")
@@ -471,7 +471,7 @@ class AuthenticatorEnrollmentTests: XCTestCase {
                                                                     userVerificationBioOrPinKeyTag: nil,
                                                                     jwtGenerator: jwtGeneratorMock)
         let ex = expectation(description: "Completion expected!")
-        authenticator.generateSSWSToken { result in
+        authenticator.generateSSWSToken(preferUVKey: true) { result in
             switch result {
             case .success(_):
                 XCTFail("Unexpected success")
@@ -502,7 +502,7 @@ class AuthenticatorEnrollmentTests: XCTestCase {
                                                                     userVerificationBioOrPinKeyTag: nil,
                                                                     jwtGenerator: jwtGeneratorMock)
         let ex = expectation(description: "Completion expected!")
-        authenticator.generateSSWSToken { result in
+        authenticator.generateSSWSToken(preferUVKey: true) { result in
             switch result {
             case .success(_):
                 XCTFail("Unexpected success")
@@ -530,7 +530,7 @@ class AuthenticatorEnrollmentTests: XCTestCase {
                                                                     userVerificationBioOrPinKeyTag: nil,
                                                                     jwtGenerator: jwtGeneratorMock)
         let ex = expectation(description: "Completion expected!")
-        authenticator.generateSSWSToken { result in
+        authenticator.generateSSWSToken(preferUVKey: true) { result in
             switch result {
             case .success(_):
                 XCTFail("Unexpected success")
@@ -559,7 +559,7 @@ class AuthenticatorEnrollmentTests: XCTestCase {
                                                                     userVerificationBioOrPinKeyTag: nil,
                                                                     jwtGenerator: jwtGeneratorMock)
         let ex = expectation(description: "Completion expected!")
-        authenticator.generateSSWSToken { result in
+        authenticator.generateSSWSToken(preferUVKey: true) { result in
             switch result {
             case .success(_):
                 XCTFail("Unexpected success")
@@ -591,7 +591,7 @@ class AuthenticatorEnrollmentTests: XCTestCase {
                                                                     userVerificationBioOrPinKeyTag: userVerificationBioOrPinKeyTag,
                                                                     jwtGenerator: jwtGeneratorMock)
         let ex = expectation(description: "Completion expected!")
-        authenticator.generateSSWSToken { result in
+        authenticator.generateSSWSToken(preferUVKey: true) { result in
             switch result {
             case .success(_):
                 XCTFail("Unexpected success")
