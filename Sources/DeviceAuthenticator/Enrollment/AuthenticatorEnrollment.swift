@@ -134,12 +134,12 @@ class AuthenticatorEnrollment: AuthenticatorEnrollmentProtocol {
         }
     }
 
-    func updateDeviceToken(_ token: Data,
+    func updateDeviceToken(_ token: DeviceToken,
                            completion: @escaping (DeviceAuthenticatorError?) -> Void) {
         self.generateSSWSToken { result in
             switch result {
             case .success(let sswsToken):
-                let tokenString = DeviceToken.tokenData(token).rawValue
+                let tokenString = token.rawValue
                 let authenticationToken = OktaRestAPIToken.authenticationToken(sswsToken)
 
                 self.restAPIClient.updateDeviceToken(tokenString, orgURL: self.organization.url,
