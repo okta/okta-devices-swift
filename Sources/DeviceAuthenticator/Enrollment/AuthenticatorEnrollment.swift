@@ -384,7 +384,7 @@ class AuthenticatorEnrollment: AuthenticatorEnrollmentProtocol {
     }
 
     func generateSSWSToken(jwtType: String = "okta-enrollmentupdate+jwt",
-                           preferUVKey: Bool = true,
+                           preferUVKey: Bool = false,
                            onCompletion: @escaping (Result<String, DeviceAuthenticatorError>) -> Void) {
         DispatchQueue.global().async {
             guard var keyTagToUse = self.findPoPKeyTagFromEnrolledFactors() else {
