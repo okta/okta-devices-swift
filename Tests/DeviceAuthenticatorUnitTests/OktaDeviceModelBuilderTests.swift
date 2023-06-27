@@ -37,7 +37,8 @@ class OktaDeviceModelBuilderTests: XCTestCase {
         jwtGenerator = OktaJWTGeneratorMock(logger: OktaLoggerMock())
         applicationConfig = ApplicationConfig(applicationName: "Test App",
                                               applicationVersion: "1.0.0",
-                                              applicationGroupId: ExampleAppConstants.appGroupId)
+                                              applicationGroupId: ExampleAppConstants.appGroupId,
+                                              applicationInstallationId: "applicationInstallationId")
         mockStorageManager = StorageMock()
     }
 
@@ -228,10 +229,12 @@ class OktaDeviceModelBuilderTests: XCTestCase {
         XCTAssertNil(deviceSignalsModel.udid)
         XCTAssertNil(deviceSignalsModel.serialNumber)
         XCTAssertEqual(displayName, deviceSignalsModel.displayName)
+        XCTAssertEqual(deviceSignalsModel.authenticatorAppKey, applicationConfig.applicationInfo.applicationInstallationId)
         #else
         XCTAssertNotNil(deviceSignalsModel.udid)
         XCTAssertNotNil(deviceSignalsModel.serialNumber)
         XCTAssertEqual(displayName, deviceSignalsModel.displayName)
+        XCTAssertNil(deviceSignalsModel.authenticatorAppKey)
         #endif
     }
 }

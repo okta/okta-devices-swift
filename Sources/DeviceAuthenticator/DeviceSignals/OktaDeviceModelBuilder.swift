@@ -114,6 +114,10 @@ class OktaDeviceModelBuilder {
             deviceModel.clientInstanceDeviceSdkVersion = DeviceAuthenticatorConstants.name + " " + DeviceAuthenticatorConstants.version
         }
 
+        #if os(iOS)
+        deviceModel.authenticatorAppKey = applicationConfig.applicationInfo.applicationInstallationId ?? UIDevice.current.identifierForVendor?.uuidString
+        #endif
+
         return deviceModel
     }
 
