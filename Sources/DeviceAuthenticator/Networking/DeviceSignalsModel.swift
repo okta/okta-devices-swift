@@ -75,6 +75,7 @@ class DeviceSignalsModel: Codable {
     var clientInstanceBundleId: String?
     var clientInstanceVersion: String?
     var clientInstanceDeviceSdkVersion: String?
+    var authenticatorAppKey: String?
 
     init(platform: PlatformValue?, osVersion: String?, displayName: String?) {
         self.platform = platform

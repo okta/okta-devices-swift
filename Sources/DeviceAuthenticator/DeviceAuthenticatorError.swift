@@ -73,7 +73,7 @@ extension DeviceAuthenticatorError: CustomNSError {
             if let errorModel = errorModel {
                 userInfo["json"] = try? JSONEncoder().encode(errorModel)
             } else {
-                userInfo["json"] = [: ]
+                userInfo["json"] = [: ] as [String: Any]
             }
             return userInfo
         case .storageError(error: let error):
