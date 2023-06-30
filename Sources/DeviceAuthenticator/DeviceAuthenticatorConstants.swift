@@ -15,7 +15,7 @@ import Foundation
 /// SDK constants
 public struct DeviceAuthenticatorConstants {
     /// DeviceAuthenticator SDK version
-    public static let version = "1.0.0"
+    public static let version = "1.1.0"
     /// DeviceAuthenticator SDK name
     public static let name = "DeviceAuthenticator"
     /// Location of shared SQLite database
