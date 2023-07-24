@@ -67,8 +67,9 @@ protocol OktaCryptoProtocol {
     ///   - type: Public or private key
     ///   - tag: unique identifier that was used to create the public key
     ///   - context: pass LAContext if biometric check is already done on the context
+    ///   - skipAuthenticationUI: silently skip any items that require user authentication
     /// - Returns: Reference to SecKey if it can find the key otherwise returns nil
-    func get(keyOf type: KeyType, with tag: String, context: LAContext) -> SecKey?
+    func get(keyOf type: KeyType, with tag: String, context: LAContext, skipAuthenticationUI: Bool) -> SecKey?
 
     ///  Given a key tag, ascertain whether it is available for signing operations
     /// - Parameters:
@@ -120,7 +121,7 @@ extension OktaCryptoProtocol {
                             biometricSettings: biometricSettings)
     }
 
-    func get(keyOf type: KeyType, with tag: String, context: LAContext = LAContext()) -> SecKey? {
-        return get(keyOf: type, with: tag, context: context)
+    func get(keyOf type: KeyType, with tag: String, context: LAContext = LAContext(), skipAuthenticationUI: Bool = false) -> SecKey? {
+        return get(keyOf: type, with: tag, context: context, skipAuthenticationUI)
     }
 }
