@@ -146,7 +146,7 @@ class OktaCryptoManager: OktaSharedCryptoProtocol {
         return (statusCode == errSecSuccess)
     }
 
-    func get(keyOf type: KeyType, with tag: String, context: LAContext, skipAuthenticationUI: Bool = false) -> SecKey? {
+    func get(keyOf type: KeyType, with tag: String, context: LAContext, skipAuthenticationUI: Bool) -> SecKey? {
         var keyQuery = baseQuery(with: tag)
         keyQuery[kSecReturnRef] = true
         if skipAuthenticationUI {
