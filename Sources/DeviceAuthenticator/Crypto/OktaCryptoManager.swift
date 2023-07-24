@@ -149,6 +149,7 @@ class OktaCryptoManager: OktaSharedCryptoProtocol {
     func get(keyOf type: KeyType, with tag: String, context: LAContext) -> SecKey? {
         var keyQuery = baseQuery(with: tag)
         keyQuery[kSecReturnRef] = true
+        keyQuery[kSecUseAuthenticationUI] = kSecUseAuthenticationUISkip
         if !keychainGroupId.isEmpty {
             keyQuery[kSecAttrAccessGroup] = keychainGroupId
         }
