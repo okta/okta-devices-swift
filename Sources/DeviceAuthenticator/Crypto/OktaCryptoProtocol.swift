@@ -122,6 +122,6 @@ extension OktaCryptoProtocol {
     }
 
     func get(keyOf type: KeyType, with tag: String, context: LAContext = LAContext(), skipAuthenticationUI: Bool = false) -> SecKey? {
-        return get(keyOf: type, with: tag, context: context, skipAuthenticationUI)
+        return get(keyOf: type, with: tag, context: context, skipAuthenticationUI: skipAuthenticationUI)
     }
 }
