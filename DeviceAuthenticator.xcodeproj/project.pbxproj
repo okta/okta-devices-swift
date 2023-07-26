@@ -138,6 +138,7 @@
 		7FD93C33291479EF00AC76B1 /* UpdateCIBAFlowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FD93C32291479EF00AC76B1 /* UpdateCIBAFlowTests.swift */; };
 		98F2EBDD5510C097C38222F3 /* libPods-DeviceAuthenticatorFunctionalTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DD73FB7DC7E598DC865F395B /* libPods-DeviceAuthenticatorFunctionalTests.a */; };
 		9F47E556289C989000299CFB /* DeviceAuthenticatorConfigTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F47E555289C989000299CFB /* DeviceAuthenticatorConfigTests.swift */; };
+		9F4E6F672A71A8D6008E53F8 /* FunctionalTestsBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4E6F662A71A8D6008E53F8 /* FunctionalTestsBase.swift */; };
 		9F7AAD8E28BD297E00E15F59 /* ServerAPIProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7AAD8D28BD297E00E15F59 /* ServerAPIProtocol.swift */; };
 		9F7EFF07287E0D8A001E2C4E /* EnrollmentTestHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7EFF00287E0D8A001E2C4E /* EnrollmentTestHelper.swift */; };
 		9F7EFF08287E0D8A001E2C4E /* FakePushChallenge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7EFF01287E0D8A001E2C4E /* FakePushChallenge.swift */; };
@@ -392,6 +393,7 @@
 		7FFB5FFA286A7F4C006BC548 /* DeviceAuthenticatorUnitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DeviceAuthenticatorUnitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		7FFB6010286A80CF006BC548 /* DeviceAuthenticatorFunctionalTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DeviceAuthenticatorFunctionalTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9F47E555289C989000299CFB /* DeviceAuthenticatorConfigTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceAuthenticatorConfigTests.swift; sourceTree = "<group>"; };
+		9F4E6F662A71A8D6008E53F8 /* FunctionalTestsBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FunctionalTestsBase.swift; sourceTree = "<group>"; };
 		9F7AAD8D28BD297E00E15F59 /* ServerAPIProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerAPIProtocol.swift; sourceTree = "<group>"; };
 		9F7EFF00287E0D8A001E2C4E /* EnrollmentTestHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EnrollmentTestHelper.swift; sourceTree = "<group>"; };
 		9F7EFF01287E0D8A001E2C4E /* FakePushChallenge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FakePushChallenge.swift; sourceTree = "<group>"; };
@@ -904,6 +906,7 @@
 				9F7EFF05287E0D8A001E2C4E /* UserVerificationFlowTests.swift */,
 				7FD93C32291479EF00AC76B1 /* UpdateCIBAFlowTests.swift */,
 				9F7EFF03287E0D8A001E2C4E /* VerifyFlowTests.swift */,
+				9F4E6F662A71A8D6008E53F8 /* FunctionalTestsBase.swift */,
 			);
 			name = DeviceAuthenticatorFunctionalTests;
 			path = Tests/DeviceAuthenticatorFunctionalTests;
@@ -1512,6 +1515,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9F7EFF12287E0E12001E2C4E /* ExampleAppConstants.swift in Sources */,
+				9F4E6F672A71A8D6008E53F8 /* FunctionalTestsBase.swift in Sources */,
 				9F7EFF13287E0E12001E2C4E /* UNNotificationResponseMock.swift in Sources */,
 				7FD93C33291479EF00AC76B1 /* UpdateCIBAFlowTests.swift in Sources */,
 				9F7EFF14287E0E12001E2C4E /* RestAPIMock.swift in Sources */,

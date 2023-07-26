@@ -21,13 +21,12 @@ import GRDB
 class OktaSharedSQLiteTests: XCTestCase {
 
     let testGroupId = ExampleAppConstants.appGroupId
-    let relativeSQLitePath = "DeviceSDK/SQLite"
     let sqliteFileBasename = "TestEmptySQLite"
     let fileManager = FileManager.default
     let entitiesGenerator = OktaStorageEntitiesGenerator()
 
     lazy var sqlDirectoryURL: URL! = {
-        return fileManager.containerURL(forSecurityApplicationGroupIdentifier: testGroupId)?.appendingPathComponent(relativeSQLitePath)
+        return fileManager.containerURL(forSecurityApplicationGroupIdentifier: testGroupId)?.appendingPathComponent(DeviceAuthenticatorConstants.defaultStorageRelativeDirectoryPath)
     }()
 
     override func setUp() {
@@ -748,7 +747,7 @@ class OktaSharedSQLiteTests: XCTestCase {
     // MARK: Private Helpers
 
     private func createStorage(prefersSecureEnclaveUsage: Bool, schemaVersion: SQLiteStorageVersion = .latestVersion) throws -> OktaSQLitePersistentStorage {
-        guard let url = fileManager.containerURL(forSecurityApplicationGroupIdentifier: testGroupId)?.appendingPathComponent("\(relativeSQLitePath)/\(sqliteFileBasename)") else {
+        guard let url = fileManager.containerURL(forSecurityApplicationGroupIdentifier: testGroupId)?.appendingPathComponent("\(DeviceAuthenticatorConstants.defaultStorageRelativeDirectoryPath)/\(sqliteFileBasename)") else {
             throw NSError(domain: "TestError", code: -1, userInfo: nil)
         }
 
