@@ -2,44 +2,15 @@
 # See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
 
-# Define a job to be invoked later in a workflow.
-# See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
-  build:
-    # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
-    # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
-    docker:
-      - image: cimg/base:stable
-    # Add steps to the job
-    # See: https://circleci.com/docs/2.0/configuration-reference/#steps
+  SampleApp:
+    macos:
+      xcode: 14.3.1
     steps:
       - checkout
       - run:
-          name: "build stage"
-          command: "echo build stage"
-  test:
-    docker:
-      - image: cimg/base:stable
-    steps:
+          name: Install pods
+          command: cd Examples/PushSampleApp; pod install
       - run:
-          name: "test stage"
-          command: "echo test stage"
-  package:
-    docker:
-      - image: cimg/base:stable
-    steps:
-      - run:
-          name: "package stage"
-          command: "echo package stage"
-# Invoke jobs via workflows
-# See: https://circleci.com/docs/2.0/configuration-reference/#workflows
-workflows:
-  build-and-test:
-    jobs:
-      - build
-      - test:
-          requires:
-            - build
-      - package:
-          requires:
-            - test
+          name: "iOS Push Sample App"
+          command: xcodebuild -workspace ./Examples/PushSampleApp/SampleApp.xcworkspace -scheme "SampleApp" -destination "platform=iOS Simulator,OS=latest,name=iPhone 12" clean build
