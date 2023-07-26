@@ -13,9 +13,8 @@
 import XCTest
 @testable import DeviceAuthenticator
 
-class VerifyFlowTests: XCTestCase {
+class VerifyFlowTests: FunctionalTestsBase {
 
-    private let mockURL = URL(string: "https://example.okta.com")!
     private let authToken = AuthToken.bearer("testAuthToken")
     private let expectationTimeout: TimeInterval = 1.0
 
@@ -24,6 +23,7 @@ class VerifyFlowTests: XCTestCase {
     private var dataResponses: [Data]!
 
     override func setUpWithError() throws {
+        try super.setUpWithError()
         enrollmentHelper = EnrollmentTestHelper(applicationName: "FuncTests",
                                                 applicationVersion: "1.0.0",
                                                 applicationGroupId: ExampleAppConstants.appGroupId,

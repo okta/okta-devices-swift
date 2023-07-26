@@ -15,7 +15,7 @@ import Foundation
 typealias UserVerificationEncodableValue = SigningKeysModel.UserVerificationKey
 typealias APSEnvironmentEncodableValue = APSEnvironment
 
-enum APSEnvironment: String, Encodable {
+enum APSEnvironment: String, Codable {
     case development
     case production
 }

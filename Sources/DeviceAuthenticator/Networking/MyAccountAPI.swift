@@ -39,16 +39,16 @@ struct MyAccountAPI {
         }
     }
 
-    struct AuthenticatorRequestModel: Encodable {
+    struct AuthenticatorRequestModel: Codable {
         let authenticatorId: String
         let device: DeviceSignalsModel?
         let appSignals: [String: _OktaCodableArbitaryType]?
         let methods: AuthenticatorMethods
 
-        struct AuthenticatorMethods: Encodable {
+        struct AuthenticatorMethods: Codable {
             var push: PushMethod?
 
-            struct PushMethod: Encodable {
+            struct PushMethod: Codable {
                 let pushToken: String
                 let apsEnvironment: APSEnvironment
                 let capabilities: CapabilitiesModel

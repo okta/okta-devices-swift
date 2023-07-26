@@ -13,10 +13,9 @@
 import XCTest
 @testable import DeviceAuthenticator
 
-class UserVerificationFlowTests: XCTestCase {
+class UserVerificationFlowTests: FunctionalTestsBase {
 
     private let expectationTimeout: TimeInterval = 1.0
-    private let mockURL = URL(string: "https://example.okta.com")!
     private let authToken = AuthToken.bearer("testAuthToken")
 
     private var enrollmentHelper: EnrollmentTestHelper!
@@ -24,6 +23,7 @@ class UserVerificationFlowTests: XCTestCase {
     private var dataResponses: [Data]!
 
     override func setUpWithError() throws {
+        try super.setUpWithError()
         enrollmentHelper = EnrollmentTestHelper(applicationName: "FuncTests",
                                                 applicationVersion: "1.0.0",
                                                 applicationGroupId: ExampleAppConstants.appGroupId,
@@ -38,12 +38,6 @@ class UserVerificationFlowTests: XCTestCase {
         dataResponses = [GoldenData.orgData(),
                          MyAccountTestData.policyResponse(),
                          MyAccountTestData.enrollmentResponse()]
-    }
-
-    override func tearDownWithError() throws {
-        enrollmentHelper = nil
-        httpResponses = nil
-        dataResponses = nil
     }
 
     func testEnableUserVerification_Success() throws {

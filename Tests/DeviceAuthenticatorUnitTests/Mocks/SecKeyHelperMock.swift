@@ -26,7 +26,7 @@ class SecKeyHelperMock: SecKeyHelper {
     var deleteKeyHook: deleteKeyType?
 
     var generateKeyPairExpectaion = 0 as OSStatus
-    var generateKeyPairSpyParameters = [:] as CFDictionary
+    var generateKeyPairSpyParameters = [String: Any]() as CFDictionary
     var generateKeyPairPublicKeySpyParameter: UnsafeMutablePointer<SecKey?>?
     var generateKeyPairPrivateKeySpyParmeter: UnsafeMutablePointer<SecKey?>?
     var generateKeyPairErrorSpyParameter: UnsafeMutablePointer<Unmanaged<CFError>?>?
@@ -37,7 +37,7 @@ class SecKeyHelperMock: SecKeyHelper {
 
     var keyExpectation: SecKey?
     var getKeyExpectation = 0 as OSStatus
-    var getKeySpyParameters = [:] as CFDictionary
+    var getKeySpyParameters = [String: Any]() as CFDictionary
     var getKeyRefExpectation: CFTypeRef?
 
     var createSignatureExpectation: CFData?

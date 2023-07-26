@@ -13,11 +13,10 @@
 import XCTest
 @testable import DeviceAuthenticator
 
-class UpdateCIBAFlowTests: XCTestCase {
+class UpdateCIBAFlowTests: FunctionalTestsBase {
 
     private let expectationTimeout: TimeInterval = 1.0
 
-    private let mockURL = URL(string: "https://example.okta.com")!
     private let authToken = AuthToken.bearer("testAuthToken")
 
     private var enrollmentHelper: EnrollmentTestHelper!
@@ -25,6 +24,7 @@ class UpdateCIBAFlowTests: XCTestCase {
     private var dataResponses: [Data]!
 
     override func setUpWithError() throws {
+        try super.setUpWithError()
         enrollmentHelper = EnrollmentTestHelper(applicationName: "FuncTests",
                                                 applicationVersion: "1.0.0",
                                                 applicationGroupId: ExampleAppConstants.appGroupId,
@@ -39,12 +39,6 @@ class UpdateCIBAFlowTests: XCTestCase {
         dataResponses = [GoldenData.orgData(),
                          MyAccountTestData.policyResponse(),
                          MyAccountTestData.enrollmentResponse()]
-    }
-
-    override func tearDownWithError() throws {
-        enrollmentHelper = nil
-        httpResponses = nil
-        dataResponses = nil
     }
 
     func testUpdateTransactionType_Success() throws {
