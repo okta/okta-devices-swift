@@ -50,14 +50,10 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-          at: ./DerivedData
+          at: DerivedData
       - run:
           name: Unit tests
           command: set -o pipefail && xcodebuild -workspace DeviceAuthenticator.xcworkspace -scheme "DeviceAuthenticatorFramework" -destination "platform=iOS Simulator,OS=latest,name=iPhone 14" -derivedDataPath DerivedData test-without-building -only-testing:DeviceAuthenticatorUnitTests -enableCodeCoverage YES | xcpretty
-      - persist_to_workspace:
-          root: DerivedData
-          paths:
-            - Logs/Test
   functional-tests:
     macos:
       xcode: 14.3.1
@@ -65,31 +61,11 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-          at: ./FT/DD
+          at: DerivedData
       - run:
           name: Functional tests
-          command: set -o pipefail && xcodebuild -workspace DeviceAuthenticator.xcworkspace -scheme "DeviceAuthenticatorFramework" -destination "platform=iOS Simulator,OS=latest,name=iPhone 14" -derivedDataPath FT/DD test-without-building -only-testing:DeviceAuthenticatorFunctionalTests -enableCodeCoverage YES | xcpretty
-      - persist_to_workspace:
-          root: FT
-          paths:
-            - DD/Logs/Test
-  code-coverage:
-    macos:
-      xcode: 14.3.1
-    resource_class: macos.m1.medium.gen1
-    steps:
-      - checkout
-      - attach_workspace:
-          at: ./DerivedData
-      - run:
-          name: "Generate Code Coverage"
-          command: |
-            softwareupdate --install-rosetta --agree-to-license
-            cp -r ./DerivedData/DD/Logs/Test/Test*.xcresult ./DerivedData/Logs/Test
-            gem install xcov
-            xcov -s DeviceAuthenticatorFramework -j DerivedData
+          command: set -o pipefail && xcodebuild -workspace DeviceAuthenticator.xcworkspace -scheme "DeviceAuthenticatorFramework" -destination "platform=iOS Simulator,OS=latest,name=iPhone 14" -derivedDataPath DerivedData test-without-building -only-testing:DeviceAuthenticatorFunctionalTests -enableCodeCoverage YES | xcpretty
 
-          
 workflows:
   build-sample-app:
     jobs:
@@ -97,7 +73,7 @@ workflows:
   build-swift-package:
     jobs:
       - spm
-  test-and-code-coverage:
+  build-and-test:
     jobs:
       - build
       - unit-tests:
@@ -106,8 +82,4 @@ workflows:
       - functional-tests:
           requires:
             - build
-      - code-coverage:
-          requires:
-            - unit-tests
-            - functional-tests
   
