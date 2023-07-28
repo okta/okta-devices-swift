@@ -2,44 +2,84 @@
 # See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
 
-# Define a job to be invoked later in a workflow.
-# See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
-  build:
-    # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
-    # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
-    docker:
-      - image: cimg/base:stable
-    # Add steps to the job
-    # See: https://circleci.com/docs/2.0/configuration-reference/#steps
+  sample-app:
+    macos:
+      xcode: 14.3.1
+    resource_class: macos.m1.medium.gen1
     steps:
       - checkout
       - run:
-          name: "build stage"
-          command: "echo build stage"
-  test:
-    docker:
-      - image: cimg/base:stable
-    steps:
+          name: Install pods
+          command: cd Examples/PushSampleApp; pod install
       - run:
-          name: "test stage"
-          command: "echo test stage"
-  package:
-    docker:
-      - image: cimg/base:stable
+          name: "Build iOS PushSDK Sample App"
+          command: xcodebuild -workspace ./Examples/PushSampleApp/SampleApp.xcworkspace -scheme "SampleApp" -destination "platform=iOS Simulator,OS=latest,name=iPhone 14" clean build
+  spm:
+    macos:
+      xcode: 14.3.1
+    resource_class: macos.m1.medium.gen1
     steps:
+      - checkout
       - run:
-          name: "package stage"
-          command: "echo package stage"
-# Invoke jobs via workflows
-# See: https://circleci.com/docs/2.0/configuration-reference/#workflows
+          name: Build Swift Package
+          command: swift build
+  build:
+    macos:
+      xcode: 14.3.1
+    resource_class: macos.m1.medium.gen1
+    steps:
+      - checkout
+      - run:
+          name: Install rosetta # Needed for swiftlint to work on M1 machines.
+          command: softwareupdate --install-rosetta --agree-to-license
+      - run:
+          name: Install pods
+          command: pod install
+      - run:
+          name: Build for testing and code coverage
+          command: set -o pipefail && xcodebuild -workspace DeviceAuthenticator.xcworkspace -scheme "DeviceAuthenticatorFramework" -destination "platform=iOS Simulator,OS=latest,name=iPhone 14" -derivedDataPath DerivedData build-for-testing | xcpretty
+      - persist_to_workspace:
+          root: DerivedData
+          paths:
+            - Build/Products
+  unit-tests:
+    macos:
+      xcode: 14.3.1
+    resource_class: macos.m1.medium.gen1
+    steps:
+      - checkout
+      - attach_workspace:
+          at: DerivedData
+      - run:
+          name: Unit tests
+          command: set -o pipefail && xcodebuild -workspace DeviceAuthenticator.xcworkspace -scheme "DeviceAuthenticatorFramework" -destination "platform=iOS Simulator,OS=latest,name=iPhone 14" -derivedDataPath DerivedData test-without-building -only-testing:DeviceAuthenticatorUnitTests -enableCodeCoverage YES | xcpretty
+  functional-tests:
+    macos:
+      xcode: 14.3.1
+    resource_class: macos.m1.medium.gen1
+    steps:
+      - checkout
+      - attach_workspace:
+          at: DerivedData
+      - run:
+          name: Functional tests
+          command: set -o pipefail && xcodebuild -workspace DeviceAuthenticator.xcworkspace -scheme "DeviceAuthenticatorFramework" -destination "platform=iOS Simulator,OS=latest,name=iPhone 14" -derivedDataPath DerivedData test-without-building -only-testing:DeviceAuthenticatorFunctionalTests -enableCodeCoverage YES | xcpretty
+
 workflows:
+  build-sample-app:
+    jobs:
+      - sample-app
+  build-swift-package:
+    jobs:
+      - spm
   build-and-test:
     jobs:
       - build
-      - test:
+      - unit-tests:
           requires:
             - build
-      - package:
+      - functional-tests:
           requires:
-            - test
+            - build
+  
