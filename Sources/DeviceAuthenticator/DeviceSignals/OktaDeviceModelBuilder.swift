@@ -23,7 +23,7 @@ class OktaDeviceModelBuilder {
     let orgHost: String
     let applicationConfig: ApplicationConfig
     let customSignals: DeviceSignals?
-    let cryptoManager: OktaSharedCryptoProtocol
+    let cryptoManager: OktaSharedCryptoProtocol?
     let jwtGenerator: OktaJWTGenerator
     let jwkGenerator: OktaJWKGenerator
     let logger: OktaLoggerProtocol
@@ -51,7 +51,7 @@ class OktaDeviceModelBuilder {
          applicationConfig: ApplicationConfig,
          requestedSignals: [String],
          customSignals: DeviceSignals?,
-         cryptoManager: OktaSharedCryptoProtocol,
+         cryptoManager: OktaSharedCryptoProtocol?,
          jwtGenerator: OktaJWTGenerator? = nil,
          jwkGenerator: OktaJWKGenerator? = nil,
          logger: OktaLoggerProtocol) {
@@ -80,7 +80,7 @@ class OktaDeviceModelBuilder {
             try addJWTPart(to: &deviceModel, deviceEnrollment: deviceEnrollment)
         } catch {
             // Failed to build device key attestation. Recreate the device object on server side and register new client instance key
-            _ = cryptoManager.delete(keyPairWith: deviceEnrollment.clientInstanceKeyTag)
+            _ = cryptoManager?.delete(keyPairWith: deviceEnrollment.clientInstanceKeyTag)
             deviceModel = buildForCreateEnrollment(with: deviceEnrollment.clientInstanceKeyTag)
         }
 
@@ -124,7 +124,7 @@ class OktaDeviceModelBuilder {
     private func addJWTPart(to deviceModel: inout DeviceSignalsModel,
                             deviceEnrollment: OktaDeviceEnrollment) throws {
         let payload = OktaJWTPayload(iss: deviceEnrollment.clientInstanceId, aud: orgHost, sub: deviceEnrollment.id)
-        if let clientInstanceKey = self.cryptoManager.get(keyOf: .privateKey,
+        if let clientInstanceKey = self.cryptoManager?.get(keyOf: .privateKey,
                                                           with: deviceEnrollment.clientInstanceKeyTag,
                                                           context: LAContext()) {
             let jwt = try jwtGenerator.generate(with: "",
@@ -151,7 +151,7 @@ class OktaDeviceModelBuilder {
         additionalParameters["okta:isFipsCompliant"] = .bool(OktaEnvironment.isSecureEnclaveAvailable())
         #endif
 
-        if let secKey = try? cryptoManager.generate(keyPairWith: .ES256,
+        if let secKey = try? cryptoManager?.generate(keyPairWith: .ES256,
                                                     with: clientIntanceKeyTag,
                                                     useSecureEnclave: OktaEnvironment.canUseSecureEnclave(),
                                                     useBiometrics: false,
