@@ -43,6 +43,7 @@ See [Custom authenticator integration guide] for more details.
 
 ### Including Okta Devices SDK
 
+
 #### Cocoapods
 Okta Devices SDK is available from [CocoaPods](http://cocoapods.org). To add it to your project, add the following lines to your Podfile:
 
