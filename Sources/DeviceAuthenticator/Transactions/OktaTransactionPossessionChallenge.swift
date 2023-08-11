@@ -248,7 +248,7 @@ class OktaTransactionPossessionChallengeBase: OktaTransaction {
                                onIdentityStep: transactionContext.appIdentityStepClosure) { keyData, error in
 
             if let error = error {
-                self.logger.error(eventName: self.logEventName, message: "Error: \(error)")
+                self.logger.warning(eventName: self.logEventName, message: "Failed to read signing key: \(error)")
                 self.readSigningKeyErrorHandler(error: error,
                                                 transactionContext: transactionContext,
                                                 keysRequirements: keysRequirements)
@@ -357,7 +357,6 @@ class OktaTransactionPossessionChallengeBase: OktaTransaction {
         case .proofOfPossession:
             guard let proofOfPossessionKeyTag = getProofOfPossessionKeyTag(methodType: methodType, enrollment: enrollment) else {
                 let error = DeviceAuthenticatorError.genericError("Can't find enrolled proof of possession key in enrollment object")
-                logger.error(eventName: self.logEventName, message: "Verification flow failed with error: \(error)")
                 onCompletion(nil, error)
                 return
             }
@@ -366,7 +365,6 @@ class OktaTransactionPossessionChallengeBase: OktaTransaction {
         case .userVerification:
             guard let userVerificationKeyTag = getUserVerificationKeyTag(methodType: methodType, enrollment: enrollment) else {
                 let error = DeviceAuthenticatorError.genericError("Can't find enrolled user verification key in enrollment object")
-                logger.error(eventName: self.logEventName, message: "Verification flow failed with error: \(error)")
                 onCompletion(nil, error)
                 return
             }
@@ -380,7 +378,6 @@ class OktaTransactionPossessionChallengeBase: OktaTransaction {
         case .userVerificationBioOrPin:
             guard let userVerificationBioOrPinKeyTag = getUserVerificationBioOrPinKeyTag(methodType: methodType, enrollment: enrollment) else {
                 let error = DeviceAuthenticatorError.genericError("Can't find enrolled user verification bio or pin key in enrollment object")
-                logger.error(eventName: self.logEventName, message: "Verification flow failed with error: \(error)")
                 onCompletion(nil, error)
                 return
             }
@@ -392,7 +389,6 @@ class OktaTransactionPossessionChallengeBase: OktaTransaction {
                                        onCompletion: onCompletion)
         default:
             let error = DeviceAuthenticatorError.internalError("Unknown key type provided by the server")
-            logger.error(eventName: self.logEventName, message: "Verification flow failed with error: \(error)")
             onCompletion(nil, error)
         }
     }
