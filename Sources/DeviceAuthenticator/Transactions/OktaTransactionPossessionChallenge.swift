@@ -248,7 +248,7 @@ class OktaTransactionPossessionChallengeBase: OktaTransaction {
                                onIdentityStep: transactionContext.appIdentityStepClosure) { keyData, error in
 
             if let error = error {
-                self.logger.error(eventName: self.logEventName, message: "Error: \(error)")
+                self.logger.warning(eventName: self.logEventName, message: "Failed to read signing key: \(error)")
                 self.readSigningKeyErrorHandler(error: error,
                                                 transactionContext: transactionContext,
                                                 keysRequirements: keysRequirements)
