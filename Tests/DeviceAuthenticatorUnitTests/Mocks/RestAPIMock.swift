@@ -27,6 +27,7 @@ class RestAPIMock: ServerAPIProtocol {
     typealias pendingChallengeRequestType = (URL, OktaRestAPIToken, (HTTPURLResult?, DeviceAuthenticatorError?) -> Void) -> Void
     typealias retrieveMaintenaceTokenType = (URL, String, [String], String,(Result<HTTPURLResult, DeviceAuthenticatorError>) -> Void) -> Void
     typealias updateDeviceTokenType = (String, URL, OktaRestAPIToken, String, (Result<Void, DeviceAuthenticatorError>) -> Void) -> Void
+    typealias verifyDeviceChallengeType = (URL, [String: String]?, Data?, (HTTPURLResult?, DeviceAuthenticatorError?) -> Void) -> Void
 
     var enrollAuthenticatorRequestHook: enrollAuthenticatorRequestType?
     var downloadOrgIdTypeHook: downloadOrgIdType?
@@ -37,6 +38,7 @@ class RestAPIMock: ServerAPIProtocol {
     var pendingChallengeRequestHook: pendingChallengeRequestType?
     var retrieveMaintenaceTokenHook: retrieveMaintenaceTokenType?
     var updateDeviceTokenHook: updateDeviceTokenType?
+    var verifyDeviceChallengeHook: verifyDeviceChallengeType?
 
     let client: HTTPClientProtocol
     let logger: OktaLoggerProtocol
@@ -159,16 +161,20 @@ class RestAPIMock: ServerAPIProtocol {
                                       httpHeaders: [String: String]? = nil,
                                       data: Data?,
                                       completion: @escaping (_ result: HTTPURLResult?, _ error: DeviceAuthenticatorError?) -> Void) {
-        if let oktaError = error {
-            completion(nil, oktaError)
+        if let verifyDeviceChallengeHook = verifyDeviceChallengeHook {
+            verifyDeviceChallengeHook(verifyURL, httpHeaders, data, completion)
         } else {
-            var paramsToVerify: [String: Any] = ["verifyURL": verifyURL.absoluteString]
-            paramsToVerify["httpHeaders"] = httpHeaders
-            paramsToVerify["data"] = data?.base64EncodedString()
-            let data = try! JSONSerialization.data(withJSONObject: paramsToVerify, options: .prettyPrinted)
-            let urlResponse = HTTPURLResponse()
-            let resut = HTTPURLResult(request: nil, response: urlResponse, data: data)
-            completion(resut, nil)
+            if let oktaError = error {
+                completion(nil, oktaError)
+            } else {
+                var paramsToVerify: [String: Any] = ["verifyURL": verifyURL.absoluteString]
+                paramsToVerify["httpHeaders"] = httpHeaders
+                paramsToVerify["data"] = data?.base64EncodedString()
+                let data = try! JSONSerialization.data(withJSONObject: paramsToVerify, options: .prettyPrinted)
+                let urlResponse = HTTPURLResponse()
+                let resut = HTTPURLResult(request: nil, response: urlResponse, data: data)
+                completion(resut, nil)
+            }
         }
     }
 

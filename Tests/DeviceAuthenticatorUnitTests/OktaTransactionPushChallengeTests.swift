@@ -68,7 +68,7 @@ class OktaTransactionPushChallengeTests: XCTestCase {
 
     func testHandleSelectAccountStep_Success() {
         let context = OktaTransaction.TransactionContext(challengeRequest: transaction.challengeRequestJWT) { _ in
-        } appCompletionClosure: { (_, _, _) in
+        } appCompletionClosure: { (_) in
         }
 
         var triageRemediationEventsHookCalled = false
@@ -86,7 +86,7 @@ class OktaTransactionPushChallengeTests: XCTestCase {
 
     func testHandleSelectAccountStep_Success_CustomAuthZKey() throws {
         let context = OktaTransaction.TransactionContext(challengeRequest: transaction.challengeRequestJWT) { _ in
-        } appCompletionClosure: { (_, _, _) in
+        } appCompletionClosure: { (_) in
         }
 
         var triageRemediationEventsHookCalled = false
@@ -115,14 +115,21 @@ class OktaTransactionPushChallengeTests: XCTestCase {
     func testHandleSelectAccountStep_JWTValidationFailed() {
         var appCompletionClosureCalled = false
         let context = OktaTransaction.TransactionContext(challengeRequest: transaction.challengeRequestJWT) { _ in
-        } appCompletionClosure: { (_, error, _) in
-            appCompletionClosureCalled = true
-            if case .securityError(let securityError) = error {
-                if securityError != .jwtError("The JWT algorithm HS256 is not supported at this time") {
+        } appCompletionClosure: { (result) in
+            switch result {
+            case .success(_):
+                XCTFail("Unexpected success")
+            case .failure(let info):
+                if case .securityError(let securityError) = info.error {
+                    if securityError != .jwtError("The JWT algorithm HS256 is not supported at this time") {
+                        XCTFail("Unexpected error")
+                    }
+                } else {
                     XCTFail("Unexpected error")
                 }
-            } else {
-                XCTFail("Unexpected error")
+                XCTAssertNil(info.userConsentResponse)
+                XCTAssertNil(info.enrollment)
+                appCompletionClosureCalled = true
             }
         }
 
@@ -141,7 +148,7 @@ class OktaTransactionPushChallengeTests: XCTestCase {
             } else {
                 XCTFail("Unexpected remediation event")
             }
-        } appCompletionClosure: { (_, _, _) in
+        } appCompletionClosure: { (_) in
         }
 
         var triageRemediationEventsHookCalled = false
@@ -160,7 +167,7 @@ class OktaTransactionPushChallengeTests: XCTestCase {
         pushChallenge.userResponse = .userApproved
         let context = OktaTransaction.TransactionContext(challengeRequest: transaction.challengeRequestJWT) { step in
             XCTFail("Unexpected call")
-        } appCompletionClosure: { (_, _, _) in
+        } appCompletionClosure: { (_) in
         }
 
         var triageRemediationEventsHookCalled = false
@@ -179,7 +186,7 @@ class OktaTransactionPushChallengeTests: XCTestCase {
         pushChallenge.userResponse = .userApproved
         let context = OktaTransaction.TransactionContext(challengeRequest: transaction.challengeRequestJWT) { step in
             XCTFail("Unexpected call")
-        } appCompletionClosure: { (_, _, _) in
+        } appCompletionClosure: { (_) in
         }
 
         var triageRemediationEventsHookCalled = false
@@ -196,7 +203,7 @@ class OktaTransactionPushChallengeTests: XCTestCase {
         pushChallenge.userResponse = .userApproved
         let context = OktaTransaction.TransactionContext(challengeRequest: transaction.challengeRequestJWT) { step in
             XCTFail("Unexpected call")
-        } appCompletionClosure: { (_, _, _) in
+        } appCompletionClosure: { (_) in
         }
         context.enrollment = (pushChallenge.enrollment as! AuthenticatorEnrollment)
 
@@ -218,7 +225,7 @@ class OktaTransactionPushChallengeTests: XCTestCase {
         pushChallenge.userResponse = .userApproved
         let context = OktaTransaction.TransactionContext(challengeRequest: transaction.challengeRequestJWT) { step in
             XCTFail("Unexpected call")
-        } appCompletionClosure: { (_, _, _) in
+        } appCompletionClosure: { (_) in
         }
         context.enrollment = (pushChallenge.enrollment as! AuthenticatorEnrollment)
 
@@ -240,7 +247,7 @@ class OktaTransactionPushChallengeTests: XCTestCase {
         pushChallenge.userResponse = .userDenied
         let context = OktaTransaction.TransactionContext(challengeRequest: transaction.challengeRequestJWT) { step in
             XCTFail("Unexpected call")
-        } appCompletionClosure: { (_, _, _) in
+        } appCompletionClosure: { (_) in
         }
         context.enrollment = (pushChallenge.enrollment as! AuthenticatorEnrollment)
 
@@ -265,7 +272,7 @@ class OktaTransactionPushChallengeTests: XCTestCase {
             } else {
                 XCTFail("Unexpected event")
             }
-        } appCompletionClosure: { (_, _, _) in
+        } appCompletionClosure: { (_) in
         }
         context.enrollment = (pushChallenge.enrollment as! AuthenticatorEnrollment)
 
@@ -285,8 +292,14 @@ class OktaTransactionPushChallengeTests: XCTestCase {
         var completionCalled = false
         let context = OktaTransaction.TransactionContext(challengeRequest: transaction.challengeRequestJWT) { step in
             XCTFail("Unexpected call")
-        } appCompletionClosure: { (_, error, _) in
-            XCTAssertNotNil(error)
+        } appCompletionClosure: { (result) in
+            switch result {
+            case .success(_):
+                XCTFail("Unexpected success")
+            case .failure(let info):
+                XCTAssertNil(info.userConsentResponse)
+                XCTAssertNotNil(info.enrollment)
+            }
             completionCalled = true
         }
         context.enrollment = (pushChallenge.enrollment as! AuthenticatorEnrollment)
