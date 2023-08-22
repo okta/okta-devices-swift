@@ -59,21 +59,25 @@ class TransactionPossessionChallengeBaseTests: XCTestCase {
                                                                         signalsManager: SignalsManager(logger: OktaLoggerMock()),
                                                                         restAPI: restAPIMock,
                                                                         logger: OktaLoggerMock())
-        mut.verify(onIdentityStep: { identityStep in
-        }) { result, error, enrollment in
-            XCTAssertNil(error)
-            XCTAssertNotNil(result)
-            let paramsToVerify = try! JSONSerialization.jsonObject(with: result!.data!, options: []) as! [String: Any]
-            let verifyURL = paramsToVerify["verifyURL"] as? String
-            let data = paramsToVerify["data"] as? Data
-            XCTAssertNotNil(verifyURL)
-            XCTAssertTrue(verifyURL!.contains("challengeResponse"))
-            XCTAssertTrue(verifyURL!.contains("stateHandle"))
+        
+        var verifyDeviceChallengeHookCalled = false
+        restAPIMock.verifyDeviceChallengeHook = { url, httpHeaders, data, completion in
+            XCTAssertTrue(url.absoluteString.contains("challengeResponse"))
+            XCTAssertTrue(url.absoluteString.contains("stateHandle"))
             XCTAssertNil(data)
+            verifyDeviceChallengeHookCalled = true
+            let urlResponse = HTTPURLResponse()
+            let resut = HTTPURLResult(request: nil, response: urlResponse, data: data)
+            completion(resut, nil)
+        }
+
+        mut.verify(onIdentityStep: { identityStep in
+        }) { result in
             completionExpectation.fulfill()
         }
 
         wait(for: [completionExpectation], timeout: 3.0)
+        XCTAssertTrue(verifyDeviceChallengeHookCalled)
     }
 
     func testVerifyChallengeTransactionWithIntegrations_Success() throws {
@@ -92,6 +96,19 @@ class TransactionPossessionChallengeBaseTests: XCTestCase {
             XCTFail()
         }
         signalsManager.initializeSignalPlugins(plugins: [], externalConfigs: integrations)
+        
+        var verifyDeviceChallengeHookCalled = false
+        restAPIMock.verifyDeviceChallengeHook = { url, httpHeaders, data, completion in
+            let challengeResponseJSON = self.extractChallengeResponseJSON(verifyURL: url.absoluteString)
+            let integrations = challengeResponseJSON?["integrations"] as? [[String: Any]]
+            #if os(macOS)
+            XCTAssertNotNil(integrations?.first?["signal"])
+            #endif
+            verifyDeviceChallengeHookCalled = true
+            let urlResponse = HTTPURLResponse()
+            let resut = HTTPURLResult(request: nil, response: urlResponse, data: data)
+            completion(resut, nil)
+        }
         let mut = try OktaTransactionPossessionChallengeBasePartialMock(applicationConfig: applicationConfig,
                                                                         challengeRequest: OktaJWTTestData.validDeviceChallengeRequestJWT(),
                                                                         stateHandle: "state_handle",
@@ -103,25 +120,30 @@ class TransactionPossessionChallengeBaseTests: XCTestCase {
                                                                         restAPI: restAPIMock,
                                                                         logger: OktaLoggerMock())
         mut.verify(onIdentityStep: { identityStep in
-        }) { result, error, enrollment in
-            XCTAssertNil(error)
-            XCTAssertNotNil(result)
-            let paramsToVerify = try! JSONSerialization.jsonObject(with: result!.data!, options: []) as! [String: Any]
-            let verifyURL = paramsToVerify["verifyURL"] as? String
-            let challengeResponseJSON = self.extractChallengeResponseJSON(verifyURL: verifyURL)
-            let integrations = challengeResponseJSON?["integrations"] as? [[String: Any]]
-            #if os(macOS)
-            XCTAssertNotNil(integrations?.first?["signal"])
-            #endif
+        }) { _ in
             completionExpectation.fulfill()
         }
 
         wait(for: [completionExpectation], timeout: 3.0)
+        XCTAssertTrue(verifyDeviceChallengeHookCalled)
     }
 
     func testVerifyChallengeTransactionWithEmptyStateHandle_Success() throws {
 
         let completionExpectation = expectation(description: "Completion has been called!")
+        
+        var verifyDeviceChallengeHookCalled = false
+        restAPIMock.verifyDeviceChallengeHook = { url, httpHeaders, data, completion in
+            XCTAssertFalse(url.absoluteString.contains("challengeRequest"))
+            XCTAssertFalse(url.absoluteString.contains("stateHandle"))
+            let dict = try? JSONSerialization.jsonObject(with: data!, options: .allowFragments) as? [String: Any]
+            let challengeResponse = dict?["challengeResponse"]
+            XCTAssertNotNil(challengeResponse)
+            verifyDeviceChallengeHookCalled = true
+            let urlResponse = HTTPURLResponse()
+            let resut = HTTPURLResult(request: nil, response: urlResponse, data: data)
+            completion(resut, nil)
+        }
         let mut = try OktaTransactionPossessionChallengeBasePartialMock(applicationConfig: applicationConfig,
                                                                         challengeRequest: OktaJWTTestData.validDeviceChallengeRequestJWTWithUserMediationRequired(),
                                                                         stateHandle: nil,
@@ -133,23 +155,12 @@ class TransactionPossessionChallengeBaseTests: XCTestCase {
                                                                         restAPI: restAPIMock,
                                                                         logger: OktaLoggerMock())
         mut.verify(onIdentityStep: { identityStep in
-        }) { result, error, enrollment in
-            XCTAssertNil(error)
-            XCTAssertNotNil(result)
-            let paramsToVerify = try! JSONSerialization.jsonObject(with: result!.data!, options: []) as! [String: Any]
-            let verifyURL = paramsToVerify["verifyURL"] as? String
-            let base64String = paramsToVerify["data"] as? String
-            XCTAssertNotNil(verifyURL)
-            XCTAssertFalse(verifyURL!.contains("challengeRequest"))
-            XCTAssertFalse(verifyURL!.contains("stateHandle"))
-            XCTAssertNotNil(base64String)
-            let dict = try? JSONSerialization.jsonObject(with: Data(base64Encoded: base64String!)!, options: .allowFragments) as? [String: Any]
-            let challengeResponse = dict?["challengeResponse"]
-            XCTAssertNotNil(challengeResponse)
+        }) { _ in
             completionExpectation.fulfill()
         }
 
         wait(for: [completionExpectation], timeout: 3.0)
+        XCTAssertTrue(verifyDeviceChallengeHookCalled)
     }
 
     func testVerifyChallengeTransaction_InvalidJWTFailure() throws {
@@ -207,15 +218,18 @@ class TransactionPossessionChallengeBaseTests: XCTestCase {
                                                                         restAPI: restAPIMock,
                                                                         logger: OktaLoggerMock())
         mut.verify(onIdentityStep: { identityStep in
-        }) { result, error, enrollment in
-            XCTAssertNil(result)
-            XCTAssertNotNil(error)
-            XCTAssertEqual(error?.errorCode, -1)
-            if case let DeviceAuthenticatorError.serverAPIError(_, errorModel) = error! {
-                XCTAssertNotNil(errorModel)
-                XCTAssertEqual(errorModel?.errorCode?.rawValue, ServerErrorCode.enrollmentDeleted.rawValue)
-            } else {
-                XCTFail("Incorrect error type - \(error!)")
+        }) { result in
+            switch result {
+            case .success(_):
+                XCTFail("Unexpected success")
+            case .failure(let info):
+                XCTAssertEqual(info.error.errorCode, -1)
+                if case let DeviceAuthenticatorError.serverAPIError(_, errorModel) = info.error {
+                    XCTAssertNotNil(errorModel)
+                    XCTAssertEqual(errorModel?.errorCode?.rawValue, ServerErrorCode.enrollmentDeleted.rawValue)
+                } else {
+                    XCTFail("Incorrect error type - \(info.error)")
+                }
             }
             completionExpectation.fulfill()
         }
@@ -260,7 +274,7 @@ class TransactionPossessionChallengeBaseTests: XCTestCase {
         let transactionContext = OktaTransactionPossessionChallengeBase.TransactionContext(challengeRequest: mut.challengeRequestJWT,
                                                                                            appIdentityStepClosure: { step in
         },
-                                                                                           appCompletionClosure: { jwt, error, enrollment in
+                                                                                           appCompletionClosure: { _ in
         })
 
         var signJWTAndSendRequestHookCalled = false
@@ -295,7 +309,7 @@ class TransactionPossessionChallengeBaseTests: XCTestCase {
         let transactionContext = OktaTransactionPossessionChallengeBase.TransactionContext(challengeRequest: mut.challengeRequestJWT,
                                                                                            appIdentityStepClosure: { step in
         },
-                                                                                           appCompletionClosure: { jwt, error, enrollment in
+                                                                                           appCompletionClosure: { _ in
         })
 
         var signJWTAndSendRequestHookCalled = false
@@ -338,7 +352,7 @@ class TransactionPossessionChallengeBaseTests: XCTestCase {
         let transactionContext = OktaTransactionPossessionChallengeBase.TransactionContext(challengeRequest: mut.challengeRequestJWT,
                                                                                            appIdentityStepClosure: { step in
         },
-                                                                                           appCompletionClosure: { jwt, error, enrollment in
+                                                                                           appCompletionClosure: { _ in
         })
 
         var signJWTAndSendRequestHookCalled = false
@@ -373,7 +387,7 @@ class TransactionPossessionChallengeBaseTests: XCTestCase {
         let transactionContext = OktaTransactionPossessionChallengeBase.TransactionContext(challengeRequest: mut.challengeRequestJWT,
                                                                                            appIdentityStepClosure: { step in
         },
-                                                                                           appCompletionClosure: { jwt, error, enrollment in
+                                                                                           appCompletionClosure: { _ in
         })
 
         var signJWTAndSendRequestHookCalled = false

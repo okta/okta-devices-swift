@@ -126,8 +126,13 @@ class PushChallenge: PushChallengeProtocol, CIBAChallengeProtocol {
                                                                             signalsManager: signalsManager,
                                                                             restAPI: restAPI,
                                                                             logger: logger)
-            pushChallengeTransaction.verify(onIdentityStep: onRemediation) { result, error, enrollment in
-                onCompletion(error)
+            pushChallengeTransaction.verify(onIdentityStep: onRemediation) { result in
+                switch result {
+                case .failure(let failureInfo):
+                    onCompletion(failureInfo.error)
+                case .success(_):
+                    onCompletion(nil)
+                }
             }
         } catch {
             let deviceAuthenticatorError = DeviceAuthenticatorError.oktaError(from: error)
