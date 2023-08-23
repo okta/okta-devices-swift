@@ -3,7 +3,7 @@
 version: 2.1
 
 orbs:
-  general-platform-helpers: okta/general-platform-helpers@1.7.6
+  general-platform-helpers: okta/general-platform-helpers@1.8
 
 jobs:
   sample-app:
@@ -68,6 +68,16 @@ jobs:
       - run:
           name: Functional tests
           command: set -o pipefail && xcodebuild -workspace DeviceAuthenticator.xcworkspace -scheme "DeviceAuthenticatorFramework" -destination "platform=iOS Simulator,OS=latest,name=iPhone 14" -derivedDataPath DerivedData test-without-building -only-testing:DeviceAuthenticatorFunctionalTests -enableCodeCoverage YES | xcpretty
+  snyk-scan:
+    docker:
+      - image: cimg/openjdk:13.0
+    steps:
+      - attach_workspace:
+          at: DerivedData
+      - general-platform-helpers/step-load-dependencies
+      - general-platform-helpers/step-run-snyk-monitor:
+          scan-all-projects: true
+          skip-unresolved: false
 
 workflows:
   build-sample-app:
@@ -85,6 +95,14 @@ workflows:
       - functional-tests:
           requires:
             - build
+      - general-platform-helpers/job-snyk-prepare:
+          name: prepare-snyk
+          requires:
+            - build
+      - snyk-scan:
+          name: execute-snyk
+          requires:
+            - prepare-snyk
   semgrep:
     jobs:
       - general-platform-helpers/job-semgrep-prepare:
