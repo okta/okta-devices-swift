@@ -79,6 +79,8 @@ jobs:
       - general-platform-helpers/step-run-snyk-monitor:
           scan-all-projects: true
           skip-unresolved: false
+          run-on-non-main: true
+          os: macos
 
 workflows:
   build-sample-app:
