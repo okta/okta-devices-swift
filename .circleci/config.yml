@@ -75,6 +75,10 @@ jobs:
     steps:
       - attach_workspace:
           at: DerivedData
+      - checkout
+      - run:
+          name: Install pods
+          command: pod install
       - general-platform-helpers/step-load-dependencies
       - general-platform-helpers/step-run-snyk-monitor:
           scan-all-projects: true
@@ -100,8 +104,8 @@ workflows:
             - build
       - general-platform-helpers/job-snyk-prepare:
           name: prepare-snyk
-          requires:
-            - build
+          # requires:
+          #   - build
       - snyk-scan:
           name: execute-snyk
           requires:
