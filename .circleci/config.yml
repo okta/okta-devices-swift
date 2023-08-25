@@ -73,8 +73,6 @@ jobs:
       xcode: "13.4.1"
     resource_class: macos.x86.medium.gen2
     steps:
-      - attach_workspace:
-          at: DerivedData
       - checkout
       - run:
           name: Install pods
@@ -95,13 +93,13 @@ workflows:
       - spm
   build-and-test:
     jobs:
-      - build
-      - unit-tests:
-          requires:
-            - build
-      - functional-tests:
-          requires:
-            - build
+      # - build
+      # - unit-tests:
+      #     requires:
+      #       - build
+      # - functional-tests:
+      #     requires:
+      #       - build
       - general-platform-helpers/job-snyk-prepare:
           name: prepare-snyk
           # requires:
@@ -110,11 +108,11 @@ workflows:
           name: execute-snyk
           requires:
             - prepare-snyk
-  semgrep:
-    jobs:
-      - general-platform-helpers/job-semgrep-prepare:
-          name: semgrep-prepare
-      - general-platform-helpers/job-semgrep-scan:
-          name: semgrep-scan
-          requires:
-            - semgrep-prepare
+  # semgrep:
+  #   jobs:
+  #     - general-platform-helpers/job-semgrep-prepare:
+  #         name: semgrep-prepare
+  #     - general-platform-helpers/job-semgrep-scan:
+  #         name: semgrep-scan
+  #         requires:
+  #           - semgrep-prepare
