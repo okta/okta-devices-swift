@@ -73,10 +73,11 @@ jobs:
       xcode: "13.4.1"
     resource_class: macos.x86.medium.gen2
     steps:
-      - checkout
+      - attach_workspace:
+          at: DerivedData
       - run:
-          name: Install pods
-          command: pod install
+          name: run swift package show dependencies
+          command: swift package show-dependencies
       - general-platform-helpers/step-load-dependencies
       - general-platform-helpers/step-run-snyk-monitor:
           scan-all-projects: true
