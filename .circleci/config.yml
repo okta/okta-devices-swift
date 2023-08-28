@@ -5,11 +5,15 @@ version: 2.1
 orbs:
   general-platform-helpers: okta/general-platform-helpers@1.8
 
-jobs:
-  sample-app:
+executors:
+  apple-ci-arm-medium:
     macos:
       xcode: 14.3.1
     resource_class: macos.m1.medium.gen1
+
+jobs:
+  sample-app:
+    executor: apple-ci-arm-medium
     steps:
       - checkout
       - run:
@@ -19,18 +23,14 @@ jobs:
           name: "Build iOS PushSDK Sample App"
           command: xcodebuild -workspace ./Examples/PushSampleApp/SampleApp.xcworkspace -scheme "SampleApp" -destination "platform=iOS Simulator,OS=latest,name=iPhone 14" clean build
   spm:
-    macos:
-      xcode: 14.3.1
-    resource_class: macos.m1.medium.gen1
+    executor: apple-ci-arm-medium
     steps:
       - checkout
       - run:
           name: Build Swift Package
           command: swift build
   build:
-    macos:
-      xcode: 14.3.1
-    resource_class: macos.m1.medium.gen1
+    executor: apple-ci-arm-medium
     steps:
       - checkout
       - run:
@@ -47,9 +47,7 @@ jobs:
           paths:
             - Build/Products
   unit-tests:
-    macos:
-      xcode: 14.3.1
-    resource_class: macos.m1.medium.gen1
+    executor: apple-ci-arm-medium
     steps:
       - checkout
       - attach_workspace:
@@ -58,9 +56,7 @@ jobs:
           name: Unit tests
           command: set -o pipefail && xcodebuild -workspace DeviceAuthenticator.xcworkspace -scheme "DeviceAuthenticatorFramework" -destination "platform=iOS Simulator,OS=latest,name=iPhone 14" -derivedDataPath DerivedData test-without-building -only-testing:DeviceAuthenticatorUnitTests -enableCodeCoverage YES | xcpretty
   functional-tests:
-    macos:
-      xcode: 14.3.1
-    resource_class: macos.m1.medium.gen1
+    executor: apple-ci-arm-medium
     steps:
       - checkout
       - attach_workspace:
@@ -69,9 +65,7 @@ jobs:
           name: Functional tests
           command: set -o pipefail && xcodebuild -workspace DeviceAuthenticator.xcworkspace -scheme "DeviceAuthenticatorFramework" -destination "platform=iOS Simulator,OS=latest,name=iPhone 14" -derivedDataPath DerivedData test-without-building -only-testing:DeviceAuthenticatorFunctionalTests -enableCodeCoverage YES | xcpretty
   snyk-scan:
-    macos:
-      xcode: 14.3.1
-    resource_class: macos.m1.medium.gen1
+    executor: apple-ci-arm-medium
     steps:
       - checkout
       - run:
@@ -99,26 +93,24 @@ workflows:
       - spm
   build-and-test:
     jobs:
-      # - build
-      # - unit-tests:
-      #     requires:
-      #       - build
-      # - functional-tests:
-      #     requires:
-      #       - build
+      - build
+      - unit-tests:
+          requires:
+            - build
+      - functional-tests:
+          requires:
+            - build
       - general-platform-helpers/job-snyk-prepare:
           name: prepare-snyk
-          # requires:
-          #   - build
       - snyk-scan:
           name: execute-snyk
           requires:
             - prepare-snyk
-  # semgrep:
-  #   jobs:
-  #     - general-platform-helpers/job-semgrep-prepare:
-  #         name: semgrep-prepare
-  #     - general-platform-helpers/job-semgrep-scan:
-  #         name: semgrep-scan
-  #         requires:
-  #           - semgrep-prepare
+  semgrep:
+    jobs:
+      - general-platform-helpers/job-semgrep-prepare:
+          name: semgrep-prepare
+      - general-platform-helpers/job-semgrep-scan:
+          name: semgrep-scan
+          requires:
+            - semgrep-prepare
