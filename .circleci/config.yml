@@ -102,8 +102,16 @@ workflows:
             - build
       - general-platform-helpers/job-snyk-prepare:
           name: prepare-snyk
+          filters:
+            branches:
+              only:
+                - master
       - snyk-scan:
           name: execute-snyk
+          filters:
+            branches:
+              only:
+                - master
           requires:
             - prepare-snyk
   semgrep:
