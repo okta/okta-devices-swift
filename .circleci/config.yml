@@ -70,8 +70,8 @@ jobs:
           command: set -o pipefail && xcodebuild -workspace DeviceAuthenticator.xcworkspace -scheme "DeviceAuthenticatorFramework" -destination "platform=iOS Simulator,OS=latest,name=iPhone 14" -derivedDataPath DerivedData test-without-building -only-testing:DeviceAuthenticatorFunctionalTests -enableCodeCoverage YES | xcpretty
   snyk-scan:
     macos:
-      xcode: "13.4.1"
-    resource_class: macos.x86.medium.gen2
+      xcode: 14.3.1
+    resource_class: macos.m1.medium.gen1
     steps:
       - checkout
       - run:
