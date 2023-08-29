@@ -69,7 +69,7 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Install rosetta # Needed for swiftlint to work on M1 machines.
+          name: Install rosetta # Needed for snyk to work on M1 machines.
           command: softwareupdate --install-rosetta --agree-to-license
       - run:
           name: Install pods
