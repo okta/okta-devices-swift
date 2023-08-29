@@ -3,13 +3,17 @@
 version: 2.1
 
 orbs:
-  general-platform-helpers: okta/general-platform-helpers@1.7.6
+  general-platform-helpers: okta/general-platform-helpers@1.8
 
-jobs:
-  sample-app:
+executors:
+  apple-ci-arm-medium:
     macos:
       xcode: 14.3.1
     resource_class: macos.m1.medium.gen1
+
+jobs:
+  sample-app:
+    executor: apple-ci-arm-medium
     steps:
       - checkout
       - run:
@@ -19,18 +23,14 @@ jobs:
           name: "Build iOS PushSDK Sample App"
           command: xcodebuild -workspace ./Examples/PushSampleApp/SampleApp.xcworkspace -scheme "SampleApp" -destination "platform=iOS Simulator,OS=latest,name=iPhone 14" clean build
   spm:
-    macos:
-      xcode: 14.3.1
-    resource_class: macos.m1.medium.gen1
+    executor: apple-ci-arm-medium
     steps:
       - checkout
       - run:
           name: Build Swift Package
           command: swift build
   build:
-    macos:
-      xcode: 14.3.1
-    resource_class: macos.m1.medium.gen1
+    executor: apple-ci-arm-medium
     steps:
       - checkout
       - run:
@@ -47,9 +47,7 @@ jobs:
           paths:
             - Build/Products
   unit-tests:
-    macos:
-      xcode: 14.3.1
-    resource_class: macos.m1.medium.gen1
+    executor: apple-ci-arm-medium
     steps:
       - checkout
       - attach_workspace:
@@ -58,9 +56,7 @@ jobs:
           name: Unit tests
           command: set -o pipefail && xcodebuild -workspace DeviceAuthenticator.xcworkspace -scheme "DeviceAuthenticatorFramework" -destination "platform=iOS Simulator,OS=latest,name=iPhone 14" -derivedDataPath DerivedData test-without-building -only-testing:DeviceAuthenticatorUnitTests -enableCodeCoverage YES | xcpretty
   functional-tests:
-    macos:
-      xcode: 14.3.1
-    resource_class: macos.m1.medium.gen1
+    executor: apple-ci-arm-medium
     steps:
       - checkout
       - attach_workspace:
@@ -68,6 +64,25 @@ jobs:
       - run:
           name: Functional tests
           command: set -o pipefail && xcodebuild -workspace DeviceAuthenticator.xcworkspace -scheme "DeviceAuthenticatorFramework" -destination "platform=iOS Simulator,OS=latest,name=iPhone 14" -derivedDataPath DerivedData test-without-building -only-testing:DeviceAuthenticatorFunctionalTests -enableCodeCoverage YES | xcpretty
+  snyk-scan:
+    executor: apple-ci-arm-medium
+    steps:
+      - checkout
+      - run:
+          name: Install rosetta # Needed for snyk to work on M1 machines.
+          command: softwareupdate --install-rosetta --agree-to-license
+      - run:
+          name: Install pods
+          command: pod install
+      - run:
+          name: run swift package show dependencies
+          command: swift package show-dependencies
+      - general-platform-helpers/step-load-dependencies
+      - general-platform-helpers/step-run-snyk-monitor:
+          scan-all-projects: true
+          skip-unresolved: false
+          run-on-non-main: true
+          os: macos
 
 workflows:
   build-sample-app:
@@ -85,6 +100,20 @@ workflows:
       - functional-tests:
           requires:
             - build
+      - general-platform-helpers/job-snyk-prepare:
+          name: prepare-snyk
+          filters:
+            branches:
+              only:
+                - master
+      - snyk-scan:
+          name: execute-snyk
+          filters:
+            branches:
+              only:
+                - master
+          requires:
+            - prepare-snyk
   semgrep:
     jobs:
       - general-platform-helpers/job-semgrep-prepare:
