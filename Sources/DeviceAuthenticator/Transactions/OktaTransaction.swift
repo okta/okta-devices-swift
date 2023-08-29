@@ -29,14 +29,14 @@ class OktaTransaction {
     enum TransactionResult {
         struct SuccessInfo {
             let challengeResponseJWTString: String
-            let enrollment: AuthenticatorEnrollmentProtocol
+            let enrollment: AuthenticatorEnrollment
             let challengeRequestJWT: OktaBindJWT
             let userConsentResponse: String
         }
 
         struct FailureInfo {
             let challengeRequestJWT: OktaBindJWT?
-            let enrollment: AuthenticatorEnrollmentProtocol?
+            let enrollment: AuthenticatorEnrollment?
             let userConsentResponse: String?
             let error: DeviceAuthenticatorError
         }
