@@ -100,7 +100,6 @@
 		7F8833D62874FB820034CA5E /* OktaTransactionEnroll+Push.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F8833582874FB820034CA5E /* OktaTransactionEnroll+Push.swift */; };
 		7F8833D72874FB820034CA5E /* OktaTransactionEnroll+Factors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F8833592874FB820034CA5E /* OktaTransactionEnroll+Factors.swift */; };
 		7F8833D82874FB820034CA5E /* OktaTransactionPushTokenUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F88335A2874FB820034CA5E /* OktaTransactionPushTokenUpdate.swift */; };
-		7F8833D92874FB820034CA5E /* OktaTransactionEnroll+Device.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F88335B2874FB820034CA5E /* OktaTransactionEnroll+Device.swift */; };
 		7F8833DA2874FB820034CA5E /* OktaTransactionPushChallenge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F88335C2874FB820034CA5E /* OktaTransactionPushChallenge.swift */; };
 		7F8833DB2874FB820034CA5E /* AuthenticationMethodType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F88335D2874FB820034CA5E /* AuthenticationMethodType.swift */; };
 		7F8833DC2874FB820034CA5E /* BiometricSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F88335E2874FB820034CA5E /* BiometricSettings.swift */; };
@@ -349,7 +348,6 @@
 		7F8833582874FB820034CA5E /* OktaTransactionEnroll+Push.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OktaTransactionEnroll+Push.swift"; sourceTree = "<group>"; };
 		7F8833592874FB820034CA5E /* OktaTransactionEnroll+Factors.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OktaTransactionEnroll+Factors.swift"; sourceTree = "<group>"; };
 		7F88335A2874FB820034CA5E /* OktaTransactionPushTokenUpdate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OktaTransactionPushTokenUpdate.swift; sourceTree = "<group>"; };
-		7F88335B2874FB820034CA5E /* OktaTransactionEnroll+Device.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OktaTransactionEnroll+Device.swift"; sourceTree = "<group>"; };
 		7F88335C2874FB820034CA5E /* OktaTransactionPushChallenge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OktaTransactionPushChallenge.swift; sourceTree = "<group>"; };
 		7F88335D2874FB820034CA5E /* AuthenticationMethodType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthenticationMethodType.swift; sourceTree = "<group>"; };
 		7F88335E2874FB820034CA5E /* BiometricSettings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BiometricSettings.swift; sourceTree = "<group>"; };
@@ -678,7 +676,6 @@
 				7F8833582874FB820034CA5E /* OktaTransactionEnroll+Push.swift */,
 				7F8833592874FB820034CA5E /* OktaTransactionEnroll+Factors.swift */,
 				7F88335A2874FB820034CA5E /* OktaTransactionPushTokenUpdate.swift */,
-				7F88335B2874FB820034CA5E /* OktaTransactionEnroll+Device.swift */,
 				7F88335C2874FB820034CA5E /* OktaTransactionPushChallenge.swift */,
 				7F88335D2874FB820034CA5E /* AuthenticationMethodType.swift */,
 				7F88335E2874FB820034CA5E /* BiometricSettings.swift */,
@@ -1437,7 +1434,6 @@
 				9F91D86C2991C503007CBDA1 /* Oauth2Credential.swift in Sources */,
 				7F8833982874FB820034CA5E /* OktaLock.swift in Sources */,
 				7F8833C12874FB820034CA5E /* SQLiteTables.swift in Sources */,
-				7F8833D92874FB820034CA5E /* OktaTransactionEnroll+Device.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -407,6 +407,29 @@ class OktaTransactionEnroll: OktaTransaction {
         return jwk
     }
 
+    func buildDeviceModelData(customDeviceSignals: DeviceSignals?) -> DeviceSignalsModel {
+        let deviceModelBuilder = OktaDeviceModelBuilder(orgHost: enrollmentContext.orgHost.absoluteString,
+                                                        applicationConfig: applicationConfig,
+                                                        requestedSignals: [],
+                                                        customSignals: customDeviceSignals,
+                                                        cryptoManager: self.cryptoManager,
+                                                        jwtGenerator: jwtGenerator,
+                                                        jwkGenerator: jwkGenerator,
+                                                        logger: logger)
+        let deviceModel: DeviceSignalsModel
+        if let deviceEnrollment = deviceEnrollment {
+            logger.info(eventName: self.logEventName, message: "Building device model based on existing device object")
+            deviceModel = deviceModelBuilder.buildForUpdateEnrollment(with: deviceEnrollment)
+        } else {
+            logger.info(eventName: self.logEventName, message: "Registering new device object")
+            let clientInstanceKeyTag = UUID().uuidString
+            deviceModel = deviceModelBuilder.buildForCreateEnrollment(with: clientInstanceKeyTag)
+            self.clientInstanceKeyTag = clientInstanceKeyTag
+        }
+
+        return deviceModel
+    }
+
     func handleServerResult(_ result: Result<EnrollmentSummary, DeviceAuthenticatorError>,
                             andCall onCompletion: @escaping (Result<AuthenticatorEnrollmentProtocol, DeviceAuthenticatorError>) -> Void) {
         switch result {
