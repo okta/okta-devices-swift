@@ -387,25 +387,33 @@ class AuthenticatorEnrollment: AuthenticatorEnrollmentProtocol {
                            preferUVKey: Bool = false,
                            onCompletion: @escaping (Result<String, DeviceAuthenticatorError>) -> Void) {
         DispatchQueue.global().async {
-            guard var keyTagToUse = self.findPoPKeyTagFromEnrolledFactors() else {
-                let error = DeviceAuthenticatorError.internalError("Proof of possession key tag is not found")
-                self.logger.error(eventName: "JWT generating error", message: "\(error)")
-                onCompletion(.failure(error))
-                return
-            }
-
-            if preferUVKey {
-                if let userVerificationBioOrPinKeyTag = self.findUVBioOrPinKeyTagFromEnrolledFactors() {
-                    keyTagToUse = userVerificationBioOrPinKeyTag
-                } else if let userVerificationKeyTag = self.findUVKeyTagFromEnrolledFactors() {
-                    keyTagToUse = userVerificationKeyTag
+            var keyTagToUse: String?
+            var secKey: SecKey?
+            let enrolledFactors = self.enrolledFactors
+            for factor in enrolledFactors {
+                if preferUVKey {
+                    keyTagToUse = factor.userVerificationBioOrPinKeyTag ?? factor.userVerificationKeyTag
+                } else {
+                    keyTagToUse = factor.proofOfPossessionKeyTag
                 }
+
+                guard let keyTagToUse = keyTagToUse else {
+                    self.logger.info(eventName: "SSWS token generation", message: "No PoP or UV keys found for factor: \(factor.id), preferUVKey: \(preferUVKey), enrollmentId: \(self.enrollmentId)")
+                    continue
+                }
+
+                secKey = self.cryptoManager.get(keyOf: .privateKey, with: keyTagToUse, context: LAContext())
+                if secKey != nil {
+                    break
+                }
+                self.logger.warning(eventName: "SSWS token generation", message: "Failed to read PoP or UV key for factor: \(factor.id), preferUVKey: \(preferUVKey), enrollmentId: \(self.enrollmentId)")
             }
 
-            guard let key = self.cryptoManager.get(keyOf: .privateKey, with: keyTagToUse, context: LAContext()) else {
-                let error = SecurityError.jwtError("Failed to read private key")
-                self.logger.error(eventName: "JWT generating error", message: "\(error)")
-                onCompletion(.failure(DeviceAuthenticatorError.securityError(error)))
+            guard let secKey = secKey,
+                  let keyTagToUse = keyTagToUse else {
+                let errorDescription = preferUVKey ? "User verification key is not found" : "Proof of possession key is not found"
+                let error = DeviceAuthenticatorError.securityError(.jwtError(errorDescription))
+                onCompletion(.failure(error))
                 return
             }
 
@@ -413,7 +421,7 @@ class AuthenticatorEnrollment: AuthenticatorEnrollmentProtocol {
                 let jwtString = try OktaAuthenticationJWTGenerator(enrollmentId: self.enrollmentId,
                                                                    orgHost: self.orgHost.absoluteString,
                                                                    userId: self.userId,
-                                                                   key: key,
+                                                                   key: secKey,
                                                                    kid: keyTagToUse,
                                                                    jwtType: jwtType,
                                                                    cryptoManager: self.cryptoManager,
