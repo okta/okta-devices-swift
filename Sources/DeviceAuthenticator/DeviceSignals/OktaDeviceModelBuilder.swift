@@ -98,6 +98,29 @@ class OktaDeviceModelBuilder {
         return deviceModel
     }
 
+    func buildForKeyReenroll(with deviceEnrollment: OktaDeviceEnrollment) -> DeviceSignalsModel {
+        logger.info(eventName: logEventName, message: "Building device model for client instance key reenroll")
+        var deviceModel = buildBaseDeviceModel(with: Self.enrollmentSignals)
+        var existingClientInstanceKey: SecKey?
+        if self.cryptoManager.isPrivateKeyAvailable(deviceEnrollment.clientInstanceKeyTag),
+           let clientInstanceKey = self.cryptoManager.get(keyOf: .publicKey,
+                                                          with: deviceEnrollment.clientInstanceKeyTag,
+                                                          context: LAContext()) {
+            logger.info(eventName: logEventName, message: "Existing key is healthy, reusing same key...")
+            existingClientInstanceKey = clientInstanceKey
+        } else {
+            logger.info(eventName: logEventName, message: "Can't read the key, calling delete to avoid conflicts for new key")
+            _ = cryptoManager.delete(keyPairWith: deviceEnrollment.clientInstanceKeyTag)
+        }
+
+        addJWKPart(to: &deviceModel, clientIntanceKeyTag: deviceEnrollment.clientInstanceKeyTag, existingKey: existingClientInstanceKey)
+        deviceModel.id = deviceEnrollment.id
+        deviceModel.clientInstanceId = deviceEnrollment.clientInstanceId
+        deviceModel.deviceAttestation = deviceModel.deviceAttestation ?? [:]
+
+        return deviceModel
+    }
+
     func buildBaseDeviceModel(with requestedSignals: Set<RequestableSignal>) -> DeviceSignalsModel {
         let deviceModel: DeviceSignalsModel
         deviceModel = retrieveDeviceSignals(customDeviceSignals: customSignals, requestedSignals: requestedSignals)
@@ -144,18 +167,23 @@ class OktaDeviceModelBuilder {
     }
 
     private func addJWKPart(to deviceModel: inout DeviceSignalsModel,
-                            clientIntanceKeyTag: String) {
+                            clientIntanceKeyTag: String,
+                            existingKey: SecKey? = nil) {
         var additionalParameters: [String: _OktaCodableArbitaryType] = [:]
         additionalParameters["okta:kpr"] = .string(OktaEnvironment.canUseSecureEnclave() ? "HARDWARE" : "SOFTWARE")
         #if os(iOS)
         additionalParameters["okta:isFipsCompliant"] = .bool(OktaEnvironment.isSecureEnclaveAvailable())
         #endif
 
-        if let secKey = try? cryptoManager.generate(keyPairWith: .ES256,
-                                                    with: clientIntanceKeyTag,
-                                                    useSecureEnclave: OktaEnvironment.canUseSecureEnclave(),
-                                                    useBiometrics: false,
-                                                    biometricSettings: nil),
+        var clientInstanceKey = existingKey
+        if clientInstanceKey == nil {
+            clientInstanceKey = try? cryptoManager.generate(keyPairWith: .ES256,
+                                                            with: clientIntanceKeyTag,
+                                                            useSecureEnclave: OktaEnvironment.canUseSecureEnclave(),
+                                                            useBiometrics: false,
+                                                            biometricSettings: nil)
+        }
+        if let secKey = clientInstanceKey,
            let jwk = try? jwkGenerator.generate(for: secKey,
                                                 type: .publicKey,
                                                 algorithm: .ES256,

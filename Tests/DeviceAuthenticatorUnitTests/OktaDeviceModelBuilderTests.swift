@@ -129,6 +129,69 @@ class OktaDeviceModelBuilderTests: XCTestCase {
         validateDeviceSignals(deviceSignalsModel)
     }
 
+    func testBuildForClientInstanceKeyReenroll() {
+        let jwkGenerator = OktaJWKGenerator(logger: OktaLoggerMock())
+        let jwtGenerator = OktaJWTGenerator(logger: OktaLoggerMock())
+        let crypto = OktaCryptoManager(keychainGroupId: ExampleAppConstants.appGroupId, secKeyHelper: SecKeyHelper(), logger: OktaLoggerMock())
+        let mut = OktaDeviceModelBuilder(orgHost: "https://tenant.okta.com",
+                                         applicationConfig: applicationConfig,
+                                         requestedSignals: ["diskEncryptionType", "screenLockType"],
+                                         customSignals: nil,
+                                         cryptoManager: crypto,
+                                         jwtGenerator: jwtGenerator,
+                                         jwkGenerator: jwkGenerator,
+                                         logger: OktaLoggerMock())
+        let deviceEnrollment = OktaDeviceEnrollment(id: "id",
+                                                    orgId: "orgId",
+                                                    clientInstanceId: "clientInstanceId",
+                                                    clientInstanceKeyTag: "clientInstanceKeyTag")
+        _ = crypto.delete(keyPairWith: deviceEnrollment.clientInstanceKeyTag)
+        var deviceSignalsModel = mut.buildForKeyReenroll(with: deviceEnrollment)
+        XCTAssertFalse(deviceSignalsModel.clientInstanceKey!.isEmpty)
+        XCTAssertNotNil(deviceSignalsModel.clientInstanceKey!["okta:kpr"])
+        #if os(macOS)
+        XCTAssertNil(deviceSignalsModel.clientInstanceKey!["okta:isFipsCompliant"])
+        #else
+        XCTAssertEqual(deviceSignalsModel.clientInstanceKey!["okta:isFipsCompliant"],
+                       _OktaCodableArbitaryType.bool(OktaEnvironment.isSecureEnclaveAvailable()))
+        #endif
+        XCTAssertNotNil(deviceSignalsModel.clientInstanceKey?["x"])
+        XCTAssertNotNil(deviceSignalsModel.clientInstanceKey?["y"])
+        XCTAssertNotNil(deviceSignalsModel.id)
+        XCTAssertNotNil(deviceSignalsModel.deviceAttestation)
+        XCTAssertNotNil(deviceSignalsModel.clientInstanceId)
+        XCTAssertTrue(crypto.delete(keyPairWith: deviceEnrollment.clientInstanceKeyTag))
+
+        let secKey = try? crypto.generate(keyPairWith: .ES256,
+                                          with: deviceEnrollment.clientInstanceKeyTag,
+                                          useSecureEnclave: OktaEnvironment.canUseSecureEnclave(),
+                                          useBiometrics: false,
+                                          biometricSettings: nil)
+        XCTAssertNotNil(secKey)
+        let jwk = try? jwkGenerator.generate(for: secKey!, type: .publicKey, algorithm: .ES256)
+        XCTAssertNotNil(jwk)
+
+        deviceSignalsModel = mut.buildForKeyReenroll(with: deviceEnrollment)
+        XCTAssertFalse(deviceSignalsModel.clientInstanceKey!.isEmpty)
+        XCTAssertNotNil(deviceSignalsModel.clientInstanceKey!["okta:kpr"])
+        #if os(macOS)
+        XCTAssertNil(deviceSignalsModel.clientInstanceKey!["okta:isFipsCompliant"])
+        #else
+        XCTAssertEqual(deviceSignalsModel.clientInstanceKey!["okta:isFipsCompliant"],
+                       _OktaCodableArbitaryType.bool(OktaEnvironment.isSecureEnclaveAvailable()))
+        #endif
+        XCTAssertNotNil(deviceSignalsModel.id)
+        XCTAssertNotNil(deviceSignalsModel.deviceAttestation)
+        XCTAssertNotNil(deviceSignalsModel.clientInstanceId)
+        XCTAssertEqual(deviceSignalsModel.clientInstanceKey?["kid"], .string(deviceEnrollment.clientInstanceKeyTag))
+        XCTAssertEqual(deviceSignalsModel.clientInstanceKey?["kty"], jwk?["kty"])
+        XCTAssertEqual(deviceSignalsModel.clientInstanceKey?["crv"], jwk?["crv"])
+        XCTAssertEqual(deviceSignalsModel.clientInstanceKey?["x"], jwk?["x"])
+        XCTAssertEqual(deviceSignalsModel.clientInstanceKey?["y"], jwk?["y"])
+
+        XCTAssertTrue(crypto.delete(keyPairWith: deviceEnrollment.clientInstanceKeyTag))
+    }
+
     // Verify that requested unmanaged signals are ignored if not requested
     func testBuildForVerifyTransaction_Unmanaged_NotRequested() {
         let mut = OktaDeviceModelBuilder(orgHost: "https://tenant.okta.com",
