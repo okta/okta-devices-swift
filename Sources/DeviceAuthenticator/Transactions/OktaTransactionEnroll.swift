@@ -246,7 +246,9 @@ class OktaTransactionEnroll: OktaTransaction {
                             onCompletion: @escaping (Result<AuthenticatorEnrollmentProtocol, DeviceAuthenticatorError>) -> Void) {
         self.orgId = orgId
         self.metaData = metaData
-        self.deviceEnrollment = try? self.storageManager.deviceEnrollmentByOrgId(orgId)
+        if self.deviceEnrollment == nil {
+            self.deviceEnrollment = try? self.storageManager.deviceEnrollmentByOrgId(orgId)
+        }
         let enrolledFactors: [EnrollingFactor]
         do {
             // Build factors based on metadata requirements

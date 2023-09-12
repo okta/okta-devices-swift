@@ -446,7 +446,7 @@ class AuthenticatorEnrollmentTests: XCTestCase {
                 XCTFail("Unexpected success")
             case .failure(let error):
                 if case let .securityError(encryptionError) = error {
-                    XCTAssertEqual(encryptionError, SecurityError.jwtError("Failed to read private key"))
+                    XCTAssertEqual(encryptionError, SecurityError.jwtError("User verification key is not found"))
                 } else {
                     XCTFail("Unexpected error: \(error)")
                 }
@@ -565,7 +565,7 @@ class AuthenticatorEnrollmentTests: XCTestCase {
                 XCTFail("Unexpected success")
             case .failure(let error):
                 if case let .securityError(encryptionError) = error {
-                    XCTAssertEqual(encryptionError, SecurityError.jwtError("Failed to sign jwt"))
+                    XCTAssertEqual(encryptionError, SecurityError.jwtError("User verification key is not found"))
                 } else {
                     XCTFail("Unexpected error: \(error)")
                 }
