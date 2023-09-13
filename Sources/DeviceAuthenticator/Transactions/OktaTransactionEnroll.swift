@@ -287,14 +287,21 @@ class OktaTransactionEnroll: OktaTransaction {
                                                 appSignals: enrollmentContext.applicationSignals,
                                                 enrollingFactors: factorsMetaData,
                                                 token: token) { result in
-            /// Retry with no deviceId if backend returns .deviceDeleted
             if self.shouldRetryIfDeviceNotFound(result: result) {
-                self.deviceEnrollment = nil
-                self.doEnrollment(factorsMetaData: factorsMetaData, onCompletion: onCompletion)
+                self.retryEnrollment(factorsMetaData: factorsMetaData, onCompletion: onCompletion)
             } else {
                 self.handleServerResult(result, andCall: onCompletion)
             }
         }
+    }
+
+    /// For retrying enrollment when E0000153, is returned. This can happen when server deletes the device but client still has the deviceId
+    func retryEnrollment(factorsMetaData: [EnrollingFactor],
+                         onCompletion: @escaping (Result<AuthenticatorEnrollmentProtocol, DeviceAuthenticatorError>) -> Void) {
+        self.logger.info(eventName: logEventName, message: "Device deleted in backend. Re-enrolling with no deviceId")
+        self.deviceEnrollment = nil
+        try? self.storageManager.deleteDeviceEnrollmentForOrgId(self.orgId)
+        self.doEnrollment(factorsMetaData: factorsMetaData, onCompletion: onCompletion)
     }
 
     func doUpdate(enrollment: AuthenticatorEnrollment,
@@ -451,10 +458,14 @@ class OktaTransactionEnroll: OktaTransaction {
     }
 
     func shouldRetryIfDeviceNotFound(result: Result<EnrollmentSummary, DeviceAuthenticatorError>) -> Bool {
-        guard case .failure(let error) = result else { return false }
-        guard case .serverAPIError(_, let serverAPIErrorModel) = error else { return false }
-        guard let errorCode = serverAPIErrorModel?.errorCode?.rawValue,
-              ServerErrorCode(raw: errorCode) == .deviceDeleted else { return false }
+        guard case .failure(let error) = result else {
+            return false
+        }
+        guard case .serverAPIError(_, let serverAPIErrorModel) = error,
+              let errorCode = serverAPIErrorModel?.errorCode?.rawValue,
+              ServerErrorCode(raw: errorCode) == .deviceDeleted else {
+            return false
+        }
         return true
     }
 

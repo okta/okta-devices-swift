@@ -1361,6 +1361,34 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
         let result: Result<EnrollmentSummary, DeviceAuthenticatorError> = Result.failure(DeviceAuthenticatorError.genericError(""))
         XCTAssertFalse(transaction.shouldRetryIfDeviceNotFound(result: result))
     }
+
+    func testRetryEnrollmentAfterDeviceDeleted_ResetsDeviceEnrollment() {
+        let decoder = JSONDecoder()
+        let metaDataArray = try! decoder.decode([AuthenticatorMetaDataModel].self, from: GoldenData.authenticatorMetaData())
+        let deviceEnrollment = OktaDeviceEnrollment(id: "id",
+                                                    orgId: "tenant.okta.com",
+                                                    clientInstanceId: "clientInstanceId",
+                                                    clientInstanceKeyTag: "clientInstanceKeyTag")
+        try? mockStorageManager.storeDeviceEnrollment(deviceEnrollment, for: deviceEnrollment.orgId!)
+        transaction = createTransaction(enrollmentContext: enrollmentContext, enrollment: nil, jwtGenerator: OktaJWTGenerator(logger: OktaLoggerMock()))
+        transaction.deviceEnrollment = deviceEnrollment
+        transaction.metaData = metaDataArray[0]
+        transaction.orgId = ""
+        let enrolledFactors = try? transaction.enrollFactors()
+        XCTAssertNotNil(enrolledFactors)
+        transaction.clientInstanceKeyTag = "clientInstanceKeyTag"
+        var hookCalled = false
+        restAPIMock.enrollAuthenticatorRequestHook = { _, _, _, _, _, _, completion in
+            hookCalled = true
+            XCTAssertNil(self.transaction.deviceEnrollment)
+        }
+        transaction.retryEnrollment(factorsMetaData: enrolledFactors!) { result in
+            if case Result.failure(_) = result {
+                XCTFail("Unexpected result")
+            }
+        }
+        XCTAssertTrue(hookCalled)
+    }
     /*
     func testHandleServerResult_Success() {
         let urlResponse = HTTPURLResponse(url: URL(string: "tenant.okta.com")!, statusCode: 200, httpVersion: nil, headerFields: nil)!
