@@ -94,8 +94,8 @@ class OktaDeviceModelBuilderTests: XCTestCase {
         // Simulate loss of client instance key
         cryptoManager.privateKey = nil
         deviceSignalsModel = mut.buildForUpdateEnrollment(with: deviceEnrollment)
-        XCTAssertNil(deviceSignalsModel.clientInstanceId)
-        XCTAssertNil(deviceSignalsModel.id)
+        XCTAssertNotNil(deviceSignalsModel.clientInstanceId)
+        XCTAssertNotNil(deviceSignalsModel.id)
         XCTAssertNil(deviceSignalsModel.deviceAttestation)
         validateDeviceSignals(deviceSignalsModel)
     }

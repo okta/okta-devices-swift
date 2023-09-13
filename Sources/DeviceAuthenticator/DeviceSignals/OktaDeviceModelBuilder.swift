@@ -82,6 +82,8 @@ class OktaDeviceModelBuilder {
             // Failed to build device key attestation. Recreate the device object on server side and register new client instance key
             _ = cryptoManager.delete(keyPairWith: deviceEnrollment.clientInstanceKeyTag)
             deviceModel = buildForCreateEnrollment(with: deviceEnrollment.clientInstanceKeyTag)
+            deviceModel.id = deviceEnrollment.id
+            deviceModel.clientInstanceId = deviceEnrollment.clientInstanceId
         }
 
         return deviceModel
