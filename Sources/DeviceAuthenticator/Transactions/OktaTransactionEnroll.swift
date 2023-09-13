@@ -287,17 +287,20 @@ class OktaTransactionEnroll: OktaTransaction {
                                                 appSignals: enrollmentContext.applicationSignals,
                                                 enrollingFactors: factorsMetaData,
                                                 token: token) { result in
-            if self.shouldRetryIfDeviceNotFound(result: result) {
-                self.retryEnrollment(factorsMetaData: factorsMetaData, onCompletion: onCompletion)
-            } else {
-                self.handleServerResult(result, andCall: onCompletion)
-            }
+            self.handleServerResult(result, factorsMetaData: factorsMetaData, andCall: onCompletion)
         }
     }
 
     /// For retrying enrollment when E0000153, is returned. This can happen when server deletes the device but client still has the deviceId
-    func retryEnrollment(factorsMetaData: [EnrollingFactor],
-                         onCompletion: @escaping (Result<AuthenticatorEnrollmentProtocol, DeviceAuthenticatorError>) -> Void) {
+    func retryEnrollmentIfNeeded(error: DeviceAuthenticatorError,
+                                 factorsMetaData: [EnrollingFactor],
+                                 onCompletion: @escaping (Result<AuthenticatorEnrollmentProtocol, DeviceAuthenticatorError>) -> Void) {
+        guard case .serverAPIError(_, let serverAPIErrorModel) = error,
+              let errorCode = serverAPIErrorModel?.errorCode?.rawValue,
+              ServerErrorCode(raw: errorCode) == .deviceDeleted else {
+            onCompletion(.failure(error))
+            return
+        }
         self.logger.info(eventName: logEventName, message: "Device deleted in backend. Re-enrolling with no deviceId")
         self.deviceEnrollment = nil
         try? self.storageManager.deleteDeviceEnrollmentForOrgId(self.orgId)
@@ -319,7 +322,7 @@ class OktaTransactionEnroll: OktaTransaction {
                                                     enrollingFactors: factorsMetaData,
                                                     token: token,
                                                     enrollmentContext: self.enrollmentContext) { result in
-                self.handleServerResult(result, andCall: onCompletion)
+                self.handleServerResult(result, factorsMetaData: factorsMetaData, andCall: onCompletion)
             }
         }
 
@@ -446,27 +449,18 @@ class OktaTransactionEnroll: OktaTransaction {
     }
 
     func handleServerResult(_ result: Result<EnrollmentSummary, DeviceAuthenticatorError>,
+                            factorsMetaData: [EnrollingFactor],
                             andCall onCompletion: @escaping (Result<AuthenticatorEnrollmentProtocol, DeviceAuthenticatorError>) -> Void) {
         switch result {
         case .failure(let error):
-            onCompletion(.failure(error))
+            retryEnrollmentIfNeeded(error: error,
+                                    factorsMetaData: factorsMetaData,
+                                    onCompletion: onCompletion)
             return
         case .success(let enrollmentSummary):
             createEnrollmentAndSaveToStorage(enrollmentSummary: enrollmentSummary,
                                              onCompletion: onCompletion)
         }
-    }
-
-    func shouldRetryIfDeviceNotFound(result: Result<EnrollmentSummary, DeviceAuthenticatorError>) -> Bool {
-        guard case .failure(let error) = result else {
-            return false
-        }
-        guard case .serverAPIError(_, let serverAPIErrorModel) = error,
-              let errorCode = serverAPIErrorModel?.errorCode?.rawValue,
-              ServerErrorCode(raw: errorCode) == .deviceDeleted else {
-            return false
-        }
-        return true
     }
 
     func createEnrollmentAndSaveToStorage(enrollmentSummary: EnrollmentSummary,
