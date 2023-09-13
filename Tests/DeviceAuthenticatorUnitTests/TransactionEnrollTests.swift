@@ -1346,6 +1346,21 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
         wait(for: [enrollExpectation, metadataDownloadExpectation], timeout: 0.5)
     }
 
+    func testShouldRetryIfDeviceNotFound_WithDeviceNotFoundError_ReturnsTrue() {
+        let urlResponse = HTTPURLResponse(url: URL(string: "tenant.okta.com")!, statusCode: 410, httpVersion: nil, headerFields: nil)!
+        let httpResult = HTTPURLResult(request: URLRequest(url: URL(string: "tenant.okta.com")!),
+                                       response: urlResponse,
+                                       data: nil, error: nil)
+        let serverErrorCode = ServerErrorCode(raw: "E0000153")
+        let serverAPIErrorModel = ServerAPIErrorModel(errorCode: serverErrorCode, errorSummary: nil, errorLink: nil, errorId: nil, status: nil, errorCauses: nil)
+        let result: Result<EnrollmentSummary, DeviceAuthenticatorError> = Result.failure(DeviceAuthenticatorError.serverAPIError(httpResult, serverAPIErrorModel))
+        XCTAssert(transaction.shouldRetryIfDeviceNotFound(result: result))
+    }
+    
+    func testShouldRetryIfDeviceNotFound_WithOtherError_ReturnsFalse() {
+        let result: Result<EnrollmentSummary, DeviceAuthenticatorError> = Result.failure(DeviceAuthenticatorError.genericError(""))
+        XCTAssertFalse(transaction.shouldRetryIfDeviceNotFound(result: result))
+    }
     /*
     func testHandleServerResult_Success() {
         let urlResponse = HTTPURLResponse(url: URL(string: "tenant.okta.com")!, statusCode: 200, httpVersion: nil, headerFields: nil)!

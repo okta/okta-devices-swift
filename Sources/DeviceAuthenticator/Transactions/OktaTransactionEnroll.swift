@@ -287,7 +287,13 @@ class OktaTransactionEnroll: OktaTransaction {
                                                 appSignals: enrollmentContext.applicationSignals,
                                                 enrollingFactors: factorsMetaData,
                                                 token: token) { result in
-            self.handleServerResult(result, andCall: onCompletion)
+            /// Retry with no deviceId if backend returns .deviceDeleted
+            if self.shouldRetryIfDeviceNotFound(result: result) {
+                self.deviceEnrollment = nil
+                self.doEnrollment(factorsMetaData: factorsMetaData, onCompletion: onCompletion)
+            } else {
+                self.handleServerResult(result, andCall: onCompletion)
+            }
         }
     }
 
@@ -442,6 +448,14 @@ class OktaTransactionEnroll: OktaTransaction {
             createEnrollmentAndSaveToStorage(enrollmentSummary: enrollmentSummary,
                                              onCompletion: onCompletion)
         }
+    }
+
+    func shouldRetryIfDeviceNotFound(result: Result<EnrollmentSummary, DeviceAuthenticatorError>) -> Bool {
+        guard case .failure(let error) = result else { return false }
+        guard case .serverAPIError(_, let serverAPIErrorModel) = error else { return false }
+        guard let errorCode = serverAPIErrorModel?.errorCode?.rawValue,
+              ServerErrorCode(raw: errorCode) == .deviceDeleted else { return false }
+        return true
     }
 
     func createEnrollmentAndSaveToStorage(enrollmentSummary: EnrollmentSummary,
