@@ -26,28 +26,9 @@ class OktaTransaction {
         case DeviceSignals
     }
 
-    enum TransactionResult {
-        struct SuccessInfo {
-            let challengeResponseJWTString: String
-            let enrollment: AuthenticatorEnrollment
-            let challengeRequestJWT: OktaBindJWT
-            let userConsentResponse: String
-        }
-
-        struct FailureInfo {
-            let challengeRequestJWT: OktaBindJWT?
-            let enrollment: AuthenticatorEnrollment?
-            let userConsentResponse: String?
-            let error: DeviceAuthenticatorError
-        }
-
-        case success(SuccessInfo)
-        case failure(FailureInfo)
-    }
-
     class TransactionContext {
         let appIdentityStepClosure: (RemediationStep) -> Void
-        let appCompletionClosure: (TransactionResult) -> Void
+        let appCompletionClosure: (String?, DeviceAuthenticatorError?, AuthenticatorEnrollment?) -> Void
         let challengeRequest: OktaBindJWT
         var enrollment: AuthenticatorEnrollment!
         var userConsentResponseValue: OktaUserConsentValue = .approved
@@ -58,7 +39,7 @@ class OktaTransaction {
 
         init(challengeRequest: OktaBindJWT,
              appIdentityStepClosure: @escaping (RemediationStep) -> Void,
-             appCompletionClosure: @escaping (TransactionResult) -> Void) {
+             appCompletionClosure: @escaping (String?, DeviceAuthenticatorError?, AuthenticatorEnrollment?) -> Void) {
             self.appIdentityStepClosure = appIdentityStepClosure
             self.appCompletionClosure = appCompletionClosure
             self.challengeRequest = challengeRequest
