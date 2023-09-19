@@ -43,6 +43,24 @@ enum RequestableSignal: String {
     case clientInstanceDeviceSdkVersion
     case clientInstanceId
     case clientInstanceVersion
+
+    ///  List of device signals which can be logged (No PII)
+    ///  Update DeviceSignalsModel properties if making changes to this list
+    static var loggableSignals: Set<String> {
+        Set<String>([
+            RequestableSignal.platform.rawValue,
+            RequestableSignal.manufacturer.rawValue,
+            RequestableSignal.model.rawValue,
+            RequestableSignal.osVersion.rawValue,
+            RequestableSignal.secureHardwarePresent.rawValue,
+            RequestableSignal.diskEncryptionType.rawValue,
+            RequestableSignal.screenLockType.rawValue,
+            RequestableSignal.clientInstanceBundleId.rawValue,
+            RequestableSignal.clientInstanceDeviceSdkVersion.rawValue,
+            RequestableSignal.clientInstanceId.rawValue,
+            RequestableSignal.clientInstanceVersion.rawValue
+        ])
+    }
 }
 
 struct DeviceSignalsResponseModel: Codable {
@@ -54,7 +72,7 @@ struct DeviceSignalsResponseModel: Codable {
     let clientInstanceId: String
 }
 
-class DeviceSignalsModel: Codable {
+class DeviceSignalsModel: Codable, CustomStringConvertible {
     var platform: PlatformValue?
     var osVersion: String?
     var displayName: String?
@@ -81,6 +99,25 @@ class DeviceSignalsModel: Codable {
         self.platform = platform
         self.osVersion = osVersion
         self.displayName = displayName
+    }
+
+    var description: String {
+        var desc = ""
+        let mirror = Mirror(reflecting: self)
+        let properties = mirror.children
+        for property in properties {
+            guard let label = property.label else {
+                continue
+            }
+            if case Optional<Any>.some(_) = property.value {
+                if RequestableSignal.loggableSignals.contains(label) {
+                    desc = "\(desc), \(label): \(property.value)"
+                } else {
+                    desc = "\(desc), \(label): <REDACTED>"
+                }
+            }
+        }
+        return desc
     }
 }
 

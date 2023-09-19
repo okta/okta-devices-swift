@@ -81,7 +81,7 @@ class OktaDeviceBindJWTPayload: OktaJWTPayload, CustomStringConvertible {
 
         // Redact sensitive signals (for logging purposes)
         if var signals = descDict[DeviceBindCodingKeys.deviceSignals.rawValue] as? [String: Any] {
-            let loggableSignals = loggableSignals()
+            let loggableSignals = RequestableSignal.loggableSignals
             for key in signals.keys {
                 if !loggableSignals.contains(key) {
                     signals[key] = "<REDACTED>"
@@ -160,23 +160,6 @@ extension OktaDeviceBindJWTPayload {
             DeviceBindCodingKeys.deviceSignals.rawValue, // individual signals redacted
             DeviceBindCodingKeys.integrations.rawValue,
             DeviceBindCodingKeys.signalProviders.rawValue,
-        ])
-    }
-
-    ///  List of device signals which can be logged (No PII)
-    func loggableSignals() -> Set<String> {
-        Set<String>([
-            RequestableSignal.platform.rawValue,
-            RequestableSignal.manufacturer.rawValue,
-            RequestableSignal.model.rawValue,
-            RequestableSignal.osVersion.rawValue,
-            RequestableSignal.secureHardwarePresent.rawValue,
-            RequestableSignal.diskEncryptionType.rawValue,
-            RequestableSignal.screenLockType.rawValue,
-            RequestableSignal.clientInstanceBundleId.rawValue,
-            RequestableSignal.clientInstanceDeviceSdkVersion.rawValue,
-            RequestableSignal.clientInstanceId.rawValue,
-            RequestableSignal.clientInstanceVersion.rawValue
         ])
     }
 
