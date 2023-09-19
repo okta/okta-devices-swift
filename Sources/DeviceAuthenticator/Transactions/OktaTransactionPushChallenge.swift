@@ -46,7 +46,11 @@ class OktaTransactionPushChallenge: OktaTransactionPossessionChallengeBase {
         guard var keyType = keysRequirements.first else {
             let error = DeviceAuthenticatorError.internalError("No key types provided")
             logger.error(eventName: self.logEventName, message: "Error: \(error)")
-            transactionContext.appCompletionClosure(nil, error, transactionContext.enrollment)
+            let failureInfo = TransactionResult.FailureInfo(challengeRequestJWT: challengeRequestJWT,
+                                                            enrollment: transactionContext.enrollment,
+                                                            userConsentResponse: nil,
+                                                            error: error)
+            transactionContext.appCompletionClosure(.failure(failureInfo))
             return
         }
 
@@ -87,7 +91,11 @@ class OktaTransactionPushChallenge: OktaTransactionPossessionChallengeBase {
         guard let enrollment = pushChallenge.enrollment as? AuthenticatorEnrollment else {
             let error = DeviceAuthenticatorError.internalError("Invalid enrollment object")
             logger.error(eventName: "Push transaction failed", message: error.errorDescription)
-            transactionContext.appCompletionClosure(nil, error, nil)
+            let failureInfo = TransactionResult.FailureInfo(challengeRequestJWT: challengeRequestJWT,
+                                                            enrollment: nil,
+                                                            userConsentResponse: nil,
+                                                            error: error)
+            transactionContext.appCompletionClosure(.failure(failureInfo))
             return
         }
 
@@ -99,7 +107,11 @@ class OktaTransactionPushChallenge: OktaTransactionPossessionChallengeBase {
             try challengeRequestJWT.validate(with: issuer)
         } catch {
             let deviceAuthenticatorError = DeviceAuthenticatorError.oktaError(from: error)
-            transactionContext.appCompletionClosure(nil, deviceAuthenticatorError, nil)
+            let failureInfo = TransactionResult.FailureInfo(challengeRequestJWT: challengeRequestJWT,
+                                                            enrollment: nil,
+                                                            userConsentResponse: nil,
+                                                            error: deviceAuthenticatorError)
+            transactionContext.appCompletionClosure(.failure(failureInfo))
             return
         }
 
