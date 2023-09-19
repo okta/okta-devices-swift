@@ -51,7 +51,7 @@ class OktaTransactionPossessionChallengeBase: OktaTransaction {
 
     let applicationConfig: ApplicationConfig
     let challengeRequest: String
-    let httpHeaders: [ String: String]?
+    let httpHeaders: [String: String]?
     var challengeRequestJWT: OktaBindJWT!
     let stateHandle: String?
     var localAuthenticationContext = LAContext()
@@ -80,7 +80,7 @@ class OktaTransactionPossessionChallengeBase: OktaTransaction {
     }
 
     func handle(onIdentityStep: @escaping (RemediationStep) -> Void,
-                onCompletion: @escaping ((String?, DeviceAuthenticatorError?, AuthenticatorEnrollment?) -> Void)) {
+                onCompletion: @escaping (TransactionResult) -> Void) {
         let transactionContext = TransactionContext(challengeRequest: challengeRequestJWT,
                                                     appIdentityStepClosure: onIdentityStep,
                                                     appCompletionClosure: onCompletion)
@@ -200,7 +200,11 @@ class OktaTransactionPossessionChallengeBase: OktaTransaction {
         guard let keyType = keysRequirements.first else {
             let error = DeviceAuthenticatorError.internalError("No key types provided")
             logger.error(eventName: self.logEventName, message: "Error: \(error)")
-            transactionContext.appCompletionClosure(nil, error, transactionContext.enrollment)
+            let failureInfo = TransactionResult.FailureInfo(challengeRequestJWT: challengeRequestJWT,
+                                                            enrollment: transactionContext.enrollment,
+                                                            userConsentResponse: nil,
+                                                            error: error)
+            transactionContext.appCompletionClosure(.failure(failureInfo))
             return
         }
 
@@ -274,7 +278,11 @@ class OktaTransactionPossessionChallengeBase: OktaTransaction {
                                                                           integrations: transactionContext.integrations,
                                                                           signalProviders: transactionContext.signalProviders,
                                                                           amr: keyData.amr)
-                    transactionContext.appCompletionClosure(responseJWT, nil, transactionContext.enrollment)
+                    let successInfo = TransactionResult.SuccessInfo(challengeResponseJWTString: responseJWT,
+                                                                    enrollment: transactionContext.enrollment,
+                                                                    challengeRequestJWT: self.challengeRequestJWT,
+                                                                    userConsentResponse: transactionContext.userConsentResponseValue.rawValue)
+                    transactionContext.appCompletionClosure(.success(successInfo))
                 } catch {
                     let error = DeviceAuthenticatorError.oktaError(from: error)
                     self.logger.error(eventName: self.logEventName, message: "Error: \(error)")
@@ -343,7 +351,11 @@ class OktaTransactionPossessionChallengeBase: OktaTransaction {
             self.signJWTAndSendRequest(transactionContext: transactionContext,
                                        keysRequirements: keyTypes)
         } else {
-            transactionContext.appCompletionClosure(nil, error, transactionContext.enrollment)
+            let failureInfo = TransactionResult.FailureInfo(challengeRequestJWT: challengeRequestJWT,
+                                                            enrollment: transactionContext.enrollment,
+                                                            userConsentResponse: nil,
+                                                            error: error)
+            transactionContext.appCompletionClosure(.failure(failureInfo))
         }
     }
 
@@ -421,55 +433,63 @@ class OktaTransactionPossessionChallengeBase: OktaTransaction {
     }
 
     func verify(onIdentityStep: @escaping (RemediationStep) -> Void,
-                onCompletion: @escaping ((HTTPURLResult?, DeviceAuthenticatorError?, AuthenticatorEnrollment?) -> Void)) {
-        self.handle(onIdentityStep: onIdentityStep) { responseJWT, error, enrollment in
+                onCompletion: @escaping (TransactionResult) -> Void) {
+        self.handle(onIdentityStep: onIdentityStep) { result in
             self.logger.info(eventName: "Verify challenge transaction", message: "Handling verify challenge transaction")
-            guard let responseJWT = responseJWT,
-                  !responseJWT.isEmpty else {
-                if let error = error {
-                    self.logger.error(eventName: "Verify challenge transaction", message: "Handle challenge transaction finished with error: \(error)")
-                    onCompletion(nil, error, enrollment)
+            switch result {
+            case .success(let transactionInfo):
+                var verifyURL = self.challengeRequestJWT.verificationURL
+                var postData: Data?
+                if let stateHandle = self.stateHandle {
+                    guard var components = URLComponents(string: verifyURL.absoluteString) else {
+                        let error = DeviceAuthenticatorError.securityError(.jwtError("Invalid verification URL in JWT payload"))
+                        self.logger.error(eventName: "Verify challenge transaction", message: "Handle challenge transaction finished with error: \(error)")
+                        let failureInfo = TransactionResult.FailureInfo(challengeRequestJWT: transactionInfo.challengeRequestJWT,
+                                                                        enrollment: transactionInfo.enrollment,
+                                                                        userConsentResponse: transactionInfo.userConsentResponse,
+                                                                        error: error)
+                        onCompletion(.failure(failureInfo))
+                        return
+                    }
+                    components.queryItems = [URLQueryItem(name: "challengeResponse", value: transactionInfo.challengeResponseJWTString)]
+                    components.queryItems?.append(URLQueryItem(name: "stateHandle", value: stateHandle))
+                    guard let verifyURLWithQueryParams = components.url else {
+                        let error = DeviceAuthenticatorError.genericError("Failed to build verification URL")
+                        self.logger.error(eventName: "Verify challenge transaction", message: "Handle challenge transaction finished with error: \(error)")
+                        let failureInfo = TransactionResult.FailureInfo(challengeRequestJWT: transactionInfo.challengeRequestJWT,
+                                                                        enrollment: transactionInfo.enrollment,
+                                                                        userConsentResponse: transactionInfo.userConsentResponse,
+                                                                        error: error)
+                        onCompletion(.failure(failureInfo))
+                        return
+                    }
+                    verifyURL = verifyURLWithQueryParams
                 } else {
-                    let error = DeviceAuthenticatorError.internalError("Internal SDK error")
-                    self.logger.error(eventName: "Verify challenge transaction", message: "Handle challenge transaction finished with error: \(error)")
-                    onCompletion(nil, error, enrollment)
+                    let encoder = JSONEncoder()
+                    let responseDictionary = ["method": transactionInfo.challengeRequestJWT.methodType.rawValue,
+                                              "challengeResponse": transactionInfo.challengeResponseJWTString]
+                    postData = try? encoder.encode(responseDictionary)
                 }
-                return
-            }
 
-            var verifyURL = self.challengeRequestJWT.verificationURL
-            var postData: Data?
-            if let stateHandle = self.stateHandle {
-                guard var components = URLComponents(string: verifyURL.absoluteString) else {
-                    let error = SecurityError.jwtError("Invalid verification URL in JWT payload")
-                    self.logger.error(eventName: "Verify challenge transaction", message: "Handle challenge transaction finished with error: \(error)")
-                    onCompletion(nil, DeviceAuthenticatorError.securityError(error), enrollment)
-                    return
+                self.restAPI.verifyDeviceChallenge(verifyURL: verifyURL,
+                                                   httpHeaders: self.httpHeaders,
+                                                   data: postData) { httpResult, error in
+                    if let error = error {
+                        let failureInfo = TransactionResult.FailureInfo(challengeRequestJWT: transactionInfo.challengeRequestJWT,
+                                                                        enrollment: transactionInfo.enrollment,
+                                                                        userConsentResponse: transactionInfo.userConsentResponse,
+                                                                        error: error)
+                        onCompletion(.failure(failureInfo))
+                    } else {
+                        onCompletion(result)
+                    }
+                    if let data = httpResult?.data,
+                       let jsonString = String(data: data, encoding: .utf8) {
+                        self.logger.info(eventName: "Verify challenge transaction", message: "Verify challenge response - \(jsonString)")
+                    }
                 }
-                components.queryItems = [URLQueryItem(name: "challengeResponse", value: responseJWT)]
-                components.queryItems?.append(URLQueryItem(name: "stateHandle", value: stateHandle))
-                guard let verifyURLWithQueryParams = components.url else {
-                    let error = SecurityError.jwtError("Invalid verification URL in JWT payload")
-                    self.logger.error(eventName: "Verify challenge transaction", message: "Handle challenge transaction finished with error: \(error)")
-                    onCompletion(nil, DeviceAuthenticatorError.securityError(error), enrollment)
-                    return
-                }
-                verifyURL = verifyURLWithQueryParams
-            } else {
-                let encoder = JSONEncoder()
-                let responseDictionary = ["method": self.challengeRequestJWT?.methodType.rawValue,
-                                          "challengeResponse": responseJWT]
-                postData = try? encoder.encode(responseDictionary)
-            }
-
-            self.restAPI.verifyDeviceChallenge(verifyURL: verifyURL,
-                                               httpHeaders: self.httpHeaders,
-                                               data: postData) { result, error in
-                onCompletion(result, error, enrollment)
-                if let data = result?.data,
-                   let jsonString = String(data: data, encoding: .utf8) {
-                    self.logger.info(eventName: "Verify challenge transaction", message: "Verify challenge response - \(jsonString)")
-                }
+            case .failure(_):
+                onCompletion(result)
             }
         }
     }
