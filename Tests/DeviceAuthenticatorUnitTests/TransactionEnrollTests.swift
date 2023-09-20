@@ -1346,6 +1346,65 @@ XCTAssertEqual(jwk["okta:kpr"], .string("SOFTWARE"))
         wait(for: [enrollExpectation, metadataDownloadExpectation], timeout: 0.5)
     }
 
+    func testRetryEnrollment_WithDeviceDeletedError_ResetsEnrollment() {
+        let decoder = JSONDecoder()
+        let metaDataArray = try! decoder.decode([AuthenticatorMetaDataModel].self, from: GoldenData.authenticatorMetaData())
+        let deviceEnrollment = OktaDeviceEnrollment(id: "id",
+                                                    orgId: "tenant.okta.com",
+                                                    clientInstanceId: "clientInstanceId",
+                                                    clientInstanceKeyTag: "clientInstanceKeyTag")
+        try? mockStorageManager.storeDeviceEnrollment(deviceEnrollment, for: deviceEnrollment.orgId!)
+        transaction = createTransaction(enrollmentContext: enrollmentContext, enrollment: nil, jwtGenerator: OktaJWTGenerator(logger: OktaLoggerMock()))
+        transaction.deviceEnrollment = deviceEnrollment
+        transaction.metaData = metaDataArray[0]
+        transaction.orgId = ""
+        let enrolledFactors = try? transaction.enrollFactors()
+        XCTAssertNotNil(enrolledFactors)
+        transaction.clientInstanceKeyTag = "clientInstanceKeyTag"
+        var hookCalled = false
+        restAPIMock.enrollAuthenticatorRequestHook = { _, _, _, _, _, _, completion in
+            hookCalled = true
+            XCTAssertNil(self.transaction.deviceEnrollment)
+        }
+        let serverAPIErrorModel = ServerAPIErrorModel(errorCode: ServerErrorCode(raw: "E0000153"),
+                                                      errorSummary: nil,
+                                                      errorLink: nil,
+                                                      errorId: nil,
+                                                      status: nil,
+                                                      errorCauses: nil)
+        let urlResponse = HTTPURLResponse(url: URL(string: "tenant.okta.com")!, statusCode: 410, httpVersion: nil, headerFields: nil)!
+        let httpResult = HTTPURLResult(request: URLRequest(url: URL(string: "tenant.okta.com")!),
+                                       response: urlResponse,
+                                       data: nil, error: nil)
+        let error = DeviceAuthenticatorError.serverAPIError(httpResult, serverAPIErrorModel)
+        transaction.retryEnrollmentIfNeeded(error: error, factorsMetaData: enrolledFactors!, onCompletion: { result in
+        })
+        XCTAssertTrue(hookCalled)
+    }
+    
+    func testRetryEnrollment_WithGenericError_DoesNothing() {
+        let decoder = JSONDecoder()
+        let metaDataArray = try! decoder.decode([AuthenticatorMetaDataModel].self, from: GoldenData.authenticatorMetaData())
+        let deviceEnrollment = OktaDeviceEnrollment(id: "id",
+                                                    orgId: "tenant.okta.com",
+                                                    clientInstanceId: "clientInstanceId",
+                                                    clientInstanceKeyTag: "clientInstanceKeyTag")
+        try? mockStorageManager.storeDeviceEnrollment(deviceEnrollment, for: deviceEnrollment.orgId!)
+        transaction = createTransaction(enrollmentContext: enrollmentContext, enrollment: nil, jwtGenerator: OktaJWTGenerator(logger: OktaLoggerMock()))
+        transaction.deviceEnrollment = deviceEnrollment
+        transaction.metaData = metaDataArray[0]
+        transaction.orgId = ""
+        let enrolledFactors = try? transaction.enrollFactors()
+        XCTAssertNotNil(enrolledFactors)
+        transaction.clientInstanceKeyTag = "clientInstanceKeyTag"
+        var hookCalled = false
+        restAPIMock.enrollAuthenticatorRequestHook = { _, _, _, _, _, _, completion in
+            hookCalled = true
+        }
+        let error = DeviceAuthenticatorError.genericError("")
+        transaction.retryEnrollmentIfNeeded(error: error, factorsMetaData: enrolledFactors!, onCompletion: { result in })
+        XCTAssertFalse(hookCalled)
+    }
     /*
     func testHandleServerResult_Success() {
         let urlResponse = HTTPURLResponse(url: URL(string: "tenant.okta.com")!, statusCode: 200, httpVersion: nil, headerFields: nil)!
