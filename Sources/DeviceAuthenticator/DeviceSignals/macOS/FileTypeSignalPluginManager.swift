@@ -39,9 +39,14 @@ class FileTypeSignalPlugin: _SignalPluginProtocol {
 
     func collectSignals() -> _IntegrationData {
         do {
-            let signal = try String(contentsOfFile: self.location, encoding: .utf8)
-            if let strData = signal.data(using: .utf8) {
-                let signal = _PluginSignalData(name: config.name, configuration: configuration, signal: strData.base64EncodedString(), timeCollected: Int(Date().timeIntervalSince1970))
+            let fileUrl = URL(fileURLWithPath: location)
+            let signalData = try Data(contentsOf: fileUrl, options: .alwaysMapped)
+            if signalData.count > 0 {
+                let signal = _PluginSignalData(
+                    name: config.name,
+                    configuration: configuration,
+                    signal: signalData.base64EncodedString(),
+                    timeCollected: Int(Date().timeIntervalSince1970))
                 return _IntegrationData.signal(signal)
             } else {
                 let error = DeviceAuthenticatorError.genericError("Signal collection failed")
