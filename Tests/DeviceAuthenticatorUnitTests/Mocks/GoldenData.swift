@@ -487,6 +487,24 @@ class GoldenData {
         let jsonData = try! JSONSerialization.data(withJSONObject: dict, options: .prettyPrinted)
         return jsonData
     }
+
+    class func invalidTokenError() -> Data {
+        let orgDataJson: String = """
+        {"errorLink":"E0000011","errorSummary":"Invalid token provided","errorCode":"E0000011","errorId":"oaeYckeiQ8aQ124WltauaZB_Q"}
+        """
+        let dict = try! JSONSerialization.jsonObject(with: orgDataJson.data(using: .utf8)!, options: []) as! [String: Any]
+        let jsonData = try! JSONSerialization.data(withJSONObject: dict, options: .prettyPrinted)
+        return jsonData
+    }
+
+    class func deletedDeviceError() -> Data {
+        let orgDataJson: String = """
+        {"errorLink":"E0000153","errorSummary":"Device is deleted","errorCode":"E0000153","errorId":"oaeYckeiQ8aQ124WltauaZB_Q"}
+        """
+        let dict = try! JSONSerialization.jsonObject(with: orgDataJson.data(using: .utf8)!, options: []) as! [String: Any]
+        let jsonData = try! JSONSerialization.data(withJSONObject: dict, options: .prettyPrinted)
+        return jsonData
+    }
 }
 
 class MyAccountTestData {
