@@ -297,13 +297,14 @@ class OktaTransactionEnroll: OktaTransaction {
                                  onCompletion: @escaping (Result<AuthenticatorEnrollmentProtocol, DeviceAuthenticatorError>) -> Void) {
         guard case .serverAPIError(_, let serverAPIErrorModel) = error,
               let errorCode = serverAPIErrorModel?.errorCode?.rawValue,
-              ServerErrorCode(raw: errorCode) == .deviceDeleted else {
+              (ServerErrorCode(raw: errorCode) == .deviceDeleted || ServerErrorCode(raw: errorCode) == .invalidToken),
+              self.enrollmentToUpdate == nil,
+              self.deviceEnrollment != nil else {
             onCompletion(.failure(error))
             return
         }
-        self.logger.info(eventName: logEventName, message: "Device deleted in backend. Re-enrolling with no deviceId")
+        self.logger.info(eventName: logEventName, message: "Device deleted or is out of sync. Re-enrolling with no deviceId, error: \(error)")
         self.deviceEnrollment = nil
-        try? self.storageManager.deleteDeviceEnrollmentForOrgId(self.orgId)
         self.doEnrollment(factorsMetaData: factorsMetaData, onCompletion: onCompletion)
     }
 

@@ -232,4 +232,202 @@ class EnrollmentFlowTests: FunctionalTestsBase {
         }
 
     }
+
+    func testEnrollmentWithKnownDevice_ValidateRetryOnInvalidToken() throws {
+
+        let deviceAuthenticator = try DeviceAuthenticatorBuilder(applicationConfig: appConfig).create()
+        XCTAssertTrue(deviceAuthenticator.allEnrollments().isEmpty)
+
+        let enrollmentExpectation = expectation(description: "Enrollment should complete")
+
+        httpResponses = [HTTPURLResponse(url: mockURL, statusCode: 200, httpVersion: nil, headerFields: nil)!,
+                         HTTPURLResponse(url: mockURL, statusCode: 200, httpVersion: nil, headerFields: nil)!,
+                         HTTPURLResponse(url: mockURL, statusCode: 401, httpVersion: nil, headerFields: nil)!]
+        let mockHTTPClient = MockMultipleRequestsHTTPClient(responseArray: httpResponses,
+                                                            dataArray: [GoldenData.orgData(),
+                                                                        MyAccountTestData.policyResponse(),
+                                                                        GoldenData.invalidTokenError()])
+
+        var numberOfEnrollRequests = 0
+        mockHTTPClient.requestWithDataBodyHook = { url, method, urlParameters, httpBody, header, timeout in
+            mockHTTPClient.requestWithDataBodyHook = nil
+            numberOfEnrollRequests = numberOfEnrollRequests + 1
+            guard let httpBody = httpBody,
+                  let requestModel = try? JSONDecoder().decode(MyAccountAPI.AuthenticatorRequestModel.self, from: httpBody) else {
+                XCTFail("Missing or invalid body in http query")
+                return mockHTTPClient.request(url, method: method, urlParameters: urlParameters, httpBody: httpBody, timeout: timeout)
+            }
+            XCTAssertTrue(url.absoluteString.contains("idp/myaccount/app-authenticator"))
+            XCTAssertEqual(method, .post)
+            XCTAssertNotNil(requestModel.device)
+            XCTAssertNotNil(requestModel.device?.id)
+            XCTAssertNotNil(requestModel.device?.authenticatorAppKey)
+
+            let requestToReturn = mockHTTPClient.request(url, method: method, urlParameters: urlParameters, httpBody: httpBody, timeout: timeout)
+            if numberOfEnrollRequests == 1 {
+                mockHTTPClient.requestWithDataBodyHook = { url, method, urlParameters, httpBody, header, timeout in
+                    mockHTTPClient.requestWithDataBodyHook = nil
+                    numberOfEnrollRequests = numberOfEnrollRequests + 1
+                    guard let httpBody = httpBody,
+                          let requestModel = try? JSONDecoder().decode(MyAccountAPI.AuthenticatorRequestModel.self, from: httpBody) else {
+                        XCTFail("Missing or invalid body in http query")
+                        return mockHTTPClient.request(url, method: method, urlParameters: urlParameters, httpBody: httpBody, timeout: timeout)
+                    }
+                    XCTAssertTrue(url.absoluteString.contains("idp/myaccount/app-authenticator"))
+                    XCTAssertEqual(method, .post)
+                    XCTAssertNotNil(requestModel.device)
+                    XCTAssertNil(requestModel.device?.id)
+                    XCTAssertNotNil(requestModel.device?.authenticatorAppKey)
+
+                    return mockHTTPClient.request(url, method: method, urlParameters: urlParameters, httpBody: httpBody, timeout: timeout)
+                }
+                mockHTTPClient.counter = mockHTTPClient.counter - 1
+                mockHTTPClient.resultArray?.removeLast()
+                mockHTTPClient.resultArray?.append(HTTPURLResult(
+                    request: URLRequest(url: URL(string: "com.okta.example")!),
+                    response: HTTPURLResponse(url: self.mockURL, statusCode: 200, httpVersion: nil, headerFields: nil)!,
+                    data: MyAccountTestData.enrollmentResponse()))
+            }
+
+            return requestToReturn
+        }
+
+        let oktaRestAPI = MyAccountServerAPI(client: mockHTTPClient,
+                                             crypto: OktaCryptoManager(keychainGroupId: ExampleAppConstants.appGroupId,
+                                                                       logger: OktaLoggerMock()),
+                                             logger: OktaLoggerMock())
+
+        (deviceAuthenticator as? DeviceAuthenticator)?.impl.restAPI = oktaRestAPI
+        let deviceEnrollment = OktaDeviceEnrollment(id: "id",
+                                                    orgId: "00otiyyDFtNCyFbnC0g4",
+                                                    clientInstanceId: "clientInstanceId",
+                                                    clientInstanceKeyTag: "clientInstanceKeyTag")
+        XCTAssertNoThrow(try (deviceAuthenticator as? DeviceAuthenticator)?.impl.storageManager.storeDeviceEnrollment(deviceEnrollment, for: "00otiyyDFtNCyFbnC0g4"))
+        let oldDeviceEnrollment = try? (deviceAuthenticator as? DeviceAuthenticator)?.impl.storageManager.deviceEnrollmentByOrgId("00otiyyDFtNCyFbnC0g4")
+        XCTAssertNotNil(oldDeviceEnrollment)
+        XCTAssertNotNil(oldDeviceEnrollment?.clientInstanceKeyTag)
+
+        deviceAuthenticator.enroll(authenticationToken: AuthToken.bearer("cdeb3858fabc"), authenticatorConfig: deviceAuthenticatorConfig, enrollmentParameters: enrollmentParams) { result in
+            switch result {
+            case .success(let authenticator):
+                XCTAssertEqual("aen1jisLwwTG7qRrH0g4", authenticator.enrollmentId)
+                XCTAssertEqual("00otiyyDFtNCyFbnC0g4", authenticator.organization.id)
+                XCTAssertEqual("00utmecoNjNd0lrWp0g4", authenticator.user.id)
+                XCTAssertEqual("test@okta.com", authenticator.user.name)
+                XCTAssertFalse(authenticator.userVerificationEnabled)
+                XCTAssertFalse(deviceAuthenticator.allEnrollments().isEmpty)
+            case .failure(_):
+                XCTFail("Error enrolling authenticator")
+            }
+            enrollmentExpectation.fulfill()
+        }
+        wait(for: [enrollmentExpectation], timeout: 3.0)
+
+        let newDeviceEnrollment = try? (deviceAuthenticator as? DeviceAuthenticator)?.impl.storageManager.deviceEnrollmentByOrgId("00otiyyDFtNCyFbnC0g4")
+        XCTAssertNotNil(newDeviceEnrollment)
+        XCTAssertNotNil(newDeviceEnrollment?.clientInstanceKeyTag)
+        XCTAssertNotEqual(newDeviceEnrollment?.clientInstanceKeyTag, oldDeviceEnrollment?.clientInstanceKeyTag)
+        XCTAssertNotEqual(newDeviceEnrollment?.clientInstanceId, oldDeviceEnrollment?.clientInstanceId)
+        XCTAssertNotEqual(newDeviceEnrollment?.id, oldDeviceEnrollment?.id)
+        XCTAssertEqual(numberOfEnrollRequests, 2)
+    }
+
+    func testEnrollmentWithKnownDevice_ValidateRetryOnDeletedDevice() throws {
+
+        let deviceAuthenticator = try DeviceAuthenticatorBuilder(applicationConfig: appConfig).create()
+        XCTAssertTrue(deviceAuthenticator.allEnrollments().isEmpty)
+
+        let enrollmentExpectation = expectation(description: "Enrollment should complete")
+
+        httpResponses = [HTTPURLResponse(url: mockURL, statusCode: 200, httpVersion: nil, headerFields: nil)!,
+                         HTTPURLResponse(url: mockURL, statusCode: 200, httpVersion: nil, headerFields: nil)!,
+                         HTTPURLResponse(url: mockURL, statusCode: 401, httpVersion: nil, headerFields: nil)!]
+        let mockHTTPClient = MockMultipleRequestsHTTPClient(responseArray: httpResponses,
+                                                            dataArray: [GoldenData.orgData(),
+                                                                        MyAccountTestData.policyResponse(),
+                                                                        GoldenData.deletedDeviceError()])
+
+        var numberOfEnrollRequests = 0
+        mockHTTPClient.requestWithDataBodyHook = { url, method, urlParameters, httpBody, header, timeout in
+            mockHTTPClient.requestWithDataBodyHook = nil
+            numberOfEnrollRequests = numberOfEnrollRequests + 1
+            guard let httpBody = httpBody,
+                  let requestModel = try? JSONDecoder().decode(MyAccountAPI.AuthenticatorRequestModel.self, from: httpBody) else {
+                XCTFail("Missing or invalid body in http query")
+                return mockHTTPClient.request(url, method: method, urlParameters: urlParameters, httpBody: httpBody, timeout: timeout)
+            }
+            XCTAssertTrue(url.absoluteString.contains("idp/myaccount/app-authenticator"))
+            XCTAssertEqual(method, .post)
+            XCTAssertNotNil(requestModel.device)
+            XCTAssertNotNil(requestModel.device?.id)
+            XCTAssertNotNil(requestModel.device?.authenticatorAppKey)
+
+            let requestToReturn = mockHTTPClient.request(url, method: method, urlParameters: urlParameters, httpBody: httpBody, timeout: timeout)
+            if numberOfEnrollRequests == 1 {
+                mockHTTPClient.requestWithDataBodyHook = { url, method, urlParameters, httpBody, header, timeout in
+                    mockHTTPClient.requestWithDataBodyHook = nil
+                    numberOfEnrollRequests = numberOfEnrollRequests + 1
+                    guard let httpBody = httpBody,
+                          let requestModel = try? JSONDecoder().decode(MyAccountAPI.AuthenticatorRequestModel.self, from: httpBody) else {
+                        XCTFail("Missing or invalid body in http query")
+                        return mockHTTPClient.request(url, method: method, urlParameters: urlParameters, httpBody: httpBody, timeout: timeout)
+                    }
+                    XCTAssertTrue(url.absoluteString.contains("idp/myaccount/app-authenticator"))
+                    XCTAssertEqual(method, .post)
+                    XCTAssertNotNil(requestModel.device)
+                    XCTAssertNil(requestModel.device?.id)
+                    XCTAssertNotNil(requestModel.device?.authenticatorAppKey)
+
+                    return mockHTTPClient.request(url, method: method, urlParameters: urlParameters, httpBody: httpBody, timeout: timeout)
+                }
+                mockHTTPClient.counter = mockHTTPClient.counter - 1
+                mockHTTPClient.resultArray?.removeLast()
+                mockHTTPClient.resultArray?.append(HTTPURLResult(
+                    request: URLRequest(url: URL(string: "com.okta.example")!),
+                    response: HTTPURLResponse(url: self.mockURL, statusCode: 200, httpVersion: nil, headerFields: nil)!,
+                    data: MyAccountTestData.enrollmentResponse()))
+            }
+
+            return requestToReturn
+        }
+
+        let oktaRestAPI = MyAccountServerAPI(client: mockHTTPClient,
+                                             crypto: OktaCryptoManager(keychainGroupId: ExampleAppConstants.appGroupId,
+                                                                       logger: OktaLoggerMock()),
+                                             logger: OktaLoggerMock())
+
+        (deviceAuthenticator as? DeviceAuthenticator)?.impl.restAPI = oktaRestAPI
+        let deviceEnrollment = OktaDeviceEnrollment(id: "id",
+                                                    orgId: "00otiyyDFtNCyFbnC0g4",
+                                                    clientInstanceId: "clientInstanceId",
+                                                    clientInstanceKeyTag: "clientInstanceKeyTag")
+        XCTAssertNoThrow(try (deviceAuthenticator as? DeviceAuthenticator)?.impl.storageManager.storeDeviceEnrollment(deviceEnrollment, for: "00otiyyDFtNCyFbnC0g4"))
+        let oldDeviceEnrollment = try? (deviceAuthenticator as? DeviceAuthenticator)?.impl.storageManager.deviceEnrollmentByOrgId("00otiyyDFtNCyFbnC0g4")
+        XCTAssertNotNil(oldDeviceEnrollment)
+        XCTAssertNotNil(oldDeviceEnrollment?.clientInstanceKeyTag)
+
+        deviceAuthenticator.enroll(authenticationToken: AuthToken.bearer("cdeb3858fabc"), authenticatorConfig: deviceAuthenticatorConfig, enrollmentParameters: enrollmentParams) { result in
+            switch result {
+            case .success(let authenticator):
+                XCTAssertEqual("aen1jisLwwTG7qRrH0g4", authenticator.enrollmentId)
+                XCTAssertEqual("00otiyyDFtNCyFbnC0g4", authenticator.organization.id)
+                XCTAssertEqual("00utmecoNjNd0lrWp0g4", authenticator.user.id)
+                XCTAssertEqual("test@okta.com", authenticator.user.name)
+                XCTAssertFalse(authenticator.userVerificationEnabled)
+                XCTAssertFalse(deviceAuthenticator.allEnrollments().isEmpty)
+            case .failure(_):
+                XCTFail("Error enrolling authenticator")
+            }
+            enrollmentExpectation.fulfill()
+        }
+        wait(for: [enrollmentExpectation], timeout: 3.0)
+
+        let newDeviceEnrollment = try? (deviceAuthenticator as? DeviceAuthenticator)?.impl.storageManager.deviceEnrollmentByOrgId("00otiyyDFtNCyFbnC0g4")
+        XCTAssertNotNil(newDeviceEnrollment)
+        XCTAssertNotNil(newDeviceEnrollment?.clientInstanceKeyTag)
+        XCTAssertNotEqual(newDeviceEnrollment?.clientInstanceKeyTag, oldDeviceEnrollment?.clientInstanceKeyTag)
+        XCTAssertNotEqual(newDeviceEnrollment?.clientInstanceId, oldDeviceEnrollment?.clientInstanceId)
+        XCTAssertNotEqual(newDeviceEnrollment?.id, oldDeviceEnrollment?.id)
+        XCTAssertEqual(numberOfEnrollRequests, 2)
+    }
 }
