@@ -41,7 +41,7 @@ class FileTypeSignalPlugin: _SignalPluginProtocol {
         do {
             let fileUrl = URL(fileURLWithPath: location)
             let signalData = try Data(contentsOf: fileUrl, options: .alwaysMapped)
-            if signalData.count > 0 {
+            if !signalData.isEmpty {
                 let signal = _PluginSignalData(
                     name: config.name,
                     configuration: configuration,
