@@ -69,7 +69,7 @@ class OktaDeviceModelBuilderTests: XCTestCase {
         validateDeviceSignals(deviceSignalsModel)
     }
 
-    func testBuildForUpdate() {
+    func testBuildForUpdate() throws {
         let mut = OktaDeviceModelBuilder(orgHost: "https://tenant.okta.com",
                                          applicationConfig: applicationConfig,
                                          requestedSignals: [],
@@ -84,7 +84,7 @@ class OktaDeviceModelBuilderTests: XCTestCase {
                                         useSecureEnclave: false,
                                         useBiometrics: false,
                                         biometricSettings: nil)
-        var deviceSignalsModel = mut.buildForUpdateEnrollment(with: deviceEnrollment)
+        let deviceSignalsModel = try mut.buildForUpdateEnrollment(with: deviceEnrollment)
         XCTAssertEqual(deviceSignalsModel.clientInstanceId, "clientInstanceId")
         XCTAssertEqual(deviceSignalsModel.id, "id")
         XCTAssertNotNil(deviceSignalsModel.deviceAttestation)
@@ -93,10 +93,13 @@ class OktaDeviceModelBuilderTests: XCTestCase {
 
         // Simulate loss of client instance key
         cryptoManager.privateKey = nil
-        deviceSignalsModel = mut.buildForUpdateEnrollment(with: deviceEnrollment)
-        XCTAssertNotNil(deviceSignalsModel.clientInstanceId)
-        XCTAssertNotNil(deviceSignalsModel.id)
-        XCTAssertNil(deviceSignalsModel.deviceAttestation)
+        do {
+            let _ = try mut.buildForUpdateEnrollment(with: deviceEnrollment)
+            XCTFail("Unexpected success")
+        } catch {
+            XCTAssertEqual(error.localizedDescription, "Encryption operation failed")
+        }
+
         validateDeviceSignals(deviceSignalsModel)
     }
 
