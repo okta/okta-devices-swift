@@ -23,7 +23,7 @@ public class _OktaAuthenticatorsManager {
     var logger: OktaLoggerProtocol
     var restAPI: ServerAPIProtocol
     var cryptoManager: OktaSharedCryptoProtocol
-    var storageManager: PersistentStorageProtocol
+    var storageManager: PersistentStorageProtocol?
     var jwkGenerator: OktaJWKGenerator
     var jwtGenerator: OktaJWTGenerator
     let signalsManager: SignalsManager
@@ -74,11 +74,15 @@ public class _OktaAuthenticatorsManager {
                 existingEnrollment: AuthenticatorEnrollment? = nil,
                 onMetadataReceived: ((AuthenticatorMetaDataModel) -> Void)? = nil,
                 onCompletion: @escaping (Result<AuthenticatorEnrollmentProtocol, DeviceAuthenticatorError>) -> Void) {
+        guard let storageManager = storageManager else {
+            onCompletion(.failure(.internalError("Storage manager object is not available")))
+            return
+        }
         var policy: AuthenticatorPolicy?
         if let existingEnrollment = existingEnrollment {
             policy = try? storageManager.authenticatorPolicyForOrgId(existingEnrollment.orgId) as? AuthenticatorPolicy
         }
-        let enrollTransaction = OktaTransactionEnroll(storageManager: self.storageManager,
+        let enrollTransaction = OktaTransactionEnroll(storageManager: storageManager,
                                                       cryptoManager: self.cryptoManager,
                                                       restAPI: self.restAPI,
                                                       enrollmentContext: enrollmentContext,
@@ -118,6 +122,10 @@ public class _OktaAuthenticatorsManager {
     func _downloadMetadata(_ enrollment: AuthenticatorEnrollment,
                            authenticatorKey: String,
                            onCompletion: @escaping (Result<AuthenticatorPolicyProtocol, DeviceAuthenticatorError>) -> Void) {
+        guard let storageManager = storageManager else {
+            onCompletion(.failure(.internalError("Storage manager object is not available")))
+            return
+        }
         let tokenBuilder = OktaAuthenticationTokenBuilder(cryptoManager: cryptoManager,
                                                           logger: logger,
                                                           jwtGenerator: jwtGenerator)
@@ -146,7 +154,7 @@ public class _OktaAuthenticatorsManager {
 
                 let policy = AuthenticatorPolicy(metadata: metadata)
                 do {
-                    try self.storageManager.storeAuthenticatorPolicy(policy, orgId: enrollment.orgId)
+                    try storageManager.storeAuthenticatorPolicy(policy, orgId: enrollment.orgId)
                     onCompletion(result)
                 } catch let error as DeviceAuthenticatorError {
                     onCompletion(Result.failure(error))
@@ -167,6 +175,10 @@ public class _OktaAuthenticatorsManager {
                            onCompletion: @escaping (DeviceAuthenticatorError?) -> Void) {
         guard let enrollment = enrollment as? AuthenticatorEnrollment  else {
             onCompletion(DeviceAuthenticatorError.internalError("Invalid object type"))
+            return
+        }
+        guard let storageManager = storageManager else {
+            onCompletion(.internalError("Storage manager object is not available"))
             return
         }
 
@@ -243,6 +255,10 @@ public class _OktaAuthenticatorsManager {
     }
 
     func parse(userInfo: [AnyHashable: Any], allowedClockSkewInSeconds: Int) throws -> PushChallengeProtocol {
+        guard let storageManager = storageManager else {
+            throw DeviceAuthenticatorError.internalError("Storage manager object is not available")
+        }
+
         var validateJWT = true
 #if targetEnvironment(simulator)
         validateJWT = false

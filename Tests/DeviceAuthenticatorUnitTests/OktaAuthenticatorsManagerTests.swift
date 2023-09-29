@@ -360,7 +360,7 @@ class OktaAuthenticatorsManagerTests: XCTestCase {
                                                                  cryptoManager: cryptoManager)
         let policy = AuthenticatorPolicy(metadata: TestUtils.createAuthenticatorMetadataModel())
         try? mockStorageManager.storeAuthenticatorPolicy(policy, orgId: enrollment.orgId)
-        XCTAssertNoThrow(try authenticatorManager.storageManager.storeEnrollment(enrollment))
+        XCTAssertNoThrow(try authenticatorManager.storageManager!.storeEnrollment(enrollment))
 
         var response = UNNotificationResponse.testNotificationResponse(with: pushInfo,
                                                                        testIdentifier: InternalConstants.PushNotificationConstants.approveActionIdentifier)
