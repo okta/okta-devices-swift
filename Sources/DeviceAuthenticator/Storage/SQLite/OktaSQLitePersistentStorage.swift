@@ -30,6 +30,7 @@ class OktaSQLitePersistentStorage: OktaSQLitePersistentStorageProtocol {
         do {
             let hasDBStored = sqliteFileExist()
             if !hasDBStored {
+                logger.info(eventName: "SQLite db", message: "Creating directory for sqlite database")
                 try fileManager.createDirectory(at: sqliteURL.deletingLastPathComponent(), withIntermediateDirectories: true, attributes: nil)
             }
             let sharedSqlitePool = try openSQLitePool()
