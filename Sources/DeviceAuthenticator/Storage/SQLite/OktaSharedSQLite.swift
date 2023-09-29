@@ -51,11 +51,18 @@ class OktaSharedSQLite: OktaSharedSQLiteProtocol {
         if !sqlitePersistentStorage.sqliteFileExist() {
             // if there is no SQLite stored yet, return Self.targetVersion right away to avoid
             // triggering of sqlite file creation in a lazy manner, before the actual SQLite db use
+            logger.info(eventName: "SQLite db", message: "Database file doesn't exist")
             return Self.targetVersion
         }
+
+        guard let sqlitePool = sqlitePersistentStorage.sqlitePool else {
+            logger.error(eventName: "SQLite db", message: "Failed to get reference to sqlitePool")
+            return .unknown
+        }
+
         var sqlUserVersion: Int?
         do {
-            try sqlitePersistentStorage.sqlitePool?.read { db in
+            try sqlitePool.read { db in
                 sqlUserVersion = try Int.fetchOne(db, sql: "PRAGMA user_version")
             }
         } catch {
