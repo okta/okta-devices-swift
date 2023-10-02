@@ -73,18 +73,10 @@ class OktaDeviceModelBuilder {
         return deviceModel
     }
 
-    func buildForUpdateEnrollment(with deviceEnrollment: OktaDeviceEnrollment) -> DeviceSignalsModel {
+    func buildForUpdateEnrollment(with deviceEnrollment: OktaDeviceEnrollment) throws -> DeviceSignalsModel {
         logger.info(eventName: logEventName, message: "Building device model for update enrollment")
         var deviceModel = buildBaseDeviceModel(with: Self.enrollmentSignals)
-        do {
-            try addJWTPart(to: &deviceModel, deviceEnrollment: deviceEnrollment)
-        } catch {
-            // Failed to build device key attestation. Recreate the device object on server side and register new client instance key
-            _ = cryptoManager.delete(keyPairWith: deviceEnrollment.clientInstanceKeyTag)
-            deviceModel = buildForCreateEnrollment(with: deviceEnrollment.clientInstanceKeyTag)
-            deviceModel.id = deviceEnrollment.id
-            deviceModel.clientInstanceId = deviceEnrollment.clientInstanceId
-        }
+        try addJWTPart(to: &deviceModel, deviceEnrollment: deviceEnrollment)
 
         return deviceModel
     }

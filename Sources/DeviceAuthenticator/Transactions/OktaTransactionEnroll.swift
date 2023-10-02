@@ -438,7 +438,15 @@ class OktaTransactionEnroll: OktaTransaction {
         let deviceModel: DeviceSignalsModel
         if let deviceEnrollment = deviceEnrollment {
             logger.info(eventName: self.logEventName, message: "Building device model based on existing device object")
-            deviceModel = deviceModelBuilder.buildForUpdateEnrollment(with: deviceEnrollment)
+            do {
+                deviceModel = try deviceModelBuilder.buildForUpdateEnrollment(with: deviceEnrollment)
+            } catch {
+                logger.warning(eventName: self.logEventName, message: "Failed to build client attestation jwt")
+                logger.info(eventName: self.logEventName, message: "Registering new device object")
+                let clientInstanceKeyTag = UUID().uuidString
+                deviceModel = deviceModelBuilder.buildForCreateEnrollment(with: clientInstanceKeyTag)
+                self.clientInstanceKeyTag = clientInstanceKeyTag
+            }
         } else {
             logger.info(eventName: self.logEventName, message: "Registering new device object")
             let clientInstanceKeyTag = UUID().uuidString
