@@ -78,7 +78,9 @@ class OktaStorageManager: PersistentStorageProtocol {
         let path = DeviceAuthenticatorConstants.defaultStorageRelativeDirectoryPath
         let fileName = DeviceAuthenticatorConstants.defaultStorageName
         let sqliteEncryptionManager = OktaSQLiteEncryptionManager(cryptoManager: cryptoManager,
-                                                                  keychainGroupId: applicationConfig.applicationInfo.keychainGroupId)
+                                                                  keychainGroupId: applicationConfig.applicationInfo.keychainGroupId,
+                                                                  applicationGroupId: applicationConfig.applicationInfo.applicationGroupId,
+                                                                  logger: logger)
         let sqliteStorage = try OktaSQLitePersistentStorage.sqlitePersistentStorage(schemaVersion: SQLiteStorageVersion.latestVersion,
                                                                                     storageRelativePath: "\(path)/\(fileName)",
                                                                                     applicationGroupId: applicationConfig.applicationInfo.applicationGroupId,

@@ -27,7 +27,9 @@ class OktaSQLiteEncryptionManagerTests: XCTestCase {
     func encryptDecrypt(prefersSecureEnclaveUsage: Bool) {
         let cryptoManager = OktaCryptoManager(keychainGroupId: ExampleAppConstants.appGroupId, logger: OktaLoggerMock())
         let manager = OktaSQLiteEncryptionManager(cryptoManager: cryptoManager,
-                                                  keychainGroupId: cryptoManager.keychainGroupId)
+                                                  keychainGroupId: cryptoManager.keychainGroupId,
+                                                  applicationGroupId: cryptoManager.keychainGroupId,
+                                                  logger: OktaLoggerMock())
 
         let originalString = "Hello there"
         let originalStringData = originalString.data(using: .utf8)!
@@ -59,5 +61,25 @@ class OktaSQLiteEncryptionManagerTests: XCTestCase {
         XCTAssertNotEqual(longString.data(using: .utf8), encryptedLongStringData)
         let decryptedLongString = try! manager.decryptedColumnString(from: encryptedLongStringData)
         XCTAssertEqual(decryptedLongString, longString)
+    }
+
+    func testEncryptionKeyMigration() {
+        let cryptoManager = OktaCryptoManager(keychainGroupId: ExampleAppConstants.appGroupId, logger: OktaLoggerMock())
+        let manager = OktaSQLiteEncryptionManager(cryptoManager: cryptoManager,
+                                                  keychainGroupId: cryptoManager.keychainGroupId,
+                                                  applicationGroupId: cryptoManager.keychainGroupId,
+                                                  logger: OktaLoggerMock())
+        let userDefaults = UserDefaults(suiteName: ExampleAppConstants.appGroupId) ?? UserDefaults.standard
+        userDefaults.setValue(false, forKey: OktaSQLiteEncryptionManager.Constants.cryptoKeyMigratedFlag.rawValue)
+
+        let originalString = "Hello there"
+        let originalStringData = originalString.data(using: .utf8)!
+        let encrypted = try! manager.encryptedColumnData(from: originalStringData)
+        XCTAssertNotEqual(originalStringData, encrypted)
+        let decryptedData = try! manager.decryptedColumnData(from: encrypted)
+        var decryptedString: String! = String(data: decryptedData, encoding: .utf8)
+        XCTAssertEqual(decryptedString, originalString)
+
+        XCTAssertTrue(userDefaults.bool(forKey: OktaSQLiteEncryptionManager.Constants.cryptoKeyMigratedFlag.rawValue))
     }
 }
