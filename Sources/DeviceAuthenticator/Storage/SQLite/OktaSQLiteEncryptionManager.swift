@@ -50,17 +50,22 @@ class OktaSQLiteEncryptionManager: OktaSQLiteColumnEncryptionManagerProtocol {
     let cryptoManager: OktaSharedCryptoProtocol
     let keychainStorage: OktaSecureStorageProtocol
     let keychainGroupId: String?
+    let applicationGroupId: String
     let accessibility: CFString?
+    let logger: OktaLoggerProtocol
     var cryptoKey: SymmetricKey?
 
     init(cryptoManager: OktaSharedCryptoProtocol,
          keychainGroupId: String?,
          keychainStorage: OktaSecureStorageProtocol = OktaSecureStorage(applicationPassword: nil),
-         accessibility: CFString? = kSecAttrAccessibleAfterFirstUnlock) {
+         applicationGroupId: String,
+         logger: OktaLoggerProtocol) {
         self.cryptoManager = cryptoManager
         self.keychainGroupId = keychainGroupId
         self.keychainStorage = keychainStorage
-        self.accessibility = accessibility
+        self.accessibility = kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
+        self.applicationGroupId = applicationGroupId
+        self.logger = logger
     }
 
     func encryptedColumnUTF8Data(from string: String) throws -> Data {
@@ -96,11 +101,13 @@ class OktaSQLiteEncryptionManager: OktaSQLiteColumnEncryptionManagerProtocol {
             return cryptoKey
         }
 
-        let keyTag = EncryptionTag.columnEncryptionKeyTag
+        let keyTag = Constants.columnEncryptionKeyTag
         do {
             let storedPublicKey = try keychainStorage.getData(key: keyTag.rawValue, biometricPrompt: nil, accessGroup: keychainGroupId)
             let symmetricKey = SymmetricKey(data: storedPublicKey)
             self.cryptoKey = symmetricKey
+
+            migrateCryptoKeyIfNeeded(symmetricKey: symmetricKey, keyTag: keyTag.rawValue)
 
             return symmetricKey
         } catch let error as NSError {
@@ -128,11 +135,32 @@ class OktaSQLiteEncryptionManager: OktaSQLiteColumnEncryptionManagerProtocol {
         }
     }
 
+    func migrateCryptoKeyIfNeeded(symmetricKey: SymmetricKey, keyTag: String) {
+        // Migrate from kSecAttrAccessibleAfterFirstUnlock to kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
+        let userDefaults = UserDefaults(suiteName: applicationGroupId) ?? UserDefaults.standard
+        if !userDefaults.bool(forKey: Constants.cryptoKeyMigratedFlag.rawValue) {
+            let rawKey = symmetricKey.withUnsafeBytes { rawBufferPointer in
+                return Data(rawBufferPointer)
+            }
+            do {
+                try keychainStorage.set(data: rawKey,
+                                        forKey: keyTag,
+                                        behindBiometrics: false,
+                                        accessGroup: keychainGroupId,
+                                        accessibility: self.accessibility)
+                userDefaults.setValue(true, forKey: Constants.cryptoKeyMigratedFlag.rawValue)
+            } catch {
+                logger.error(eventName: "SQLite column encryption", message: "Failed to migrate encryption key, error: \(error.localizedDescription)")
+            }
+        }
+    }
+
     private func generateCryptoKey() throws -> SymmetricKey {
         return try cryptoManager.generateSymmetricKey()
     }
 
-    enum EncryptionTag: String {
+    enum Constants: String {
         case columnEncryptionKeyTag = "com.okta.SQLiteEncryptionKeyTag"
+        case cryptoKeyMigratedFlag = "com.okta.SQLiteEncryptionKeyMigrated_V0"
     }
 }

@@ -775,14 +775,20 @@ class OktaSharedSQLiteTests: XCTestCase {
             return OktaSharedSQLiteMock(sqlitePersistentStorage: storage,
                                         cryptoManager: crypto,
                                         restAPIClient: restAPI,
-                                        sqliteColumnEncryptionManager: OktaSQLiteEncryptionManager(cryptoManager: crypto, keychainGroupId: crypto.keychainGroupId),
+                                        sqliteColumnEncryptionManager: OktaSQLiteEncryptionManager(cryptoManager: crypto,
+                                                                                                   keychainGroupId: crypto.keychainGroupId,
+                                                                                                   applicationGroupId: crypto.keychainGroupId,
+                                                                                                   logger: OktaLoggerMock()),
                                         applicationConfig: config,
                                         logger: logger)
         default:
             return OktaSharedSQLite(sqlitePersistentStorage: storage,
                                     cryptoManager: crypto,
                                     restAPIClient: restAPI,
-                                    sqliteColumnEncryptionManager: OktaSQLiteEncryptionManager(cryptoManager: crypto, keychainGroupId: crypto.keychainGroupId),
+                                    sqliteColumnEncryptionManager: OktaSQLiteEncryptionManager(cryptoManager: crypto,
+                                                                                               keychainGroupId: crypto.keychainGroupId,
+                                                                                               applicationGroupId: crypto.keychainGroupId,
+                                                                                               logger: OktaLoggerMock()),
                                     applicationConfig: config,
                                     logger: logger)
         }
