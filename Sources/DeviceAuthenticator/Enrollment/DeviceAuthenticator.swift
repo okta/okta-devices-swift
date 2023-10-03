@@ -57,7 +57,7 @@ class DeviceAuthenticator: DeviceAuthenticatorProtocol {
     }
 
     func allEnrollments() -> [AuthenticatorEnrollmentProtocol] {
-        return impl.storageManager.allEnrollments()
+        return impl.storageManager?.allEnrollments() ?? []
     }
 
     func parsePushNotification(_ notification: UNNotification, allowedClockSkewInSeconds: Int) throws -> PushChallengeProtocol {
