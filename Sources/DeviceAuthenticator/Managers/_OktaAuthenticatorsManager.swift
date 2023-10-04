@@ -30,7 +30,7 @@ public class _OktaAuthenticatorsManager {
     let applicationConfig: ApplicationConfig
 
     init(applicationConfig: ApplicationConfig,
-         storageManager: PersistentStorageProtocol,
+         storageManager: PersistentStorageProtocol?,
          cryptoManager: OktaSharedCryptoProtocol,
          restAPI: ServerAPIProtocol,
          jwkGenerator: OktaJWKGenerator,

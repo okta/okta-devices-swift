@@ -447,7 +447,7 @@ class EnrollmentFlowTests: FunctionalTestsBase {
         }
         wait(for: [enrollmentExpectation], timeout: 3.0)
 
-        let newDeviceEnrollment = try? (deviceAuthenticator as? DeviceAuthenticator)?.impl.storageManager.deviceEnrollmentByOrgId("00otiyyDFtNCyFbnC0g4")
+        let newDeviceEnrollment = try? (deviceAuthenticator as? DeviceAuthenticator)?.impl.storageManager!.deviceEnrollmentByOrgId("00otiyyDFtNCyFbnC0g4")
         XCTAssertNotNil(newDeviceEnrollment)
         XCTAssertNotNil(newDeviceEnrollment?.clientInstanceKeyTag)
         XCTAssertNotEqual(newDeviceEnrollment?.clientInstanceKeyTag, oldDeviceEnrollment?.clientInstanceKeyTag)
@@ -505,8 +505,8 @@ class EnrollmentFlowTests: FunctionalTestsBase {
                                                     orgId: "00otiyyDFtNCyFbnC0g4",
                                                     clientInstanceId: "clientInstanceId",
                                                     clientInstanceKeyTag: "clientInstanceKeyTag")
-        XCTAssertNoThrow(try (deviceAuthenticator as? DeviceAuthenticator)?.impl.storageManager.storeDeviceEnrollment(deviceEnrollment, for: "00otiyyDFtNCyFbnC0g4"))
-        let oldDeviceEnrollment = try? (deviceAuthenticator as? DeviceAuthenticator)?.impl.storageManager.deviceEnrollmentByOrgId("00otiyyDFtNCyFbnC0g4")
+        XCTAssertNoThrow(try (deviceAuthenticator as? DeviceAuthenticator)?.impl.storageManager!.storeDeviceEnrollment(deviceEnrollment, for: "00otiyyDFtNCyFbnC0g4"))
+        let oldDeviceEnrollment = try? (deviceAuthenticator as? DeviceAuthenticator)?.impl.storageManager!.deviceEnrollmentByOrgId("00otiyyDFtNCyFbnC0g4")
         XCTAssertNotNil(oldDeviceEnrollment)
         XCTAssertNotNil(oldDeviceEnrollment?.clientInstanceKeyTag)
 
