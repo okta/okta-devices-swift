@@ -72,7 +72,7 @@ class DeviceAuthenticator: DeviceAuthenticatorProtocol {
                       httpClient: HTTPClientProtocol?,
                       loggerClient: OktaLoggerProtocol?) throws {
         var logger: OktaLoggerProtocol!
-        var storageManager: PersistentStorageProtocol!
+        var storageManager: PersistentStorageProtocol?
         if let loggerClient = loggerClient {
             logger = loggerClient
         } else {
