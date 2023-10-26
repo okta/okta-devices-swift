@@ -15,8 +15,9 @@ import WebAuthenticationUI
 
 // Wrapper protocol for Okta WebAuthentication object
 protocol OktaWebAuthProtocol {
-    func signIn(from: WebAuthentication.WindowAnchor?, completion: @escaping (Result<AuthFoundation.Token, WebAuthenticationError>) -> Void)
-    func signOut(from window: WebAuthentication.WindowAnchor?, credential: Credential?, completion: @escaping (Result<Void, WebAuthenticationError>) -> Void)
+    func signIn(from: WebAuthentication.WindowAnchor?,
+                options: [WebAuthentication.Option]?,
+                completion: @escaping (Result<AuthFoundation.Token, WebAuthenticationError>) -> Void)
     func signOut(from window: WebAuthentication.WindowAnchor?, completion: @escaping (Result<Void, WebAuthenticationError>) -> Void)
     func getAccessToken(completion: @escaping (Result<Token, OAuth2Error>) -> Void)
 

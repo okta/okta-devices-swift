@@ -46,7 +46,7 @@ class SignInViewModel: SignInViewModelProtocol {
     }
 
     private func startSignIn(on window: UIWindow) {
-        oktaWebAuth.signIn(from: window) { [weak self] result in
+        oktaWebAuth.signIn(from: window, options: nil) { [weak self] result in
             switch result {
             case .success(let token):
                 do {
