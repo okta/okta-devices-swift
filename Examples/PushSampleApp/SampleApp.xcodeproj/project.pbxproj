@@ -9,9 +9,6 @@
 /* Begin PBXBuildFile section */
 		4391A441A858B26610B4A344 /* libPods-SampleApp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 856BF0ABA5F1DFF06B111FB8 /* libPods-SampleApp.a */; };
 		7F1EC97A282C464800AE8ACE /* SignInFasterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F1EC979282C464800AE8ACE /* SignInFasterViewController.swift */; };
-		7F37B84A27F75C0200211492 /* AuthFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 7F37B84927F75C0200211492 /* AuthFoundation */; };
-		7F37B84C27F75C0200211492 /* OktaOAuth2 in Frameworks */ = {isa = PBXBuildFile; productRef = 7F37B84B27F75C0200211492 /* OktaOAuth2 */; };
-		7F37B84E27F75C0200211492 /* WebAuthenticationUI in Frameworks */ = {isa = PBXBuildFile; productRef = 7F37B84D27F75C0200211492 /* WebAuthenticationUI */; };
 		7F37B85027F7950C00211492 /* Okta.plist in Resources */ = {isa = PBXBuildFile; fileRef = 7F37B84F27F7950C00211492 /* Okta.plist */; };
 		7F37B85227FB711800211492 /* SignInViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F37B85127FB711800211492 /* SignInViewModel.swift */; };
 		7F47B97927F6361D00E78495 /* RootCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F47B97827F6361D00E78495 /* RootCoordinator.swift */; };
@@ -36,6 +33,10 @@
 		7FD4370C27FE580E00B0717C /* StoryboardController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FD4370B27FE580E00B0717C /* StoryboardController.swift */; };
 		7FD4371027FE6A9100B0717C /* OktaWebAuthProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FD4370F27FE6A9100B0717C /* OktaWebAuthProtocol.swift */; };
 		7FD4371227FE7FDA00B0717C /* UserDefaults+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FD4371127FE7FDA00B0717C /* UserDefaults+Extensions.swift */; };
+		B870772D2AEB0B0500DA7E4E /* AuthFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = B870772C2AEB0B0500DA7E4E /* AuthFoundation */; };
+		B870772F2AEB0B0500DA7E4E /* OktaDirectAuth in Frameworks */ = {isa = PBXBuildFile; productRef = B870772E2AEB0B0500DA7E4E /* OktaDirectAuth */; };
+		B87077312AEB0B0500DA7E4E /* OktaOAuth2 in Frameworks */ = {isa = PBXBuildFile; productRef = B87077302AEB0B0500DA7E4E /* OktaOAuth2 */; };
+		B87077332AEB0B0500DA7E4E /* WebAuthenticationUI in Frameworks */ = {isa = PBXBuildFile; productRef = B87077322AEB0B0500DA7E4E /* WebAuthenticationUI */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -89,10 +90,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7F37B84A27F75C0200211492 /* AuthFoundation in Frameworks */,
-				7F37B84C27F75C0200211492 /* OktaOAuth2 in Frameworks */,
-				7F37B84E27F75C0200211492 /* WebAuthenticationUI in Frameworks */,
+				B87077312AEB0B0500DA7E4E /* OktaOAuth2 in Frameworks */,
 				4391A441A858B26610B4A344 /* libPods-SampleApp.a in Frameworks */,
+				B870772D2AEB0B0500DA7E4E /* AuthFoundation in Frameworks */,
+				B87077332AEB0B0500DA7E4E /* WebAuthenticationUI in Frameworks */,
+				B870772F2AEB0B0500DA7E4E /* OktaDirectAuth in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -251,9 +253,10 @@
 			);
 			name = SampleApp;
 			packageProductDependencies = (
-				7F37B84927F75C0200211492 /* AuthFoundation */,
-				7F37B84B27F75C0200211492 /* OktaOAuth2 */,
-				7F37B84D27F75C0200211492 /* WebAuthenticationUI */,
+				B870772C2AEB0B0500DA7E4E /* AuthFoundation */,
+				B870772E2AEB0B0500DA7E4E /* OktaDirectAuth */,
+				B87077302AEB0B0500DA7E4E /* OktaOAuth2 */,
+				B87077322AEB0B0500DA7E4E /* WebAuthenticationUI */,
 			);
 			productName = SampleApp;
 			productReference = 7FA732AB27F6190000C38E10 /* SampleApp.app */;
@@ -306,7 +309,7 @@
 			);
 			mainGroup = 7FA732A227F6190000C38E10;
 			packageReferences = (
-				7F37B84827F75C0200211492 /* XCRemoteSwiftPackageReference "okta-mobile-swift" */,
+				B870772B2AEB0B0500DA7E4E /* XCRemoteSwiftPackageReference "okta-mobile-swift" */,
 			);
 			productRefGroup = 7FA732AC27F6190000C38E10 /* Products */;
 			projectDirPath = "";
@@ -669,30 +672,35 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		7F37B84827F75C0200211492 /* XCRemoteSwiftPackageReference "okta-mobile-swift" */ = {
+		B870772B2AEB0B0500DA7E4E /* XCRemoteSwiftPackageReference "okta-mobile-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/okta/okta-mobile-swift";
+			repositoryURL = "https://github.com/okta/okta-mobile-swift.git";
 			requirement = {
-				branch = master;
-				kind = branch;
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.4.3;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		7F37B84927F75C0200211492 /* AuthFoundation */ = {
+		B870772C2AEB0B0500DA7E4E /* AuthFoundation */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 7F37B84827F75C0200211492 /* XCRemoteSwiftPackageReference "okta-mobile-swift" */;
+			package = B870772B2AEB0B0500DA7E4E /* XCRemoteSwiftPackageReference "okta-mobile-swift" */;
 			productName = AuthFoundation;
 		};
-		7F37B84B27F75C0200211492 /* OktaOAuth2 */ = {
+		B870772E2AEB0B0500DA7E4E /* OktaDirectAuth */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 7F37B84827F75C0200211492 /* XCRemoteSwiftPackageReference "okta-mobile-swift" */;
+			package = B870772B2AEB0B0500DA7E4E /* XCRemoteSwiftPackageReference "okta-mobile-swift" */;
+			productName = OktaDirectAuth;
+		};
+		B87077302AEB0B0500DA7E4E /* OktaOAuth2 */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B870772B2AEB0B0500DA7E4E /* XCRemoteSwiftPackageReference "okta-mobile-swift" */;
 			productName = OktaOAuth2;
 		};
-		7F37B84D27F75C0200211492 /* WebAuthenticationUI */ = {
+		B87077322AEB0B0500DA7E4E /* WebAuthenticationUI */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 7F37B84827F75C0200211492 /* XCRemoteSwiftPackageReference "okta-mobile-swift" */;
+			package = B870772B2AEB0B0500DA7E4E /* XCRemoteSwiftPackageReference "okta-mobile-swift" */;
 			productName = WebAuthenticationUI;
 		};
 /* End XCSwiftPackageProductDependency section */
