@@ -112,6 +112,9 @@ class OktaSharedSQLite: OktaSharedSQLiteProtocol {
                 try db.execute(
                     sql: "DELETE from EnrolledMethod WHERE enrollmentId = ? AND orgId = ?",
                     arguments: [enrollmentDuplicate.enrollmentId, enrollmentDuplicate.organization.id])
+                try db.execute(
+                    sql: "DELETE from Enrollment WHERE enrollmentId = ?",
+                    arguments: [enrollmentDuplicate.enrollmentId])
             }
             try db.execute(sql: "INSERT INTO Enrollment (enrollmentId, orgId, serverErrorCode, orgUrl, userId, username, deviceId, createdTimestamp, updatedTimestamp) VALUES (:enrollmentId, :orgId, :serverErrorCode, :orgUrl, :userId, :username, :deviceId, :createdTimestamp, :updatedTimestamp) ON CONFLICT(enrollmentId,orgId) DO UPDATE SET enrollmentId = :enrollmentId, orgId = :orgId, serverErrorCode = :serverErrorCode, orgUrl = :orgUrl, userId = :userId, username = :username, deviceId = :deviceId, updatedTimestamp = :updatedTimestamp", arguments: writeArguments)
 
@@ -158,7 +161,7 @@ class OktaSharedSQLite: OktaSharedSQLiteProtocol {
 
     func storeEnrollment(_ enrollment: AuthenticatorEnrollmentProtocol) throws {
         let writeArguments = try enrollmentStatementWriteArguments(enrollment)
-        let enrollmentDuplicate = enrollmentByOrgId(enrollment.organization.id, userId: enrollment.user.id)
+        let enrollmentDuplicate = enrollmentById(enrollmentId: enrollment.enrollmentId)
         do {
             try pool?.write({ db in
                 try storeEnrollment(enrollment, oldEnrollment: enrollmentDuplicate, writeArguments: writeArguments, db: db)
