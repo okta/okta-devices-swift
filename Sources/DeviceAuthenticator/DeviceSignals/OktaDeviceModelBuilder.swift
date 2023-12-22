@@ -17,6 +17,9 @@ import LoggerCore
 #else
 import OktaLogger
 #endif
+#if os(iOS)
+import UIKit
+#endif
 
 class OktaDeviceModelBuilder {
 
