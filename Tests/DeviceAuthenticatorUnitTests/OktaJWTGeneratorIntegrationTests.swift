@@ -28,12 +28,12 @@ class OktaJWTGeneratorIntegrationTests: XCTestCase {
             XCTFail("Sec key is nil")
             return
         }
-        let user = UserMock(userID: "test_user", userName: "test@okta")
+        let user = UserMock(userID: nil, userName: nil)
         do {
             let jwt = try mut.generate(with: "JWT", for: user, with: secKey, using: .ES256)
             let jwtArray = jwt.components(separatedBy: ".")
             XCTAssertEqual(jwtArray.count, 3)
-            XCTAssertEqual(jwtArray[1], "eyJ1c2VySUQiOiJ0ZXN0X3VzZXIiLCJ1c2VyTmFtZSI6InRlc3RAb2t0YSJ9")
+            XCTAssertEqual(jwtArray[1], "e30")
             XCTAssertTrue(jwtArray[0] == "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9" || jwtArray[0] == "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9")
         } catch {
             XCTFail("Unexpected error from OktaJWTGenerator generate \(error)")

@@ -8,7 +8,7 @@ orbs:
 executors:
   apple-ci-arm-medium:
     macos:
-      xcode: 14.3.1
+      xcode: 15.2.0
     resource_class: macos.m1.medium.gen1
 
 jobs:
@@ -21,7 +21,7 @@ jobs:
           command: cd Examples/PushSampleApp; pod install
       - run:
           name: "Build iOS PushSDK Sample App"
-          command: xcodebuild -workspace ./Examples/PushSampleApp/SampleApp.xcworkspace -scheme "SampleApp" -destination "platform=iOS Simulator,OS=latest,name=iPhone 14" clean build
+          command: xcodebuild -workspace ./Examples/PushSampleApp/SampleApp.xcworkspace -scheme "SampleApp" -destination "platform=iOS Simulator,OS=latest,name=iPhone 15" clean build
   spm:
     executor: apple-ci-arm-medium
     steps:
@@ -41,7 +41,7 @@ jobs:
           command: pod install
       - run:
           name: Build for testing and code coverage
-          command: set -o pipefail && xcodebuild -workspace DeviceAuthenticator.xcworkspace -scheme "DeviceAuthenticatorFramework" -destination "platform=iOS Simulator,OS=latest,name=iPhone 14" -derivedDataPath DerivedData build-for-testing | xcpretty
+          command: set -o pipefail && xcodebuild -workspace DeviceAuthenticator.xcworkspace -scheme "DeviceAuthenticatorFramework" -destination "platform=iOS Simulator,OS=latest,name=iPhone 15" -derivedDataPath DerivedData build-for-testing | xcpretty
       - persist_to_workspace:
           root: DerivedData
           paths:
@@ -54,7 +54,7 @@ jobs:
           at: DerivedData
       - run:
           name: Unit tests
-          command: set -o pipefail && xcodebuild -workspace DeviceAuthenticator.xcworkspace -scheme "DeviceAuthenticatorFramework" -destination "platform=iOS Simulator,OS=latest,name=iPhone 14" -derivedDataPath DerivedData test-without-building -only-testing:DeviceAuthenticatorUnitTests -enableCodeCoverage YES | xcpretty
+          command: set -o pipefail && xcodebuild -workspace DeviceAuthenticator.xcworkspace -scheme "DeviceAuthenticatorFramework" -destination "platform=iOS Simulator,OS=latest,name=iPhone 15" -derivedDataPath DerivedData test-without-building -only-testing:DeviceAuthenticatorUnitTests -enableCodeCoverage YES | xcpretty
   functional-tests:
     executor: apple-ci-arm-medium
     steps:
@@ -63,7 +63,7 @@ jobs:
           at: DerivedData
       - run:
           name: Functional tests
-          command: set -o pipefail && xcodebuild -workspace DeviceAuthenticator.xcworkspace -scheme "DeviceAuthenticatorFramework" -destination "platform=iOS Simulator,OS=latest,name=iPhone 14" -derivedDataPath DerivedData test-without-building -only-testing:DeviceAuthenticatorFunctionalTests -enableCodeCoverage YES | xcpretty
+          command: set -o pipefail && xcodebuild -workspace DeviceAuthenticator.xcworkspace -scheme "DeviceAuthenticatorFramework" -destination "platform=iOS Simulator,OS=latest,name=iPhone 15" -derivedDataPath DerivedData test-without-building -only-testing:DeviceAuthenticatorFunctionalTests -enableCodeCoverage YES | xcpretty
   snyk-scan:
     executor: apple-ci-arm-medium
     steps:
