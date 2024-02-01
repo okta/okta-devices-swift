@@ -144,13 +144,14 @@ class SignalsManagerTests: XCTestCase {
 
     // Verify that the integration response matches that expected by the API spec
     func testIntegrationDataResponse_DefaultType() {
-        let expectedJson = "{\"configuration\":{\"type\":\"DEFAULT\",\"format\":\"JSON\"},\"name\":\"com.okta.integration\",\"signal\":\"exampleSignal\",\"timeCollected\":1591917512}"
+        let expectedJson = "{\"configuration\":{\"format\":\"JSON\",\"type\":\"DEFAULT\"},\"name\":\"com.okta.integration\",\"signal\":\"exampleSignal\",\"timeCollected\":1591917512}"
 
         let config = _DeviceChallengeTokenConfiguration.local
         let signalData = _PluginSignalData(name: "com.okta.integration", configuration: config, signal: "exampleSignal", timeCollected: 1591917512)
         let integrationData = _IntegrationData.signal(signalData)
-
-        guard let data = try? JSONEncoder().encode(integrationData),
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.sortedKeys]
+        guard let data = try? encoder.encode(integrationData),
               let json = String(data: data, encoding: .utf8) else {
                   XCTFail()
                   return

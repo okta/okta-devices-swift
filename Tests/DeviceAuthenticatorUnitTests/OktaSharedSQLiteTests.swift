@@ -141,6 +141,8 @@ class OktaSharedSQLiteTests: XCTestCase {
 
         // Check serialized metadata for byte-level comparison
         let encoder = JSONEncoder()
+        encoder.outputFormatting = [.sortedKeys]
+
         XCTAssertEqual(try? encoder.encode(retrievedPush.factorData), try! encoder.encode(push!.factorData))
         XCTAssertNotNil(retrievedPush.factorData.pushLinks?.pendingLink)
         XCTAssertEqual(retrievedPush.factorData.pushLinks?.pendingLink, push!.factorData.pushLinks?.pendingLink)
