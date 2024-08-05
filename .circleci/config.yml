@@ -3,7 +3,7 @@
 version: 2.1
 
 orbs:
-  general-platform-helpers: okta/general-platform-helpers@1.8
+  general-platform-helpers: okta/general-platform-helpers@1.9
 
 executors:
   apple-ci-arm-medium:
@@ -77,7 +77,6 @@ jobs:
       - run:
           name: run swift package show dependencies
           command: swift package show-dependencies
-      - general-platform-helpers/step-load-dependencies
       - general-platform-helpers/step-run-snyk-monitor:
           scan-all-projects: true
           skip-unresolved: false
@@ -100,25 +99,17 @@ workflows:
       - functional-tests:
           requires:
             - build
-      - general-platform-helpers/job-snyk-prepare:
-          name: prepare-snyk
-          filters:
-            branches:
-              only:
-                - master
       - snyk-scan:
           name: execute-snyk
           filters:
             branches:
               only:
                 - master
-          requires:
-            - prepare-snyk
+          context:
+            - static-analysis
   semgrep:
     jobs:
-      - general-platform-helpers/job-semgrep-prepare:
-          name: semgrep-prepare
       - general-platform-helpers/job-semgrep-scan:
           name: semgrep-scan
-          requires:
-            - semgrep-prepare
+          context:
+            - static-analysis
