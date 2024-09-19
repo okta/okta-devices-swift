@@ -1,115 +1,25 @@
-# Use the latest 2.1 version of CircleCI pipeline process engine.
-# See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
 
-orbs:
-  general-platform-helpers: okta/general-platform-helpers@1.9
+# orbs:
+#   general-helpers: atko-devices/eng-services-platform-helpers-general@2.0
+#   win-helpers: atko-devices/eng-rps-platform-windows@1.0
 
-executors:
-  apple-ci-arm-medium:
-    macos:
-      xcode: 15.2.0
-    resource_class: macos.m1.medium.gen1
-
-jobs:
-  sample-app:
-    executor: apple-ci-arm-medium
-    steps:
-      - checkout
-      - run:
-          name: Install pods
-          command: cd Examples/PushSampleApp; pod install
-      - run:
-          name: "Build iOS PushSDK Sample App"
-          command: xcodebuild -workspace ./Examples/PushSampleApp/SampleApp.xcworkspace -scheme "SampleApp" -destination "platform=iOS Simulator,OS=latest,name=iPhone 15" clean build
-  spm:
-    executor: apple-ci-arm-medium
-    steps:
-      - checkout
-      - run:
-          name: Build Swift Package
-          command: swift build
-  build:
-    executor: apple-ci-arm-medium
-    steps:
-      - checkout
-      - run:
-          name: Install rosetta # Needed for swiftlint to work on M1 machines.
-          command: softwareupdate --install-rosetta --agree-to-license
-      - run:
-          name: Install pods
-          command: pod install
-      - run:
-          name: Build for testing and code coverage
-          command: set -o pipefail && xcodebuild -workspace DeviceAuthenticator.xcworkspace -scheme "DeviceAuthenticatorFramework" -destination "platform=iOS Simulator,OS=latest,name=iPhone 15" -derivedDataPath DerivedData build-for-testing | xcpretty
-      - persist_to_workspace:
-          root: DerivedData
-          paths:
-            - Build/Products
-  unit-tests:
-    executor: apple-ci-arm-medium
-    steps:
-      - checkout
-      - attach_workspace:
-          at: DerivedData
-      - run:
-          name: Unit tests
-          command: set -o pipefail && xcodebuild -workspace DeviceAuthenticator.xcworkspace -scheme "DeviceAuthenticatorFramework" -destination "platform=iOS Simulator,OS=latest,name=iPhone 15" -derivedDataPath DerivedData test-without-building -only-testing:DeviceAuthenticatorUnitTests -enableCodeCoverage YES | xcpretty
-  functional-tests:
-    executor: apple-ci-arm-medium
-    steps:
-      - checkout
-      - attach_workspace:
-          at: DerivedData
-      - run:
-          name: Functional tests
-          command: set -o pipefail && xcodebuild -workspace DeviceAuthenticator.xcworkspace -scheme "DeviceAuthenticatorFramework" -destination "platform=iOS Simulator,OS=latest,name=iPhone 15" -derivedDataPath DerivedData test-without-building -only-testing:DeviceAuthenticatorFunctionalTests -enableCodeCoverage YES | xcpretty
-  snyk-scan:
-    executor: apple-ci-arm-medium
-    steps:
-      - checkout
-      - run:
-          name: Install rosetta # Needed for snyk to work on M1 machines.
-          command: softwareupdate --install-rosetta --agree-to-license
-      - run:
-          name: Install pods
-          command: pod install
-      - run:
-          name: run swift package show dependencies
-          command: swift package show-dependencies
-      - general-platform-helpers/step-run-snyk-monitor:
-          scan-all-projects: true
-          skip-unresolved: false
-          run-on-non-main: true
-          os: macos
-
+############### WORKFLOWS ###############
 workflows:
-  build-sample-app:
+  test-build:
     jobs:
-      - sample-app
-  build-swift-package:
-    jobs:
-      - spm
-  build-and-test:
-    jobs:
-      - build
-      - unit-tests:
-          requires:
-            - build
-      - functional-tests:
-          requires:
-            - build
-      - snyk-scan:
-          name: execute-snyk
-          filters:
-            branches:
-              only:
-                - master
-          context:
-            - static-analysis
-  semgrep:
-    jobs:
-      - general-platform-helpers/job-semgrep-scan:
-          name: semgrep-scan
-          context:
-            - static-analysis
+      - build-linux
+
+############### JOBS ###############
+jobs:
+  build-linux:
+    machine:
+      image: ubuntu-2004:current
+    resource_class: large
+    steps:
+      - checkout
+      - run:
+          name: dbus
+          command: qdbus --system
+  
+############### COMMANDS ###############
