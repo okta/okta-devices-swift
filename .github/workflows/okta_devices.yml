@@ -1,0 +1,25 @@
+name: Linux POC
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  Poc-on-Ubuntu:
+    name: Poc on Ubuntu
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '14'
+      - run: |
+          pwd
+          ls
+          who
+          whoami
+          echo $DBUS_SESSION_BUS_ADDRESS
+          dbus-monitor
+          systemctl status dbus
