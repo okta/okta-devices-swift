@@ -43,7 +43,7 @@ protocol OktaCryptoProtocol {
     ///   - keyPairWithAlgorithm: algorith used for generating keys
     ///   - tag: unique identifier used to store or retrieve keys
     ///   - useSecureEnclave: option to store the key in secure enclave
-    ///   - isAccessibleOnOtherDevice: reflects to accesibility setting. If `true`, `kSecAttrAccessibleAfterFirstUnlock` is passed while if `false`  `kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly` is passed as accesibility setting.
+    ///   - isAccessibleOnOtherDevice: reflects to accessibility setting. If `true`, `kSecAttrAccessibleAfterFirstUnlock` is passed while if `false`  `kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly` is passed as accessibility setting.
     ///   - useBiometrics: option to store key protected by biometrics
     /// - Returns: true if sucessful
     func generate(keyPairWith algorithm: Algorithm,
