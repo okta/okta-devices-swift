@@ -37,7 +37,7 @@ class SignalPluginConfigCollection {
         if signalPluginConfigs.isEmpty {
             logger.info(eventName: "", message: "no manifest file values passed in")
         }
-        // loop through all the integration configuration dictionaries recieved from manifest file
+        // loop through all the integration configuration dictionaries received from manifest file
         for config in signalPluginConfigs {
             do {
                 let decodedConfig = try JSONDecoder().decode(IntegrationsConfig.self, from: config)

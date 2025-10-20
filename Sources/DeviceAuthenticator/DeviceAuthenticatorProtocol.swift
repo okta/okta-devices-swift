@@ -49,7 +49,7 @@ public protocol DeviceAuthenticatorProtocol {
 
     ///  Given a push notification content received by your app, attempt to parse it as an Okta push.
     ///  - Parameters:
-    ///   - notification: Push notification recieved by application
+    ///   - notification: Push notification received by application
     ///   - allowedClockSkewInSeconds: The amount of clock skew in seconds to tolerate when verifying
     ///  Discussion: In the case of a non-okta notification, this function will throw an OktaError.pushNotRecognized object.
     func parsePushNotification(_ notification: UNNotification, allowedClockSkewInSeconds: Int) throws -> PushChallengeProtocol
