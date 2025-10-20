@@ -25,7 +25,7 @@ class RestAPIMock: ServerAPIProtocol {
     typealias downloadAuthenticatorMetadataType = (URL, String, OktaRestAPIToken, (Result<AuthenticatorMetaDataModel, DeviceAuthenticatorError>) -> Void) -> Void
     typealias deleteAuthenticatorRequestType = (AuthenticatorEnrollment, OktaRestAPIToken, (_ result: HTTPURLResult?, _ error: DeviceAuthenticatorError?) -> Void) -> Void
     typealias pendingChallengeRequestType = (URL, OktaRestAPIToken, (HTTPURLResult?, DeviceAuthenticatorError?) -> Void) -> Void
-    typealias retrieveMaintenaceTokenType = (URL, String, [String], String,(Result<HTTPURLResult, DeviceAuthenticatorError>) -> Void) -> Void
+    typealias retrieveMaintenanceTokenType = (URL, String, [String], String,(Result<HTTPURLResult, DeviceAuthenticatorError>) -> Void) -> Void
     typealias updateDeviceTokenType = (String, URL, OktaRestAPIToken, String, (Result<Void, DeviceAuthenticatorError>) -> Void) -> Void
     typealias verifyDeviceChallengeType = (URL, [String: String]?, Data?, (HTTPURLResult?, DeviceAuthenticatorError?) -> Void) -> Void
 
@@ -36,7 +36,7 @@ class RestAPIMock: ServerAPIProtocol {
     var error: DeviceAuthenticatorError?
     var deleteAuthenticatorRequestHook: deleteAuthenticatorRequestType?
     var pendingChallengeRequestHook: pendingChallengeRequestType?
-    var retrieveMaintenaceTokenHook: retrieveMaintenaceTokenType?
+    var retrieveMaintenanceTokenHook: retrieveMaintenanceTokenType?
     var updateDeviceTokenHook: updateDeviceTokenType?
     var verifyDeviceChallengeHook: verifyDeviceChallengeType?
 
@@ -183,8 +183,8 @@ class RestAPIMock: ServerAPIProtocol {
                                   scopes: [String],
                                   assertion: String,
                                   completion: @escaping (Result<HTTPURLResult, DeviceAuthenticatorError>) -> Void) {
-        if let retrieveMaintenaceTokenHook = retrieveMaintenaceTokenHook {
-            retrieveMaintenaceTokenHook(orgURL, oidcClientId, scopes, assertion, completion)
+        if let retrieveMaintenanceTokenHook = retrieveMaintenanceTokenHook {
+            retrieveMaintenanceTokenHook(orgURL, oidcClientId, scopes, assertion, completion)
         } else {
             restAPI.retrieveMaintenanceToken(with: orgURL,
                                              oidcClientId: oidcClientId,

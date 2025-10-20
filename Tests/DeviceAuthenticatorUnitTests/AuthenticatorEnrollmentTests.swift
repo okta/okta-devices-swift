@@ -339,9 +339,9 @@ class AuthenticatorEnrollmentTests: XCTestCase {
                                                                                               userVerification: .preferred,
                                                                                               methods: [.push]))
         try mockStorageManager.storeAuthenticatorPolicy(policy, orgId: enrollment.orgId)
-        var retrieveMaintenaceTokenHookCalled = false
-        restAPIMock.retrieveMaintenaceTokenHook = { url, oidcClientId, scopes, assertion, completion in
-            retrieveMaintenaceTokenHookCalled = true
+        var retrieveMaintenanceTokenHookCalled = false
+        restAPIMock.retrieveMaintenanceTokenHook = { url, oidcClientId, scopes, assertion, completion in
+            retrieveMaintenanceTokenHookCalled = true
             XCTAssertEqual(url, self.enrollment.orgHost)
             XCTAssertEqual(oidcClientId, policy.metadata.settings?.oauthClientId ?? "")
             XCTAssertEqual(scopes, ["okta.myAccount.appAuthenticator.maintenance.manage", "okta.myAccount.appAuthenticator.maintenance.read"])
@@ -374,7 +374,7 @@ class AuthenticatorEnrollmentTests: XCTestCase {
             retrieveMaintenanceTokenCallbackCalled = true
         }
 
-        XCTAssertTrue(retrieveMaintenaceTokenHookCalled)
+        XCTAssertTrue(retrieveMaintenanceTokenHookCalled)
         XCTAssertTrue(retrieveMaintenanceTokenCallbackCalled)
     }
 
@@ -391,9 +391,9 @@ class AuthenticatorEnrollmentTests: XCTestCase {
                                                                                               userVerification: .preferred,
                                                                                               methods: [.push]))
         try mockStorageManager.storeAuthenticatorPolicy(policy, orgId: enrollment.orgId)
-        var retrieveMaintenaceTokenHookCalled = false
-        restAPIMock.retrieveMaintenaceTokenHook = { url, oidcClientId, scopes, assertion, completion in
-            retrieveMaintenaceTokenHookCalled = true
+        var retrieveMaintenanceTokenHookCalled = false
+        restAPIMock.retrieveMaintenanceTokenHook = { url, oidcClientId, scopes, assertion, completion in
+            retrieveMaintenanceTokenHookCalled = true
             let httpResponse = HTTPURLResponse(url: url, statusCode: 401, httpVersion: nil, headerFields: nil)
             completion(.success(HTTPURLResult(request: nil, response: httpResponse, data: nil, error: nil)))
         }
@@ -411,7 +411,7 @@ class AuthenticatorEnrollmentTests: XCTestCase {
             retrieveMaintenanceTokenCallbackCalled = true
         }
 
-        XCTAssertTrue(retrieveMaintenaceTokenHookCalled)
+        XCTAssertTrue(retrieveMaintenanceTokenHookCalled)
         XCTAssertTrue(retrieveMaintenanceTokenCallbackCalled)
     }
 
