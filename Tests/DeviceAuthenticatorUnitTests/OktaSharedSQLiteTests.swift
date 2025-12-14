@@ -569,17 +569,23 @@ class OktaSharedSQLiteTests: XCTestCase {
         // WHEN:
         // Raw SQLite file get's accessed
         let sqliteDestinationUrl = sqlDirectoryURL.appendingPathComponent(sqliteFileBasename+"-wal")
-        let text = try String(contentsOf: sqliteDestinationUrl, encoding: .ascii)
+        let fileData = try Data(contentsOf: sqliteDestinationUrl)
+        // Helper to check if a string exists in binary data
+        func contains(_ searchString: String, in data: Data) -> Bool {
+            guard let searchData = searchString.data(using: .utf8) else { return false }
+            return data.range(of: searchData) != nil
+        }
 
         // THEN:
-        // - other SQLite columns are stored in unencrypted way. Verify it by accessing random columns
-        XCTAssertFalse(text.contains(enrollment.userName!))
+        // - Sensitive columns are encrypted (userName should NOT be found)
+        XCTAssertFalse(contains(enrollment.userName!, in: fileData))
 
-        XCTAssertTrue(text.contains(enrollment.enrollmentId))
-        XCTAssertTrue(text.contains(enrollment.orgHost.path))
-        XCTAssertTrue(text.contains(enrollment.userId))
-        XCTAssertTrue(text.contains(enrollment.orgId))
-        XCTAssertTrue(text.contains(enrollment.deviceId))
+        // - Other SQLite columns are stored in unencrypted way. we should be able to access other columns
+        XCTAssertTrue(contains(enrollment.enrollmentId, in: fileData))
+        XCTAssertTrue(contains(enrollment.orgHost.path, in: fileData))
+        XCTAssertTrue(contains(enrollment.userId, in: fileData))
+        XCTAssertTrue(contains(enrollment.orgId, in: fileData))
+        XCTAssertTrue(contains(enrollment.deviceId, in: fileData))
     }
 
     // MARK: Migration
