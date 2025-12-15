@@ -72,13 +72,13 @@ class OktaCryptoManager: OktaSharedCryptoProtocol {
             keyAttr[kSecAttrAccessGroup] = keychainGroupId as NSObject
         }
         if useSecureEnclave {
-            keyAttr[kSecAttrTokenID] =  kSecAttrTokenIDSecureEnclave as NSObject
+            keyAttr[kSecAttrTokenID] = kSecAttrTokenIDSecureEnclave as NSObject
         }
 
         switch algorithm {
         case .ES256:
             keyAttr[kSecAttrKeyType] = kSecAttrKeyTypeECSECPrimeRandom
-            keyAttr[kSecAttrKeySizeInBits] =  256 as NSObject
+            keyAttr[kSecAttrKeySizeInBits] = 256 as NSObject
             break
         }
 

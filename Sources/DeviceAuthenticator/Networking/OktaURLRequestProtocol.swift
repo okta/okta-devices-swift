@@ -13,7 +13,8 @@
 import Foundation
 
 /// Abstract interface that represents HTTP request
-@objc protocol URLRequestProtocol {
+@objc
+protocol URLRequestProtocol {
     var currentRequest: URLRequest { get }
 
     /**
@@ -34,7 +35,7 @@ import Foundation
      *
      * - Returns: Self
      */
-    @objc func response(completion: @escaping (_ result: HTTPURLResult) -> Void)
+    func response(completion: @escaping (_ result: HTTPURLResult) -> Void)
 
     /**
      * Adds a header to the request
@@ -45,6 +46,5 @@ import Foundation
      *
      * - Returns: Self
      */
-    @objc
     func addHeader(name: String, value: String) -> Self
 }

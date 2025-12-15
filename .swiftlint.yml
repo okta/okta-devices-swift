@@ -1,4 +1,4 @@
-whitelist_rules:
+only_rules:
   # Spacing
   - opening_brace
   - closing_brace
@@ -9,7 +9,7 @@ whitelist_rules:
   # Whitespace (Xcode configuration)
   - leading_whitespace
   - let_var_whitespace
-  - operator_whitespace
+  - function_name_whitespace
   - operator_usage_whitespace
   - return_arrow_whitespace
   - trailing_whitespace
@@ -30,6 +30,7 @@ whitelist_rules:
   - closure_parameter_position
 
   # Style
+  - attributes
   - collection_alignment
   - control_statement
   - file_header
@@ -39,7 +40,6 @@ whitelist_rules:
   - protocol_property_accessors_order
 
   # Lint
-  - anyobject_protocol
   - class_delegate_protocol
   - cyclomatic_complexity
 
@@ -59,7 +59,7 @@ leading_whitespace:
   severity: error
 let_var_whitespace:
   severity: error
-operator_whitespace:
+function_name_whitespace:
   severity: error
 operator_usage_whitespace:
   severity: error
@@ -103,11 +103,7 @@ file_header:
                   \*
                   \* See the License for the specific language governing permissions and limitations under the License.
 
-anyobject_protocol:
-  severity: error
 class_delegate_protocol:
-  severity: error
-cyclomatic_complexity:
   severity: error
 cyclomatic_complexity: 15
 
@@ -118,5 +114,4 @@ excluded:
 - Tests
 - Examples/PushSampleApp/Pods
 - DerivedData
-- .build
 - Package.swift

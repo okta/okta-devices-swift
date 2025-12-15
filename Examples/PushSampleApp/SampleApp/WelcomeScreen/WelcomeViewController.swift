@@ -34,11 +34,13 @@ class WelcomeViewController: UIViewController, StoryboardController {
         didRequestSignInFaster()
     }
 
-    @objc func didTapSettingsButton() {
+    @objc
+    func didTapSettingsButton() {
         didTapSettings()
     }
 
-    @objc func didTapSignOutButton() {
+    @objc
+    func didTapSignOutButton() {
         didTapSignOut()
     }
 

@@ -57,11 +57,11 @@ class OktaFactorPush: OktaFactor {
     }
 
     var description: String {
-        let info: [String: Any] =  ["type": "Push",
-                                    "id": factorData.id,
-                                    "popKey": factorData.proofOfPossessionKeyTag,
-                                    "uvKey": factorData.userVerificationKeyTag ?? "",
-                                    "uvBioOrPinKey": factorData.userVerificationBioOrPinKeyTag ?? ""]
+        let info: [String: Any] = ["type": "Push",
+                                   "id": factorData.id,
+                                   "popKey": factorData.proofOfPossessionKeyTag,
+                                   "uvKey": factorData.userVerificationKeyTag ?? "",
+                                   "uvBioOrPinKey": factorData.userVerificationBioOrPinKeyTag ?? ""]
         return "\(info as AnyObject)"
     }
 

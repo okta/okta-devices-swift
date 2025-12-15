@@ -11,7 +11,7 @@ end
 def device_authenticator_common
   okta_jwt
   okta_logger
-  pod 'SwiftLint', '0.32.0'
+  pod 'SwiftLint', '0.62.2'
   pod 'GRDB.swift', '~> 5'
 end
 
@@ -22,13 +22,13 @@ end
 
 target 'DeviceAuthenticatorUnitTests' do
   platform :ios, '13.0'
-  pod 'SwiftLint', '0.32.0'
+  pod 'SwiftLint', '0.62.2'
   pod 'DeviceAuthenticator', :path => '.'
 end
 
 target 'DeviceAuthenticatorFunctionalTests' do
   platform :ios, '13.0'
-  pod 'SwiftLint', '0.32.0'
+  pod 'SwiftLint', '0.62.2'
   pod 'DeviceAuthenticator', :path => '.'
 end
 
