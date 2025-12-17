@@ -107,9 +107,3 @@ workflows:
                 - master
           context:
             - static-analysis
-  semgrep:
-    jobs:
-      - general-platform-helpers/job-semgrep-scan:
-          name: semgrep-scan
-          context:
-            - static-analysis
