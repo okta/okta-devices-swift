@@ -109,7 +109,7 @@ class SignalsManagerTests: XCTestCase {
         var signals = signalsManager.collectSignals(with: name)
         var expected = _IntegrationData.error(SignalPluginMock.mockError)
         let encoder = JSONEncoder()
-        XCTAssertEqual(try? encoder.encode(signals), try? encoder.encode(expected))
+        XCTAssertEqual(try! encoder.encode(signals), try! encoder.encode(expected))
 
         // now produce real signals
         var signalMock = IntegritySignalMock()
@@ -124,7 +124,7 @@ class SignalsManagerTests: XCTestCase {
 
         signals = signalsManager.collectSignals(with: name)
         expected = pluginMock.signals
-        XCTAssertEqual(try? encoder.encode(signals), try? encoder.encode(expected))
+        XCTAssertEqual(try! encoder.encode(signals), try! encoder.encode(expected))
 
         if case .signal(let integrationData) = signals {
             XCTAssertEqual(integrationData.timeCollected, collectionTime)
@@ -139,7 +139,7 @@ class SignalsManagerTests: XCTestCase {
         let fakeName = "hello world"
         signals = signalsManager.collectSignals(with: fakeName)
         expected = _IntegrationData.error(_PluginSignalError.notFoundError(name: fakeName))
-        XCTAssertEqual(try? encoder.encode(signals), try? encoder.encode(expected))
+        XCTAssertEqual(try! encoder.encode(signals), try! encoder.encode(expected))
     }
 
     // Verify that the integration response matches that expected by the API spec

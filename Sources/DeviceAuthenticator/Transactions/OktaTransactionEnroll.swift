@@ -297,7 +297,7 @@ class OktaTransactionEnroll: OktaTransaction {
                                  onCompletion: @escaping (Result<AuthenticatorEnrollmentProtocol, DeviceAuthenticatorError>) -> Void) {
         guard case .serverAPIError(_, let serverAPIErrorModel) = error,
               let errorCode = serverAPIErrorModel?.errorCode?.rawValue,
-              (ServerErrorCode(raw: errorCode) == .deviceDeleted || ServerErrorCode(raw: errorCode) == .invalidToken),
+              ServerErrorCode(raw: errorCode) == .deviceDeleted || ServerErrorCode(raw: errorCode) == .invalidToken,
               self.enrollmentToUpdate == nil,
               self.deviceEnrollment != nil else {
             onCompletion(.failure(error))

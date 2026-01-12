@@ -462,9 +462,9 @@ class LAContextMock: LAContext {
             return passcode && biometry != .none
         case .deviceOwnerAuthentication:
             return passcode
-        case .deviceOwnerAuthenticationWithWatch:
+        case .deviceOwnerAuthenticationWithCompanion:
             return passcode
-        case .deviceOwnerAuthenticationWithBiometricsOrWatch:
+        case .deviceOwnerAuthenticationWithBiometricsOrCompanion:
             return passcode
         @unknown default:
             return passcode
