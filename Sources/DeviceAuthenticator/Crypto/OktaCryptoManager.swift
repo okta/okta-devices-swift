@@ -50,12 +50,12 @@ class OktaCryptoManager: OktaSharedCryptoProtocol {
             let settings = biometricSettings ?? BiometricEnrollmentSettings.default
             accessControlFlags.update(with: settings.accessControlFlags)
         }
-        let accesibilitySetting = isAccessibleOnOtherDevice ? kSecAttrAccessibleAfterFirstUnlock : kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
+        let accessibilitySetting = isAccessibleOnOtherDevice ? kSecAttrAccessibleAfterFirstUnlock : kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
 
         var accessControlError: Unmanaged<CFError>?
         guard let accessControl = SecAccessControlCreateWithFlags(
                                   kCFAllocatorDefault,
-                                  accesibilitySetting,
+                                  accessibilitySetting,
                                   accessControlFlags,
                                   &accessControlError) else {
             var osStatus: OSStatus = -1

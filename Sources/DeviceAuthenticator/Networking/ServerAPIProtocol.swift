@@ -163,7 +163,7 @@ extension ServerAPIProtocol {
         }
     }
 
-    /// - Description: Retrieves maintenace access token for update and read operations
+    /// - Description: Retrieves maintenance access token for update and read operations
     /// - Parameters:
     ///   - orgURL:         Org host url
     ///   - authorizationServerId: Authorization server id. Pass nil if you are using Okta organization server. Pass "default" if you use default custom authorization server
