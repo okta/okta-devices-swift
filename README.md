@@ -1,5 +1,5 @@
 #  Okta Devices SDK 
-
+.
 Enable your app to validate the identity of a user for an Okta authenticator that uses Apple Push Notification service (APNs).
 
 **Table of Contents**
